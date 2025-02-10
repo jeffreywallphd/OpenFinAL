@@ -3,9 +3,14 @@ from rest_framework.response import Response
 from rest_framework import status
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 from evaluate import load
+from datasets import load_dataset, Dataset
 import torch
 from django.shortcuts import render
 import traceback
+import pandas as pd
+import requests
+from io import StringIO
+import random
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -39,8 +44,6 @@ def model_stats(prompt, model_name, max_length=200, min_length=100, top_k=50, to
         outputs = model.generate(
             inputs['input_ids'],
             attention_mask=inputs['attention_mask'],
-            max_length=max_length,
-            min_length=min_length,
             do_sample=True,
             top_k=top_k,
             top_p=top_p,
@@ -51,48 +54,31 @@ def model_stats(prompt, model_name, max_length=200, min_length=100, top_k=50, to
         )
 
         response = tokenizer.decode(outputs[0], skip_special_tokens=True)
-
-        if isinstance(references, str):
-            references = [references]  # Wrap the reference in a list if it's a single string
-        elif not isinstance(references, list):
-            raise ValueError("References must be a string or a list of strings.")
-
-        # Ensure response is a string
-        if isinstance(response, str):
-            predictions = [response]  # Wrap the prediction in a list if it's a single string
-        else:
-            raise ValueError("Prediction must be a string.")
+        predictions = [str(response)]  # Wrap the prediction in a list
 
         # Calculate metrics
         rouge_metric = load("rouge",trusted_remote_code=True)
         bertscore_metric = load("bertscore",trusted_remote_code=True)
 
         rouge_scores = rouge_metric.compute(predictions=predictions, references=references)
-        bertscore_scores = bertscore_metric.compute(predictions=predictions, references=references,lang="en",device=0 if torch.cuda.is_available() else "cpu")
+        bertscore_scores = bertscore_metric.compute(predictions=predictions, references=references,lang="en",device=device) 
 
-        rouge1 = rouge_scores.get("rouge1",0)
-        rouge2 = rouge_scores.get("rouge2",0)
-        rougel = rouge_scores.get("rougel",0)
-        rougelsum = rouge_scores.get("rougelsum",0)
-        bertscore_f1 = bertscore_scores["f1"][0]
-        bertscore_precision = bertscore_scores["precision"][0]
-        bertscore_recall = bertscore_scores["recall"][0]
-        # Collect and return scores
-        results = {
-            "ROUGE1": rouge1,
-            "ROUGE2": rouge2,
-            "ROUGEL": rougel,
-            "ROUGELSUM" : rougelsum,
-            "BERTScoreF1": bertscore_f1,
-            "BERTScorePrecision": bertscore_precision,
-            "BERTScoreRecall": bertscore_recall,
+        print(f"ROUGE scores: {rouge_scores}")
+        print(f"BERTScore scores: {bertscore_scores}")
+        
+        return {
+            "ROUGE1" : rouge_scores.get("rouge1",0),
+            "ROUGE2" : rouge_scores.get("rouge2",0),
+            "ROUGEL" : rouge_scores.get("rougeL",0),
+            "ROUGELSUM" : rouge_scores.get("rougeLsum",0),
+            "BERTScoreF1" : bertscore_scores["f1"][0],
+            "BERTScorePrecision" : bertscore_scores["precision"][0],
+            "BERTScoreRecall" : bertscore_scores["recall"][0],
         }
-        return results
-
+    
     except Exception as e:
-        # Log the full exception details for debugging
-        print(f"Error in model_stats: {e}")
-        print("".join(traceback.format_exception(None, e, e.__traceback__)))
+        print(f"Error in model_stats: {e}") 
+        print(traceback.format_exc())
         raise RuntimeError(f"Error in model_stats: {e}")
 
 
@@ -105,34 +91,55 @@ class ModelStatisticsView(APIView):
     API endpoint to generate a chatbot response and compute metrics.
     """
     def post(self, request):
-        user_message = request.data.get("message")
+        dataset_url = request.data.get("dataset_url")
+        dataset_file = request.FILES.get("dataset_file") # Optional
+        num_questions = int(request.data.get("num_questions", 10))
         model_name = request.data.get("model_name")
-        max_length = request.data.get("max_length", 200)
-        min_length = request.data.get("min_length", 100)
-        top_k = request.data.get("top_k", 50)
-        top_p = request.data.get("top_p", 0.95)
-        references = request.data.get("references")
-        max_new_tokens = request.data.get("max_new_tokens", 300)
-        no_repeat_ngrams = request.data.get("no_repeat_ngrams", 0)
+        max_length = int(request.data.get("max_length", 200))
+        min_length = int(request.data.get("min_length", 100))
+        top_k = int(request.data.get("top_k", 50))
+        top_p = float(request.data.get("top_p", 0.95))
+        max_new_tokens = int(request.data.get("max_new_tokens", 300))
+        no_repeat_ngrams = int(request.data.get("no_repeat_ngrams", 0))
 
         # Validate inputs
-        if not user_message:
-            return Response({"error": "Message is required"}, status=status.HTTP_400_BAD_REQUEST)
         if not model_name:
             return Response({"error": "Model name is required"}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            max_length = int(max_length)
-            min_length = int(min_length)
-            top_k = int(top_k)
-            top_p = float(top_p)
-            max_new_tokens = int(max_new_tokens)
-            no_repeat_ngrams = int(no_repeat_ngrams)
-        except ValueError:
-            return Response(
-                {"error": "Invalid parameters. Ensure max_length, min_length, and top_k are integers, and top_p is a float."},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            
+            if dataset_url:
+                    dataset = load_dataset(dataset_url) 
+            elif dataset_file:
+                dataset = self.load_dataset_from_file(dataset_file)
+            else:
+                return Response({"error": "Provide either dataset URL or file."}, status=status.HTTP_400_BAD_REQUEST)
+
+            print(f"Dataset loaded: {dataset}") 
+            df = dataset["train"] 
+            # convert into dataframe 
+            df = pd.DataFrame(df)
+            print(f"Dataset loaded: {df}")
+            print(f"Dataset loaded: {df}")
+
+            # Randomly sample N questions
+            sampled_data = df.sample(n=num_questions, random_state = 42)
+            questions = sampled_data["input"].tolist()
+            references = sampled_data["output"].tolist()
+        
+        except Exception as e:
+            return Response({"error": f"Error loading dataset: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Compute scores for multiple questions
+        total_scores = {
+            "ROUGE1": 0,
+            "ROUGE2": 0,
+            "ROUGEL": 0,
+            "ROUGELSUM": 0,
+            "BERTScoreF1": 0,
+            "BERTScorePrecision": 0,
+            "BERTScoreRecall": 0,
+        }
 
         # Constraints validation
         if not (1 <= min_length <= max_length <= 1024):
@@ -142,22 +149,43 @@ class ModelStatisticsView(APIView):
         if top_k < 0:
             return Response({"error": "top_k must be a non-negative integer."}, status=status.HTTP_400_BAD_REQUEST)
 
-        try:
-            stats_result = model_stats(
-                prompt=user_message,
-                model_name=model_name,
-                max_length=max_length,
-                min_length=min_length,
-                top_k=top_k,
-                top_p=top_p,
-                max_new_tokens=max_new_tokens,
-                no_repeat_ngrams=no_repeat_ngrams,
-                references=references
-            )
-            return Response(stats_result, status=status.HTTP_200_OK)
-        except Exception as e:
-            return Response({"error": f"Error during response generation: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        for question, reference in zip(questions, references):
+            try:
+                    scores = model_stats(
+                        prompt=question,
+                        model_name=model_name,
+                        top_k=top_k,
+                        top_p=top_p,
+                        max_new_tokens=max_new_tokens,
+                        no_repeat_ngrams=no_repeat_ngrams,
+                        references=[reference]
+                    )
+                    
+                    # Sum up scores
+                    for key in total_scores:
+                        total_scores[key] += scores[key] 
+                    
+                    # print(f"Scores for question '{question}': {scores}")
+                
+            except Exception as e:
+                return Response({"error": f"Error processing question '{question}': {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+        # Compute average scores
+        avg_scores = {key: total / num_questions for key, total in total_scores.items()}
+        print(f"Average scores: {avg_scores}")
+
+        return Response(avg_scores, status=status.HTTP_200_OK)
+    
+    def handle_uploaded_file(self, file):
+        # Convert CSV to Hugging Face Dataset
+        df = pd.read_csv(file)
+        
+        # Ensure 'input' and 'output' columns are present
+        if "input" not in df.columns or "output" not in df.columns:
+            raise ValueError("CSV must contain 'input' and 'output' columns.")
+        
+        dataset = Dataset.from_pandas(df)
+        return dataset
 
 def chatbot_view(request):
     return render(request, 'model_statistics.html')

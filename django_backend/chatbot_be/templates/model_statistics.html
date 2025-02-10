@@ -9,31 +9,47 @@
 <script>
     async function evaluateModel() {
         const modelName = document.getElementById('eval_model_name').value.trim();
-        const userMessage = document.getElementById('eval_message').value.trim();
-        const references = document.getElementById('eval_references').value.trim();
+        const datasetUrl = document.getElementById('dataset_url').value.trim();
+        const datasetFile = document.getElementById('dataset_file').files[0];
+        const numQuestions = document.getElementById('num_questions').value || 10;
+        // const userMessage = document.getElementById('eval_message').value.trim();
+        // const references = document.getElementById('eval_references').value.trim();
         const topK = document.getElementById('top_k').value || 50;
         const topP = document.getElementById('top_p').value || 0.95;
         const no_repeat_ngram = document.getElementById('no_repeat_ngram').value || 0;
         const max_new_tokens = document.getElementById('max_new_tokens').value || 300;
 
-        if (!modelName || !userMessage || !references) {
+        if (!modelName ) {
             alert("Please fill in all fields for model evaluation!");
             return;
+        }
+
+        if (!datasetUrl && !datasetFile) {
+            alert("Please provide a dataset URL or upload a dataset file!");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('model_name', modelName);
+        // formData.append('dataset_url', datasetUrl);
+        // formData.append('dataset_file', datasetFile);
+        formData.append('num_questions', parseInt(numQuestions));
+        formData.append('top_k', parseInt(topK));
+        formData.append('top_p', parseFloat(topP));
+        formData.append('no_repeat_ngram', parseInt(no_repeat_ngram));
+        formData.append('max_new_tokens', parseInt(max_new_tokens));   
+        
+        if (datasetFile) {
+            formData.append('dataset_file', datasetFile);
+        } else {
+            formData.append('dataset_url', datasetUrl);
         }
 
         try {
             const response = await fetch('/api/model_statistics/', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    model_name: modelName,
-                    message: userMessage,
-                    references: references,
-                    top_k: parseInt(topK),
-                    top_p: parseFloat(topP),
-                    no_repeat_ngram_size: parseInt(no_repeat_ngram),
-                    max_new_tokens: parseInt(max_new_tokens),
-                }),
+                // headers: { 'Content-Type': 'application/json' },
+                body: formData // Using FormData for file uploads
             });
 
             const resultContainer = document.getElementById('model-eval-results');
@@ -41,14 +57,14 @@
             if (response.ok) {
                 const results = await response.json();
                 resultContainer.innerHTML = `
-                    <h3>Evaluation Results:</h3>
-                    <p><b>ROUGE1 Scores:</b> ${JSON.stringify(results.ROUGE1)}</p>
-                    <p><b>ROUGE2 Scores:</b> ${JSON.stringify(results.ROUGE2)}</p>
-                    <p><b>ROUGE-L Scores:</b> ${JSON.stringify(results.ROUGEL)}</p>
-                    <p><b>ROGUE-LSum Scores:</b> ${JSON.stringify(results.ROUGELSUM)}</p>
-                    <p><b>BERTScoreF1:</b> ${JSON.stringify(results.BERTScoreF1)}</p>
-                    <p><b>BERTScorePrecision:</b> ${JSON.stringify(results.BERTScorePrecision)}</p>
-                    <p><b>BERTScoreRecall:</b> ${JSON.stringify(results.BERTScoreRecall)}</p>
+                    <h3>Average Evaluation Results:</h3>
+                    <p><b>ROUGE1 Scores:</b> ${results.ROUGE1.toFixed(4)}</p>
+                    <p><b>ROUGE2 Scores:</b> ${results.ROUGE2.toFixed(4)}</p>
+                    <p><b>ROUGE-L Scores:</b> ${results.ROUGEL.toFixed(4)}</p>
+                    <p><b>ROGUE-LSum Scores:</b> ${results.ROUGELSUM.toFixed(4)}</p>
+                    <p><b>BERTScoreF1:</b> ${results.BERTScoreF1.toFixed(4)}</p>
+                    <p><b>BERTScorePrecision:</b> ${results.BERTScorePrecision.toFixed(4)}</p>
+                    <p><b>BERTScoreRecall:</b> ${results.BERTScoreRecall.toFixed(4)}</p>
                 `;
             } else {
                 const error = await response.json();
@@ -59,28 +75,32 @@
         }
     }
 </script>
-
-
 <h1>Model Statistics</h1>
-<div>
-    <label for="eval_model_name">Model Name:</label>
-    <input type="text" id="eval_model_name" placeholder="e.g., facebook/bart-large-cnn">
-    <label for="eval_message">Input Text:</label>
-    <textarea id="eval_message" placeholder="Enter the input text"></textarea>
-    <label for="eval_references">Expected Outputs:</label>
-    <textarea id="eval_references" placeholder="Enter expected output"></textarea>
-    <label for="top_k">Top K:</label>
-    <input type="number" id="top_k" placeholder="Default: 50">
-    <label for="top_p">Top P:</label>
-    <input type="number" step="0.01" id="top_p" placeholder="Default: 0.95">
-    <label for="no_repeat_ngram">No Repeat Ngram Size:</label>
-    <input type="number" id="no_repeat_ngram" placeholder="Default: 0">
-    <label for="max_new_tokens">Max New Tokens:</label>
-    <input type="number" id="max_new_tokens" placeholder="Default: 300">
-    <br>
-
-    <button onclick="evaluateModel()">Evaluate Model</button>
-</div>
+        <div>
+            <label for="eval_model_name">Model Name:</label>
+            <input type="text" id="eval_model_name" placeholder="e.g., facebook/bart-large-cnn">
+            <label for="dataset_url">Dataset URL:</label>
+            <input type="text" id="dataset_url" placeholder="Enter the dataset URL">
+            <label for="dataset_file">Dataset File (CSV):</label>
+            <input type="file" id="dataset_file" accept=".csv">
+            <label for="num_questions">Number of Questions:</label>
+            <input type="number" id="num_questions" placeholder="Default: 10">
+            <!-- <label for="eval_message">Input Text:</label>
+            <textarea id="eval_message" placeholder="Enter the input text"></textarea>
+            <label for="eval_references">Expected Outputs:</label>
+            <textarea id="eval_references" placeholder="Enter expected output"></textarea> -->
+            <label for="top_k">Top K:</label>
+            <input type="number" id="top_k" placeholder="Default: 50">
+            <label for="top_p">Top P:</label>
+            <input type="number" step="0.01" id="top_p" placeholder="Default: 0.95">
+            <label for="no_repeat_ngram">No Repeat Ngram Size:</label>
+            <input type="number" id="no_repeat_ngram" placeholder="Default: 0">
+            <label for="max_new_tokens">Max New Tokens:</label>
+            <input type="number" id="max_new_tokens" placeholder="Default: 300">
+            <br>
+            
+            <button onclick="evaluateModel()">Evaluate Model</button>
+        </div>
 <div id="model-eval-results" class="results-box"></div>
 
 
