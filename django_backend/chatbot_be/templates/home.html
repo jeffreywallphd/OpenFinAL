@@ -3,4 +3,71 @@
 {% block content %}
 <h1>Welcome to LMForge</h1>
 <p>This is an under development software aimed to create datasets, train large language models and evaluate trained models.</p>
+
+{% if messages %}
+    <div class="alert alert-info">
+        <ul class="mb-0">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+<h2>Datasets</h2>
+<div>
+    <a href="{% url 'scrape-view' %}" class="button success">+ New Dataset</a>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Dataset</th>
+                    <th>Downloads</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for dataset in datasets %}
+                <tr>
+                    <td>{{ dataset.id }}>
+                    </td>
+
+                    <td>{{ dataset.downloads }}</td>
+                    <td>
+                        <a href="" class="button">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+<h2>Models</h2>
+<div>
+    <a href="{% url 'train-view' %}" class="button success">+ New Model</a>
+    <div class="table-responsive">
+        <table class="table table-striped table-hover">
+            <thead class="table-dark">
+                <tr>
+                    <th>Model</th>
+                    <th>Downloads</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for model in models %}
+                <tr>
+                    <td>{{ model.id }}>
+                    </td>
+
+                    <td>{{ model.downloads }}</td>
+                    <td>
+                        <a href="" class="button">Edit</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

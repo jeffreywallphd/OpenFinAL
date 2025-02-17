@@ -28,17 +28,31 @@ input[type="text"] {
     width: calc(100% - 16px);  /* Make input fields responsive */
     box-sizing: border-box;
 }
-button {
+button, .button {
     padding: 10px 15px;
     background-color: #333;
     color: white;
     border: none;
     cursor: pointer;
     font-size: 16px;
+    text-decoration: none;
+    border-radius: 5px;
+    display: inline-block;
 }
-button:hover {
+button:hover, .button:hover {
     background-color: #575757;
 }
+
+.success{
+    background-color: #198754;
+    color: #FFF;
+}
+
+.success:hover{
+    background-color: #157347;
+    color: #FFF;
+}
+
 #result {
     margin-top: 20px;
 }
