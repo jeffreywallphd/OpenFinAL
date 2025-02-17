@@ -15,6 +15,20 @@
   --footer-height: 90px;
 }
 
+body.dark-mode {
+  --primary-color: #333c51;
+  --secondary-color: #384457;
+  --tertiary-color: #4a5568;
+  --background-color: #5c5858;
+  --accent-color: #63b3ed;
+  --highlight-color: #ecc94b;
+  --text-color-dark: #e2e8f0;
+  --text-color-light: #ffffff;
+  --text-color-medium: #cbd5e0;
+  --row-primary-color: #2d3748;
+  --row-alternating-color: #4a5568;
+}
+
 body {
   height: 100vh;
   background-color: var(--background-color);
@@ -48,7 +62,7 @@ h1 {
 }
 
 h2 {
-  color: var(--text-color-dark);
+  color: white; 
   padding-top: 0px;
   margin-top: 0px;
 }
@@ -176,6 +190,7 @@ code {
   padding: 20px;
   display: flex;
   height: 100vh;
+  background-color: var(--background-color);
   /* overflow: hidden; */
 }
 
@@ -188,13 +203,13 @@ code {
   padding: 20px;
   margin-left: 10px;
 } */
-
-/* .sidebar {
+/*
+ .sidebar {
   padding:0;
   margin:0; 
   width: 200px; 
   height: 100vh;
-  background-color: var(--primary-color);
+  background-color: var(--background-color);
   transition: width 0.5s ease;
 } */
 
@@ -752,7 +767,7 @@ body {
   left: 0;
   width: 250px; /* Adjust width as needed */
   height: 100%;
-  background-color: #fff; /* Adjust background color as needed */
+  background-color: var(--background-color); /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
   overflow-y: auto; /* Allow scrolling within the sidebar if needed */
@@ -907,9 +922,10 @@ nav ul li a:hover {
 }
 
 .stats>div {
-  background-color: #fff;
+  background-color: #2B388F;
   padding: 10px;
   border-radius: 10px;
+  color: white; 
   flex: 1 1 calc(33.333% - 20px);
   /* Flexible width for each stat */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -919,6 +935,7 @@ nav ul li a:hover {
 .stats h3 {
   display: flex;
   align-items: center;
+  color: white; 
 }
 
 .stats h3 .material-icons {
@@ -929,7 +946,7 @@ nav ul li a:hover {
 .news-updates {
   flex: 1 1 40%;
   padding: 20px;
-  background-color: #fff;
+  background-color: #2B388F;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
@@ -941,7 +958,7 @@ nav ul li a:hover {
 
 .news-item h4 {
   font-size: 20px;
-  color: #333;
+  color: white;
   display: flex;
   align-items: center;
 }
@@ -952,13 +969,14 @@ nav ul li a:hover {
 
 .news-item p {
   margin: 5px 0;
+  color: white;
 }
 
 /* Promo Section (below the stats and news) */
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
   padding: 10px;
-  background-color: #fff !important;
+  background-color: #2B388F  !important;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.064) !important;
   display: flex;
@@ -1012,7 +1030,7 @@ nav ul li a:hover {
 /* Your Trades Section (Netflix and Apple Inc.) */
 .your-trades {
   width: 250px;
-  background-color: #ffffff00 !important;
+  background-color: #2B388F !important;
   padding: 20px;
   border-radius: 10px;
   height: 150px !important;
@@ -1035,6 +1053,7 @@ nav ul li a:hover {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
+  color: white;
 }
 
 .trade-amount {
@@ -1052,7 +1071,7 @@ nav ul li a:hover {
 .trade-time {
   display: block;
   font-size: 12px;
-  color: #888;
+  color: #ffffff;
   margin-left: auto;
 }
 
@@ -1318,7 +1337,7 @@ nav ul li a:hover {
   margin: 10px 0;
   transition: all 0.3s ease;
 }
-=======
+
 /* updated /
 / StockAnalysis.css */
 
