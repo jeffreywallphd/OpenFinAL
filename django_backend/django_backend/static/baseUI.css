@@ -53,6 +53,11 @@ button:hover, .button:hover {
     color: #FFF;
 }
 
+.logo {
+    text-decoration: none;
+    color: #FFF;
+}
+
 #result {
     margin-top: 20px;
 }

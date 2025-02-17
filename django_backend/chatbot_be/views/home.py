@@ -9,7 +9,6 @@ DEFAULT_HF_KEY = config("HF_API_KEY", default="")
 DEFAULT_HF_ACCOUNT = config("HF_ACCOUNT_NAME", default=None)
 
 def home_view(request):
-    message=None
     models=[]
     datasets=[]
     messages=[]
