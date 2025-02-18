@@ -52,7 +52,10 @@ def extract_qa(text, model="gpt-4", questions_num=5):
     text_chunks = split_text(text, max_tokens=1000)  # Adjust chunk size
     results = []
 
-    for i, chunk in enumerate(text_chunks):
+    total_chunks = len(text_chunks)
+
+    for i, chunk in enumerate(text_chunks[:2]):
+        print(f'Total {total_chunks}, finished {i + 1}')
         prompt = f"""
         I would like to generate some questions and answers from the following text and return them in JSON format. 
         Generate {questions_num} questions based on this text segment.
@@ -104,35 +107,27 @@ def generate_q_and_a(request):
     page_number = request.GET.get('page')
     documents = paginator.get_page(page_number)
 
-
-    # if request.method == "POST":
-    #     form = DocumentForm(request.POST, request.FILES)
-    #     if form.is_valid():
-    #         document = form.save(commit=False)
-
-    #         if 'pdf_file' in request.FILES:
-    #             pdf_file = request.FILES['pdf_file']
-    #             reader = PdfReader(pdf_file)
-    #             pdf_text = ""
-    #             for page in reader.pages:
-    #                 pdf_text += page.extract_text()
-                
-    #             document.large_text = pdf_text  
-
-    #         document.save()
-    #         messages.success(request, 'The document has been submitted successfully!')
-    #         return redirect('generate_q_and_a')
-    # else:
     form = DocumentForm()
 
     return render(request, "generate_q_and_a.html", {"form": form, "documents":documents})
 
 
-def document_detail(request, document_id):
-    document = get_object_or_404(ScrapedData, id=document_id)
+def document_detail(request):
+    selected_document_ids = request.POST.getlist('selected_documents')
+    print(selected_document_ids)
+
+    documents = ScrapedData.objects.filter(id__in=selected_document_ids)
+    print(documents)
+
+    combined_text = "\n\n".join([doc.content for doc in documents])
+
     generated_json_data = None
 
     if request.method == "POST":
+        if selected_document_ids:
+            request.session['selected_document_ids'] = selected_document_ids
+
+
         form = DocumentProcessingForm(request.POST)
         if form.is_valid():
             test_type = form.cleaned_data['test_type']
@@ -143,34 +138,36 @@ def document_detail(request, document_id):
                 try:
                     with open(json_file_path, 'r', encoding='utf-8') as file:
                         generated_json_text = file.read()
+
                     generated_json_data = json.loads(generated_json_text)
-                    request.session[f'generated_json_{document_id}'] = generated_json_text
+                    request.session[f'generated_json_combined'] = generated_json_text
                 except (FileNotFoundError, json.JSONDecodeError):
                     generated_json_data = {"error": "Mock-up JSON file not found or invalid"}
-
+            
             else:
                 try:
-                    generated_json_text = extract_qa(text=document.content, questions_num=num_questions)
+                    generated_json_text = extract_qa(text=combined_text, questions_num=num_questions)
                     generated_json_data = json.loads(generated_json_text)
-                    request.session[f'generated_json_{document_id}'] = generated_json_text
+                    request.session['generated_json_combined'] = generated_json_text
 
-                except OpenAIError as e:
-                    # messages.error(request, "OpenAI API Error: You have exceeded your quota. Please check your billing.")
-                    generated_json_data = "{ error OpenAI API quota exceeded }"
-                    request.session[f'generated_json_{document_id}'] = generated_json_data
+                except OpenAIError:
+                    generated_json_data = {"error": "OpenAI API quota exceeded"}
+                    request.session['generated_json_combined'] = json.dumps(generated_json_data)
 
     else:
         form = DocumentProcessingForm()
 
     return render(request, 'document_detail.html', {
-        'document': document,
+        'documents': documents,
         'form': form,
-        'json_data': generated_json_data  
+        'json_data': generated_json_data, 
+        'selected_document_ids': selected_document_ids
     })
 
-def download_json(request, document_id):
+
+def download_json(request):
     """Serve the generated JSON data as a downloadable file."""
-    session_key = f'generated_json_{document_id}'
+    session_key = f'generated_json_combined'
     generated_json_text = request.session.get(session_key, None)
 
     if generated_json_text is None:
@@ -180,7 +177,7 @@ def download_json(request, document_id):
         generated_json_text,
         content_type="application/json"
     )
-    response['Content-Disposition'] = f'attachment; filename="document_{document_id}.json"'
+    response['Content-Disposition'] = f'attachment; filename="document.json"'
     return response
     
 
@@ -194,3 +191,5 @@ def delete_document(request, document_id):
     else:
         # If the request is not POST, redirect to the generate_q_and_a page
         return redirect('generate_q_and_a')
+    
+

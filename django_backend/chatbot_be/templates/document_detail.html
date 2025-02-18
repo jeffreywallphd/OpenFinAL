@@ -1,20 +1,21 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %} Document details | OpenFinAL{% endblock %}
+{% block title %} Document Details | OpenFinAL {% endblock %}
 
 {% block content %}
 <h1>Document Details</h1>
 
-<p><strong>Created At:</strong> {{ document.created_at }}</p>
-<p><strong>PDF File:</strong>
-    {% if document.pdf_file %}
-    <a href="{{ document.pdf_file.url }}" target="_blank">View PDF</a>
-    {% else %}
-    N/A
-    {% endif %}
-</p>
-
+{% if documents %}
+<h3>Selected Documents:</h3>
+<ul>
+    {% for document in documents %}
+    <li><strong>Created At:</strong> {{ document.created_at }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<p>No documents selected.</p>
+{% endif %}
 
 <form method="post" id="documentForm">
     {% csrf_token %}
@@ -27,44 +28,50 @@
             Number of Questions
             {{ form.num_questions }}
         </div>
-
         <div class="col-3">
             Test type
             {{ form.test_type }}
         </div>
-
     </div>
 
     <button type="submit" class="btn btn-primary" id="submitBtn" style="margin-top: 1vh;">
         Submit
     </button>
 
-    
     <div id="loadingSpinner" class="spinner-border text-primary ml-2" role="status" style="display: none">
         <span class="sr-only"></span>
     </div>
-</form>
 
+    {% for doc_id in selected_document_ids %}
+    <input type="hidden" name="selected_documents" value="{{ doc_id }}">
+    {% endfor %}
+</form>
 
 <script>
     function toggleTestMode() {
         let selectedMode = document.getElementById("test_mode").value;
         let url = new URL(window.location.href);
         url.searchParams.set("test_mode", selectedMode);
-        window.location.href = url.toString();  // Reload page with selected mode
+        window.location.href = url.toString();
     }
 </script>
 
 <div class="row">
     <div class="col-6">
-        <p><strong>Text</strong></p>
-        <p>{{ document.content|linebreaks }}</p>
+        <p><strong>Combined Text</strong></p>
+        {% for document in documents %}
+        <p> Document {{ forloop.counter }} </p>
+        <div class="border rounded p-2 mb-3" style="max-height: 200px; overflow-y: auto; background-color: #f8f9fa;">
+            <p>{{ document.content|linebreaks }}</p>
+        </div>
+        {% endfor %}
     </div>
+
     <div class="col-6">
         {% if json_data %}
-        <p><strong>JSON Output</strong></p>
-        
-        <a href="{% url 'download_json' document.id %}" class="btn btn-success mt-3">
+        <p><strong>Generated Q&A</strong></p>
+
+        <a href="{% url 'download_json' %}" class="btn btn-success mt-3">
             Download JSON
         </a>
 
@@ -76,16 +83,14 @@
             });
 
             document.getElementById("documentForm").addEventListener("submit", function (event) {
-               
-                document.getElementById("loadingSpinner").style.display = "inline-block"; 
+                document.getElementById("loadingSpinner").style.display = "inline-block";
                 document.getElementById("submitBtn").disabled = true;
 
-                
                 setTimeout(() => {
-                    event.target.submit();  
-                }, 1000);  
-               
-                event.preventDefault();  
+                    event.target.submit();
+                }, 1000);
+
+                event.preventDefault();
             });
         </script>
 
@@ -93,5 +98,19 @@
         {% endif %}
     </div>
 </div>
+
+<script>
+    function toggleText(index) {
+        let preview = document.getElementById("preview" + index);
+        let fullText = document.getElementById("full" + index);
+        if (preview.classList.contains("d-none")) {
+            preview.classList.remove("d-none");
+            fullText.classList.add("d-none");
+        } else {
+            preview.classList.add("d-none");
+            fullText.classList.remove("d-none");
+        }
+    }
+</script>
 
 {% endblock %}

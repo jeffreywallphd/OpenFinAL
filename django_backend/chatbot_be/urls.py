@@ -29,8 +29,8 @@ urlpatterns = [
     path('save_manual_text/', SaveManualTextView.as_view(), name='save-manual-text'),
 
     path('generate_q_and_a/', generate_q_and_a, name='generate_q_and_a'),
-    path("documents/<int:document_id>/", document_detail, name="document_detail"),
-    path('document/<int:document_id>/download_json/', download_json, name='download_json'),
+    path("document_detail/", document_detail, name="document_detail"),
+    path('document/download_json/', download_json, name='download_json'),
     path('delete_document/<int:document_id>/', delete_document, name='delete_document'),
 ]
 
