@@ -22,6 +22,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Dataset</th>
+                    <th>Created</th>
                     <th>Downloads</th>
                     <th>Action</th>
                 </tr>
@@ -29,13 +30,10 @@
             <tbody>
                 {% for dataset in datasets %}
                 <tr>
-                    <td>{{ dataset.id }}>
-                    </td>
-
+                    <td>{{ dataset.id }}</td>
+                    <td>{{ dataset.created_at }}</td>
                     <td>{{ dataset.downloads }}</td>
-                    <td>
-                        <a href="" class="button">Edit</a>
-                    </td>
+                    <td><a href="" class="button">Edit</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
@@ -50,6 +48,7 @@
             <thead class="table-dark">
                 <tr>
                     <th>Model</th>
+                    <th>Created</th>
                     <th>Downloads</th>
                     <th>Action</th>
                 </tr>
@@ -57,13 +56,10 @@
             <tbody>
                 {% for model in models %}
                 <tr>
-                    <td>{{ model.id }}>
-                    </td>
-
+                    <td>{{ model.id }}</td>
+                    <td>{{ model.created_at }}</td>
                     <td>{{ model.downloads }}</td>
-                    <td>
-                        <a href="" class="button">Edit</a>
-                    </td>
+                    <td><a href="" class="button">Edit</a></td>
                 </tr>
                 {% endfor %}
             </tbody>
