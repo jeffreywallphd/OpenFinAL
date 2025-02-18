@@ -13,8 +13,13 @@
 
     <!-- Top Panel -->
     <div class="top-panel">
+        <span id="menu">
+            <span class="hamburger" onclick="toggleSidebar()">&#9776;</span>
+        </span>
         <a href="{% url 'home-view' %}" class="logo">LMForge</a>
     </div>
+
+    {% include "menu.html"%}
 
     <!-- Main Content Area -->
     <div class="content">
@@ -23,5 +28,17 @@
         {% endblock %}
     </div>
 
+    <div class="footer">
+        Copyright 2025. All rights reserved
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById("sidebar");
+            const content = document.getElementById("menu");
+            sidebar.classList.toggle("active");
+            content.classList.toggle("active");
+        }
+    </script>
 </body>
 </html>

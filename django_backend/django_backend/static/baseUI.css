@@ -185,3 +185,60 @@ button:hover, .button:hover {
         font-size: 12px;
     }
 }
+
+#sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px; /* Hidden by default */
+    height: 100%;
+    width: 250px;
+    background-color: #000; /* Example background color */
+    overflow-y: auto;
+    transition: transform 0.3s ease-in-out; /* Smooth transition */
+    z-index: 1050; /* Ensure it's above other content */
+    padding: 20px;
+    color: #FFF;
+}
+
+#sidebar ul {
+    list-style-type: none;
+    margin: 0px;
+    padding: 5px 0px 5px 0px;
+    font-size: 16px;
+}
+
+#sidebar a {
+    text-decoration: none;
+    color: #FFF;
+}
+
+#sidebar a:hover {
+    text-decoration: underline;
+}
+
+#sidebar.active {
+    transform: translateX(250px); /* Slide in */
+}
+
+#sidebar .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+#menu {
+    transition: margin-left 0.3s ease-in-out; /* Match sidebar transition */
+}
+
+#menu.active {
+    margin-left: 250px; /* Adjust for sidebar width */
+}
+
+/* Styles for the hamburger icon */
+.hamburger {
+    cursor: pointer;
+    font-size: 24px; /* Adjust size as needed */
+    padding: 10px 10px 10px 0px;
+}

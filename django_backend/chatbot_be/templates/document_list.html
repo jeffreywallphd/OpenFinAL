@@ -4,9 +4,9 @@
             <tr>
                 <th>Select</th>
                 <th>ID</th>
-                <th>Created At</th>
-                <th>PDF File</th>
-                <th>Large Text</th>
+                <th>Created</th>
+                <th>File</th>
+                <th>Source</th>
                 <th>Action</th>
             </tr>
         </thead>
@@ -25,7 +25,7 @@
                     <span class="text-muted">N/A</span>
                     {% endif %}
                 </td>
-                <td>{{ document.content_preview }}</td>
+                <td>{{ document.url }}</td>
 
                 <td>
                     <button type="button" class="btn btn-sm btn-danger"
