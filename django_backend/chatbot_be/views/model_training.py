@@ -113,13 +113,13 @@ def train_model_view(request):
                 # If model is Llama, Meta, or OpenELM, use a special configuration
                 tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf", use_fast=False, trust_remote_code=True)
                 tokenizer.add_bos_token = True  
-                dtype = torch.bfloat16 if bf16 else torch.float16 if fp16 else None
+                dtype = torch.bfloat16 if bf16 else None
                 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype, trust_remote_code=True)
 
             else:
                 # Default to Hugging Face Auto classes for other models
                 tokenizer = AutoTokenizer.from_pretrained(model_name, trust_remote_code=True)
-                dtype = torch.bfloat16 if bf16 else torch.float16 if fp16 else None
+                dtype = torch.bfloat16 if bf16 else None
                 model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=dtype, trust_remote_code=True)
 
             # Set padding token
