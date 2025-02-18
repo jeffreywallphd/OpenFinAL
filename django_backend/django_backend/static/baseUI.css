@@ -195,8 +195,6 @@ button:hover, .button:hover {
     border-collapse: collapse;
 }
 
-
-
 #sidebar {
     position: fixed;
     top: 0;
@@ -221,6 +219,7 @@ button:hover, .button:hover {
 #sidebar a {
     text-decoration: none;
     color: #FFF;
+    font-size: 18px;
 }
 
 #sidebar a:hover {
