@@ -2,7 +2,7 @@
 
 {% block content %}
 <h1>Welcome to LMForge</h1>
-<p>This is an under development software aimed to create datasets, train large language models and evaluate trained models.</p>
+<p>This software is designed to simplify the process of creating datasets for fine-tuning language models and fine-tuning new models for specific purposes. The software is configurable to work with common AI tools, including HuggingFace, Weights and Biases, and OpenAI. If you haven't, please <a href="{% url 'settings-view' %}">configure the software here</a>.</p>
 
 {% if messages %}
     <div class="alert alert-info">
