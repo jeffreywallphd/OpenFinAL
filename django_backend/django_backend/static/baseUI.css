@@ -186,6 +186,17 @@ button:hover, .button:hover {
     }
 }
 
+.workflow-table {
+    height: 340px; 
+    overflow-y: scroll;
+}
+
+.workflow-table table {
+    border-collapse: collapse;
+}
+
+
+
 #sidebar {
     position: fixed;
     top: 0;
@@ -242,3 +253,4 @@ button:hover, .button:hover {
     font-size: 24px; /* Adjust size as needed */
     padding: 10px 10px 10px 0px;
 }
+
