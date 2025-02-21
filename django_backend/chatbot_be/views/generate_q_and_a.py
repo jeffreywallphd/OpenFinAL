@@ -182,14 +182,16 @@ def download_json(request):
     
 
 
-def delete_document(request, document_id):
+def delete_document(request, document_id, redirect_url):
+    print(request)
+
     document = get_object_or_404(ScrapedData, id=document_id)
     if request.method == "POST":
         document.delete()
         messages.success(request, 'The document has been deleted successfully!')
-        return redirect('generate_q_and_a')
+        return redirect(redirect_url)
     else:
-        # If the request is not POST, redirect to the generate_q_and_a page
-        return redirect('generate_q_and_a')
+        # If the request is not POST, redirect
+        return redirect(redirect_url)
     
 
