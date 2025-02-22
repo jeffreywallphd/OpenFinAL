@@ -18,6 +18,7 @@
 
                 <td>{{ documents.start_index|add:forloop.counter0 }}</td>
                 <td>{{ document.created_at }}</td>
+
                 <td>
                     {% if document.file_type %}
                     <span class="badge bg-info">{{ document.file_type }}</span>
@@ -25,7 +26,9 @@
                     <span class="text-muted">N/A</span>
                     {% endif %}
                 </td>
-                <td>{{ document.url }}</td>
+
+                
+                <td>{{ document.title }}</td>
 
                 <td>
                     <button type="button" class="btn btn-sm btn-danger"

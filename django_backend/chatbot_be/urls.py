@@ -6,10 +6,12 @@ from .views.home import home_view
 from .views.model_training import train_model_view, stream_training_output
 from .views.scrape import ScrapeDataView, UploadPDFView, scrape_view, SaveManualTextView
 from .views import SessionCreateView, ConversationListView, ConversationCreateView, SessionListView, ChatbotGenerateResponseView
-from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json, delete_document
+from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json
 from .views.dataset_workflow import dataset_workflow_view, dataset_workflow_document_processor
 from django.conf import settings
 from django.conf.urls.static import static
+
+from .management.commands.delete_document import delete_document
 
 urlpatterns = [
     path('chatbot/', SessionCreateView.as_view(), name='create-session'),

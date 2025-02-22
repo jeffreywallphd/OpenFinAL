@@ -5,58 +5,88 @@
 
 {% block content %}
 
+
+<div id="scrapedData" style="display: none;">
+    <h2 id="scrapedTitle"></h2>
+    <div id="scrapedContent"></div>
+</div>
+
 <div class="container mt-5">
     <h1>Document Processor</h1>
 
     <div>
-        <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text. Use one of the three tools below.</p>
+        <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text.</p>
     </div>
 
-    {% include "processor_url.html" %}
+    <div class="mb-3">
+        <label for="title" class="form-label">Title:</label>
+        <input type="text" id="title" class="form-control" placeholder="Enter a title for the document">
+    </div>
 
-    <!-- Result Display -->
-    <div id="result" class="mb-4"></div>
+    <!-- Dropdown Menu for Selecting Input Method -->
+    <div class="mb-4">
+        <label for="inputMethod" class="form-label">Select Input Method:</label>
+        <select id="inputMethod" class="form-select">
+            <option value="none">-- Select an option --</option>
+            <option value="url">Scrape from URL</option>
+            <option value="pdf">Upload PDF</option>
+            <option value="text">Enter Text</option>
+        </select>
+    </div>
 
-    {% include "processor_pdf.html" %}
+    <!-- URL Input Section -->
+    <div id="urlSection" class="input-section" style="display: none;">
+        {% include "processor_url.html" %}
 
-    <!-- Upload Result Display -->
-    <div id="uploadResult" class="mb-4"></div>
+        <div id="result" class="mb-4"></div>
+    </div>
 
-    {% include "processor_text.html" %}
+    <!-- PDF Upload Section -->
+    <div id="pdfSection" class="input-section" style="display: none;">
+        {% include "processor_pdf.html" %}
 
-    <!-- Manual Text Result Display -->
-    <div id="manualTextResult" class="mb-4"></div>
+        <div id="uploadResult" class="mb-4"></div>
+    </div>
 
-    <!-- Scraped Data Section - Hidden Initially -->
-    <div id="scrapedData" class="mb-4" style="display: none;">
-        <h2 class="text-center mb-3">Last Scraped Data</h2>
-        <div id="scrapedContent" class="bg-light p-3 rounded">
-            {% if latest_scraped_data %}
-            <h3>Data from {{ latest_scraped_data.url }} ({{ latest_scraped_data.file_type }})</h3>
+    <!-- Manual Text Entry Section -->
+    <div id="textSection" class="input-section" style="display: none;">
+        {% include "processor_text.html" %}
 
-            {% if latest_scraped_data.file_type == 'html' %}
-            <div>{{ latest_scraped_data.content|safe }}</div>
-            {% elif latest_scraped_data.file_type == 'json' %}
-            <pre>{{ latest_scraped_data.content }}</pre>
-            {% endif %}
-            {% else %}
-            <p class="text-muted">No data available.</p>
-            {% endif %}
-        </div>
+        <div id="manualTextResult" class="mb-4"></div>
     </div>
 </div>
+
+
+<script>
+    document.getElementById('inputMethod').addEventListener('change', function () {
+        const selectedOption = this.value;
+
+        document.getElementById('urlSection').style.display = 'none';
+        document.getElementById('pdfSection').style.display = 'none';
+        document.getElementById('textSection').style.display = 'none';
+
+        if (selectedOption === 'url') {
+            document.getElementById('urlSection').style.display = 'block';
+        } else if (selectedOption === 'pdf') {
+            document.getElementById('pdfSection').style.display = 'block';
+        } else if (selectedOption === 'text') {
+            document.getElementById('textSection').style.display = 'block';
+        }
+    });
+</script>
 
 <script>
     document.getElementById('scrapeBtn').addEventListener('click', () => {
         const url = document.getElementById('url').value;
         const outputFile = document.getElementById('output_file').value;
+        const title = document.getElementById('title').value;
 
-        if (!url || !outputFile) {
-            alert('Please provide both URL and output file name.');
+        if (!url || !outputFile || !title) {
+            alert('Please provide both URL, output and a title file name.');
             return;
         }
 
-        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}`)
+        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}&title=${encodeURIComponent(title)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -105,15 +135,21 @@
     document.getElementById('uploadBtn').addEventListener('click', () => {
         const pdfFile = document.getElementById('pdfUpload').files[0];
         const outputFormat = document.getElementById('output_format').value;
-
+        const title = document.getElementById('title').value;
+        console.log(title)
         if (!pdfFile) {
             alert('Please upload a PDF file.');
+            return;
+        }
+        else if (!title){
+            alert("Please provide a title");
             return;
         }
 
         const formData = new FormData();
         formData.append('pdf_file', pdfFile);
         formData.append('output_format', outputFormat);
+        formData.append('title', title);
 
         fetch('/api/upload_pdf/', {
             method: 'POST',
@@ -158,9 +194,15 @@
 
     document.getElementById('saveManualTextBtn').addEventListener('click', () => {
         const manualText = document.getElementById('manualText').value;
+        const title = document.getElementById('title').value;
 
         if (!manualText) {
             alert('Please enter some text.');
+            return;
+        }
+
+        else if(!title){
+            alert("Please provide a title")
             return;
         }
 
@@ -169,7 +211,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ text: manualText }),
+            body: JSON.stringify({ text: manualText, title: title }),
         })
             .then(response => {
                 if (!response.ok) {

@@ -17,7 +17,8 @@ from django.conf.urls.static import static
 class ScrapeDataView(APIView):
     def get(self, request):
         url = request.GET.get('url')
-
+        title = request.GET.get('title')
+        print(title)
         if not url:
             return Response({'error': 'Please provide a URL.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -73,7 +74,8 @@ class ScrapeDataView(APIView):
             url=url,
             file_type=file_type,
             content=scraped_content if scraped_content else None,  # Store text content if available
-            binary_content=binary_content if binary_content else None  # Store binary content if available
+            binary_content=binary_content if binary_content else None,  # Store binary content if available
+            title = title
         )
 
         # return Response({'success': f'Successfully saved data from {url} to the database.'}, status=status.HTTP_200_OK)
@@ -93,6 +95,7 @@ class UploadPDFView(APIView):
     def post(self, request):
         pdf_file = request.FILES.get('pdf_file')
         output_format = request.POST.get('output_format')
+        title = request.POST.get('title')
 
         if not pdf_file or not output_format:
             return Response({'error': 'PDF file and output format are required.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -130,6 +133,7 @@ class UploadPDFView(APIView):
             scraped_data = ScrapedData.objects.create(
                 file_type=file_type,
                 content=converted_content if file_type == 'html' else str(converted_content),
+                title = title
                 # pdf_file=pdf_file  
             )
 
@@ -165,14 +169,15 @@ def scrape_view(request):
 class SaveManualTextView(APIView):
     def post(self, request):
         text = request.data.get('text')
-
+        title = request.data.get('title')
         if not text:
             return Response({'error': 'Please provide text.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Save the manually entered text to the database
         scraped_data = ScrapedData.objects.create(
             file_type='text',
-            content=text
+            content=text,
+            title=title
         )
 
         # Fetch the latest scraped data after saving

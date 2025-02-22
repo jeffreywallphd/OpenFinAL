@@ -17,6 +17,8 @@
 <p>No documents selected.</p>
 {% endif %}
 
+<p><strong>Total Amount Paragraphs:</strong> {{ total_chunks|default:"0" }}</p>
+
 <form method="post" id="documentForm">
     {% csrf_token %}
     <div class="row">
