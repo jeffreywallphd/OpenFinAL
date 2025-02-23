@@ -11,5 +11,6 @@ def create_scraped_data_meta(sender, instance, created, **kwargs):
             file_type=instance.file_type,
             pdf_file=instance.pdf_file,
             created_at=instance.created_at,
-            content_preview = instance.content[:50]
+            content_preview = instance.content[:50],
+            title = instance.title
         )

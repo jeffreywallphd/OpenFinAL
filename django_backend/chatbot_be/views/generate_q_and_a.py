@@ -48,13 +48,15 @@ def split_text(text, max_tokens=1000):
     return chunks
 
 
-def extract_qa(text, model="gpt-4", questions_num=5):
+
+
+def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
     text_chunks = split_text(text, max_tokens=1000)  # Adjust chunk size
     results = []
 
     total_chunks = len(text_chunks)
 
-    for i, chunk in enumerate(text_chunks[:2]):
+    for i, chunk in enumerate(text_chunks[:chunk_limit]):
         print(f'Total {total_chunks}, finished {i + 1}')
         prompt = f"""
         I would like to generate some questions and answers from the following text and return them in JSON format. 
@@ -120,6 +122,8 @@ def document_detail(request):
     print(documents)
 
     combined_text = "\n\n".join([doc.content for doc in documents])
+    text_chunks = split_text(combined_text, max_tokens=1000)  # Adjust chunk size
+    total_chunks = len(text_chunks)
 
     generated_json_data = None
 
@@ -132,6 +136,9 @@ def document_detail(request):
         if form.is_valid():
             test_type = form.cleaned_data['test_type']
             num_questions = form.cleaned_data['num_questions']
+            num_paragraphs = form.cleaned_data['num_paragraphs']
+
+            print()
 
             if test_type == 'mockup':
                 json_file_path = 'media/JSON/Introduction to Text Segmentation.json'
@@ -146,7 +153,7 @@ def document_detail(request):
             
             else:
                 try:
-                    generated_json_text = extract_qa(text=combined_text, questions_num=num_questions)
+                    generated_json_text = extract_qa(text=combined_text, chunk_limit = num_paragraphs, questions_num=num_questions)
                     generated_json_data = json.loads(generated_json_text)
                     request.session['generated_json_combined'] = generated_json_text
 
@@ -161,7 +168,8 @@ def document_detail(request):
         'documents': documents,
         'form': form,
         'json_data': generated_json_data, 
-        'selected_document_ids': selected_document_ids
+        'selected_document_ids': selected_document_ids, 
+        'total_chunks': total_chunks,
     })
 
 
@@ -182,16 +190,6 @@ def download_json(request):
     
 
 
-def delete_document(request, document_id, redirect_url):
-    print(request)
 
-    document = get_object_or_404(ScrapedData, id=document_id)
-    if request.method == "POST":
-        document.delete()
-        messages.success(request, 'The document has been deleted successfully!')
-        return redirect(redirect_url)
-    else:
-        # If the request is not POST, redirect
-        return redirect(redirect_url)
     
 

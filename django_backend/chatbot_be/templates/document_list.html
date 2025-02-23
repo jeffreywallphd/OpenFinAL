@@ -7,7 +7,7 @@
                 <th>Created</th>
                 <th>File</th>
                 <th>Source</th>
-                <th>Action</th>
+                <!-- <th>Action</th> -->
             </tr>
         </thead>
         <tbody>
@@ -18,6 +18,7 @@
 
                 <td>{{ documents.start_index|add:forloop.counter0 }}</td>
                 <td>{{ document.created_at }}</td>
+
                 <td>
                     {% if document.file_type %}
                     <span class="badge bg-info">{{ document.file_type }}</span>
@@ -25,14 +26,16 @@
                     <span class="text-muted">N/A</span>
                     {% endif %}
                 </td>
-                <td>{{ document.url }}</td>
 
-                <td>
+                
+                <td>{{ document.title }}</td>
+
+                <!-- <td>
                     <button type="button" class="btn btn-sm btn-danger"
                         onclick="deleteDocument('{{ document.scraped_data_id }}')">
                         Delete
                     </button>
-                </td>
+                </td> -->
             </tr>
             {% endfor %}
         </tbody>
