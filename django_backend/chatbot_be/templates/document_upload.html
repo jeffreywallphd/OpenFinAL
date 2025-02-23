@@ -5,6 +5,17 @@
 
 {% block content %}
 
+
+{% if messages %}
+<div class="alert alert-info">
+    <ul class="mb-0">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
 <div id="scrapedData" style="display: none;">
     <h2 id="scrapedTitle"></h2>
     <div id="scrapedContent"></div>
@@ -53,7 +64,16 @@
 
         <div id="manualTextResult" class="mb-4"></div>
     </div>
+
+    <div class="mt-4">
+        <h3>Uploaded/Scraped Documents</h3>
+        <ul id="documentList" class="list-group"></ul>
+    </div>
+    
+    <button id="redirectBtn" class="btn btn-primary mt-3">Proceed to Dataset Workflow</button>    
+
 </div>
+
 
 
 <script>
@@ -75,17 +95,31 @@
 </script>
 
 <script>
+
+    function addDocumentToList(title, message) {
+        const documentList = document.getElementById('documentList');
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `<strong>${title}</strong>: ${message}`;
+        documentList.appendChild(listItem);
+
+    }
+
+    // Redirect button function
+    document.getElementById('redirectBtn').addEventListener('click', () => {
+        window.location.href = "{% url 'dataset-workflow' %}";
+    });
+
     document.getElementById('scrapeBtn').addEventListener('click', () => {
         const url = document.getElementById('url').value;
-        const outputFile = document.getElementById('output_file').value;
         const title = document.getElementById('title').value;
 
-        if (!url || !outputFile || !title) {
+        if (!url || !title) {
             alert('Please provide both URL, output and a title file name.');
             return;
         }
 
-        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}&title=${encodeURIComponent(title)}`)
+        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -94,33 +128,11 @@
             })
             .then(data => {
                 const resultDiv = document.getElementById('result');
-                const scrapedDataDiv = document.getElementById('scrapedData');
-                const scrapedContentDiv = document.getElementById('scrapedContent');
+
 
                 if (data.success) {
-                    resultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
-
-                    let content = '';
-
-                    if (data.file_type === 'xml') {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(data.content, 'application/xml');
-                        const xmlString = new XMLSerializer().serializeToString(xmlDoc);
-                        content = `<pre>${escapeXML(prettyPrintXML(xmlString))}</pre>`;
-                    } else if (data.file_type === 'html') {
-                        content = `<pre>${escapeHTML(data.content)}</pre>`;
-                    } else if (data.file_type === 'json' || data.file_type === 'csv') {
-                        content = `<pre>${data.content}</pre>`;
-                    } else if (data.file_type === 'xlsx') {
-                        content = `<p>Excel file content available. <a href="/download/${data.id}">Download</a></p>`;
-                    }
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Data from ${data.url} (${data.file_type})</h3>
-                        ${content}
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
+                    setTimeout(1000);
+                    addDocumentToList(title, "Scraped successfully.");
                 } else if (data.error) {
                     resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -135,12 +147,13 @@
         const pdfFile = document.getElementById('pdfUpload').files[0];
         const outputFormat = document.getElementById('output_format').value;
         const title = document.getElementById('title').value;
-        console.log(title)
+
         if (!pdfFile) {
             alert('Please upload a PDF file.');
             return;
         }
-        else if (!title){
+
+        else if (!title) {
             alert("Please provide a title");
             return;
         }
@@ -163,24 +176,9 @@
             .then(data => {
                 const uploadResultDiv = document.getElementById('uploadResult');
                 if (data.success) {
-                    uploadResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
+                    setTimeout(1000);
+                    addDocumentToList(title, "Uploaded successfully.");
 
-                    const scrapedDataDiv = document.getElementById('scrapedData');
-                    const scrapedContentDiv = document.getElementById('scrapedContent');
-                    let content = '';
-
-                    if (data.file_type === 'html') {
-                        content = `<pre>${escapeHTML(data.content)}</pre>`;
-                    } else if (data.file_type === 'json') {
-                        content = `<pre>${JSON.stringify(data.content, null, 4)}</pre>`;
-                    }
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Converted PDF Content (${data.file_type.toUpperCase()})</h3>
-                        ${content}
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
                 } else if (data.error) {
                     uploadResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -200,16 +198,12 @@
             return;
         }
 
-        else if(!title){
-            alert("Please provide a title")
-            return;
-        }
-
         fetch('/api/save_manual_text/', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
+            body: JSON.stringify({ text: manualText }),
             body: JSON.stringify({ text: manualText, title: title }),
         })
             .then(response => {
@@ -221,17 +215,8 @@
             .then(data => {
                 const manualTextResultDiv = document.getElementById('manualTextResult');
                 if (data.success) {
-                    manualTextResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
-
-                    const scrapedDataDiv = document.getElementById('scrapedData');
-                    const scrapedContentDiv = document.getElementById('scrapedContent');
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Manually Entered Text</h3>
-                        <pre>${escapeHTML(manualText)}</pre>
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
+                    addDocumentToList(title, "Saved successfully.");
+                    setTimeout(1000);
                 } else if (data.error) {
                     manualTextResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -241,6 +226,7 @@
                 document.getElementById('manualTextResult').innerHTML = `<p class="text-danger">An error occurred: ${error.message}</p>`;
             });
     });
+
 
     function escapeHTML(str) {
         return str

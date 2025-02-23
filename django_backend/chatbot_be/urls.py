@@ -11,7 +11,7 @@ from .views.dataset_workflow import dataset_workflow_view, dataset_workflow_docu
 from django.conf import settings
 from django.conf.urls.static import static
 
-from .management.commands.delete_document import delete_document
+from .management.commands.delete_document import delete_document, delete_document_mul
 
 urlpatterns = [
     path('chatbot/', SessionCreateView.as_view(), name='create-session'),
@@ -38,6 +38,7 @@ urlpatterns = [
     path("document_detail/", document_detail, name="document_detail"),
     path('document/download_json/', download_json, name='download_json'),
     path('delete_document/<int:document_id>/<path:redirect_url>', delete_document, name='delete_document'),
+    path('delete_document_mul/', delete_document_mul, name='delete_document_mul'),
 ]
 
 

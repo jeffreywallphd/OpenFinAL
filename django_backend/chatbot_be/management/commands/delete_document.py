@@ -14,3 +14,16 @@ def delete_document(request, document_id, redirect_url):
     else:
         # If the request is not POST, redirect
         return redirect(redirect_url)
+    
+def delete_document_mul(request):
+    selected_document_ids = request.POST.getlist('selected_documents')
+    print(selected_document_ids)
+
+    documents = ScrapedData.objects.filter(id__in=selected_document_ids)
+
+    if request.method == "POST":
+        request.session['selected_document_ids'] = selected_document_ids
+        
+        documents.delete()
+        messages.success(request, 'The document has been deleted successfully!')
+        return redirect('dataset-workflow')

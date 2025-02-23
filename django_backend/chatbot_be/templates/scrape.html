@@ -6,10 +6,6 @@
 {% block content %}
 
 
-<div id="scrapedData" style="display: none;">
-    <h2 id="scrapedTitle"></h2>
-    <div id="scrapedContent"></div>
-</div>
 
 <div class="container mt-5">
     <h1>Document Processor</h1>
@@ -57,6 +53,11 @@
 </div>
 
 
+<div id="scrapedData" style="display: none;">
+    <h2 id="scrapedTitle"></h2>
+    <div id="scrapedContent"></div>
+</div>
+
 <script>
     document.getElementById('inputMethod').addEventListener('change', function () {
         const selectedOption = this.value;
@@ -78,15 +79,14 @@
 <script>
     document.getElementById('scrapeBtn').addEventListener('click', () => {
         const url = document.getElementById('url').value;
-        const outputFile = document.getElementById('output_file').value;
         const title = document.getElementById('title').value;
 
-        if (!url || !outputFile || !title) {
+        if (!url || !title) {
             alert('Please provide both URL, output and a title file name.');
             return;
         }
 
-        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}&title=${encodeURIComponent(title)}`)
+        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
