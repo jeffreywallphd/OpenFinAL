@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404
 from ...models.scraped_data import ScrapedData, ScrapedDataMeta
 from django.contrib import messages
 from django.shortcuts import render, redirect
+from django.http import HttpResponseRedirect
 
 def delete_document(request, document_id, redirect_url):
     print(request)
@@ -23,7 +24,13 @@ def delete_document_mul(request):
 
     if request.method == "POST":
         request.session['selected_document_ids'] = selected_document_ids
-        
-        documents.delete()
-        messages.success(request, 'The document has been deleted successfully!')
-        return redirect('dataset-workflow')
+        print(documents)
+        print(type(documents))
+
+        if documents.exists():
+            documents.delete()
+            messages.success(request, 'The document has been deleted successfully!')
+        else:
+            messages.warning(request, 'Please select files to delete first')
+
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))

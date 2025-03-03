@@ -9,15 +9,20 @@ from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 import openai
+from datetime import datetime
 from openai import OpenAI, OpenAIError
 import tiktoken
 from decouple import config
 from django.db.models import F, Func, Value
 from django.core.paginator import Paginator
+import pandas as pd
+import io
+from huggingface_hub import HfApi
 
 client = OpenAI(
-    api_key=config('OPENAI_API_KEY'),
+    api_key=config('OPENAI_API_KEY', default=""),
 )
+DEFAULT_HF_API_KEY = config("HF_API_KEY", default="")
 
 # Tokenizer function (GPT-4 uses "cl100k_base" tokenizer)
 def count_tokens(text):
@@ -116,10 +121,10 @@ def generate_q_and_a(request):
 
 def document_detail(request):
     selected_document_ids = request.POST.getlist('selected_documents')
-    print(selected_document_ids)
+    # print(selected_document_ids)
 
     documents = ScrapedData.objects.filter(id__in=selected_document_ids)
-    print(documents)
+    # print(documents)
 
     combined_text = "\n\n".join([doc.content for doc in documents])
     text_chunks = split_text(combined_text, max_tokens=1000)  # Adjust chunk size
@@ -138,7 +143,6 @@ def document_detail(request):
             num_questions = form.cleaned_data['num_questions']
             num_paragraphs = form.cleaned_data['num_paragraphs']
 
-            print()
 
             if test_type == 'mockup':
                 json_file_path = 'media/JSON/Introduction to Text Segmentation.json'
@@ -178,6 +182,9 @@ def download_json(request):
     session_key = f'generated_json_combined'
     generated_json_text = request.session.get(session_key, None)
 
+    # print(generated_json_text)
+    # print(type(generated_json_text))
+
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
 
@@ -187,9 +194,42 @@ def download_json(request):
     )
     response['Content-Disposition'] = f'attachment; filename="document.json"'
     return response
-    
 
 
+def upload_parquet_to_huggingface(request):
+    """Convert JSON string to Parquet and upload to Hugging Face Hub."""
+    session_key = 'generated_json_combined'
+    generated_json_text = request.session.get(session_key, None)
 
-    
+    if generated_json_text is None:
+        return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
 
+    try:
+        # Convert JSON string to Python object
+        json_data = json.loads(generated_json_text)
+
+        df = pd.DataFrame(json_data)
+
+        # Convert to Parquet format
+        buffer = io.BytesIO()
+        df.to_parquet(buffer, index=False)
+        buffer.seek(0)
+
+        # Hugging Face upload
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        file_path = f"document_{timestamp}.parquet"  
+        api = HfApi()
+        repo_id = "OpenFinAL/Temp_Testing" 
+
+        api.upload_file(
+            path_or_fileobj=buffer,
+            path_in_repo=file_path,
+            repo_id=repo_id,
+            repo_type="dataset",
+            token=DEFAULT_HF_API_KEY
+        )
+
+        return JsonResponse({"success": "Uploaded successfully"}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

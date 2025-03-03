@@ -19,15 +19,17 @@
 
 <p><strong>Total Amount Paragraphs:</strong> {{ total_chunks|default:"0" }}</p>
 
+<div id="alertContainer" class="mt-3"></div>
+
 <form method="post" id="documentForm">
     {% csrf_token %}
     <div class="row">
         <div class="col-3">
-            Number of paragraphs
+            Number of paragraphs To Process
             {{ form.num_paragraphs }}
         </div>
         <div class="col-3">
-            Number of Questions
+            Number of Questions To Genearted from Each Paragraph
             {{ form.num_questions }}
         </div>
         <div class="col-3">
@@ -77,6 +79,10 @@
             Download JSON
         </a>
 
+        <button type="button" class="btn btn-primary mt-3" id="uploadParquetBtn">
+            Upload Parquet
+        </button>
+
         <pre>{{ json_data|json_script:"jsonData" }}</pre>
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -102,17 +108,48 @@
 </div>
 
 <script>
-    function toggleText(index) {
-        let preview = document.getElementById("preview" + index);
-        let fullText = document.getElementById("full" + index);
-        if (preview.classList.contains("d-none")) {
-            preview.classList.remove("d-none");
-            fullText.classList.add("d-none");
-        } else {
-            preview.classList.add("d-none");
-            fullText.classList.remove("d-none");
-        }
-    }
+    document.getElementById("uploadParquetBtn").addEventListener("click", function () {
+        fetch("{% url 'upload_parquet_to_huggingface' %}", {
+            method: "GET",
+            headers: {
+                "X-Requested-With": "XMLHttpRequest"
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let alertContainer = document.getElementById("alertContainer");
+            let alertDiv = document.createElement("div");
+            alertDiv.className = "alert alert-dismissible fade show mt-3";
+            alertDiv.role = "alert";
+
+            if (data.success) {
+                alertDiv.classList.add("alert-success");
+                alertDiv.innerHTML = `✅ <strong>Success:</strong> ${data.success}`;
+            } else if (data.error) {
+                alertDiv.classList.add("alert-danger");
+                alertDiv.innerHTML = `❌ <strong>Error:</strong> ${data.error}`;
+            }
+
+            // Add close button to the alert
+            alertDiv.innerHTML += `
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+
+            // Clear previous messages and add the new one
+            alertContainer.innerHTML = "";
+            alertContainer.appendChild(alertDiv);
+        })
+        .catch(error => {
+            let alertContainer = document.getElementById("alertContainer");
+            alertContainer.innerHTML = `
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    ❌ <strong>Error:</strong> An error occurred while uploading.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            console.error("Upload error:", error);
+        });
+    });
 </script>
 
 {% endblock %}
