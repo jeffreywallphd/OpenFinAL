@@ -25,16 +25,32 @@ function Settings(props) {
         message: null
     });
 
-    const [darkMode, setDarkMode] = useState(false);
-    // Dynamically apply dark mode class to the body
+    const [darkMode, setDarkMode] = useState(() => {
+        return localStorage.getItem("darkMode") === "true"; // Retrieve from localStorage
+    });
+    
+    // Dynamically apply dark mode class to the body and store preference
     useEffect(() => {
         if (darkMode) {
             document.body.classList.add("dark-mode");
         } else {
             document.body.classList.remove("dark-mode");
         }
+        localStorage.setItem("darkMode", darkMode); // Store preference
     }, [darkMode]);
-
+    
+    
+    useEffect(() => {
+        const clearDarkMode = () => {
+            localStorage.removeItem("darkMode");
+        };
+    
+        window.addEventListener("beforeunload", clearDarkMode);
+        
+        return () => {
+            window.removeEventListener("beforeunload", clearDarkMode);
+        };
+    }, []);    
 
     const getConfigAPI = () => {
         const updater = new ConfigUpdater();
