@@ -204,10 +204,13 @@ def upload_parquet_to_huggingface(request):
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
 
+    file_name = request.GET.get("file_name", "").strip()
+    if not file_name:
+        return JsonResponse({"error": "No file name provided"}, status=400)
+
     try:
         # Convert JSON string to Python object
         json_data = json.loads(generated_json_text)
-
         df = pd.DataFrame(json_data)
 
         # Convert to Parquet format
@@ -216,8 +219,7 @@ def upload_parquet_to_huggingface(request):
         buffer.seek(0)
 
         # Hugging Face upload
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        file_path = f"document_{timestamp}.parquet"  
+        file_path = f"{file_name}.parquet"  
         api = HfApi()
         repo_id = "OpenFinAL/Temp_Testing" 
 
@@ -229,7 +231,7 @@ def upload_parquet_to_huggingface(request):
             token=DEFAULT_HF_API_KEY
         )
 
-        return JsonResponse({"success": "Uploaded successfully"}, status=200)
+        return JsonResponse({"success": f"Uploaded successfully as {file_path}"}, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
