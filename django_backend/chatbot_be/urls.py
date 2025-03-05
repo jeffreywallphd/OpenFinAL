@@ -4,6 +4,7 @@ from .views.model_statistics import ModelStatisticsView
 from .views.chatbot import chatbot_view
 from .views.home import home_view
 from .views.model_training import train_model_view, stream_training_output
+from .views.model_training_workflow import train_model_workflow, model_stats_workflow, stream_training_workflow_output
 from .views.scrape import ScrapeDataView, UploadPDFView, scrape_view, SaveManualTextView
 from .views import SessionCreateView, ConversationListView, ConversationCreateView, SessionListView, ChatbotGenerateResponseView
 from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json, delete_document
@@ -23,7 +24,9 @@ urlpatterns = [
     path('scrape_view/', scrape_view, name='scrape-view'),
     path("train_model/", train_model_view, name="train-view"),
     path("stream-training/",stream_training_output, name="stream-training"),
-
+    path('stream-training-workflow/',stream_training_workflow_output, name='stream-training-workflow'),
+    path('train-model-workflow/',train_model_workflow, name='train-model-workflow'),
+    path('model-stats-workflow/',model_stats_workflow, name='model-stats-workflow'),
     path('settings_view/', settings_view, name='settings-view'),
     path('scrape/', ScrapeDataView.as_view(), name='scrape-data'),
     path('upload_pdf/', UploadPDFView.as_view(), name='upload-pdf'),
