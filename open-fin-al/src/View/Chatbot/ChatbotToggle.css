@@ -1,0 +1,27 @@
+.chatBotToggle {
+    position: relative;
+    height: 100vh; /* Make sure it's the full height of the viewport */
+}
+
+.circle {
+    width: 50px;
+    height: 50px;
+    background-color: #3498db; /* Blue color */
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px; /* 20px from the bottom */
+    left: 95%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust the circle's position to truly center it */
+    cursor: pointer;
+    transition: background-color 0.3s;
+
+    /*
+    background-image: url('comment-alt.png');
+    background-size: cover;
+    background-position: center;
+     */
+}
+
+.circle:hover {
+    background-color: #2980b9; /* Darker blue color on hover */
+}

@@ -34,6 +34,8 @@ import ForecastModel from "./ForecastModel";
 import { SecReport } from "./SecReport";
 import InvestmentPool from "./InvestmentPool";
 import StockAnalysis from "./StockAnalysis";
+import Chatbot from "./Chatbot/Chatbot";
+import ChatbotToggle from "./Chatbot/Chatbot-toggle";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop() {
@@ -121,6 +123,8 @@ class AppLoaded extends Component {
               </footer>
             </div>
           </div>
+          <Chatbot/>
+          <ChatbotToggle/>
         </>
       </HashRouter>
     );
