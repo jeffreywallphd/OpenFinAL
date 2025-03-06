@@ -4,7 +4,7 @@ from .views.model_statistics import ModelStatisticsView
 from .views.chatbot import chatbot_view
 from .views.home import home_view
 from .views.model_training import train_model_view, stream_training_output
-from .views.model_training_workflow import train_model_workflow, model_stats_workflow, stream_training_workflow_output
+from .views.model_training_workflow import stream_training_workflow_output, train_model_workflow, model_stats_workflow
 from .views.scrape import ScrapeDataView, UploadPDFView, scrape_view, SaveManualTextView
 from .views import SessionCreateView, ConversationListView, ConversationCreateView, SessionListView, ChatbotGenerateResponseView
 from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json, delete_document

@@ -209,7 +209,7 @@ def train_model_workflow(request):
 
                 for question, reference in zip(questions, references):
                     try:
-                            scores = model_stats(
+                            scores = model_stats_workflow(
                                 prompt=question,
                                 model_name=model_name,
                                 top_k=50,
