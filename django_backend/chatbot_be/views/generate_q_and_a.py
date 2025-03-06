@@ -145,7 +145,7 @@ def document_detail(request):
 
 
             if test_type == 'mockup':
-                json_file_path = 'media/JSON/Introduction to Text Segmentation.json'
+                json_file_path = 'media/JSON/Mock_up_2.json'
                 try:
                     with open(json_file_path, 'r', encoding='utf-8') as file:
                         generated_json_text = file.read()
@@ -209,19 +209,27 @@ def upload_parquet_to_huggingface(request):
         return JsonResponse({"error": "No file name provided"}, status=400)
 
     try:
-        # Convert JSON string to Python object
         json_data = json.loads(generated_json_text)
-        df = pd.DataFrame(json_data)
 
-        # Convert to Parquet format
+        records = []
+        for entry in json_data:
+            part = entry["part"]
+            for q in entry["questions"]:
+                records.append({
+                    "part": part,
+                    "question": q["question"],
+                    "answer": q["answer"]
+                })
+
+        df = pd.DataFrame(records)
+
         buffer = io.BytesIO()
         df.to_parquet(buffer, index=False)
         buffer.seek(0)
 
-        # Hugging Face upload
         file_path = f"{file_name}.parquet"  
         api = HfApi()
-        repo_id = "OpenFinAL/Temp_Testing" 
+        repo_id = "OpenFinAL/Temp_Testing"  
 
         api.upload_file(
             path_or_fileobj=buffer,
