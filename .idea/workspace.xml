@@ -5,13 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/chatbot-Message.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/AppLoaded.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/AppLoaded.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/index.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/index.html" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/documentation/Chatbot/Chatbot Documentation.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -83,7 +78,7 @@
       <workItem from="1739806393743" duration="1179000" />
       <workItem from="1741013635753" duration="1087000" />
       <workItem from="1741014886848" duration="1939000" />
-      <workItem from="1741187165332" duration="2820000" />
+      <workItem from="1741187165332" duration="3742000" />
     </task>
     <servers />
   </component>
