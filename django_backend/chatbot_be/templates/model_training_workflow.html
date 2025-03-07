@@ -120,7 +120,7 @@
         }
 
         try {
-            const trainResponse = await fetch("/api/train_model/", {
+            const trainResponse = await fetch("/api/train_model_workflow/", {
                 method: "POST",
                 body: formData,
             });
@@ -149,7 +149,7 @@
         formData.append("num_questions", parseInt(numQuestions));
 
         try {
-            const response = await fetch("/api/model_statistics/", {
+            const response = await fetch("/api/model_stats_workflow/", {
                 method: "POST",
                 body: formData,
             });
@@ -158,7 +158,7 @@
                 const results = await response.json();
                 let tableHtml = `
                     <h3>Model Evaluation Results</h3>
-                    <table>
+                    <table id="model-eval-table">
                         <thead>
                             <tr>
                                 <th>Model</th>
