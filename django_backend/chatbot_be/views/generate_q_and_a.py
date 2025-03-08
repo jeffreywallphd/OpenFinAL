@@ -17,6 +17,7 @@ from django.db.models import F, Func, Value
 from django.core.paginator import Paginator
 import pandas as pd
 import io
+import csv
 from huggingface_hub import HfApi
 
 client = OpenAI(
@@ -64,20 +65,17 @@ def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
     for i, chunk in enumerate(text_chunks[:chunk_limit]):
         print(f'Total {total_chunks}, finished {i + 1}')
         prompt = f"""
-        I would like to generate some questions and answers from the following text and return them in JSON format. 
-        Generate {questions_num} questions based on this text segment.
-        
-        Text Segment ({i+1}/{len(text_chunks)}):
+        Generate {questions_num} question-answer pairs based on the following text segment. 
+        Return the result in valid JSON format as a list of objects.
+
+        Text Segment:
         {chunk}
 
         Response Format:
-        {{
-            "part": {i+1},
-            "questions": [
-                {{"question": "", "answer": ""}},
-                {{"question": "", "answer": ""}}
-            ]
-        }}
+        [
+            {{"question": "What is ...?", "answer": "The answer is ..."}},
+            {{"question": "How does ... work?", "answer": "It works by ..."}}
+        ]
 
         Return ONLY valid JSON output.
         """
@@ -96,7 +94,11 @@ def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
             )
 
             json_data = json.loads(response.choices[0].message.content.strip())
-            results.append(json_data)
+
+            if isinstance(json_data, list):  
+                results.extend(json_data)
+            else:
+                results.append({"error": "Unexpected JSON format"})
 
         except json.JSONDecodeError:
             results.append({"part": i + 1, "error": "Invalid JSON response"})
@@ -145,7 +147,7 @@ def document_detail(request):
 
 
             if test_type == 'mockup':
-                json_file_path = 'media/JSON/Mock_up_2.json'
+                json_file_path = 'media/JSON/New_Prompt_Simple_QA.json'
                 try:
                     with open(json_file_path, 'r', encoding='utf-8') as file:
                         generated_json_text = file.read()
@@ -196,6 +198,35 @@ def download_json(request):
     return response
 
 
+def download_csv(request):
+    """Serve the generated JSON data as a downloadable CSV file."""
+    session_key = 'generated_json_combined'
+    generated_json_text = request.session.get(session_key, None)
+
+    if generated_json_text is None:
+        return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
+
+    try:
+        json_data = json.loads(generated_json_text)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    # Create a response object with CSV content
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="document.csv"'
+
+    # Assuming JSON data is a list of dictionaries
+    if isinstance(json_data, list) and json_data:
+        fieldnames = json_data[0].keys()  # Get column headers from the first item
+        writer = csv.DictWriter(response, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(json_data)
+        print(response)
+    else:
+        return JsonResponse({"error": "Invalid JSON structure for CSV conversion"}, status=400)
+
+    return response
+
 def upload_parquet_to_huggingface(request):
     """Convert JSON string to Parquet and upload to Hugging Face Hub."""
     session_key = 'generated_json_combined'
@@ -211,23 +242,19 @@ def upload_parquet_to_huggingface(request):
     try:
         json_data = json.loads(generated_json_text)
 
-        records = []
-        for entry in json_data:
-            part = entry["part"]
-            for q in entry["questions"]:
-                records.append({
-                    "part": part,
-                    "question": q["question"],
-                    "answer": q["answer"]
-                })
+        # Ensure the JSON data is a list of dictionaries
+        if not isinstance(json_data, list) or not all(isinstance(item, dict) for item in json_data):
+            return JsonResponse({"error": "Invalid JSON format: Expected a list of dictionaries"}, status=400)
 
-        df = pd.DataFrame(records)
+        # Convert JSON list to DataFrame dynamically
+        df = pd.DataFrame(json_data)
 
+        # Convert DataFrame to Parquet format
         buffer = io.BytesIO()
         df.to_parquet(buffer, index=False)
         buffer.seek(0)
 
-        file_path = f"{file_name}.parquet"  
+        file_path = f"{file_name}.parquet"
         api = HfApi()
         repo_id = "OpenFinAL/Temp_Testing"  
 

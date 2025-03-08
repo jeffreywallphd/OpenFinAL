@@ -10,6 +10,7 @@ from io import BytesIO
 from ..models.scraped_data import ScrapedData  # Import the model to save data
 import pdfplumber
 import markdown
+from transformers import pipeline
 
 from django.conf import settings
 from django.conf.urls.static import static
@@ -51,7 +52,21 @@ class ScrapeDataView(APIView):
 
         elif 'text/html' in content_type:
             file_type = 'html'
-            scraped_content = BeautifulSoup(response.content, 'html.parser').prettify()  # Clean up HTML
+            soup = BeautifulSoup(response.content, 'html.parser')
+
+            for script in soup(["script", "style", "meta", "noscript"]):
+                script.extract()
+
+            main_content = soup.find("article")  
+            if not main_content:
+                main_content = soup.find("div", {"class": "content"}) 
+            
+            if main_content:
+                scraped_content = main_content.get_text(separator="\n", strip=True)  
+            else:
+                scraped_content = soup.get_text(separator="\n", strip=True) 
+
+            scraped_content = "\n".join([line.strip() for line in scraped_content.split("\n") if line.strip()])
 
         elif 'text/csv' in content_type or 'application/csv' in content_type:
             file_type = 'csv'
