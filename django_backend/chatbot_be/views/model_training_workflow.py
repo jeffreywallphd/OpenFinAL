@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+from django_backend.chatbot_be.models.model_stats import ModelStats
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -7,6 +8,7 @@ from transformers import TrainingArguments, Trainer
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments, Trainer
 from datasets import load_dataset, DatasetDict, Dataset
 from evaluate import load
+from django.views.decorators.csrf import csrf_protect
 import os
 import sys
 import wandb
@@ -17,13 +19,21 @@ import traceback
 from decouple import config
 from huggingface_hub import login
 import subprocess
-from django.http import StreamingHttpResponse
+from django.http import StreamingHttpResponse, JsonResponse
+import signal
+from threading import Lock
+
 
 # Retrieve API keys from environment variables
 DEFAULT_WANDB_API_KEY = config("WANDB_API_KEY", default="")
 DEFAULT_HF_API_KEY = config("HF_API_KEY", default="")
 
 print(f"CUDA available: {torch.cuda.is_available()}")
+
+# Store the training process ID
+training_process = None
+process_lock = Lock()
+
 
 def stream_training_workflow_output(request):
     # Start subprocess to run model training and capture terminal output
@@ -32,7 +42,7 @@ def stream_training_workflow_output(request):
         env['PYTHONUNBUFFERED'] = '1'  # Ensure real-time output
 
         process = subprocess.Popen(
-            [sys.executable, "manage.py", "runserver"],
+            [sys.executable, "manage.py", "model_training_workflow"],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
@@ -54,9 +64,18 @@ def stream_training_workflow_output(request):
     return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
 def train_model_workflow(request):
+    global training_process
+
     if request.method == "POST":
 
         try:
+            # Check if a training process is already running
+            if training_process and training_process.poll() is None:
+                return JsonResponse({
+                    "status": "error",
+                    "message": "A training process is already running. Please stop it before starting a new one."
+                })
+
             # Parse user-configurable parameters from the request
             model_name = request.POST.get("model_name", "gpt2")
             learning_rate = float(request.POST.get("learning_rate", 2e-5))
@@ -84,6 +103,19 @@ def train_model_workflow(request):
                     "status": "error",
                     "message": "Both W&B and Hugging Face API keys are required either in the .env file or via the form."
                 })
+            
+
+            # Start the training as a subprocess
+            training_process = subprocess.Popen(
+                [sys.executable, "manage.py", "model_training_workflow"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                bufsize=1,
+            )
+
+            print(f"Training started with PID: {training_process.pid}")
+
             # Check for GPU
             device = "cuda" if torch.cuda.is_available() else "cpu"
             if device == "cpu":
@@ -233,9 +265,24 @@ def train_model_workflow(request):
                 results[model_name] = avg_scores
                 print(f"Average scores: {avg_scores}")
 
+                # Save evaluation results to the database
+                for model_name, scores in results.items():
+                    ModelStats.objects.create(
+                        model_name=model_name,
+                        dataset=dataset_name,  # The dataset used for evaluation
+                        ROUGE1=scores["ROUGE1"],
+                        ROUGE2=scores["ROUGE2"],
+                        ROUGE_L=scores["ROUGEL"],
+                        ROUGE_LSum=scores["ROUGELSUM"],
+                        BERTScoreF1=scores["BERTScoreF1"],
+                        BERTScorePrecision=scores["BERTScorePrecision"],
+                        BERTScoreRecall=scores["BERTScoreRecall"]
+                    )
+
             # Cleanup
-            del train_dataset, eval_dataset
+            del train_dataset, eval_dataset, model, tokenizer
             gc.collect()
+            torch.cuda.empty_cache()
             
             print(f"Results: {results}")
             return JsonResponse({"status": "success", "message": f"Training completed successfully for {model_name}!","evaluation_results": results})
@@ -244,6 +291,37 @@ def train_model_workflow(request):
             return JsonResponse({"status": "error", "message": str(e)})
     
     return render(request, "model_training_workflow.html")
+
+@csrf_protect
+def stop_training_workflow(request):
+    global training_process
+    if request.method == "POST":
+        with process_lock:
+            try:
+                if training_process and training_process.poll() is None:
+                    # Send SIGTERM to the training process
+                    training_process.terminate()
+                    training_process.wait()
+                    training_process = None
+
+                    print("Training process terminated successfully.")
+                    return JsonResponse({
+                        "status": "success",
+                        "message": "Training process terminated successfully."
+                    })
+                else:
+                    return JsonResponse({
+                        "status": "error",
+                        "message": "No training process is running."
+                    })
+
+            except Exception as e:
+                return JsonResponse({
+                    "status": "error",
+                    "message": f"Failed to terminate the training process: {str(e)}"
+                })
+    return JsonResponse({"status": "error", "message": "Invalid request method."})
+
 
 def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_tokens=300, no_repeat_ngrams=0, references=[]):
     device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -312,3 +390,32 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
         print(f"Error in model_stats: {e}") 
         print(traceback.format_exc())
         raise RuntimeError(f"Error in model_stats: {e}")
+    
+def get_last_four_model_stats(request):
+    # Extract dataset name from query parameters
+    dataset_name = request.GET.get('dataset_name')
+    if not dataset_name:
+        return JsonResponse({"error": "Dataset name is required."}, status=400)
+
+    # Fetch the last four models trained on the same dataset
+    stats = ModelStats.objects.filter(dataset=dataset_name).order_by('-created_at')[:4]
+
+    # If no stats found, return empty response
+    if not stats.exists():
+        return JsonResponse({"message": "No models found for the specified dataset."}, status=404)
+
+    # Prepare response data
+    data = [{
+        "model_name": stat.model_name,
+        "dataset": stat.dataset,
+        "ROUGE1": stat.ROUGE1,
+        "ROUGE2": stat.ROUGE2,
+        "ROUGE_L": stat.ROUGE_L,
+        "ROUGE_LSum": stat.ROUGE_LSum,
+        "BERTScoreF1": stat.BERTScoreF1,
+        "BERTScorePrecision": stat.BERTScorePrecision,
+        "BERTScoreRecall": stat.BERTScoreRecall,
+        "created_at": stat.created_at.strftime('%Y-%m-%d %H:%M:%S')
+    } for stat in stats]
+
+    return JsonResponse(data, safe=False, status=200)

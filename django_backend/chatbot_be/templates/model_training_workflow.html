@@ -88,7 +88,9 @@
     <input type="number" id="num_questions" name="num_questions" placeholder="Default: 10">
     <br>
 
-    <button type="submit" onclick="startTraining(event)">Start Training & Evaluate</button>
+    <button type="button" onclick="startTraining(event)">Start Training & Evaluate</button>
+    <button type="button" id="stopTrainingBtn" onclick="stopTraining(event)" disabled>Stop Training</button>
+
 </form>
 
 <h2>Model Evaluation Results</h2>
@@ -99,6 +101,17 @@
 
 <script>
     let eventSource;
+    let trainingInProgress = false;
+
+    // Precision Handling Logic
+    document.getElementById('fp16').value = 'off';
+    document.getElementById('bf16').value = 'off';
+
+    document.getElementById('precision').addEventListener('change', function () {
+        const precision = this.value;
+        document.getElementById('fp16').value = (precision === 'fp16') ? 'on' : 'off';
+        document.getElementById('bf16').value = (precision === 'bf16') ? 'on' : 'off';
+    });
 
     async function startTraining(event) {
         event.preventDefault();
@@ -128,6 +141,10 @@
             const trainData = await trainResponse.json();
             if (trainData.status === "success") {
                 logContainer.textContent += "✅ Training initiated successfully.\n";
+                trainingInProgress = true;
+                console.log("Training started, enabling stop button");
+                document.getElementById("stopTrainingBtn").disabled = false;
+                
                 await startLogStreaming();
 
                 logContainer.textContent += "\n🏁 Training completed! Fetching Model Statistics...\n";
@@ -140,12 +157,79 @@
         }
     }
 
+    // Stop Training Function
+    async function stopTraining(event) {
+        event.preventDefault();
+        console.log("Stop Training function triggered");  // Debugging line
+        if (!trainingInProgress) {
+            alert("No training in progress.");
+            return;
+        }
+
+        const logContainer = document.getElementById("log-container");
+        logContainer.textContent += "⏹️ Stopping training...\n";
+
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            console.log("Sending request to /api/stop_training/");
+            const stopResponse = await fetch("/api/stop_training/", {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                },
+            });
+
+            const stopData = await stopResponse.json();
+            console.log("Stop response:",stopData);
+            if (stopData.status === "success") {
+                logContainer.textContent += "✅ Training stopped successfully.\n";
+                trainingInProgress = false;
+                document.getElementById("stopTrainingBtn").disabled = true;
+                if (eventSource) {
+                    eventSource.close();
+                }
+            } else {
+                logContainer.textContent += `❌ Error: ${stopData.message}\n`;
+            }
+        } catch (error) {
+            logContainer.textContent += `⚠️ Request failed: ${error}\n`;
+        }
+    }
+
+    function startLogStreaming() {
+        const logContainer = document.getElementById("log-container");
+        if (eventSource) {
+            eventSource.close();
+        }
+
+        eventSource = new EventSource("/api/stream_training_workflow/");
+
+        return new Promise((resolve) => {
+            eventSource.onmessage = function (event) {
+                logContainer.innerHTML += `<pre>${event.data}</pre>`;
+                logContainer.scrollTop = logContainer.scrollHeight;
+
+                if (event.data.includes("[END_OF_TRAINING]")) {
+                    eventSource.close();
+                    resolve();
+                }
+            };
+
+            eventSource.onerror = function () {
+                logContainer.innerHTML += `<pre>⚠️ Connection lost. Retrying...</pre>`;
+                eventSource.close();
+                setTimeout(startLogStreaming, 3000);
+            };
+        });
+    }
+
     async function evaluateModel(modelName, numQuestions) {
         const resultContainer = document.getElementById("model-eval-results");
         resultContainer.innerHTML = "<p>Evaluating models... Please wait...</p>";
 
         const formData = new FormData();
-        formData.append("models", modelName);
+        formData.append("model_name", modelName);
         formData.append("num_questions", parseInt(numQuestions));
 
         try {
@@ -200,45 +284,7 @@
             resultContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         }
     }
-
-    function startLogStreaming() {
-        const logContainer = document.getElementById("log-container");
-        if (eventSource) {
-            eventSource.close();
-        }
-
-        eventSource = new EventSource("/api/stream-training/");
-
-        return new Promise((resolve) => {
-            eventSource.onmessage = function (event) {
-                logContainer.innerHTML += `<pre>${event.data}</pre>`;
-                logContainer.scrollTop = logContainer.scrollHeight;
-
-                if (event.data.includes("[END_OF_TRAINING]")) {
-                    eventSource.close();
-                    resolve();
-                }
-            };
-
-            eventSource.onerror = function () {
-                logContainer.innerHTML += `<pre>⚠️ Connection lost. Retrying...</pre>`;
-                eventSource.close();
-                setTimeout(startLogStreaming, 3000);
-            };
-        });
-    }
-    // Precision Handling Logic
-    document.getElementById('fp16').value = 'off';
-    document.getElementById('bf16').value = 'off';
-
-    document.getElementById('precision').addEventListener('change', function () {
-        const precision = this.value;
-        document.getElementById('fp16').value = (precision === 'fp16') ? 'on' : 'off';
-        document.getElementById('bf16').value = (precision === 'bf16') ? 'on' : 'off';
-    });
-
-    let form = document.querySelector("form");
-    if (!form.id) form.setAttribute("id", "train-form");
+    
 </script>
 
 {% endblock %}

@@ -8,6 +8,7 @@ from .models.Reviewer import Reviewer as ReviewerTable
 from .models.Answer import Answer as AnswerTable
 from .models.Source import Source as SourceTable
 from .models.Document import Document as DocumentTable
+from .models.model_stats import ModelStats as ModelStatsTable
 
 admin.site.register(ScrapedDataTable)
 admin.site.register(LicenseTable)
@@ -18,3 +19,4 @@ admin.site.register(ReviewerTable)
 admin.site.register(AnswerTable)
 admin.site.register(SourceTable)
 admin.site.register(DocumentTable)
+admin.site.register(ModelStatsTable) 
