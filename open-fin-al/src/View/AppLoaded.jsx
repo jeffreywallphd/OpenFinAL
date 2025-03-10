@@ -123,7 +123,6 @@ class AppLoaded extends Component {
               </footer>
             </div>
           </div>
-          <Chatbot/>
           <ChatbotToggle/>
         </>
       </HashRouter>
