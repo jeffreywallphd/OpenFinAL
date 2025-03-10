@@ -22,6 +22,11 @@
      */
 }
 
+.chatbotIcon{
+    display: block;
+    margin: auto;
+}
+
 .circle:hover {
     background-color: #2980b9; /* Darker blue color on hover */
 }

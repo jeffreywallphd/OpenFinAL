@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import './ChatbotToggle.css';  // Ensure this file contains the necessary styles
-import './comment-alt.png';
+import chatbotIcon from './comment-alt.png';
 
 class ChatbotToggle extends Component {
     constructor(props) {
@@ -24,7 +24,9 @@ class ChatbotToggle extends Component {
         return (
             <div>
                 <div className="chatBotToggle">
-                    <div className="circle" onClick={this.handleClick}></div>
+                    <div className="circle" onClick={this.handleClick}>
+                        <img src={chatbotIcon} alt="Chatbot Icon" className="chatbotIcon" width={30} height={30}  />
+                    </div>
                 </div>
 
                 {this.state.toggle && (

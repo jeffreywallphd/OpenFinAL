@@ -6,8 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/AppLoaded.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/AppLoaded.jsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,6 +24,9 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="CurrentFile" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 3
@@ -82,7 +85,7 @@
       <workItem from="1741187165332" duration="3774000" />
       <workItem from="1741314961259" duration="1038000" />
       <workItem from="1741359576777" duration="2514000" />
-      <workItem from="1741615305679" duration="1590000" />
+      <workItem from="1741615305679" duration="2907000" />
     </task>
     <servers />
   </component>
