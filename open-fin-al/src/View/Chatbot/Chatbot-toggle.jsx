@@ -11,13 +11,10 @@ class ChatbotToggle extends Component {
     }
 
     handleClick = () => {
-        this.setState(
-            (prevState) => {
-                const newToggleState = !prevState.toggle; // Toggle the state
-                //alert(newToggleState ? 'Chatbot Visible' : 'Chatbot Hidden'); // Alert when the state changes
-                return { toggle: newToggleState };
-            }
-        );
+        this.setState((prevState) => {
+            const newToggleState = !prevState.toggle;
+            return { toggle: newToggleState };
+        });
     };
 
     render() {
@@ -25,13 +22,19 @@ class ChatbotToggle extends Component {
             <div>
                 <div className="chatBotToggle">
                     <div className="circle" onClick={this.handleClick}>
-                        <img src={chatbotIcon} alt="Chatbot Icon" className="chatbotIcon" width={30} height={30}  />
+                        <img src={chatbotIcon} alt="Chatbot Icon" className="chatbotIcon" width={30} height={30} />
                     </div>
                 </div>
 
+                {/* Conditionally render the modal */}
                 {this.state.toggle && (
-                    <Chatbot />  /* Conditionally render the Chatbot component */
-                    )}
+                    <div className="chatbot-modal">
+                        <div className="chatbot-modal-content">
+                            <button onClick={this.handleClick} className="close-btn">X</button>
+                            <Chatbot/> {/* Chatbot component inside the modal */}
+                        </div>
+                    </div>
+                )}
             </div>
         );
     }
@@ -50,11 +53,11 @@ class Chatbot extends Component {
                     </li>
                 </ul>
                 <div className="chat-input">
-          <textarea
-              rows="0"
-              cols="17"
-              placeholder="Enter a message..."
-          ></textarea>
+                    <textarea
+                        rows="0"
+                        cols="17"
+                        placeholder="Enter a message..."
+                    ></textarea>
                     <button id="sendBTN">Send</button>
                 </div>
             </div>

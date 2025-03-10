@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 class Chatbot extends Component {
     render() {
-        /*return (
+        return (
             <div className="chatBot">
                 <header>
                     <h2>ChatBot</h2>
@@ -22,7 +22,7 @@ class Chatbot extends Component {
                     <button id="sendBTN">Send</button>
                 </div>
             </div>
-        );*/
+        );
     }
 }
 
