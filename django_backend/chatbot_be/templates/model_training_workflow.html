@@ -89,9 +89,13 @@
     <br>
 
     <button type="button" onclick="startTraining(event)">Start Training & Evaluate</button>
+    <button type="button" onclick="fetchLastFourModelStats()">Show Last 4 Model Statistics</button>
     <button type="button" id="stopTrainingBtn" onclick="stopTraining(event)" disabled>Stop Training</button>
 
 </form>
+
+<h2>Last 4 Model Statistics</h2>
+<div id="last-four-model-stats" class="results-box"></div>
 
 <h2>Model Evaluation Results</h2>
 <div id="model-eval-results" class="results-box"></div>
@@ -148,7 +152,7 @@
                 await startLogStreaming();
 
                 logContainer.textContent += "\n🏁 Training completed! Fetching Model Statistics...\n";
-                await evaluateModel(modelName, numQuestions);
+                // await evaluateModel(modelName, numQuestions);
             } else {
                 logContainer.textContent += `❌ Error: ${trainData.message}\n`;
             }
@@ -224,28 +228,94 @@
         });
     }
 
-    async function evaluateModel(modelName, numQuestions) {
-        const resultContainer = document.getElementById("model-eval-results");
-        resultContainer.innerHTML = "<p>Evaluating models... Please wait...</p>";
+    // async function evaluateModel(modelName, numQuestions) {
+    //     const resultContainer = document.getElementById("model-eval-results");
+    //     resultContainer.innerHTML = "<p>Evaluating models... Please wait...</p>";
 
-        const formData = new FormData();
-        formData.append("model_name", modelName);
-        formData.append("num_questions", parseInt(numQuestions));
+    //     const formData = new FormData();
+    //     formData.append("model_name", modelName);
+    //     formData.append("num_questions", parseInt(numQuestions));
+
+    //     try {
+    //         const response = await fetch("/api/model_stats_workflow/", {
+    //             method: "POST",
+    //             body: formData,
+    //         });
+
+    //         if (response.ok) {
+    //             const results = await response.json();
+    //             let tableHtml = `
+    //                 <h3>Model Evaluation Results</h3>
+    //                 <table id="model-eval-table">
+    //                     <thead>
+    //                         <tr>
+    //                             <th>Model</th>
+    //                             <th>ROUGE1</th>
+    //                             <th>ROUGE2</th>
+    //                             <th>ROUGE-L</th>
+    //                             <th>ROUGE-LSum</th>
+    //                             <th>BERTScoreF1</th>
+    //                             <th>BERTScorePrecision</th>
+    //                             <th>BERTScoreRecall</th>
+    //                         </tr>
+    //                     </thead>
+    //                     <tbody>
+    //             `;
+
+    //             Object.keys(results).forEach(model => {
+    //                 const modelResults = results[model];
+    //                 tableHtml += `
+    //                     <tr>
+    //                         <td>${model}</td>
+    //                         <td>${modelResults.ROUGE1.toFixed(4)}</td>
+    //                         <td>${modelResults.ROUGE2.toFixed(4)}</td>
+    //                         <td>${modelResults.ROUGEL.toFixed(4)}</td>
+    //                         <td>${modelResults.ROUGELSUM.toFixed(4)}</td>
+    //                         <td>${modelResults.BERTScoreF1.toFixed(4)}</td>
+    //                         <td>${modelResults.BERTScorePrecision.toFixed(4)}</td>
+    //                         <td>${modelResults.BERTScoreRecall.toFixed(4)}</td>
+    //                     </tr>
+    //                 `;
+    //             });
+
+    //             tableHtml += "</tbody></table>";
+    //             resultContainer.innerHTML = tableHtml;
+    //         } else {
+    //             const errorMessage = await response.text();
+    //             resultContainer.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;
+    //         }
+    //     } catch (error) {
+    //         resultContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
+    //     }
+    // }
+
+    async function fetchLastFourModelStats() {
+        const resultContainer = document.getElementById("last-four-model-stats");
+        const datasetName = document.getElementById("dataset_name").value.trim();
+
+        if (!datasetName) {
+            alert("Please enter a dataset name to fetch statistics!");
+            return;
+        }
+
+        resultContainer.innerHTML = "<p>Fetching last 4 model statistics... Please wait...</p>";
 
         try {
-            const response = await fetch("/api/model_stats_workflow/", {
-                method: "POST",
-                body: formData,
-            });
-
+            const response = await fetch(`/api/get_last_four_model_stats/?dataset_name=${datasetName}`);
             if (response.ok) {
                 const results = await response.json();
+
+                if (results.length === 0) {
+                    resultContainer.innerHTML = `<p>No models found for this dataset.</p>`;
+                    return;
+                }
+
                 let tableHtml = `
-                    <h3>Model Evaluation Results</h3>
-                    <table id="model-eval-table">
+                    <h3>Last 4 Model Statistics</h3>
+                    <table id="last-four-model-stats-table">
                         <thead>
                             <tr>
-                                <th>Model</th>
+                                <th>Model Name</th>
                                 <th>ROUGE1</th>
                                 <th>ROUGE2</th>
                                 <th>ROUGE-L</th>
@@ -253,29 +323,32 @@
                                 <th>BERTScoreF1</th>
                                 <th>BERTScorePrecision</th>
                                 <th>BERTScoreRecall</th>
+                                <th>Created At</th>
                             </tr>
                         </thead>
                         <tbody>
                 `;
 
-                Object.keys(results).forEach(model => {
-                    const modelResults = results[model];
+                results.forEach(stat => {
                     tableHtml += `
                         <tr>
-                            <td>${model}</td>
-                            <td>${modelResults.ROUGE1.toFixed(4)}</td>
-                            <td>${modelResults.ROUGE2.toFixed(4)}</td>
-                            <td>${modelResults.ROUGEL.toFixed(4)}</td>
-                            <td>${modelResults.ROUGELSUM.toFixed(4)}</td>
-                            <td>${modelResults.BERTScoreF1.toFixed(4)}</td>
-                            <td>${modelResults.BERTScorePrecision.toFixed(4)}</td>
-                            <td>${modelResults.BERTScoreRecall.toFixed(4)}</td>
+                            <td>${stat.model_name}</td>
+                            <td>${stat.ROUGE1.toFixed(4)}</td>
+                            <td>${stat.ROUGE2.toFixed(4)}</td>
+                            <td>${stat.ROUGE_L.toFixed(4)}</td>
+                            <td>${stat.ROUGE_LSum.toFixed(4)}</td>
+                            <td>${stat.BERTScoreF1.toFixed(4)}</td>
+                            <td>${stat.BERTScorePrecision.toFixed(4)}</td>
+                            <td>${stat.BERTScoreRecall.toFixed(4)}</td>
+                            <td>${stat.created_at}</td>
                         </tr>
                     `;
                 });
 
                 tableHtml += "</tbody></table>";
                 resultContainer.innerHTML = tableHtml;
+            } else if (response.status === 404) {
+                resultContainer.innerHTML = `<p>No models found for this dataset.</p>`;
             } else {
                 const errorMessage = await response.text();
                 resultContainer.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;

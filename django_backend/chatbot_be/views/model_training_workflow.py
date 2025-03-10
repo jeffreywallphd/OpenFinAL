@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.http import JsonResponse
-from django_backend.chatbot_be.models.model_stats import ModelStats
+from ..models.model_stats import ModelStats
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
