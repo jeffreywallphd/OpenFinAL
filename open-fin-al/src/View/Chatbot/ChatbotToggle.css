@@ -14,17 +14,17 @@
     transform: translateX(-50%); /* Adjust the circle's position to truly center it */
     cursor: pointer;
     transition: background-color 0.3s;
-
-    /*
-    background-image: url('comment-alt.png');
-    background-size: cover;
-    background-position: center;
-     */
+    display: flex; /* Use flexbox to center the image */
+    justify-content: center; /* Center the image horizontally */
+    align-items: center; /* Center the image vertically */
+    cursor: pointer; /* Changes the cursor when hovering over the circle */
+    overflow: hidden; /* Ensures the image stays within the circle */
 }
 
-.chatbotIcon{
-    display: block;
-    margin: auto;
+.chatbotIcon {
+    width: 30px; /* Image size inside the circle */
+    height: 30px; /* Image size inside the circle */
+    object-fit: cover; /* Ensures the image fits within the circle without distortion */
 }
 
 .circle:hover {
