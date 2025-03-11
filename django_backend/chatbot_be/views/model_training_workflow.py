@@ -34,7 +34,6 @@ print(f"CUDA available: {torch.cuda.is_available()}")
 training_process = None
 process_lock = Lock()
 
-
 def stream_training_workflow_output(request):
     # Start subprocess to run model training and capture terminal output
     def event_stream():
@@ -47,19 +46,20 @@ def stream_training_workflow_output(request):
             stderr=subprocess.STDOUT,
             text=True,
             bufsize=1,
+            universal_newlines=True,
             env=env
         )
 
-        for line in process.stdout:
-            yield f"data: {line.strip()}\n\n"  # SSE format
+        for line in iter(process.stdout.readline, ''):
+            yield f"data: {line.strip()}\n\n"
             sys.stdout.flush()
 
-        for line in process.stderr:
+        for line in iter(process.stderr.readline, ''):
             yield f"data: [ERROR] {line.strip()}\n\n"
-            sys.stdout.flush()
+            sys.stderr.flush()
 
         process.stdout.close()
-        process.stderr.close()
+        process.wait()
 
     return StreamingHttpResponse(event_stream(), content_type="text/event-stream")
 
@@ -174,10 +174,9 @@ def train_model_workflow(request):
                 inputs["labels"] = inputs["input_ids"]
                 return inputs
 
-            # Split dataset and preprocess
-            train_test_split = dataset["train"].train_test_split(test_size=0.1)
-            train_dataset = train_test_split['train'].map(tokenize_function, batched=True)
-            eval_dataset = train_test_split['test'].map(tokenize_function, batched=True)
+            # Tokenize split datasets directly
+            train_dataset = train_dataset.map(tokenize_function, batched=True)
+            eval_dataset = eval_dataset.map(tokenize_function, batched=True)
 
             print("Sample tokenized data:", train_dataset[0])
 
@@ -391,7 +390,7 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
         print(traceback.format_exc())
         raise RuntimeError(f"Error in model_stats: {e}")
     
-def get_last_four_model_stats(request):
+def get_model_stats(request):
     # Extract dataset name from query parameters
     dataset_name = request.GET.get('dataset_name')
     if not dataset_name:

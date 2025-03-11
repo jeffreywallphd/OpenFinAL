@@ -10,6 +10,7 @@ class ModelStats(models.Model):
     BERTScoreF1 = models.FloatField()
     BERTScorePrecision = models.FloatField()
     BERTScoreRecall = models.FloatField()
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"{self.model_name} - {self.dataset}"
