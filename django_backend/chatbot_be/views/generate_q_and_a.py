@@ -19,6 +19,8 @@ import pandas as pd
 import io
 import csv
 from huggingface_hub import HfApi
+from transformers import AutoTokenizer, AutoModelForCausalLM
+import torch
 
 client = OpenAI(
     api_key=config('OPENAI_API_KEY', default=""),
@@ -57,7 +59,17 @@ def split_text(text, max_tokens=1000):
 
 
 def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
-    text_chunks = split_text(text, max_tokens=1000)  # Adjust chunk size
+    # Set up data preparation model
+    model_name = "meta-llama/Meta-Llama-3-8B"
+
+    try:
+        tokenizer = AutoTokenizer.from_pretrained(model_name)
+        model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype=torch.float16, device_map="auto") #Use torch.bfloat16 if your GPU supports it.
+    except Exception as e:
+        print(e)
+        return json.dumps({"error": f"The data preparation model was not properly loaded."}, indent=4)
+
+    text_chunks = split_text(text, max_tokens=4000)  # Adjust chunk size
     results = []
 
     total_chunks = len(text_chunks)
@@ -77,31 +89,33 @@ def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
             {{"question": "How does ... work?", "answer": "It works by ..."}}
         ]
 
-        Return ONLY valid JSON output.
+        Question answers should be at least 250 words long.
+
+        Do NOT include any explanation or pre-amble before or after the JSON output.
+        Return ONLY valid JSON output.  
+
+        Answer:
         """
 
-        response = client.chat.completions.create(
-            model=model,
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.5
-        )
-
         try:
-            response = client.chat.completions.create(
-                model=model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.5
-            )
+            inputs = tokenizer(prompt, return_tensors="pt").to(model.device)
+            outputs = model.generate(**inputs, max_new_tokens=1000) # Adjust max_new_tokens as needed
+            response = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-            json_data = json.loads(response.choices[0].message.content.strip())
+            #process response to remove prompt and non-JSON elements
+            processed_response = response.strip().split("Answer:")[-1]
 
-            if isinstance(json_data, list):  
-                results.extend(json_data)
-            else:
-                results.append({"error": "Unexpected JSON format"})
+            json_data = json.loads(processed_response)
+
+            #if isinstance(json_data, list):  
+            results.extend(json_data)
+            #else:
+            #    print(json_data)
+            #    results.append({"error": "Unexpected JSON format"})
 
         except json.JSONDecodeError:
             results.append({"part": i + 1, "error": "Invalid JSON response"})
+            results.append(processed_response)
         
         except OpenAIError as e:
             return json.dumps({"error": f"OpenAI API Error: {str(e)}"}, indent=4)
