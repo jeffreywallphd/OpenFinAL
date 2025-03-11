@@ -15,11 +15,12 @@ This design guide defines the visual and interaction standards for the applicati
 The app design follows these core principles:  
 - Simplicity & Clarity – The interface should be easy to understand and navigate. Keep it simple and minimalistic.
 - Consistency – Design patterns and UI components should be uniform throughout the app.  Icons that appear throughout all pages should be appearing in the same part of the screen. 
-- Responsiveness – The UI should adapt seamlessly across different screen sizes and devices.  
+- Responsiveness – The UI should adapt seamlessly across different screen sizes and devices.
+- Stability - Keep al icons like ChatBot at the same spot for all sections of the application.
 
 
 ## Color Palette  
-Define the primary, secondary, and neutral colors used in the app:  
+Other colors may be used with permission. 
 
 | Name       | Hex Code  | Usage                      |  
 |------------|----------|---------------------------|  
