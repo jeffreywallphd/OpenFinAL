@@ -235,8 +235,8 @@ def upload_parquet_to_huggingface(request):
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
     
-    file_name = request.GET.get("file_name", "").strip()
-    repo_name = request.GET.get("repo_name", "").strip()
+    file_name = request.GET.get("file_name", "").strip().replace(" ", "_")
+    repo_name = request.GET.get("repo_name", "").strip().replace(" ", "_")
 
     if not file_name:
         return JsonResponse({"error": "No file name provided"}, status=400)
@@ -280,3 +280,11 @@ def upload_parquet_to_huggingface(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+    
+api = HfApi()
+user_info = api.whoami(token=DEFAULT_HF_API_KEY)  # Get user info
+user_id = user_info["name"]  # Get your HF username
+organizations = user_info["orgs"][0]["name"]  # Get list of organizations
+
+print("User ID:", user_id)
+print("Organizations:", organizations)
