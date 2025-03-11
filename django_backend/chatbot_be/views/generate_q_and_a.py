@@ -234,10 +234,15 @@ def upload_parquet_to_huggingface(request):
 
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
-
+    
     file_name = request.GET.get("file_name", "").strip()
+    repo_name = request.GET.get("repo_name", "").strip()
+
     if not file_name:
         return JsonResponse({"error": "No file name provided"}, status=400)
+    
+    if not repo_name:
+        return JsonResponse({"error": "No repository name provided"}, status=400)
 
     try:
         json_data = json.loads(generated_json_text)
@@ -256,7 +261,12 @@ def upload_parquet_to_huggingface(request):
 
         file_path = f"{file_name}.parquet"
         api = HfApi()
-        repo_id = "OpenFinAL/Temp_Testing"  
+        repo_id = f"OpenFinAL/{repo_name}"  
+
+        try:
+            api.repo_info(repo_id, repo_type="dataset") 
+        except:
+            api.create_repo(repo_id, repo_type="dataset", token=DEFAULT_HF_API_KEY)
 
         api.upload_file(
             path_or_fileobj=buffer,
@@ -266,7 +276,7 @@ def upload_parquet_to_huggingface(request):
             token=DEFAULT_HF_API_KEY
         )
 
-        return JsonResponse({"success": f"Uploaded successfully as {file_path}"}, status=200)
+        return JsonResponse({"success": f"Uploaded successfully as {file_path}, under database {repo_id}"}, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)

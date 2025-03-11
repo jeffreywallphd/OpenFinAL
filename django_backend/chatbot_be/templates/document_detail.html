@@ -119,7 +119,13 @@
             return;
         }
 
-        fetch("{% url 'upload_parquet_to_huggingface' %}?file_name=" + encodeURIComponent(fileName), {
+        let repoName = prompt("Enter the Hugging Face repository name:");
+        if (!repoName) {
+            alert("Upload canceled. Please provide a repository name.");
+            return;
+        }
+
+        fetch(`{% url 'upload_parquet_to_huggingface' %}?file_name=${encodeURIComponent(fileName)}&repo_name=${encodeURIComponent(repoName)}`, {
             method: "GET",
             headers: {
                 "X-Requested-With": "XMLHttpRequest"
