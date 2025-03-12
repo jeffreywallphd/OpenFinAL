@@ -144,8 +144,13 @@ All gratitude to the Michigan Tech students who worked on this project to develo
 
 ### Core Contributors
 * Jeffrey Wall - Faculty Advisor
+* Divy Patel - Graduate Research Assistant - March 2024 - April 2025
+* Yaman Aljnadi - Graduate Research Assistant - January 2025 - April 2025
 * Students at Michigan Technological University in MIS 4100 - Emerging Technologies: Fall 2023
 * Students at Michigan Technological University in MIS 3200 - Systems Analysis and Design: Spring 2024
+* Students at Michigan Technological University in MIS 4100 - Emerging Technologies: Fall 2024
+* Students at Michigan Technological University in BA 5200 - IS Management and Data Analytics: Fall 2024
+* Students at Michigan Technological University in MIS 3200 - Systems Analysis and Design: Spring 2025
 
 ### Dependencies
 Please see the package.json file in the OpenFinAL folder for a list of the dependencies used in this project.

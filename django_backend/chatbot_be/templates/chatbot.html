@@ -1,12 +1,10 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenFinAL Chatbot Conversation</title>
-    <link rel="stylesheet" href="{% static 'backend.css'%}">
-</head>
+
+
+{% block title %}OpenFinAL Chatbot Conversation{% endblock %}
+
+{% block content %}
 <script>
     function handleEnter(event) {
         if (event.key === 'Enter') {
@@ -19,13 +17,20 @@
 
         if (!sessionId) {
             // Create a new session if it does not exist
-            const response = await fetch('/api/chatbot/', { method: 'POST', headers: { 'Content-Type': 'application/json' } });
-            if (response.ok) {
-                const data = await response.json();
-                sessionId = data.session_id;
-                localStorage.setItem('session_id', sessionId);
-            } else {
-                console.error('Failed to create session');
+            try {
+                const response = await fetch('/api/chatbot/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    sessionId = data.session_id;
+                    localStorage.setItem('session_id', sessionId);
+                } else {
+                    console.error('Failed to create session');
+                }
+            } catch (error) {
+                console.error('Error creating session:', error);
             }
         }
 
@@ -33,16 +38,24 @@
     }
 
     async function sendMessage() {
-        const message = document.getElementById('message').value;
+        const message = document.getElementById('message').value.trim();
+        const model_name = document.getElementById('model_name').value.trim();
         const maxLength = document.getElementById('max_length').value || 200;
         const minLength = document.getElementById('min_length').value || 100;
         const topK = document.getElementById('top_k').value || 50;
         const topP = document.getElementById('top_p').value || 0.95;
+        const no_repeat_ngram_size = document.getElementById('no_repeat_ngram_size').value || 0;
+        const max_new_tokens = document.getElementById('max_new_tokens').value || 300;
         const sessionId = await getSessionId();
 
         // Ensure the message is not empty
-        if (message.trim() === "") {
-            console.error("Message cannot be empty");
+        if (!message) {
+            alert("Please enter a message!");
+            return;
+        }
+
+        if (!model_name) {
+            alert("Please enter a model name!");
             return;
         }
 
@@ -53,86 +66,99 @@
             body: JSON.stringify({ message: message, is_user: true })
         });
 
-        if (userResponse.ok) {
-            // Fetch GPT-2 response
+        try {
             const chatbotResponse = await fetch(`/api/chatbot/${sessionId}/response/`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     message: message,
+                    model_name: model_name,
                     max_length: parseInt(maxLength),
                     min_length: parseInt(minLength),
                     top_k: parseInt(topK),
                     top_p: parseFloat(topP),
-                })  // Ensure message is passed correctly
+                    no_repeat_ngram_size: parseInt(no_repeat_ngram_size),
+                    max_new_tokens: parseInt(max_new_tokens),
+                }),
             });
 
             if (chatbotResponse.ok) {
                 displayMessages();
-                document.getElementById('message').value = ''; // Clear the input field
+                document.getElementById('message').value = ''; // Clear input
             } else {
-                console.error('Failed to get GPT-2 response');
+                console.error('Failed to fetch chatbot response');
             }
-        } else {
-            console.error('Failed to send user message');
+        } catch (error) {
+            console.error('Error sending message:', error);
         }
     }
 
     async function displayMessages() {
         const sessionId = await getSessionId();
 
-        const response = await fetch(`/api/chatbot/${sessionId}/`);
-        const messages = await response.json();
+        try {
+            const response = await fetch(`/api/chatbot/${sessionId}/`);
+            const messages = await response.json();
 
-        const messageContainer = document.getElementById('messages');
-        messageContainer.innerHTML = '';  // Clear previous messages
+            const messageContainer = document.getElementById('messages');
+            messageContainer.innerHTML = ''; // Clear previous messages
 
-        messages.forEach(msg => {
-            const messageElement = document.createElement('div');
-            messageElement.textContent = `${msg.is_user ? 'User' : 'Chatbot'}: ${msg.message}`;
-            messageElement.classList.add(msg.is_user ? 'user-message' : 'chatbot-message');
-            messageContainer.appendChild(messageElement);
-        });
+            let lastMessage = '';
+            let lastUserMessage = '';
+
+            messages.forEach((msg) => {
+
+                const role = msg.is_user ? 'User' : 'Chatbot';
+
+                // Avoid displaying duplicate messages
+                if (msg.message.trim() === lastMessage) {
+                    return;
+                }
+
+                // Store the last user message
+                if (msg.is_user) {
+                    lastUserMessage = msg.message.trim();
+                } else if (msg.message.trim().startsWith(lastUserMessage)) {
+                    // If chatbot response starts with the last user message, remove it
+                    msg.message = msg.message.replace(lastUserMessage, '').trim();
+                }
+
+                const messageElement = document.createElement('div');
+                messageElement.innerHTML = `<strong>${role}:</strong> ${msg.message}`;
+                messageElement.classList.add(msg.is_user ? 'user-message' : 'chatbot-message');
+                messageContainer.appendChild(messageElement);
+
+                lastMessage = msg.message.trim(); // Update last message tracker
+            });
+        } catch (error) {
+            console.error('Error fetching messages:', error);
+        }
     }
 
     document.addEventListener('DOMContentLoaded', displayMessages);
 </script>
 
-<body>
-     <!-- Top Panel -->
-    <div class="top-panel">
-        OpenFinAL
-    </div>
 
-    <!-- Side Panel -->
-    <div class="side-panel">
-        <a href="{% url 'home-view' %}">Home</a> <!-- Home option -->
-        <a href="{% url 'chatbot-view' %}">Chatbot</a>  <!-- Chatbot option -->=
-        <a href="{% url 'scrape-view' %}">Scrape Data</a> <!-- Scraping option -->
-        <a href="{% url 'train-view' %}">Model Training</a> <!-- Model Training option -->
-        <a href="#">Option 5 (Dummy)</a> <!-- Dummy option -->
-    </div>
+<h1>Chatbot Conversation</h1>
+<div class="config-options">
+    <h2>Configuration Options</h2>
+    <label for="model_name">Model Name:</label>
+    <input type="text" id="model_name" placeholder="Enter model name (e.g., gpt-2)">
+    <label for="max_length">Max Length:</label>
+    <input type="number" id="max_length" placeholder="Default: 200">
+    <label for="min_length">Min Length:</label>
+    <input type="number" id="min_length" placeholder="Default: 100">
+    <label for="top_k">Top K:</label>
+    <input type="number" id="top_k" placeholder="Default: 50">
+    <label for="top_p">Top P:</label>
+    <input type="number" step="0.01" id="top_p" placeholder="Default: 0.95">
+    <label for="no_repeat_ngram_size">No Repeat Ngram Size:</label>
+    <input type="number" id="no_repeat_ngram_size" placeholder="Default: 0">
+    <label for="max_new_tokens">Max New Tokens:</label>
+    <input type="number" id="max_new_tokens" placeholder="Default: 300">
+</div>
+<div id="messages"></div>
+<input type="text" id="message" placeholder="Type your message..." onkeydown="handleEnter(event)">
+<button onclick="sendMessage()">Send</button>
 
-    <!-- Main Content Area -->
-    <div class="content">
-        <h1>Chatbot Conversation</h1>
-        <div class="config-options">
-            <h2>Configuration Options</h2>
-            <label for="max_length">Max Length:</label>
-            <input type="number" id="max_length" placeholder="Default: 200">
-            <br>
-            <label for="min_length">Min Length:</label>
-            <input type="number" id="min_length" placeholder="Default: 100">
-            <br>
-            <label for="top_k">Top K:</label>
-            <input type="number" id="top_k" placeholder="Default: 50">
-            <br>
-            <label for="top_p">Top P:</label>
-            <input type="number" step="0.01" id="top_p" placeholder="Default: 0.95">
-        </div>
-        <div id="messages"></div>
-        <input type="text" id="message" placeholder="Type your message..." onkeydown="handleEnter(event)">
-        <button onclick="sendMessage()">Send</button>
-    </div>
-</body>
-</html>
+{% endblock %}
