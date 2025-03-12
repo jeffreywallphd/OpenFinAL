@@ -70,7 +70,7 @@
                     </div>
                     <div class="mb-3">
                         <label for="repoName" class="form-label">Repository Name</label>
-                        <input type="text" class="form-control" id="repoName" placeholder="Enter repository name" required>
+                        <input type="text" class="form-control" id="repoName" placeholder="Enter repository name; Leave blank for default repository">
                     </div>
                 </form>
                 <div id="modalAlertContainer"></div> <!-- For displaying alerts -->
@@ -153,7 +153,7 @@
         let fileName = document.getElementById("fileName").value.trim();
         let repoName = document.getElementById("repoName").value.trim();
 
-        if (!fileName || !repoName) {
+        if (!fileName) {
             let modalAlertContainer = document.getElementById("modalAlertContainer");
             modalAlertContainer.innerHTML = `
                 <div class="alert alert-warning alert-dismissible fade show" role="alert">
