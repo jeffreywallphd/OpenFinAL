@@ -5,10 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IModel.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -20,6 +18,7 @@
       <list>
         <option value="JavaScript File" />
         <option value="JSX File" />
+        <option value="TypeScript File" />
       </list>
     </option>
   </component>
@@ -87,6 +86,8 @@
       <workItem from="1741314961259" duration="1038000" />
       <workItem from="1741359576777" duration="2514000" />
       <workItem from="1741615305679" duration="6371000" />
+      <workItem from="1741789268849" duration="2612000" />
+      <workItem from="1741796593112" duration="13000" />
     </task>
     <servers />
   </component>
