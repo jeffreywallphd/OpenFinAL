@@ -58,8 +58,8 @@ class Chatbot extends Component {
                         cols="17"
                         placeholder="Enter a message..."
                     ></textarea>
-                    <button id="sendBTN">Send</button>
                 </div>
+                <button id="sendBTN">Send</button>
             </div>
         );
     }
