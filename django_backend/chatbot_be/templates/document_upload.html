@@ -5,48 +5,38 @@
 
 {% block content %}
 
-<div class="container mt-5">
+<div>
     <h1>Document Processor</h1>
 
     <div>
         <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text. Use one of the three tools below.</p>
     </div>
 
+    <h2>From URL</h2>
     {% include "processor_url.html" %}
 
     <!-- Result Display -->
     <div id="result" class="mb-4"></div>
 
+    <h2>From PDF</h2>
     {% include "processor_pdf.html" %}
 
     <!-- Upload Result Display -->
     <div id="uploadResult" class="mb-4"></div>
 
+    <h2>From Text</h2>
     {% include "processor_text.html" %}
 
     <!-- Manual Text Result Display -->
     <div id="manualTextResult" class="mb-4"></div>
-
-    <!-- Scraped Data Section - Hidden Initially -->
-    <div id="scrapedData" class="mb-4" style="display: none;">
-        <h2 class="text-center mb-3">Last Scraped Data</h2>
-        <div id="scrapedContent" class="bg-light p-3 rounded">
-            {% if latest_scraped_data %}
-            <h3>Data from {{ latest_scraped_data.url }} ({{ latest_scraped_data.file_type }})</h3>
-
-            {% if latest_scraped_data.file_type == 'html' %}
-            <div>{{ latest_scraped_data.content|safe }}</div>
-            {% elif latest_scraped_data.file_type == 'json' %}
-            <pre>{{ latest_scraped_data.content }}</pre>
-            {% endif %}
-            {% else %}
-            <p class="text-muted">No data available.</p>
-            {% endif %}
-        </div>
-    </div>
 </div>
 
 <script>
+    function redirectToDatasetWorkflow() {
+        const redirectUrl = "{% url 'dataset-workflow' %}"; // Use Django's reverse function
+        window.location.href = redirectUrl;
+   }
+
     document.getElementById('scrapeBtn').addEventListener('click', () => {
         const url = document.getElementById('url').value;
         const outputFile = document.getElementById('output_file').value;
@@ -65,33 +55,11 @@
             })
             .then(data => {
                 const resultDiv = document.getElementById('result');
-                const scrapedDataDiv = document.getElementById('scrapedData');
-                const scrapedContentDiv = document.getElementById('scrapedContent');
-
+                
                 if (data.success) {
-                    resultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
-
-                    let content = '';
-
-                    if (data.file_type === 'xml') {
-                        const parser = new DOMParser();
-                        const xmlDoc = parser.parseFromString(data.content, 'application/xml');
-                        const xmlString = new XMLSerializer().serializeToString(xmlDoc);
-                        content = `<pre>${escapeXML(prettyPrintXML(xmlString))}</pre>`;
-                    } else if (data.file_type === 'html') {
-                        content = `<pre>${escapeHTML(data.content)}</pre>`;
-                    } else if (data.file_type === 'json' || data.file_type === 'csv') {
-                        content = `<pre>${data.content}</pre>`;
-                    } else if (data.file_type === 'xlsx') {
-                        content = `<p>Excel file content available. <a href="/download/${data.id}">Download</a></p>`;
-                    }
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Data from ${data.url} (${data.file_type})</h3>
-                        ${content}
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
+                    resultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
+                    setTimeout(1000);
+                    redirectToDatasetWorkflow();
                 } else if (data.error) {
                     resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -128,24 +96,9 @@
             .then(data => {
                 const uploadResultDiv = document.getElementById('uploadResult');
                 if (data.success) {
-                    uploadResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
-
-                    const scrapedDataDiv = document.getElementById('scrapedData');
-                    const scrapedContentDiv = document.getElementById('scrapedContent');
-                    let content = '';
-
-                    if (data.file_type === 'html') {
-                        content = `<pre>${escapeHTML(data.content)}</pre>`;
-                    } else if (data.file_type === 'json') {
-                        content = `<pre>${JSON.stringify(data.content, null, 4)}</pre>`;
-                    }
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Converted PDF Content (${data.file_type.toUpperCase()})</h3>
-                        ${content}
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
+                    uploadResultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
+                    setTimeout(1000);
+                    redirectToDatasetWorkflow();
                 } else if (data.error) {
                     uploadResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -180,17 +133,9 @@
             .then(data => {
                 const manualTextResultDiv = document.getElementById('manualTextResult');
                 if (data.success) {
-                    manualTextResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
-
-                    const scrapedDataDiv = document.getElementById('scrapedData');
-                    const scrapedContentDiv = document.getElementById('scrapedContent');
-
-                    scrapedContentDiv.innerHTML = `
-                        <h3>Manually Entered Text</h3>
-                        <pre>${escapeHTML(manualText)}</pre>
-                    `;
-
-                    scrapedDataDiv.style.display = 'block';
+                    manualTextResultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
+                    setTimeout(1000);
+                    redirectToDatasetWorkflow();
                 } else if (data.error) {
                     manualTextResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
