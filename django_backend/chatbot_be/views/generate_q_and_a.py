@@ -19,6 +19,7 @@ import pandas as pd
 import io
 import csv
 from huggingface_hub import HfApi
+from datasets import Dataset
 
 client = OpenAI(
     api_key=config('OPENAI_API_KEY', default=""),
@@ -56,7 +57,7 @@ def split_text(text, max_tokens=1000):
 
 
 
-def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
+def extract_qa(text, chunk_limit, model="gpt-4", questions_num=1, instruction_prompt=""):
     text_chunks = split_text(text, max_tokens=1000)  # Adjust chunk size
     results = []
 
@@ -64,21 +65,47 @@ def extract_qa(text, chunk_limit, model="gpt-4", questions_num=5):
 
     for i, chunk in enumerate(text_chunks[:chunk_limit]):
         print(f'Total {total_chunks}, finished {i + 1}')
+
+        instruction_prompt_preamble = ""
+        instruction_prompt_details = ""
+
+        if instruction_prompt:
+            instruction_prompt_preamble = "Include an instruction prompt for each question-answer pair. The instruction prompt should be different for each question, but have the same meaning as the base instruction prompt."
+            instruction_prompt_details = f"""
+            Base Instruction Prompt:
+            {instruction_prompt}
+            """
+
+            response_format = f"""
+            [
+                {{"input": "What is ...?", "output": "The answer is ...", "instruction": "You are a ..."}},
+                {{"input": "How does ... work?", "output": "It works by ...", "instruction": "Answer questions as though you are a..."}}
+            ]
+            """
+        else:
+            response_format = f"""        
+            [
+                {{"input": "What is ...?", "output": "The answer is ..."}},
+                {{"input": "How does ... work?", "output": "It works by ..."}}
+            ]
+            """
+
         prompt = f"""
         Generate {questions_num} question-answer pairs based on the following text segment. 
-        Return the result in valid JSON format as a list of objects.
+        Return the result in valid JSON format as a list of objects. {instruction_prompt_preamble}
 
         Text Segment:
         {chunk}
 
+        {instruction_prompt_details}
+        
         Response Format:
-        [
-            {{"question": "What is ...?", "answer": "The answer is ..."}},
-            {{"question": "How does ... work?", "answer": "It works by ..."}}
-        ]
+        {response_format}
 
         Return ONLY valid JSON output.
         """
+
+        #print(prompt)
 
         response = client.chat.completions.create(
             model=model,
@@ -125,6 +152,11 @@ def document_detail(request):
     selected_document_ids = request.POST.getlist('selected_documents')
     # print(selected_document_ids)
 
+    if not selected_document_ids:
+        request.session["redirect_message"] = "You must select at least one document to proceed."
+        redirect_url = reverse('dataset-workflow')
+        return redirect(redirect_url)
+
     documents = ScrapedData.objects.filter(id__in=selected_document_ids)
     # print(documents)
 
@@ -144,7 +176,7 @@ def document_detail(request):
             test_type = form.cleaned_data['test_type']
             num_questions = form.cleaned_data['num_questions']
             num_paragraphs = form.cleaned_data['num_paragraphs']
-
+            instruction_prompt = form.cleaned_data["instruction_prompt"]
 
             if test_type == 'mockup':
                 json_file_path = 'media/JSON/New_Prompt_Simple_QA.json'
@@ -159,7 +191,7 @@ def document_detail(request):
             
             else:
                 try:
-                    generated_json_text = extract_qa(text=combined_text, chunk_limit = num_paragraphs, questions_num=num_questions)
+                    generated_json_text = extract_qa(text=combined_text, chunk_limit = num_paragraphs, questions_num=num_questions, instruction_prompt=instruction_prompt)
                     generated_json_data = json.loads(generated_json_text)
                     request.session['generated_json_combined'] = generated_json_text
 
@@ -252,27 +284,12 @@ def upload_parquet_to_huggingface(request):
 
         df = pd.DataFrame(json_data)
 
-        buffer = io.BytesIO()
-        df.to_parquet(buffer, index=False)
-        buffer.seek(0)
+        repo_id = f"{repo_name}/{file_name}"  
 
-        file_path = f"{file_name}.parquet"
-        api = HfApi(token=DEFAULT_HF_API_KEY)
-        repo_id = f"{repo_name}"  
+        dataset = Dataset.from_pandas(df)
+        dataset.push_to_hub(repo_id)
 
-        api.whoami(token=DEFAULT_HF_API_KEY)
-
-        api.repo_info(repo_id, repo_type="dataset", token=DEFAULT_HF_API_KEY)
-
-        api.upload_file(
-            path_or_fileobj=buffer,
-            path_in_repo=file_path,
-            repo_id=repo_id,
-            repo_type="dataset",
-            token=DEFAULT_HF_API_KEY
-        )
-
-        return JsonResponse({"success": f"Uploaded successfully as {file_path}, under database {repo_id}"}, status=200)
+        return JsonResponse({"success": f"Uploaded successfully as {file_name}, under database {repo_id}"}, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
@@ -285,10 +302,13 @@ def get_huggingface_datasets(request):
         user_info = api.whoami()
         organizations = user_info.get("orgs", [])
 
-        org_name = organizations[0]["name"] if organizations else user_info["name"]
+        if organizations:
+            dataset_list = [org["name"] for org in organizations]
+        else:
+            dataset_list = [user_info["name"]]
 
-        datasets = list(api.list_datasets(author=org_name))
-        dataset_list = [dataset.id for dataset in datasets]
+        #datasets = list(api.list_datasets(author=org_name))
+        #dataset_list = [dataset.id for dataset in datasets]
 
         return JsonResponse({"datasets": dataset_list})
 

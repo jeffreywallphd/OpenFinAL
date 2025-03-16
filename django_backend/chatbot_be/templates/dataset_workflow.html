@@ -12,7 +12,7 @@
     </div>
 
     {% if messages %}
-    <div class="alert alert-info">
+    <div class="alert alert-warning alert-dismissible fade show">
         <ul class="mb-0">
             {% for message in messages %}
             <li>{{ message }}</li>
@@ -124,6 +124,7 @@
 
         // Copy selected checkboxes into delete form
         let checkboxes = selectionForm.querySelectorAll('input[name="selected_documents"]:checked');
+        
         checkboxes.forEach(checkbox => {
             let hiddenInput = document.createElement('input');
             hiddenInput.type = 'hidden';

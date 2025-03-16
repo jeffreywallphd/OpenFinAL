@@ -11,17 +11,12 @@
     crossorigin="anonymous"></script>
 
 {% if documents %}
-<h3>Selected Documents:</h3>
-<ul>
-    {% for document in documents %}
-    <li><strong>Created At:</strong> {{ document.created_at }}</li>
-    {% endfor %}
-</ul>
+<p>Provide the requested details in the form below to convert the selected documents to a question-answer dataset</p>
 {% else %}
 <p>No documents selected.</p>
 {% endif %}
 
-<p><strong>Total Amount Paragraphs:</strong> {{ total_chunks|default:"0" }}</p>
+<p><strong>Total Number of Paragraphs:</strong> {{ total_chunks|default:"0" }}</p>
 
 <div id="alertContainer" class="mt-3"></div>
 
@@ -29,12 +24,20 @@
     {% csrf_token %}
     <div class="row">
         <div class="col-3">
-            Number of paragraphs To Process
+            Number Of Paragraphs To Process
             {{ form.num_paragraphs }}
         </div>
         <div class="col-3">
-            Number of Questions To Genearted from Each Paragraph
+            Number of Questions Per Paragraph
             {{ form.num_questions }}
+        </div>
+        
+    </div>
+
+    <div class="row">
+        <div class="col-3">
+            Instruction Prompt
+            {{ form.instruction_prompt }}
         </div>
         <div class="col-3">
             Test type
@@ -71,9 +74,9 @@
                         <input type="text" class="form-control" id="fileName" placeholder="Enter file name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="repoName" class="form-label">Select Dataset</label>
+                        <label for="repoName" class="form-label">Storage Location</label>
                         <select class="form-select" id="repoName">
-                            <option value="">Loading datasets...</option>
+                            <option value="">Select Location...</option>
                         </select>
                     </div>
                 </form>
