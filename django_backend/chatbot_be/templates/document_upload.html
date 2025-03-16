@@ -5,48 +5,121 @@
 
 {% block content %}
 
-<div>
+
+{% if messages %}
+<div class="alert alert-info">
+    <ul class="mb-0">
+        {% for message in messages %}
+        <li>{{ message }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
+
+<div id="scrapedData" style="display: none;">
+    <h2 id="scrapedTitle"></h2>
+    <div id="scrapedContent"></div>
+</div>
+
+<div class="container mt-5">
     <h1>Document Processor</h1>
 
     <div>
-        <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text. Use one of the three tools below.</p>
+        <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text.</p>
     </div>
 
-    <h2>From URL</h2>
-    {% include "processor_url.html" %}
+    <div class="mb-3">
+        <label for="title" class="form-label">Title:</label>
+        <input type="text" id="title" class="form-control" placeholder="Enter a title for the document">
+    </div>
 
-    <!-- Result Display -->
-    <div id="result" class="mb-4"></div>
+    <!-- Dropdown Menu for Selecting Input Method -->
+    <div class="mb-4">
+        <label for="inputMethod" class="form-label">Select Input Method:</label>
+        <select id="inputMethod" class="form-select">
+            <option value="none">-- Select an option --</option>
+            <option value="url">Scrape from URL</option>
+            <option value="pdf">Upload PDF</option>
+            <option value="text">Enter Text</option>
+        </select>
+    </div>
 
-    <h2>From PDF</h2>
-    {% include "processor_pdf.html" %}
+    <!-- URL Input Section -->
+    <div id="urlSection" class="input-section" style="display: none;">
+        {% include "processor_url.html" %}
 
-    <!-- Upload Result Display -->
-    <div id="uploadResult" class="mb-4"></div>
+        <div id="result" class="mb-4"></div>
+    </div>
 
-    <h2>From Text</h2>
-    {% include "processor_text.html" %}
+    <!-- PDF Upload Section -->
+    <div id="pdfSection" class="input-section" style="display: none;">
+        {% include "processor_pdf.html" %}
 
-    <!-- Manual Text Result Display -->
-    <div id="manualTextResult" class="mb-4"></div>
+        <div id="uploadResult" class="mb-4"></div>
+    </div>
+
+    <!-- Manual Text Entry Section -->
+    <div id="textSection" class="input-section" style="display: none;">
+        {% include "processor_text.html" %}
+
+        <div id="manualTextResult" class="mb-4"></div>
+    </div>
+
+    <div class="mt-4">
+        <h3>Uploaded/Scraped Documents</h3>
+        <ul id="documentList" class="list-group"></ul>
+    </div>
+    
+    <button id="redirectBtn" class="btn btn-primary mt-3">Proceed to Dataset Workflow</button>    
+
 </div>
 
+
+
 <script>
-    function redirectToDatasetWorkflow() {
-        const redirectUrl = "{% url 'dataset-workflow' %}"; // Use Django's reverse function
-        window.location.href = redirectUrl;
-   }
+    document.getElementById('inputMethod').addEventListener('change', function () {
+        const selectedOption = this.value;
+
+        document.getElementById('urlSection').style.display = 'none';
+        document.getElementById('pdfSection').style.display = 'none';
+        document.getElementById('textSection').style.display = 'none';
+
+        if (selectedOption === 'url') {
+            document.getElementById('urlSection').style.display = 'block';
+        } else if (selectedOption === 'pdf') {
+            document.getElementById('pdfSection').style.display = 'block';
+        } else if (selectedOption === 'text') {
+            document.getElementById('textSection').style.display = 'block';
+        }
+    });
+</script>
+
+<script>
+
+    function addDocumentToList(title, message) {
+        const documentList = document.getElementById('documentList');
+        const listItem = document.createElement('li');
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `<strong>${title}</strong>: ${message}`;
+        documentList.appendChild(listItem);
+
+    }
+
+    // Redirect button function
+    document.getElementById('redirectBtn').addEventListener('click', () => {
+        window.location.href = "{% url 'dataset-workflow' %}";
+    });
 
     document.getElementById('scrapeBtn').addEventListener('click', () => {
         const url = document.getElementById('url').value;
-        const outputFile = document.getElementById('output_file').value;
+        const title = document.getElementById('title').value;
 
-        if (!url || !outputFile) {
-            alert('Please provide both URL and output file name.');
+        if (!url || !title) {
+            alert('Please provide both URL, output and a title file name.');
             return;
         }
 
-        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}`)
+        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -55,11 +128,11 @@
             })
             .then(data => {
                 const resultDiv = document.getElementById('result');
-                
+
+
                 if (data.success) {
-                    resultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
                     setTimeout(1000);
-                    redirectToDatasetWorkflow();
+                    addDocumentToList(title, "Scraped successfully.");
                 } else if (data.error) {
                     resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -73,15 +146,22 @@
     document.getElementById('uploadBtn').addEventListener('click', () => {
         const pdfFile = document.getElementById('pdfUpload').files[0];
         const outputFormat = document.getElementById('output_format').value;
+        const title = document.getElementById('title').value;
 
         if (!pdfFile) {
             alert('Please upload a PDF file.');
             return;
         }
 
+        else if (!title) {
+            alert("Please provide a title");
+            return;
+        }
+
         const formData = new FormData();
         formData.append('pdf_file', pdfFile);
         formData.append('output_format', outputFormat);
+        formData.append('title', title);
 
         fetch('/api/upload_pdf/', {
             method: 'POST',
@@ -96,9 +176,9 @@
             .then(data => {
                 const uploadResultDiv = document.getElementById('uploadResult');
                 if (data.success) {
-                    uploadResultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
                     setTimeout(1000);
-                    redirectToDatasetWorkflow();
+                    addDocumentToList(title, "Uploaded successfully.");
+
                 } else if (data.error) {
                     uploadResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -111,6 +191,7 @@
 
     document.getElementById('saveManualTextBtn').addEventListener('click', () => {
         const manualText = document.getElementById('manualText').value;
+        const title = document.getElementById('title').value;
 
         if (!manualText) {
             alert('Please enter some text.');
@@ -123,6 +204,7 @@
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ text: manualText }),
+            body: JSON.stringify({ text: manualText, title: title }),
         })
             .then(response => {
                 if (!response.ok) {
@@ -133,9 +215,8 @@
             .then(data => {
                 const manualTextResultDiv = document.getElementById('manualTextResult');
                 if (data.success) {
-                    manualTextResultDiv.innerHTML = `<p class="text-success">${data.success}</p><p>Redirecting...</p>`;
+                    addDocumentToList(title, "Saved successfully.");
                     setTimeout(1000);
-                    redirectToDatasetWorkflow();
                 } else if (data.error) {
                     manualTextResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
@@ -145,6 +226,7 @@
                 document.getElementById('manualTextResult').innerHTML = `<p class="text-danger">An error occurred: ${error.message}</p>`;
             });
     });
+
 
     function escapeHTML(str) {
         return str
