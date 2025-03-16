@@ -19,7 +19,6 @@ import pandas as pd
 import io
 import csv
 from huggingface_hub import HfApi
-from datasets import Dataset
 
 client = OpenAI(
     api_key=config('OPENAI_API_KEY', default=""),
@@ -236,9 +235,8 @@ def upload_parquet_to_huggingface(request):
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
     
-    repo_name = config('HF_ACCOUNT_NAME', default="") if not request.GET.get("repo_name", "").strip().replace(" ", "_") else request.GET.get("repo_name", "").strip().replace(" ", "_")
-    print(repo_name)
-    file_name = request.GET.get("file_name", "").strip().replace(" ", "_")    
+    file_name = request.GET.get("file_name", "").strip().replace(" ", "_")
+    repo_name = request.GET.get("repo_name", "").strip().replace(" ", "_")
 
     if not file_name:
         return JsonResponse({"error": "No file name provided"}, status=400)
@@ -249,37 +247,50 @@ def upload_parquet_to_huggingface(request):
     try:
         json_data = json.loads(generated_json_text)
 
-        # Ensure the JSON data is a list of dictionaries
         if not isinstance(json_data, list) or not all(isinstance(item, dict) for item in json_data):
             return JsonResponse({"error": "Invalid JSON format: Expected a list of dictionaries"}, status=400)
 
-        # Convert JSON list to DataFrame dynamically
         df = pd.DataFrame(json_data)
 
-        # Convert DataFrame to Parquet format
         buffer = io.BytesIO()
         df.to_parquet(buffer, index=False)
         buffer.seek(0)
 
-        #api = HfApi()
-        repo_id = f"{repo_name}/{file_name}"  
+        file_path = f"{file_name}.parquet"
+        api = HfApi(token=DEFAULT_HF_API_KEY)
+        repo_id = f"{repo_name}"  
 
-        try:
-            dataset = Dataset.from_pandas(df)
-            dataset.push_to_hub(repo_id, token=DEFAULT_HF_API_KEY) 
-        except Exception as e:
-            print(e)
-            return JsonResponse({"error": "failed to connect to the HuggingFace repository"}, status=500)
+        api.whoami(token=DEFAULT_HF_API_KEY)
 
-        return JsonResponse({"success": f"Uploaded {file_name} to HuggingFace as {repo_id}"}, status=200)
+        api.repo_info(repo_id, repo_type="dataset", token=DEFAULT_HF_API_KEY)
+
+        api.upload_file(
+            path_or_fileobj=buffer,
+            path_in_repo=file_path,
+            repo_id=repo_id,
+            repo_type="dataset",
+            token=DEFAULT_HF_API_KEY
+        )
+
+        return JsonResponse({"success": f"Uploaded successfully as {file_path}, under database {repo_id}"}, status=200)
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
     
-api = HfApi()
-user_info = api.whoami(token=DEFAULT_HF_API_KEY)  # Get user info
-user_id = user_info["name"]  # Get your HF username
-organizations = user_info["orgs"][0]["name"]  # Get list of organizations
 
-print("User ID:", user_id)
-print("Organizations:", organizations)
+def get_huggingface_datasets(request):
+    """Fetch the user's Hugging Face datasets and return as JSON."""
+    try:
+        api = HfApi(token=DEFAULT_HF_API_KEY)
+        user_info = api.whoami()
+        organizations = user_info.get("orgs", [])
+
+        org_name = organizations[0]["name"] if organizations else user_info["name"]
+
+        datasets = list(api.list_datasets(author=org_name))
+        dataset_list = [dataset.id for dataset in datasets]
+
+        return JsonResponse({"datasets": dataset_list})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)

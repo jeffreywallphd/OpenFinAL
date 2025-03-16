@@ -6,7 +6,9 @@
 {% block content %}
 <h1>Document Details</h1>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"></script>
 
 {% if documents %}
 <h3>Selected Documents:</h3>
@@ -69,8 +71,10 @@
                         <input type="text" class="form-control" id="fileName" placeholder="Enter file name" required>
                     </div>
                     <div class="mb-3">
-                        <label for="repoName" class="form-label">Repository Name</label>
-                        <input type="text" class="form-control" id="repoName" placeholder="Enter repository name; Leave blank for default repository">
+                        <label for="repoName" class="form-label">Select Dataset</label>
+                        <select class="form-select" id="repoName">
+                            <option value="">Loading datasets...</option>
+                        </select>
                     </div>
                 </form>
                 <div id="modalAlertContainer"></div> <!-- For displaying alerts -->
@@ -83,14 +87,6 @@
     </div>
 </div>
 
-<script>
-    function toggleTestMode() {
-        let selectedMode = document.getElementById("test_mode").value;
-        let url = new URL(window.location.href);
-        url.searchParams.set("test_mode", selectedMode);
-        window.location.href = url.toString();
-    }
-</script>
 
 <div class="row">
     <div class="col-6">
@@ -144,10 +140,34 @@
 
 <script>
     document.getElementById("uploadParquetBtn").addEventListener("click", function () {
-        // Show the Bootstrap modal
         let uploadModal = new bootstrap.Modal(document.getElementById("uploadModal"));
         uploadModal.show();
+
+
+        fetch("{% url 'get_huggingface_datasets' %}")
+            .then(response => response.json())
+            .then(data => {
+                let repoSelect = document.getElementById("repoName");
+                repoSelect.innerHTML = ""; 
+
+                if (data.datasets && data.datasets.length > 0) {
+                    repoSelect.innerHTML = '<option value="">Select a dataset</option>';
+                    data.datasets.forEach(dataset => {
+                        let option = document.createElement("option");
+                        option.value = dataset;
+                        option.textContent = dataset;
+                        repoSelect.appendChild(option);
+                    });
+                } else {
+                    repoSelect.innerHTML = '<option value="">No datasets found</option>';
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching datasets:", error);
+                document.getElementById("repoName").innerHTML = '<option value="">Error loading datasets</option>';
+            });
     });
+
 
     document.getElementById("confirmUploadBtn").addEventListener("click", function () {
         let fileName = document.getElementById("fileName").value.trim();
@@ -174,38 +194,38 @@
                 "X-Requested-With": "XMLHttpRequest"
             }
         })
-        .then(response => response.json())
-        .then(data => {
-            let alertContainer = document.getElementById("alertContainer");
-            let alertDiv = document.createElement("div");
-            alertDiv.className = "alert alert-dismissible fade show mt-3";
-            alertDiv.role = "alert";
+            .then(response => response.json())
+            .then(data => {
+                let alertContainer = document.getElementById("alertContainer");
+                let alertDiv = document.createElement("div");
+                alertDiv.className = "alert alert-dismissible fade show mt-3";
+                alertDiv.role = "alert";
 
-            if (data.success) {
-                alertDiv.classList.add("alert-success");
-                alertDiv.innerHTML = `✅ <strong>Success:</strong> ${data.success}`;
-            } else if (data.error) {
-                alertDiv.classList.add("alert-danger");
-                alertDiv.innerHTML = `❌ <strong>Error:</strong> ${data.error}`;
-            }
+                if (data.success) {
+                    alertDiv.classList.add("alert-success");
+                    alertDiv.innerHTML = `✅ <strong>Success:</strong> ${data.success}`;
+                } else if (data.error) {
+                    alertDiv.classList.add("alert-danger");
+                    alertDiv.innerHTML = `❌ <strong>Error:</strong> ${data.error}`;
+                }
 
-            alertDiv.innerHTML += `
+                alertDiv.innerHTML += `
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             `;
 
-            alertContainer.innerHTML = "";
-            alertContainer.appendChild(alertDiv);
-        })
-        .catch(error => {
-            let alertContainer = document.getElementById("alertContainer");
-            alertContainer.innerHTML = `
+                alertContainer.innerHTML = "";
+                alertContainer.appendChild(alertDiv);
+            })
+            .catch(error => {
+                let alertContainer = document.getElementById("alertContainer");
+                alertContainer.innerHTML = `
                 <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
                     ❌ <strong>Error:</strong> An error occurred while uploading.
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
             `;
-            console.error("Upload error:", error);
-        });
+                console.error("Upload error:", error);
+            });
     });
 </script>
 
