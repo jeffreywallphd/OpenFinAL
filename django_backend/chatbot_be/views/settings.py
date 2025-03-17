@@ -6,10 +6,10 @@ from django.conf import settings
 def settings_view(request):
     env_file = os.path.join(settings.BASE_DIR, 'django_backend', '.env')
     existing_values = {}
-    message = None  # Initialize message to avoid UnboundLocalError
-    message_type = None  # Initialize message type
+    message = None  
+    message_type = None  
 
-    # Load existing values if the file exists
+    # Load existing values from .env
     if os.path.exists(env_file):
         with open(env_file, 'r') as f:
             for line in f:
@@ -41,8 +41,10 @@ def settings_view(request):
             message = f"Failed to update .env file: {e}"
             message_type = "error"
 
+    # Ensure form fields get correct values
+    print(existing_values)
     return render(request, 'settings.html', {
-        "existing_values": existing_values,
+        "existing_values": existing_values,  # Pass loaded values to template
         "message": message,
         "message_type": message_type
     })

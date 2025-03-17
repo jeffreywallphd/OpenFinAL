@@ -7,28 +7,48 @@
 <div class="container mt-4">
     <h1>Dataset Workflow</h1>
     <div>
-        <p>Add new documents (ex. PDFs, websites, plain text, etc.) to include in your dataset. Once all of the desired documents are uploaded, select those you wish to include in the dataset and move to the next step.</p>
+        <p>Add new documents (ex. PDFs, websites, plain text, etc.) to include in your dataset. Once all of the desired
+            documents are uploaded, select those you wish to include in the dataset and move to the next step.</p>
     </div>
- 
+
     {% if messages %}
-    <div class="alert alert-info">
+    <div class="alert alert-warning alert-dismissible fade show">
         <ul class="mb-0">
             {% for message in messages %}
             <li>{{ message }}</li>
             {% endfor %}
         </ul>
     </div>
-    {% endif %}   
+    {% endif %}
 
     <h2>Processed Documents</h2>
-    <a href="{% url 'document-processor' %}" class="button success">+ New Document</a>
-    <form method="POST" action="{% url 'document_detail' %}">
+    <div class="row">
+        <div class="col-2">
+            <a href="{% url 'document-processor' %}" class="button success">+ New Document</a>
+        </div>
+        <div class="col-2">
+            <form method="POST" action="{% url 'delete_document_mul' %}" id="deleteForm">
+                {% csrf_token %}
+                <a type="button" class="btn btn-danger" onclick="submitDeleteForm()">Delete Selected</a>
+            </form>
+        </div>
+    </div>
+    <form id="documentSelectionForm">
         {% csrf_token %}
-
         {% include "document_list.html" %}
-        
-        <button type="submit" class="btn btn-success mt-3" style="margin-bottom: 1vh;">Proceed with Selected</button>
     </form>
+
+    <div class="row">
+        <div class="col-2">
+            <form method="POST" action="{% url 'document_detail' %}" id="process_selected">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success mt-3" style="margin-bottom: 1vh;"
+                    onclick="ProcessSelected()">
+                    Proceed with Selected
+                </button>
+            </form>
+        </div>
+    </div>
 
     <nav aria-label="Page navigation">
         <ul class="pagination">
@@ -77,4 +97,44 @@
     }
 </script>
 
+<script>
+    function submitDeleteForm() {
+        let selectionForm = document.getElementById('documentSelectionForm');
+        let deleteForm = document.getElementById('deleteForm');
+
+        // Copy selected checkboxes into delete form
+        let checkboxes = selectionForm.querySelectorAll('input[name="selected_documents"]:checked');
+        checkboxes.forEach(checkbox => {
+            let hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_documents';
+            hiddenInput.value = checkbox.value;
+            deleteForm.appendChild(hiddenInput);
+        });
+
+        // Submit delete form
+        deleteForm.submit();
+    }
+</script>
+
+<script>
+    function ProcessSelected() {
+        let selectionForm = document.getElementById('documentSelectionForm');
+        let process_selected = document.getElementById('process_selected');
+
+        // Copy selected checkboxes into delete form
+        let checkboxes = selectionForm.querySelectorAll('input[name="selected_documents"]:checked');
+        
+        checkboxes.forEach(checkbox => {
+            let hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_documents';
+            hiddenInput.value = checkbox.value;
+            process_selected.appendChild(hiddenInput);
+        });
+
+        // Submit delete form
+        process_selected.submit();
+    }
+</script>
 {% endblock %}

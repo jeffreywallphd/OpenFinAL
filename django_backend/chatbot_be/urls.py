@@ -7,10 +7,12 @@ from .views.model_training import train_model_view, stream_training_output
 from .views.model_training_workflow import stream_training_workflow_output, train_model_workflow, model_stats_workflow, stop_training_workflow, get_model_stats
 from .views.scrape import ScrapeDataView, UploadPDFView, scrape_view, SaveManualTextView
 from .views import SessionCreateView, ConversationListView, ConversationCreateView, SessionListView, ChatbotGenerateResponseView
-from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json, delete_document
+from .views.generate_q_and_a import generate_q_and_a, document_detail, download_json, upload_parquet_to_huggingface, download_csv, get_huggingface_datasets
 from .views.dataset_workflow import dataset_workflow_view, dataset_workflow_document_processor
 from django.conf import settings
 from django.conf.urls.static import static
+
+from .management.commands.delete_document import delete_document, delete_document_mul
 
 urlpatterns = [
     path('chatbot/', SessionCreateView.as_view(), name='create-session'),
@@ -38,8 +40,14 @@ urlpatterns = [
 
     path('generate_q_and_a/', generate_q_and_a, name='generate_q_and_a'),
     path("document_detail/", document_detail, name="document_detail"),
+
+    path('document/download_csv/', download_csv, name='download_csv'),
     path('document/download_json/', download_json, name='download_json'),
+    path('document/upload_parquet_to_huggingface/', upload_parquet_to_huggingface, name='upload_parquet_to_huggingface'),
+    path("get_huggingface_datasets/", get_huggingface_datasets, name="get_huggingface_datasets"),
+
     path('delete_document/<int:document_id>/<path:redirect_url>', delete_document, name='delete_document'),
+    path('delete_document_mul/', delete_document_mul, name='delete_document_mul'),
 ]
 
 

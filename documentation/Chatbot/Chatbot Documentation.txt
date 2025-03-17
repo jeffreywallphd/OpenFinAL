@@ -1,0 +1,3 @@
+FILE: Chatbot.jsx
+This file will hold the inner workings of the main chatbot window
+colors can be found in the index.html at the bottom.
