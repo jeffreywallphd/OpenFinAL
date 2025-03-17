@@ -5,8 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/documentation/Chatbot/Chatbot Documentation.txt" beforeDir="false" afterPath="$PROJECT_DIR$/documentation/Chatbot/Chatbot Documentation.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -92,6 +91,7 @@
       <workItem from="1741963159099" duration="49000" />
       <workItem from="1741963288806" duration="747000" />
       <workItem from="1741965455455" duration="1355000" />
+      <workItem from="1742220435681" duration="216000" />
     </task>
     <servers />
   </component>
