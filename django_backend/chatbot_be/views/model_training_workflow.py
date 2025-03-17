@@ -391,17 +391,27 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
         raise RuntimeError(f"Error in model_stats: {e}")
     
 def get_model_stats(request):
-    # Extract dataset name from query parameters
+    # Extract dataset name and model name from query parameters
     dataset_name = request.GET.get('dataset_name')
-    if not dataset_name:
-        return JsonResponse({"error": "Dataset name is required."}, status=400)
+    model_name = request.GET.get('model_name')
 
-    # Fetch the last four models trained on the same dataset
-    stats = ModelStats.objects.filter(dataset=dataset_name).order_by('-created_at')[:4]
+    # Validate input: At least one parameter must be provided
+    if not dataset_name and not model_name:
+        return JsonResponse({"error": "Either dataset name or model name is required."}, status=400)
 
-    # If no stats found, return empty response
+    # Filter based on provided parameters
+    filter_conditions = {}
+    if dataset_name:
+        filter_conditions["dataset"] = dataset_name
+    if model_name:
+        filter_conditions["model_name"] = model_name
+
+    # Fetch the last four models that match the filter conditions
+    stats = ModelStats.objects.filter(**filter_conditions).order_by('-created_at')[:4]
+
+    # If no stats found, return an appropriate response
     if not stats.exists():
-        return JsonResponse({"message": "No models found for the specified dataset."}, status=404)
+        return JsonResponse({"message": "No models found matching the criteria."}, status=404)
 
     # Prepare response data
     data = [{

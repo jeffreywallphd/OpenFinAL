@@ -6,7 +6,18 @@
 
 {% block content %}
 <script>
-    function handleEnter(event) {
+    document.addEventListener('DOMContentLoaded', function () {
+        displayMessages();
+        prefillModelName();
+    });
+
+    function prefillModelName() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelName = urlParams.get('model_name');
+        if (modelName) {
+            document.getElementById('model_name').value = modelName;
+        }
+    }    function handleEnter(event) {
         if (event.key === 'Enter') {
             sendMessage();
         }

@@ -6,6 +6,25 @@
 {% block content %}
 
 <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        prefillModelName();
+    });
+
+    function prefillModelName() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const modelName = urlParams.get('model_name');  // Get model_name from URL
+        const modelsInput = document.getElementById('eval_model_name');  // Get input field reference
+
+        if (modelName && modelsInput) {  // Ensure the input field exists before modifying
+            let existingModels = modelsInput.value.trim();
+            
+            // Prevent adding empty values
+            if (modelName.trim()) {
+                modelsInput.value = existingModels ? `${existingModels}, ${modelName}` : modelName;
+            }
+        }
+    }
+
     async function evaluateModel() {
         const modelsInput = document.getElementById('eval_model_name').value.trim();
         const datasetUrl = document.getElementById('dataset_url').value.trim();

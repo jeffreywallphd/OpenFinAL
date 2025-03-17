@@ -91,10 +91,11 @@
     <button type="button" onclick="startTraining(event)">Start Training & Evaluate</button>
     <button type="button" onclick="fetchLastFourModelStats()">Show Last 4 Model Statistics</button>
     <button type="button" id="stopTrainingBtn" onclick="stopTraining(event)" disabled>Stop Training</button>
+    <button type="button" onclick="redirectToChatbot()">To Chatbot</button>
+    <button type="button" onclick="redirectToModelStat()">To Model Statistics</button>
+
 
 </form>
-
-<h2>Last 4 Model Statistics</h2>
 <div id="last-four-model-stats" class="results-box"></div>
 
 <!-- <h2>Model Evaluation Results</h2>
@@ -207,7 +208,7 @@
             eventSource.close();
         }
 
-        eventSource = new EventSource("/api/stream_training_workflow/");
+        eventSource = new EventSource("/api/stream_training/");
 
         return new Promise((resolve) => {
             eventSource.onmessage = function (event) {
@@ -250,30 +251,37 @@
     async function fetchLastFourModelStats() {
         const resultContainer = document.getElementById("last-four-model-stats");
         const datasetName = document.getElementById("dataset_name").value.trim();
+        const modelName = document.getElementById("model_name").value.trim();
 
-        if (!datasetName) {
-            alert("Please enter a dataset name to fetch statistics!");
+        if (!datasetName && !modelName) {
+            alert("Please enter either a dataset name, a model name, or both to fetch statistics!");
             return;
         }
 
         resultContainer.innerHTML = "<p>Fetching last 4 model statistics... Please wait...</p>";
 
+        // Construct query parameters dynamically
+        const params = new URLSearchParams();
+        if (datasetName) params.append("dataset_name", datasetName);
+        if (modelName) params.append("model_name", modelName);
+
         try {
-            const response = await fetch(`/api/model_stats/?dataset_name=${datasetName}`);
+            const response = await fetch(`/api/model_stats/?${params.toString()}`);
             if (response.ok) {
                 const results = await response.json();
 
                 if (results.length === 0) {
-                    resultContainer.innerHTML = `<p>No models found for this dataset.</p>`;
+                    resultContainer.innerHTML = `<p>No models found matching the criteria.</p>`;
                     return;
                 }
 
                 let tableHtml = `
                     <h3>Last 4 Model Statistics</h3>
-                    <table id="last-four-model-stats-table">
+                    <table id="model-eval-table">
                         <thead>
                             <tr>
                                 <th>Model Name</th>
+                                <th>Dataset Name</th>
                                 <th>ROUGE1</th>
                                 <th>ROUGE2</th>
                                 <th>ROUGE-L</th>
@@ -291,6 +299,7 @@
                     tableHtml += `
                         <tr>
                             <td>${stat.model_name}</td>
+                            <td>${stat.dataset}</td>
                             <td>${stat.ROUGE1.toFixed(4)}</td>
                             <td>${stat.ROUGE2.toFixed(4)}</td>
                             <td>${stat.ROUGE_L.toFixed(4)}</td>
@@ -306,7 +315,7 @@
                 tableHtml += "</tbody></table>";
                 resultContainer.innerHTML = tableHtml;
             } else if (response.status === 404) {
-                resultContainer.innerHTML = `<p>No models found for this dataset.</p>`;
+                resultContainer.innerHTML = `<p>No models found matching the criteria.</p>`;
             } else {
                 const errorMessage = await response.text();
                 resultContainer.innerHTML = `<p style="color: red;">Error: ${errorMessage}</p>`;
@@ -315,7 +324,29 @@
             resultContainer.innerHTML = `<p style="color: red;">Error: ${error.message}</p>`;
         }
     }
+
+    function redirectToChatbot() {
+    let modelName = document.getElementById("model_name").value.trim();
+    let url = "/api/chatbot_view/";
+
+    if (modelName) {
+        url += `?model_name=${encodeURIComponent(modelName)}`;
+    }
+
+    window.location.href = url;
+    }
     
+    function redirectToModelStat() {
+    let modelName = document.getElementById("model_name").value.trim();
+    let url = "/api/model_statistics/";
+
+    if (modelName) {
+        url += `?model_name=${encodeURIComponent(modelName)}`;
+    }
+
+    window.location.href = url;
+    }
+
 </script>
 
 {% endblock %}
