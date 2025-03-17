@@ -252,7 +252,7 @@ code {
   text-align: left;
   width: 40px;
 } */
-*/
+
 /* .toggle-sidebar:hover {
   background-color: var(--tertiary-color);
 }
@@ -1929,7 +1929,7 @@ nav ul li a:hover {
 }
 
 .chat-incoming p {
-  background-color: #eaeaea;
+  background-color: #00ffff; /*This is the Chatbot's message*/
 }
 
 .chat-input {
