@@ -227,7 +227,9 @@ button:hover, .button:hover {
 }
 
 #sidebar.active {
-    transform: translateX(250px); /* Slide in */
+    width: 48px;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 #sidebar .closebtn {
