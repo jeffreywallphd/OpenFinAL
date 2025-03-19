@@ -34,6 +34,10 @@ body {
 }
 
 footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: var(--background-color);
   color: var(--text-color-medium);
   padding: 15px;
@@ -840,7 +844,7 @@ nav ul li a:hover {
   /* background-color: #fff; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   margin-bottom: 20px;
-  border-radius: 10px;
+  border-radius: 10px; 
 }
 
 .nav-left h1 {
