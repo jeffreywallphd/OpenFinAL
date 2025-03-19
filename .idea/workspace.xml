@@ -5,10 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/OpenAiModel.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Tokenizer/IKeyedTokenizer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Tokenizer/IKeylessTokenizer.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Tokenizer/ITokenizer.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IKeyedModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/IKeyedModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IKeylessModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/IKeylessModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/IModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/prompt.txt" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/prompt.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/ChatbotToggle.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/index.css" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/index.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,6 +65,7 @@
 }</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\Gateway\AI" />
       <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\View\Chatbot" />
     </key>
   </component>
@@ -94,7 +102,8 @@
       <workItem from="1741963159099" duration="49000" />
       <workItem from="1741963288806" duration="747000" />
       <workItem from="1741965455455" duration="1355000" />
-      <workItem from="1742220435681" duration="1936000" />
+      <workItem from="1742220435681" duration="3103000" />
+      <workItem from="1742392980785" duration="2971000" />
     </task>
     <servers />
   </component>

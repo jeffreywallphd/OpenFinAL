@@ -1,6 +1,6 @@
 .chatBotToggle {
     position: relative;
-    height: 100vh; /* Make sure it's the full height of the viewport */
+    height: 0;
 }
 
 /* Circle styles for the chatbot toggle button */
@@ -91,10 +91,15 @@
 }
 
 .chat-incoming {
+    align-self: flex-start;
     background-color: #ffffff;
     padding: 5px;
     border-radius: 5px;
     margin: 5px 0;
+}
+.chat-outgoing{
+    align-self: flex-end;
+    text-align: right;
 }
 
 .chat-input {
