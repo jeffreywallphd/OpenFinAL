@@ -11,8 +11,20 @@ import pandas as pd
 import requests
 from io import StringIO
 import random
+from sentence_transformers import CrossEncoder
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def cal_sts_score(input1, input2):
+    """Compute STS score using CrossEncoder."""
+    model = CrossEncoder("cross-encoder/stsb-distilroberta-base")
+    if not isinstance(input1, str) or not isinstance(input2, str):
+        return "nan"
+    
+    sentence_combinations = [[input1, input2]]
+    sts_score = round(model.predict(sentence_combinations)[0], 4)  # Extract score
+    return sts_score
+
 
 def model_stats(prompt, model_name, max_length=200, min_length=100, top_k=50, top_p=0.95, max_new_tokens=300, no_repeat_ngrams=0, references=[]):
     try:
@@ -62,10 +74,12 @@ def model_stats(prompt, model_name, max_length=200, min_length=100, top_k=50, to
 
         rouge_scores = rouge_metric.compute(predictions=predictions, references=references)
         bertscore_scores = bertscore_metric.compute(predictions=predictions, references=references,lang="en",device=device) 
-
+        sts_score = cal_sts_score(response, references[0])
+        
         print(f"ROUGE scores: {rouge_scores}")
         print(f"BERTScore scores: {bertscore_scores}")
-        
+        print(f"STS Score: {sts_score}")
+
         return {
             "ROUGE1" : rouge_scores.get("rouge1",0),
             "ROUGE2" : rouge_scores.get("rouge2",0),
@@ -74,6 +88,7 @@ def model_stats(prompt, model_name, max_length=200, min_length=100, top_k=50, to
             "BERTScoreF1" : bertscore_scores["f1"][0],
             "BERTScorePrecision" : bertscore_scores["precision"][0],
             "BERTScoreRecall" : bertscore_scores["recall"][0],
+            "STSScore": sts_score
         }
     
     except Exception as e:
@@ -156,6 +171,7 @@ class ModelStatisticsView(APIView):
                 "BERTScoreF1": 0,
                 "BERTScorePrecision": 0,
                 "BERTScoreRecall": 0,
+                "STSScore": 0,
             }
 
             # Constraints validation

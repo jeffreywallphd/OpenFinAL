@@ -10,6 +10,7 @@ class ModelStats(models.Model):
     BERTScoreF1 = models.FloatField()
     BERTScorePrecision = models.FloatField()
     BERTScoreRecall = models.FloatField()
+    STSScore = models.FloatField(default=0.0)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):

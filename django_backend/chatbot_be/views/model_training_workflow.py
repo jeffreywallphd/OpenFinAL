@@ -1,5 +1,7 @@
 from django.shortcuts import render
 from django.http import JsonResponse
+import numpy as np
+from .model_statistics import cal_sts_score
 from ..models.model_stats import ModelStats
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -231,6 +233,7 @@ def train_model_workflow(request):
                     "BERTScoreF1": 0,
                     "BERTScorePrecision": 0,
                     "BERTScoreRecall": 0,
+                    "STSScore": 0,
                 }
 
                 # Randomly select `num_questions` from eval_dataset
@@ -260,7 +263,7 @@ def train_model_workflow(request):
                         return Response({"error": f"Error processing question '{question}': {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
                 # Compute average scores
-                avg_scores = {key: total / num_questions for key, total in total_scores.items()}
+                avg_scores = {key: float(total / num_questions) for key, total in total_scores.items()}
                 results[model_name] = avg_scores
                 print(f"Average scores: {avg_scores}")
 
@@ -269,13 +272,14 @@ def train_model_workflow(request):
                     ModelStats.objects.create(
                         model_name=model_name,
                         dataset=dataset_name,  # The dataset used for evaluation
-                        ROUGE1=scores["ROUGE1"],
-                        ROUGE2=scores["ROUGE2"],
-                        ROUGE_L=scores["ROUGEL"],
-                        ROUGE_LSum=scores["ROUGELSUM"],
-                        BERTScoreF1=scores["BERTScoreF1"],
-                        BERTScorePrecision=scores["BERTScorePrecision"],
-                        BERTScoreRecall=scores["BERTScoreRecall"]
+                        ROUGE1=float(scores["ROUGE1"]),
+                        ROUGE2=float(scores["ROUGE2"]),
+                        ROUGE_L=float(scores["ROUGEL"]),
+                        ROUGE_LSum=float(scores["ROUGELSUM"]),
+                        BERTScoreF1=float(scores["BERTScoreF1"]),
+                        BERTScorePrecision=float(scores["BERTScorePrecision"]),
+                        BERTScoreRecall=float(scores["BERTScoreRecall"]),
+                        STSScore=float(scores["STSScore"]),
                     )
 
             # Cleanup
@@ -371,6 +375,7 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
 
         rouge_scores = rouge_metric.compute(predictions=predictions, references=references)
         bertscore_scores = bertscore_metric.compute(predictions=predictions, references=references,lang="en",device=device) 
+        sts_score = cal_sts_score(response, references[0])
 
         print(f"ROUGE scores: {rouge_scores}")
         print(f"BERTScore scores: {bertscore_scores}")
@@ -383,6 +388,7 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
             "BERTScoreF1" : bertscore_scores["f1"][0],
             "BERTScorePrecision" : bertscore_scores["precision"][0],
             "BERTScoreRecall" : bertscore_scores["recall"][0],
+            "STSScore": sts_score
         }
     
     except Exception as e:
@@ -391,39 +397,40 @@ def model_stats_workflow(prompt, model_name, top_k=50, top_p=0.95, max_new_token
         raise RuntimeError(f"Error in model_stats: {e}")
     
 def get_model_stats(request):
-    # Extract dataset name and model name from query parameters
     dataset_name = request.GET.get('dataset_name')
     model_name = request.GET.get('model_name')
 
-    # Validate input: At least one parameter must be provided
     if not dataset_name and not model_name:
         return JsonResponse({"error": "Either dataset name or model name is required."}, status=400)
 
-    # Filter based on provided parameters
     filter_conditions = {}
     if dataset_name:
         filter_conditions["dataset"] = dataset_name
     if model_name:
         filter_conditions["model_name"] = model_name
 
-    # Fetch the last four models that match the filter conditions
     stats = ModelStats.objects.filter(**filter_conditions).order_by('-created_at')[:4]
 
-    # If no stats found, return an appropriate response
     if not stats.exists():
         return JsonResponse({"message": "No models found matching the criteria."}, status=404)
 
-    # Prepare response data
+    def force_float(value):
+        """Convert all numerical types (np.float32, np.float64, int) to Python float."""
+        if isinstance(value, (np.float32, np.float64, int)):
+            return float(value)
+        return value
+
     data = [{
         "model_name": stat.model_name,
         "dataset": stat.dataset,
-        "ROUGE1": stat.ROUGE1,
-        "ROUGE2": stat.ROUGE2,
-        "ROUGE_L": stat.ROUGE_L,
-        "ROUGE_LSum": stat.ROUGE_LSum,
-        "BERTScoreF1": stat.BERTScoreF1,
-        "BERTScorePrecision": stat.BERTScorePrecision,
-        "BERTScoreRecall": stat.BERTScoreRecall,
+        "ROUGE1": force_float(stat.ROUGE1),
+        "ROUGE2": force_float(stat.ROUGE2),
+        "ROUGE_L": force_float(stat.ROUGE_L),
+        "ROUGE_LSum": force_float(stat.ROUGE_LSum),
+        "BERTScoreF1": force_float(stat.BERTScoreF1),
+        "BERTScorePrecision": force_float(stat.BERTScorePrecision),
+        "BERTScoreRecall": force_float(stat.BERTScoreRecall),
+        "STSScore": force_float(stat.STSScore),  # Ensure STSScore is converted
         "created_at": stat.created_at.strftime('%Y-%m-%d %H:%M:%S')
     } for stat in stats]
 
