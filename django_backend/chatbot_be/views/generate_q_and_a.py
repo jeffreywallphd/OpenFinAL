@@ -9,15 +9,22 @@ from django.http import JsonResponse, HttpResponse
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 import openai
+from datetime import datetime
 from openai import OpenAI, OpenAIError
 import tiktoken
 from decouple import config
 from django.db.models import F, Func, Value
 from django.core.paginator import Paginator
+import pandas as pd
+import io
+import csv
+from huggingface_hub import HfApi
+from datasets import Dataset
 
 client = OpenAI(
-    api_key=config('OPENAI_API_KEY'),
+    api_key=config('OPENAI_API_KEY', default=""),
 )
+DEFAULT_HF_API_KEY = config("HF_API_KEY", default="")
 
 # Tokenizer function (GPT-4 uses "cl100k_base" tokenizer)
 def count_tokens(text):
@@ -48,32 +55,57 @@ def split_text(text, max_tokens=1000):
     return chunks
 
 
-def extract_qa(text, model="gpt-4", questions_num=5):
+
+
+def extract_qa(text, chunk_limit, model="gpt-4", questions_num=1, instruction_prompt=""):
     text_chunks = split_text(text, max_tokens=1000)  # Adjust chunk size
     results = []
 
     total_chunks = len(text_chunks)
 
-    for i, chunk in enumerate(text_chunks[:2]):
+    for i, chunk in enumerate(text_chunks[:chunk_limit]):
         print(f'Total {total_chunks}, finished {i + 1}')
+
+        instruction_prompt_preamble = ""
+        instruction_prompt_details = ""
+
+        if instruction_prompt:
+            instruction_prompt_preamble = "Include an instruction prompt for each question-answer pair. The instruction prompt should be different for each question, but have the same meaning as the base instruction prompt."
+            instruction_prompt_details = f"""
+            Base Instruction Prompt:
+            {instruction_prompt}
+            """
+
+            response_format = f"""
+            [
+                {{"input": "What is ...?", "output": "The answer is ...", "instruction": "You are a ..."}},
+                {{"input": "How does ... work?", "output": "It works by ...", "instruction": "Answer questions as though you are a..."}}
+            ]
+            """
+        else:
+            response_format = f"""        
+            [
+                {{"input": "What is ...?", "output": "The answer is ..."}},
+                {{"input": "How does ... work?", "output": "It works by ..."}}
+            ]
+            """
+
         prompt = f"""
-        I would like to generate some questions and answers from the following text and return them in JSON format. 
-        Generate {questions_num} questions based on this text segment.
-        
-        Text Segment ({i+1}/{len(text_chunks)}):
+        Generate {questions_num} question-answer pairs based on the following text segment. 
+        Return the result in valid JSON format as a list of objects. {instruction_prompt_preamble}
+
+        Text Segment:
         {chunk}
 
+        {instruction_prompt_details}
+        
         Response Format:
-        {{
-            "part": {i+1},
-            "questions": [
-                {{"question": "", "answer": ""}},
-                {{"question": "", "answer": ""}}
-            ]
-        }}
+        {response_format}
 
         Return ONLY valid JSON output.
         """
+
+        #print(prompt)
 
         response = client.chat.completions.create(
             model=model,
@@ -89,7 +121,11 @@ def extract_qa(text, model="gpt-4", questions_num=5):
             )
 
             json_data = json.loads(response.choices[0].message.content.strip())
-            results.append(json_data)
+
+            if isinstance(json_data, list):  
+                results.extend(json_data)
+            else:
+                results.append({"error": "Unexpected JSON format"})
 
         except json.JSONDecodeError:
             results.append({"part": i + 1, "error": "Invalid JSON response"})
@@ -114,12 +150,19 @@ def generate_q_and_a(request):
 
 def document_detail(request):
     selected_document_ids = request.POST.getlist('selected_documents')
-    print(selected_document_ids)
+    # print(selected_document_ids)
+
+    if not selected_document_ids:
+        request.session["redirect_message"] = "You must select at least one document to proceed."
+        redirect_url = reverse('dataset-workflow')
+        return redirect(redirect_url)
 
     documents = ScrapedData.objects.filter(id__in=selected_document_ids)
-    print(documents)
+    # print(documents)
 
     combined_text = "\n\n".join([doc.content for doc in documents])
+    text_chunks = split_text(combined_text, max_tokens=1000)  # Adjust chunk size
+    total_chunks = len(text_chunks)
 
     generated_json_data = None
 
@@ -132,9 +175,11 @@ def document_detail(request):
         if form.is_valid():
             test_type = form.cleaned_data['test_type']
             num_questions = form.cleaned_data['num_questions']
+            num_paragraphs = form.cleaned_data['num_paragraphs']
+            instruction_prompt = form.cleaned_data["instruction_prompt"]
 
             if test_type == 'mockup':
-                json_file_path = 'media/JSON/Introduction to Text Segmentation.json'
+                json_file_path = 'media/JSON/New_Prompt_Simple_QA.json'
                 try:
                     with open(json_file_path, 'r', encoding='utf-8') as file:
                         generated_json_text = file.read()
@@ -146,7 +191,7 @@ def document_detail(request):
             
             else:
                 try:
-                    generated_json_text = extract_qa(text=combined_text, questions_num=num_questions)
+                    generated_json_text = extract_qa(text=combined_text, chunk_limit = num_paragraphs, questions_num=num_questions, instruction_prompt=instruction_prompt)
                     generated_json_data = json.loads(generated_json_text)
                     request.session['generated_json_combined'] = generated_json_text
 
@@ -161,7 +206,8 @@ def document_detail(request):
         'documents': documents,
         'form': form,
         'json_data': generated_json_data, 
-        'selected_document_ids': selected_document_ids
+        'selected_document_ids': selected_document_ids, 
+        'total_chunks': total_chunks,
     })
 
 
@@ -169,6 +215,9 @@ def download_json(request):
     """Serve the generated JSON data as a downloadable file."""
     session_key = f'generated_json_combined'
     generated_json_text = request.session.get(session_key, None)
+
+    # print(generated_json_text)
+    # print(type(generated_json_text))
 
     if generated_json_text is None:
         return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
@@ -179,19 +228,89 @@ def download_json(request):
     )
     response['Content-Disposition'] = f'attachment; filename="document.json"'
     return response
-    
 
 
-def delete_document(request, document_id, redirect_url):
-    print(request)
+def download_csv(request):
+    """Serve the generated JSON data as a downloadable CSV file."""
+    session_key = 'generated_json_combined'
+    generated_json_text = request.session.get(session_key, None)
 
-    document = get_object_or_404(ScrapedData, id=document_id)
-    if request.method == "POST":
-        document.delete()
-        messages.success(request, 'The document has been deleted successfully!')
-        return redirect(redirect_url)
+    if generated_json_text is None:
+        return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
+
+    try:
+        json_data = json.loads(generated_json_text)
+    except json.JSONDecodeError:
+        return JsonResponse({"error": "Invalid JSON data"}, status=400)
+
+    # Create a response object with CSV content
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="document.csv"'
+
+    # Assuming JSON data is a list of dictionaries
+    if isinstance(json_data, list) and json_data:
+        fieldnames = json_data[0].keys()  # Get column headers from the first item
+        writer = csv.DictWriter(response, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(json_data)
+        print(response)
     else:
-        # If the request is not POST, redirect
-        return redirect(redirect_url)
+        return JsonResponse({"error": "Invalid JSON structure for CSV conversion"}, status=400)
+
+    return response
+
+def upload_parquet_to_huggingface(request):
+    """Convert JSON string to Parquet and upload to Hugging Face Hub."""
+    session_key = 'generated_json_combined'
+    generated_json_text = request.session.get(session_key, None)
+
+    if generated_json_text is None:
+        return JsonResponse({"error": "No generated JSON available for this document"}, status=404)
+    
+    file_name = request.GET.get("file_name", "").strip().replace(" ", "_")
+    repo_name = request.GET.get("repo_name", "").strip().replace(" ", "_")
+
+    if not file_name:
+        return JsonResponse({"error": "No file name provided"}, status=400)
+    
+    if not repo_name:
+        return JsonResponse({"error": "No repository name provided"}, status=400)
+
+    try:
+        json_data = json.loads(generated_json_text)
+
+        if not isinstance(json_data, list) or not all(isinstance(item, dict) for item in json_data):
+            return JsonResponse({"error": "Invalid JSON format: Expected a list of dictionaries"}, status=400)
+
+        df = pd.DataFrame(json_data)
+
+        repo_id = f"{repo_name}/{file_name}"  
+
+        dataset = Dataset.from_pandas(df)
+        dataset.push_to_hub(repo_id)
+
+        return JsonResponse({"success": f"Uploaded successfully as {file_name}, under database {repo_id}"}, status=200)
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
     
 
+def get_huggingface_datasets(request):
+    """Fetch the user's Hugging Face datasets and return as JSON."""
+    try:
+        api = HfApi(token=DEFAULT_HF_API_KEY)
+        user_info = api.whoami()
+        organizations = user_info.get("orgs", [])
+
+        if organizations:
+            dataset_list = [org["name"] for org in organizations]
+        else:
+            dataset_list = [user_info["name"]]
+
+        #datasets = list(api.list_datasets(author=org_name))
+        #dataset_list = [dataset.id for dataset in datasets]
+
+        return JsonResponse({"datasets": dataset_list})
+
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
