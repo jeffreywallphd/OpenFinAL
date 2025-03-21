@@ -7,7 +7,6 @@ body {
     background-color: #333;
     color: white;
     padding: 15px;
-    text-align: center;
     font-size: 24px;
     font-weight: bold;
 }
@@ -31,6 +30,6 @@ body {
     background-color: #575757;
 }
 .content {
-    margin-left: 250px;
+    margin-left: 0px;
     padding: 20px;
 }

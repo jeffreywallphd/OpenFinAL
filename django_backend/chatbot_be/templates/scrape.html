@@ -1,148 +1,160 @@
+{% extends 'base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Scraper</title>
-    <link rel="stylesheet" href="{% static 'backend.css'%}">
-    <link rel="stylesheet" href="{% static 'backendScrape.css'%}">
-</head>
-<body>
-     <!-- Top Panel -->
-    <div class="top-panel">
-        OpenFinAL
+
+{% block title %} LMForge: Document Processor {% endblock %}
+
+{% block content %}
+
+
+
+<div class="container mt-5">
+    <h1>Document Processor</h1>
+
+    <div>
+        <p>You can add a new document in three ways: from a URL, from a PDF, or by writing/pasting text.</p>
     </div>
 
-    <!-- Side Panel -->
-    <div class="side-panel">
-        <a href="{% url 'home-view' %}">Home</a> <!-- Home option -->
-        <a href="{% url 'chatbot-view' %}">Chatbot</a>  <!-- Chatbot option -->=
-        <a href="{% url 'scrape-view' %}">Scrape Data</a> <!-- Scraping option -->
-        <a href="{% url 'train-view' %}">Model Training</a> <!-- Model Training option -->
-        <a href="#">Option 5 (Dummy)</a> <!-- Dummy option -->
+    <div class="mb-3">
+        <label for="title" class="form-label">Title:</label>
+        <input type="text" id="title" class="form-control" placeholder="Enter a title for the document">
     </div>
 
-    <!-- Main Content Area -->
-    <div class="content">
-        <h1>Data Scraper</h1>
-        <label for="url">URL:</label>
-        <input type="text" id="url" placeholder="Enter the URL to scrape" required>
-        
-        <label for="output_file">Output File Name:</label>
-        <input type="text" id="output_file" placeholder="Enter desired output file name" required>
-        
-        <button id="scrapeBtn">Scrape</button>
-        <div id="result"></div>
-        <label for="pdfUpload">Upload PDF:</label>
-        <input type="file" id="pdfUpload" accept="application/pdf" required>
-
-        <label for="output_format">Select Output Format:</label>
-        <select id="output_format">
-            <option value="html">HTML</option>
-            <option value="json">JSON</option>
+    <!-- Dropdown Menu for Selecting Input Method -->
+    <div class="mb-4">
+        <label for="inputMethod" class="form-label">Select Input Method:</label>
+        <select id="inputMethod" class="form-select">
+            <option value="none">-- Select an option --</option>
+            <option value="url">Scrape from URL</option>
+            <option value="pdf">Upload PDF</option>
+            <option value="text">Enter Text</option>
         </select>
-
-        <button id="uploadBtn">Upload and Convert</button>
-        <div id="uploadResult"></div>
-        <!-- Scraped Data Section - Hidden Initially -->
-        <div id="scrapedData">
-            <h2>Last Scraped Data</h2>
-            <div id="scrapedContent"></div>  <!-- Container for scraped content -->
-            {% if latest_scraped_data %}
-                <h3>Data from {{ latest_scraped_data.url }} ({{ latest_scraped_data.file_type }})</h3>
-
-                {% if latest_scraped_data.file_type == 'html' %}
-                    <div>{{ latest_scraped_data.content|safe }}</div> <!-- Render HTML content safely -->
-
-                {% elif latest_scraped_data.file_type == 'json' %}
-                    <pre>{{ latest_scraped_data.content }}</pre> <!-- Render JSON content -->
-
-                {% endif %}
-            {% else %}
-                <p>No data available.</p>
-            {% endif %}
-        </div>
     </div>
-    
-    <script>
-        document.getElementById('scrapeBtn').addEventListener('click', () => {
-            const url = document.getElementById('url').value;
-            const outputFile = document.getElementById('output_file').value;
 
-            if (!url || !outputFile) {
-                alert('Please provide both URL and output file name.');
-                return;
-            }
+    <!-- URL Input Section -->
+    <div id="urlSection" class="input-section" style="display: none;">
+        {% include "processor_url.html" %}
 
-            // Correct the fetch URL to match your Django endpoint
-            fetch(`/api/scrape/?url=${encodeURIComponent(url)}&output_file=${encodeURIComponent(outputFile)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! Status: ${response.status}`);
-                    }
-                    return response.json();  // Ensure the response is JSON
-                })
-                .then(data => {
-                    const resultDiv = document.getElementById('result');
-                    const scrapedDataDiv = document.getElementById('scrapedData');
-                    const scrapedContentDiv = document.getElementById('scrapedContent');
-                    
-                    if (data.success) {
-                        resultDiv.innerHTML = `<p style="color: green;">${data.success}</p>`;
+        <div id="result" class="mb-4"></div>
+    </div>
 
-                        let content = '';
+    <!-- PDF Upload Section -->
+    <div id="pdfSection" class="input-section" style="display: none;">
+        {% include "processor_pdf.html" %}
 
-                        if (data.file_type === 'xml') {
-                            // Parse the XML and pretty print
-                            const parser = new DOMParser();
-                            const xmlDoc = parser.parseFromString(data.content, 'application/xml');
-                            
-                            // Serialize and pretty print the XML
-                            const xmlString = new XMLSerializer().serializeToString(xmlDoc);
-                            content = `<pre>${escapeXML(prettyPrintXML(xmlString))}</pre>`;
-                            
-                        } else if (data.file_type === 'html') {
-                            content = `<pre>${escapeHTML(data.content)}</pre>`;
-                        } else if (data.file_type === 'json' || data.file_type === 'csv') {
-                            content = `<pre>${data.content}</pre>`;
-                        } else if (data.file_type === 'xlsx') {
-                            content = `<p>Excel file content available. <a href="/download/${data.id}">Download</a></p>`;
-                        }
+        <div id="uploadResult" class="mb-4"></div>
+    </div>
 
-                        scrapedContentDiv.innerHTML = `
-                            <h3>Data from ${data.url} (${data.file_type})</h3>
-                            ${content}
-                        `;
-                        
-                        // Show the scraped data section
-                        scrapedDataDiv.style.display = 'block';
-                    } else if (data.error) {
-                        resultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
-                    }
-                })
-                .catch(error => {
-                    console.error('An error occurred:', error);
-                    document.getElementById('result').innerHTML = `<p style="color: red;">An error occurred: ${error.message}</p>`;
-                });
-        });
-        document.getElementById('uploadBtn').addEventListener('click', () => {
-            const pdfFile = document.getElementById('pdfUpload').files[0];
-            const outputFormat = document.getElementById('output_format').value;
+    <!-- Manual Text Entry Section -->
+    <div id="textSection" class="input-section" style="display: none;">
+        {% include "processor_text.html" %}
 
-            if (!pdfFile) {
-                alert('Please upload a PDF file.');
-                return;
-            }
+        <div id="manualTextResult" class="mb-4"></div>
+    </div>
+</div>
 
-            const formData = new FormData();
-            formData.append('pdf_file', pdfFile);
-            formData.append('output_format', outputFormat);
 
-            fetch('/api/upload_pdf/', {
-                method: 'POST',
-                body: formData,
+<div id="scrapedData" style="display: none;">
+    <h2 id="scrapedTitle"></h2>
+    <div id="scrapedContent"></div>
+</div>
+
+<script>
+    document.getElementById('inputMethod').addEventListener('change', function () {
+        const selectedOption = this.value;
+
+        document.getElementById('urlSection').style.display = 'none';
+        document.getElementById('pdfSection').style.display = 'none';
+        document.getElementById('textSection').style.display = 'none';
+
+        if (selectedOption === 'url') {
+            document.getElementById('urlSection').style.display = 'block';
+        } else if (selectedOption === 'pdf') {
+            document.getElementById('pdfSection').style.display = 'block';
+        } else if (selectedOption === 'text') {
+            document.getElementById('textSection').style.display = 'block';
+        }
+    });
+</script>
+
+<script>
+    document.getElementById('scrapeBtn').addEventListener('click', () => {
+        const url = document.getElementById('url').value;
+        const title = document.getElementById('title').value;
+
+        if (!url || !title) {
+            alert('Please provide both URL, output and a title file name.');
+            return;
+        }
+
+        fetch(`/api/scrape/?url=${encodeURIComponent(url)}&title=${encodeURIComponent(title)}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
             })
+            .then(data => {
+                const resultDiv = document.getElementById('result');
+                const scrapedDataDiv = document.getElementById('scrapedData');
+                const scrapedContentDiv = document.getElementById('scrapedContent');
+
+                if (data.success) {
+                    resultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
+
+                    let content = '';
+
+                    if (data.file_type === 'xml') {
+                        const parser = new DOMParser();
+                        const xmlDoc = parser.parseFromString(data.content, 'application/xml');
+                        const xmlString = new XMLSerializer().serializeToString(xmlDoc);
+                        content = `<pre>${escapeXML(prettyPrintXML(xmlString))}</pre>`;
+                    } else if (data.file_type === 'html') {
+                        content = `<pre>${escapeHTML(data.content)}</pre>`;
+                    } else if (data.file_type === 'json' || data.file_type === 'csv') {
+                        content = `<pre>${data.content}</pre>`;
+                    } else if (data.file_type === 'xlsx') {
+                        content = `<p>Excel file content available. <a href="/download/${data.id}">Download</a></p>`;
+                    }
+
+                    scrapedContentDiv.innerHTML = `
+                        <h3>Data from ${data.url} (${data.file_type})</h3>
+                        ${content}
+                    `;
+
+                    scrapedDataDiv.style.display = 'block';
+                } else if (data.error) {
+                    resultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+                document.getElementById('result').innerHTML = `<p class="text-danger">An error occurred: ${error.message}</p>`;
+            });
+    });
+
+    document.getElementById('uploadBtn').addEventListener('click', () => {
+        const pdfFile = document.getElementById('pdfUpload').files[0];
+        const outputFormat = document.getElementById('output_format').value;
+        const title = document.getElementById('title').value;
+        console.log(title)
+        if (!pdfFile) {
+            alert('Please upload a PDF file.');
+            return;
+        }
+        else if (!title){
+            alert("Please provide a title");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('pdf_file', pdfFile);
+        formData.append('output_format', outputFormat);
+        formData.append('title', title);
+
+        fetch('/api/upload_pdf/', {
+            method: 'POST',
+            body: formData,
+        })
             .then(response => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
@@ -152,8 +164,8 @@
             .then(data => {
                 const uploadResultDiv = document.getElementById('uploadResult');
                 if (data.success) {
-                    uploadResultDiv.innerHTML = `<p style="color: green;">${data.success}</p>`;
-                    
+                    uploadResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
+
                     const scrapedDataDiv = document.getElementById('scrapedData');
                     const scrapedContentDiv = document.getElementById('scrapedContent');
                     let content = '';
@@ -161,7 +173,7 @@
                     if (data.file_type === 'html') {
                         content = `<pre>${escapeHTML(data.content)}</pre>`;
                     } else if (data.file_type === 'json') {
-                        content = `<pre>${JSON.stringify(data.content, null, 4)}</pre>`; // pretty print JSON
+                        content = `<pre>${JSON.stringify(data.content, null, 4)}</pre>`;
                     }
 
                     scrapedContentDiv.innerHTML = `
@@ -169,69 +181,111 @@
                         ${content}
                     `;
 
-                    // Show the scraped data section
                     scrapedDataDiv.style.display = 'block';
-
                 } else if (data.error) {
-                    uploadResultDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                    uploadResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
                 }
             })
             .catch(error => {
                 console.error('An error occurred:', error);
-                document.getElementById('uploadResult').innerHTML = `<p style="color: red;">An error occurred: ${error.message}</p>`;
+                document.getElementById('uploadResult').innerHTML = `<p class="text-danger">An error occurred: ${error.message}</p>`;
             });
+    });
+
+    document.getElementById('saveManualTextBtn').addEventListener('click', () => {
+        const manualText = document.getElementById('manualText').value;
+        const title = document.getElementById('title').value;
+
+        if (!manualText) {
+            alert('Please enter some text.');
+            return;
+        }
+
+        else if(!title){
+            alert("Please provide a title")
+            return;
+        }
+
+        fetch('/api/save_manual_text/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ text: manualText, title: title }),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                const manualTextResultDiv = document.getElementById('manualTextResult');
+                if (data.success) {
+                    manualTextResultDiv.innerHTML = `<p class="text-success">${data.success}</p>`;
+
+                    const scrapedDataDiv = document.getElementById('scrapedData');
+                    const scrapedContentDiv = document.getElementById('scrapedContent');
+
+                    scrapedContentDiv.innerHTML = `
+                        <h3>Manually Entered Text</h3>
+                        <pre>${escapeHTML(manualText)}</pre>
+                    `;
+
+                    scrapedDataDiv.style.display = 'block';
+                } else if (data.error) {
+                    manualTextResultDiv.innerHTML = `<p class="text-danger">${data.error}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('An error occurred:', error);
+                document.getElementById('manualTextResult').innerHTML = `<p class="text-danger">An error occurred: ${error.message}</p>`;
+            });
+    });
+
+    function escapeHTML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function escapeXML(str) {
+        return str
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    function prettyPrintXML(xml) {
+        let formatted = '';
+        const reg = /(>)(<)(\/*)/g;
+        let pad = 0;
+
+        xml = xml.replace(reg, '$1\r\n$2$3');
+        xml.split('\r\n').forEach((node) => {
+            let indent = 0;
+            if (node.match(/.+<\/\w[^>]*>$/)) {
+                indent = 0;
+            } else if (node.match(/^<\/\w/)) {
+                if (pad !== 0) {
+                    pad -= 1;
+                }
+            } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
+                indent = 1;
+            } else {
+                indent = 0;
+            }
+
+            formatted += new Array(pad + 1).join('  ') + node + '\r\n';
+            pad += indent;
         });
 
-        // Helper function to escape HTML special characters
-        function escapeHTML(str) {
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // Helper function to escape XML special characters (ensuring no tags are rendered)
-        function escapeXML(str) {
-            return str
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
-        }
-
-        // Helper function to pretty-print the XML string
-        function prettyPrintXML(xml) {
-            let formatted = '';
-            const reg = /(>)(<)(\/*)/g;
-            let pad = 0;
-            
-            // Add line breaks and indentation
-            xml = xml.replace(reg, '$1\r\n$2$3');
-            xml.split('\r\n').forEach((node) => {
-                let indent = 0;
-                if (node.match(/.+<\/\w[^>]*>$/)) {
-                    indent = 0; // no change to indentation for self-closing tags
-                } else if (node.match(/^<\/\w/)) {
-                    // Decrease indent for closing tags
-                    if (pad !== 0) {
-                        pad -= 1;
-                    }
-                } else if (node.match(/^<\w[^>]*[^\/]>.*$/)) {
-                    indent = 1; // increase indent for opening tags
-                } else {
-                    indent = 0; // no indent for single-line elements
-                }
-
-                formatted += new Array(pad + 1).join('  ') + node + '\r\n';
-                pad += indent; // increase padding for the next tag
-            });
-
-            return formatted;
-        }
-
-    </script>    
-</body>
-</html>
+        return formatted;
+    }
+</script>
+{% endblock %}

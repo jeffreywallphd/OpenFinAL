@@ -1,31 +1,51 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from transformers import AutoModelForCausalLM, AutoTokenizer
 from ..models import Conversation
 from ..serializers import ConversationSerializer
 import uuid
 from django.shortcuts import render
-from transformers import GPT2LMHeadModel, GPT2Tokenizer
 from django.conf import settings
 from django.conf.urls.static import static
 import torch
 
-# Load the GPT-2 model and tokenizer once during server initialization
-MODEL_PATH = "OpenFinAL/GPT2_FINGPT_QA"
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-tokenizer = GPT2Tokenizer.from_pretrained(MODEL_PATH)
-model = GPT2LMHeadModel.from_pretrained(MODEL_PATH)
-model.to(device)
 
-# Ensure pad_token_id is set
-if tokenizer.pad_token_id is None:
-    tokenizer.pad_token = tokenizer.eos_token
-
-def generate_gpt2_response(prompt, max_length=200, min_length=100, top_k=50, top_p=0.95):
+model_cache = {} 
+def get_model_and_tokenizer(model_name):    
     """
-    Generate a response from the GPT-2 model based on the input prompt.
+    Generate a response from the model based on the input prompt.
+    """
+    if model_name in model_cache:
+        return model_cache[model_name]
+    try:
+        # Load tokenizer dynamically
+        if "llama" in model_name.lower() or "meta" in model_name.lower() or "openelm" in model_name.lower():
+            tokenizer = AutoTokenizer.from_pretrained("meta-llama/Llama-2-7b-hf", use_fast=False, trust_remote_code=True)
+            tokenizer.add_bos_token = True
+            model = AutoModelForCausalLM.from_pretrained(model_name, trust_remote_code=True)    
+        else:
+            tokenizer = AutoTokenizer.from_pretrained(model_name)
+            model = AutoModelForCausalLM.from_pretrained(model_name,trust_remote_code=True)
+
+        # Set pad_token for compatibility
+        tokenizer.pad_token = tokenizer.eos_token
+        model.resize_token_embeddings(len(tokenizer)) 
+        model.to(device)
+
+        model_cache[model_name] = (model, tokenizer)
+        return model, tokenizer
+    except Exception as e:
+        raise ValueError(f"Error loading model '{model_name}' and tokenizer: {str(e)}")   
+
+def generate_response(prompt, model_name, max_length=200, min_length=100, top_k=50, top_p=0.95, no_repeat_ngram_size=0, max_new_tokens=300):
+    """
+    Generate a response dynamically using the specified model and tokenizer.
     """
     try:
+        model, tokenizer = get_model_and_tokenizer(model_name)
         # Tokenize the input prompt
         inputs = tokenizer(
             prompt,
@@ -44,6 +64,8 @@ def generate_gpt2_response(prompt, max_length=200, min_length=100, top_k=50, top
             do_sample=True,
             top_k=top_k,
             top_p=top_p,
+            no_repeat_ngram_size=no_repeat_ngram_size,
+            max_new_tokens=max_new_tokens,
             num_return_sequences=1,
             pad_token_id=tokenizer.pad_token_id
         )
@@ -93,31 +115,36 @@ class ConversationCreateView(APIView):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class ChatbotGenerateResponseView(APIView):
+    def get(self, request):
+        return Response({'message': 'This is a GET request. Please use a POST request to generate a chatbot response.'}, status=status.HTTP_405_METHOD_NOT_ALLOWED)  
     """
     Handle POST requests to generate a chatbot response using GPT-2
     and save the chat to the database.
     """
     def post(self, request, session_id):
         # Ensure that 'message' exists in the request body
-        if 'message' not in request.data:
-            return Response({'error': 'Message is required'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        user_message = request.data['message']  # Access the message directly
-        if not user_message:
-            return Response({'error': 'Message is required'}, status=status.HTTP_400_BAD_REQUEST)
+        user_message = request.data.get('message')
+        model_name = request.data.get('model_name')
+        if not user_message or not model_name:
+            return Response({'error': 'Both "message" and "model_name" are required.'}, status=status.HTTP_400_BAD_REQUEST)
 
         # Extract configurable parameters from the request or set defaults
         max_length = request.data.get('max_length', 200)
         min_length = request.data.get('min_length', 100)
         top_k = request.data.get('top_k', 50)
         top_p = request.data.get('top_p', 0.95)
+        no_repeat_ngram_size = request.data.get('no_repeat_ngram_size', 0)
+        max_new_tokens = request.data.get('max_new_tokens', 300)
 
         # Validate parameters
         try:
+            model_name = str(model_name)
             max_length = int(max_length)
             min_length = int(min_length)
             top_k = int(top_k)
             top_p = float(top_p)
+            no_repeat_ngram_size = int(no_repeat_ngram_size)
+            max_new_tokens = int(max_new_tokens)
         except ValueError:
             return Response({'error': 'Invalid parameters. Ensure max_length, min_length, and top_k are integers, and top_p is a float.'}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -129,20 +156,21 @@ class ChatbotGenerateResponseView(APIView):
         if top_k < 0:
             return Response({'error': 'top_k must be a non-negative integer.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # Generate GPT-2 response with configurable parameters
+        # Generate response with configurable parameters
         try:
-            bot_response = generate_gpt2_response(
+            bot_response = generate_response(
                 user_message,
+                model_name=model_name,
                 max_length=max_length,
                 min_length=min_length,
                 top_k=top_k,
-                top_p=top_p
+                top_p=top_p,
+                no_repeat_ngram_size=no_repeat_ngram_size,
+                max_new_tokens=max_new_tokens
             )
         except Exception as e:
             return Response({'error': f'Error during response generation: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # Generate GPT-2 response
-        # bot_response = generate_gpt2_response(user_message)
 
         # Save user message to the database
         user_message_data = {
@@ -169,10 +197,13 @@ class ChatbotGenerateResponseView(APIView):
             'user_message': user_message, 
             'bot_response': bot_response,
             'generation_params': {
+                'model_name': model_name,
                 'max_length': max_length,
                 'min_length': min_length,
                 'top_k': top_k,
                 'top_p': top_p,
+                'no_repeat_ngram_size': no_repeat_ngram_size,
+                'max_new_tokens': max_new_tokens
             }
             }, status=status.HTTP_200_OK)
 

@@ -34,6 +34,8 @@ import ForecastModel from "./ForecastModel";
 import { SecReport } from "./SecReport";
 import InvestmentPool from "./InvestmentPool";
 import StockAnalysis from "./StockAnalysis";
+import Chatbot from "./Chatbot/Chatbot";
+import ChatbotToggle from "./Chatbot/Chatbot-toggle";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop() {
@@ -116,13 +118,16 @@ class AppLoaded extends Component {
                 <Route path="/investment-pool" element={<InvestmentPool />} /> 
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
+              <ChatbotToggle/>
               <footer>
                 This software is licensed under the GPL-3.0 license.
               </footer>
             </div>
           </div>
         </>
+
       </HashRouter>
+
     );
   }
 }
