@@ -7,12 +7,15 @@ import ChatCompletionCreateParamsBase from "openai"
 
 
 export class OpenAiModel implements IKeyedModel{
-    key: string;
-    modelName: string;
-    async create(message: ChatCompletionCreateParamsNonStreaming): object {
-        try{
-            const client = new OpenAI(api_key=this.key);
-            const completion = await client.chat.completions.create(message);
+    key: any;
+    async create(model: string, messages: any[]): Promise<any> {
+        let api_key;
+        try {
+            const client = new OpenAI(api_key = this.key);
+            const completion = await client.chat.completions.create({
+                model: model,
+                messages: messages,
+            });
             return completion;
         } catch (e) {
 

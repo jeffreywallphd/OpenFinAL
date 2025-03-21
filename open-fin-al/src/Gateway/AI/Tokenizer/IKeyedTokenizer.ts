@@ -1,7 +1,7 @@
 import {ITokenizer} from "./ITokenizer";
 
 export interface IKeyedTokenizer extends ITokenizer {
-    key: string;
+    key: any;
     encodingName: string;
     modelName: string;
     encode(message : string) : any;

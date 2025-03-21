@@ -1,5 +1,4 @@
 export interface IModel {
-    key?: string;
-    modelName: string;
-    create(message : any) : object;
+    key?: any;
+    create(model: string, messages: any[]) : Promise<any>;
 }

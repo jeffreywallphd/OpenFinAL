@@ -1,5 +1,5 @@
 export interface ITokenizer {
-    key?: string;
+    key?: any;
     encodingName: string;
     modelName: string;
     encode(message : string) : any;
