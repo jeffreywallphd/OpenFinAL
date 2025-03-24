@@ -25,7 +25,7 @@ import { News } from "./NewsPage";
 import { Learn } from "./Learn";
 import { LearningModuleDetails } from "./LearningModuleDetails";
 import { LearningModulePage } from "./LearningModulePage";
-import logo from "../Asset/Image/logo.png";
+import logo from "../Asset/Image/openfinal_logo_no_text.png";
 import navIcon from "../Asset/Image/navIcon.png";
 import { Settings } from "./APIConfigSetting";
 import Forecast from "./Forecast";
@@ -56,10 +56,19 @@ class AppLoaded extends Component {
   }
 
   toggleMenu() {
-    this.setState(prevState => ({
+    print("hello");
+    this.setState(prevState => ({   
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
+  handleClick = () => {
+    console.log("hello");
+    this.setState(prevState => ({   
+      menuCollapsed: !prevState.menuCollapsed
+    }));
+    
+  };
+  
 
   render() {
     const { menuCollapsed } = this.state;
@@ -71,6 +80,7 @@ class AppLoaded extends Component {
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
                 <img src={logo} alt="OpenFinAL Logo" />
+                <button onClick={this.handleClick}>toggleMenu</button>
               </div>
               <nav className="sidebar-padding">
                 <h5>Main</h5>

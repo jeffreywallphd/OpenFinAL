@@ -203,7 +203,11 @@ code {
 } */
 
 .sidebar.collapsed {
-  width: 40px;
+  width: 47px;
+}
+
+.sidebar.collapsed::-webkit-scrollbar {
+  display: none;
 }
 
 /* .header {
