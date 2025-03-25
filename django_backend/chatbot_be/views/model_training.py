@@ -97,16 +97,35 @@ def train_model_view(request):
 
             # Load dataset
             dataset = load_dataset(dataset_name)
-            dataset = dataset.rename_column("input", "Question").rename_column("output", "Answer")
-            dataset = dataset.remove_columns([col for col in dataset.column_names["train"] if col not in ["Question", "Answer"]])
+
+            # Identify existing columns (case-insensitive)
+            existing_columns = {col.lower(): col for col in dataset["train"].column_names}
+
+            # Define potential column mappings (lowercase for comparison)
+            column_mappings = {
+                "input": "Question",
+                "output": "Answer"
+            }
+
+            # Apply renaming only if necessary
+            for original_col, new_col in column_mappings.items():
+                if original_col in existing_columns and new_col.lower() not in existing_columns:
+                    dataset = dataset.rename_column(existing_columns[original_col], new_col)
+
+            # Ensure we retain only "Question" and "Answer" columns, regardless of case
+            required_columns = set(existing_columns.get(col.lower(), col) for col in ["Question", "Answer"] if col.lower() in existing_columns)
+            dataset = dataset.remove_columns([col for col in dataset["train"].column_names if col not in required_columns])
+
             # Split dataset based on user-provided ratio
             train_test_split = dataset["train"].train_test_split(test_size=train_test_split_ratio)
             train_dataset = train_test_split["train"]
             eval_dataset = train_test_split["test"]
 
-            # Save split datasets to HF hub
-            split_dataset = DatasetDict({"train": train_dataset, "test": eval_dataset})
-            split_dataset.push_to_hub(f"{model_repo}-split-dataset", token=hf_key)
+            # Save train dataset to HF hub
+            train_dataset.push_to_hub(f"{model_repo}-train-dataset", token=hf_key)
+
+            # Save test dataset to HF hub
+            eval_dataset.push_to_hub(f"{model_repo}-test-dataset", token=hf_key)
 
             # Load model and tokenizer dynamically with Meta and OpenELM support
             if "llama" in model_name.lower() or "meta" in model_name.lower() or "openelm" in model_name.lower():

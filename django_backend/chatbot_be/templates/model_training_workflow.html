@@ -90,23 +90,17 @@
 
     <button type="button" onclick="startTraining(event)">Start Training & Evaluate</button>
     <button type="button" onclick="fetchLastFourModelStats()">Show Last 4 Model Statistics</button>
-    <button type="button" id="stopTrainingBtn" onclick="stopTraining(event)" disabled>Stop Training</button>
     <button type="button" onclick="redirectToChatbot()">To Chatbot</button>
     <button type="button" onclick="redirectToModelStat()">To Model Statistics</button>
 
-
 </form>
 <div id="last-four-model-stats" class="results-box"></div>
-
-<!-- <h2>Model Evaluation Results</h2>
-<div id="model-eval-results" class="results-box"></div> -->
 
 <h2>Training Logs</h2>
 <div id="log-container">Waiting for logs...</div>
 
 <script>
     let eventSource;
-    let trainingInProgress = false;
 
     // Precision Handling Logic
     document.getElementById('fp16').value = 'off';
@@ -156,46 +150,6 @@
                 await evaluateModel(modelName, numQuestions);
             } else {
                 logContainer.textContent += `❌ Error: ${trainData.message}\n`;
-            }
-        } catch (error) {
-            logContainer.textContent += `⚠️ Request failed: ${error}\n`;
-        }
-    }
-
-    // Stop Training Function
-    async function stopTraining(event) {
-        event.preventDefault();
-        console.log("Stop Training function triggered");  // Debugging line
-        if (!trainingInProgress) {
-            alert("No training in progress.");
-            return;
-        }
-
-        const logContainer = document.getElementById("log-container");
-        logContainer.textContent += "⏹️ Stopping training...\n";
-
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
-
-        try {
-            console.log("Sending request to /api/stop_training/");
-            const stopResponse = await fetch("/api/stop_training/", {
-                method: "POST",
-                headers: {
-                    "X-CSRFToken": csrftoken,
-                },
-            });
-
-            const stopData = await stopResponse.json();
-            console.log("Stop response:",stopData);
-            if (stopData.status === "success") {
-                logContainer.textContent += "✅ Training stopped successfully.\n";
-                trainingInProgress = false;
-                document.getElementById("stopTrainingBtn").disabled = true;
-                if (eventSource) {
-                    eventSource.close();
-                }
-            } else {
-                logContainer.textContent += `❌ Error: ${stopData.message}\n`;
             }
         } catch (error) {
             logContainer.textContent += `⚠️ Request failed: ${error}\n`;

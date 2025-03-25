@@ -138,23 +138,30 @@ class ModelStatisticsView(APIView):
             # convert into dataframe 
             df = pd.DataFrame(df)
             print(f"Dataset loaded: {df}")
-            print(f"Dataset loaded: {df}")
 
-            if "input" not in df.columns or "output" not in df.columns:
-                return Response({"error": "Dataset must contain 'input' and 'output' columns."}, status=status.HTTP_400_BAD_REQUEST)
+            possible_input_names = {"input", "Input", "question", "Question"}
+            possible_output_names = {"output", "Output", "answer", "Answer"}
 
-            df.dropna(subset=["input", "output"], inplace=True)
+            # Find actual column names
+            input_col = next((col for col in df.columns if col in possible_input_names), None)
+            output_col = next((col for col in df.columns if col in possible_output_names), None)
+
+            # Check if required columns exist
+            if not input_col or not output_col:
+                return Response({"error": "Dataset must contain 'Input/Output' or 'Question/Answer' columns."}, status=status.HTTP_400_BAD_REQUEST)
+
+            df.dropna(subset=[input_col, output_col], inplace=True)
 
             if df.empty:
                 return Response({"error": "Dataset is empty after filtering."}, status=status.HTTP_400_BAD_REQUEST)
 
-
             # Randomly sample N questions
             num_questions = min(num_questions, len(df))
-            sampled_data = df.sample(n=num_questions, random_state = 42)
-            questions = sampled_data["input"].tolist()
-            references = sampled_data["output"].tolist()
-        
+            sampled_data = df.sample(n=num_questions, random_state=42)
+
+            # Use the detected column names
+            questions = sampled_data[input_col].tolist()
+            references = sampled_data[output_col].tolist()        
         except Exception as e:
             return Response({"error": f"Error loading dataset: {str(e)}"}, status=status.HTTP_400_BAD_REQUEST)
 
