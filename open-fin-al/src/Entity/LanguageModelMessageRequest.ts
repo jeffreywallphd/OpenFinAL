@@ -8,14 +8,11 @@ export class LanguageModelRequest implements IEntity {
     fields: Map<string,Field> = new Map();
 
     constructor() {
-        var model = new Field("model","string", null);
-        this.fields.set("model", model);
+        var role = new Field("role","string", null);
+        this.fields.set("role", role);
 
-        var messages : Field = new Field("messages", "array", null);
-        this.fields.set("messages", messages)
-
-        var key : Field = new Field("key","string", null);
-        this.fields.set("key", key);
+        var content = new Field("content","string", null);
+        this.fields.set("content", content);
     }
 
     getId() {

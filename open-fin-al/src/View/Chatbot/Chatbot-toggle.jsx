@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import './ChatbotToggle.css';  // Ensure styles are correctly linked
 import chatbotIcon from './comment-alt.png';
+import {LanguageModelInteractor} from "../../Interactor/LanguageModelInteractor";
+import {JSONRequest} from "../../Gateway/Request/JSONRequest";
 
 class ChatbotToggle extends Component {
     constructor(props) {
@@ -41,7 +43,7 @@ class Chatbot extends Component {
         super(props);
         this.state = {
             messages: [
-                { text: "Hey! How can I assist you today?", sender: "bot" } // Initial bot message
+                { content: "Hey! How can I assist you today?", role: "assistant" } // Initial bot message
             ],
             userInput: ""
         };
@@ -56,9 +58,22 @@ class Chatbot extends Component {
         if (userInput.trim() === "") return; // Prevent sending empty messages
 
         // Append new user message below existing messages
-        const updatedMessages = [...messages, { text: userInput, sender: "user" }];
+        const updatedMessages = [...messages, { content: userInput, role: "user" }];
 
         this.setState({ messages: updatedMessages, userInput: "" }); // Clear input after sending
+        var interactor = new LanguageModelInteractor();
+        // TODO: Fix to send all messages rather than most recent.
+        var requestObj = new JSONRequest(`{
+            "request" : {
+                "model" : {
+                    "name" : "gpt-4o",
+                    "messages" : [
+                        "role" : "user",
+                        "content" : "${userInput}"
+                    ]
+                }
+            }
+        }`);
     };
 
     render() {
@@ -69,8 +84,8 @@ class Chatbot extends Component {
                 </header>
                 <ul className="chatbox">
                     {this.state.messages.map((msg, index) => (
-                        <li key={index} className={`chat ${msg.sender === "user" ? "chat-outgoing" : "chat-incoming"}`}>
-                            <p>{msg.text}</p>
+                        <li key={index} className={`chat ${msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
+                            <p>{msg.content}</p>
                         </li>
                     ))}
                 </ul>

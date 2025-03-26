@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/ChatbotModelGatewayFactory.ts" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelMessageRequest.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/open-fin-al/src/Interactor/LanguageModelInteractor.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Interactor/LanguageModelInteractor.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,25 +39,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
-    &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;Chatbot-Interface&quot;,
-    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/tjwat/Documents/GitHub/OpenFinAL&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable&quot;,
-    &quot;ts.external.directory.path&quot;: &quot;C:\\Users\\tjwat\\Documents\\GitHub\\OpenFinAL\\open-fin-al\\node_modules\\typescript\\lib&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "dart.analysis.tool.window.visible": "false",
+    "git-widget-placeholder": "Chatbot-Interface",
+    "ignore.virus.scanning.warn.message": "true",
+    "last_opened_file_path": "C:/Users/tjwat/Documents/GitHub/OpenFinAL/open-fin-al/src/Entity",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable",
+    "ts.external.directory.path": "C:\\Users\\tjwat\\Documents\\GitHub\\OpenFinAL\\open-fin-al\\node_modules\\typescript\\lib",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\Entity" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\Gateway\AI" />
       <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\View\Chatbot" />
@@ -96,7 +101,10 @@
       <workItem from="1741965455455" duration="1355000" />
       <workItem from="1742220435681" duration="3103000" />
       <workItem from="1742392980785" duration="3093000" />
-      <workItem from="1742565918233" duration="2509000" />
+      <workItem from="1742565918233" duration="2780000" />
+      <workItem from="1742824219043" duration="655000" />
+      <workItem from="1742925761150" duration="66000" />
+      <workItem from="1742997649789" duration="3717000" />
     </task>
     <servers />
   </component>
