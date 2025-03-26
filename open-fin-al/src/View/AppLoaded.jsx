@@ -4,7 +4,6 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { Component, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -56,13 +55,11 @@ class AppLoaded extends Component {
   }
 
   toggleMenu() {
-    print("hello");
     this.setState(prevState => ({   
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
   handleClick = () => {
-    console.log("hello");
     this.setState(prevState => ({   
       menuCollapsed: !prevState.menuCollapsed
     }));
@@ -72,7 +69,6 @@ class AppLoaded extends Component {
 
   render() {
     const { menuCollapsed } = this.state;
-  
     return (
       <HashRouter>
         <>
