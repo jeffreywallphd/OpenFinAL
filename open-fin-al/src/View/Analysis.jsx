@@ -31,16 +31,23 @@ function Analysis(props) {
     const smallCS = useRef("smallCS");
     const microCS = useRef("microCS");
 
+
+   
+
+
     // Define handleHover functions correctly
     const [hoveredInfo, setHoveredInfo] = useState(null);
+
 
     const handleInfoHover = (metric) => {
         setHoveredInfo(metric);
     };
 
+
     const handleInfoLeave = () => {
         setHoveredInfo(null);
     };
+
 
     //Create a key value pair data structure which will hold our variables which will be changeale in the html on the button click
         //Initialize each key
@@ -683,6 +690,7 @@ function Analysis(props) {
     </div>
 </div>
 
+
 {/* <div className='riskContainer'>
     <h3 className='riskHeader'>Your Timeline</h3>
     <h4 className='statHeader'>Investment Horizon</h4>
@@ -720,7 +728,18 @@ function Analysis(props) {
         </div>
 
         <div className='bigScoreContainer'>
-            <div><b>Diversity Score</b></div>
+
+        <Popover
+            isOpen={hoveredInfo === "diversityScore"}
+            content={<div className="popoverContent">
+                placeholder
+            </div>}
+        >
+            
+            <div onMouseEnter={() => handleInfoHover("diversityScore")} onMouseLeave={handleInfoLeave}><b>Diversity Score 🛈</b></div>
+        </Popover>
+
+
             <div className="scoreComponentContainer">    
                 <div className='scoreComponent highlight'> {diversificationScore.score} </div>
                 <div className='scoreComponent highlight'> {diversificationScore.grade} </div>
