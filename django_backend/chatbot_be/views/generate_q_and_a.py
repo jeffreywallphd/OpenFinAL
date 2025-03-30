@@ -314,3 +314,21 @@ def get_huggingface_datasets(request):
 
     except Exception as e:
         return JsonResponse({"error": str(e)}, status=500)
+
+# Old Working Code
+# def get_huggingface_datasets(request):
+#     """Fetch the user's Hugging Face datasets and return as JSON."""
+#     try:
+#         api = HfApi(token=DEFAULT_HF_API_KEY)
+#         user_info = api.whoami()
+#         organizations = user_info.get("orgs", [])
+
+#         org_name = organizations[0]["name"] if organizations else user_info["name"]
+
+#         datasets = list(api.list_datasets(author=org_name))
+#         dataset_list = [dataset.id for dataset in datasets]
+
+#         return JsonResponse({"datasets": dataset_list})
+
+#     except Exception as e:
+#         return JsonResponse({"error": str(e)}, status=500)
