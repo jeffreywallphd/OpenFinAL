@@ -15,20 +15,6 @@
   --footer-height: 90px;
 }
 
-body.dark-mode {
-  --primary-color: #333c51;
-  --secondary-color: #384457;
-  --tertiary-color: #4a5568;
-  --background-color: #5c5858;
-  --accent-color: #63b3ed;
-  --highlight-color: #ecc94b;
-  --text-color-dark: #e2e8f0;
-  --text-color-light: #ffffff;
-  --text-color-medium: #cbd5e0;
-  --row-primary-color: #2d3748;
-  --row-alternating-color: #4a5568;
-}
-
 body {
   height: 100vh;
   background-color: var(--background-color);
@@ -62,7 +48,7 @@ h1 {
 }
 
 h2 {
-  color: white; 
+  color: var(--text-color-dark);
   padding-top: 0px;
   margin-top: 0px;
 }
@@ -190,7 +176,6 @@ code {
   padding: 20px;
   display: flex;
   height: 100vh;
-  background-color: var(--background-color);
   /* overflow: hidden; */
 }
 
@@ -203,13 +188,13 @@ code {
   padding: 20px;
   margin-left: 10px;
 } */
-/*
- .sidebar {
+
+/* .sidebar {
   padding:0;
   margin:0; 
   width: 200px; 
   height: 100vh;
-  background-color: var(--background-color);
+  background-color: var(--primary-color);
   transition: width 0.5s ease;
 } */
 
@@ -508,129 +493,184 @@ code {
 
 /* Styling for Risk Analysis Page */
 
-.riskHeaders {
+.riskTitleContainer {
   display: flex;
-  /*Allows side by side div elements*/
+  flex-direction: row;
   align-items: center;
-  /* Vertically centers items */
+  margin-bottom: 10px;
+}
+
+.riskIcon {
+  font-size: 36px;
+}
+
+.riskPage {
+  min-width: calc(100vw - 400px);
+  background-color: #F0F4F8;
 }
 
 .riskBody {
   display: flex;
+  justify-content: space-around;
+  width: 100%;
 }
 
 .riskHeader {
-  padding-left: 20px;
+  text-align: center;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  width: 75%;
+  margin-bottom: 10px;
+}
+
+.inputLabel {
+  margin-left: 10px;
+}
+
+.popoverContent {
+  max-width: 200px;
+  padding: 5px;
+  border-radius: 10px;
+  background-color: rgba(29, 32, 40, 0.9);
+  color: var(--text-color-light)
 }
 
 .userInput {
-  width: 150px;
+  width: 100%;
   margin: 5px;
+  background-color: #b4b9cc;
+  border-color: transparent;
+  border-radius: 5px;
 }
 
 .explanationText {
   font-size: small;
 }
 
-.riskContainer {
-  width: 100%;
+.hollow {
+  display: flex;
+  justify-content: center;
   align-items: center;
 }
 
-.ratioBox {
-  text-align: center;
-  width: 75px;
-  border: 3px solid var(--text-color-dark);
-  padding-top: 2px;
-  padding-bottom: 2px;
+.hollow span {
+  z-index: 2;
+  font-size: 24pt;
 }
 
-.ratioName {
-  width: 125px;
-  border: 3px solid var(--text-color-dark);
-  padding-top: 2px;
-  padding-bottom: 2px;
-  padding-left: 10px;
-  display: flex;
-}
-
-.smallbutton {
-  margin-left: 8px;
-  background-color: var(--secondary-color);
-  color: var(--text-color-light);
+.hollow::after {
+  content: "";
+  position: absolute;
+  height: 200px;
+  width: 200px;
+  border-radius: 50%;
+  background-color: var(--background-color);
   border: 2px solid black;
-  padding: 4px;
-  border-radius: 4px;
+}
+
+.riskContainer {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: var(--background-color); 
+  align-items: center;
+  min-width: 300px;
+}
+
+.diversificationInputContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.diversificationInputRow {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.diversificationBox {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+}
+
+.diversificationInput {
+  width: 40%;
+  aspect-ratio: 3 / 1;
+  text-align: center;
+  margin-bottom: 10px;
 }
 
 .bigbutton {
-  background-color: var(--secondary-color);
+  background-color: var(--primary-color);
   color: var(--text-color-light);
   font: bold;
   font-size: 16px;
-  border: 3px solid black;
   padding: 8px;
   border-radius: 4px;
 }
 
-.infobutton {
-  font-size: x-small;
-  margin-left: 8px;
-  background-color: var(--secondary-color);
-  color: var(--text-color-light);
-  border: 2px solid black;
-  padding-left: 6px;
-  padding-right: 6px;
-  border-radius: 6px;
+.bigScoreContainer {
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  width: 90%;
+  align-items: center;
+  margin-top: 10px;
 }
 
-.realRatioName {
-  margin-left: 8px;
+.scoreComponentContainer {
+  display: flex;
+  width: 75%;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  border: black 2px solid;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 5px;
+
 }
 
-.overallScore {
-  width: 125px;
-  border: 3px solid var(--text-color-dark);
-  padding-top: 2px;
-  padding-bottom: 2px;
+.scoreComponent {
+  background-color: var(--row-alternating-color);
+  color: var(--text-color-medium);
+  border-radius: 3px;
+  min-width: 30%;
   text-align: center;
 }
 
-.scoreContainer {
-  display: flex;
-  border: 4px solid var(--secondary-color);
-  border-radius: 4px;
-  width: 275px;
-  margin: 10px;
-  margin-left: 14px;
-}
-
-.scoreContainerOverallScore {
-  display: flex;
-  border: 4px solid var(--secondary-color);
-  width: 275px;
-}
-
 .highlight {
-  border: 4px solid var(--highlight-color);
-  display: flex;
-  border-radius: 4px;
-  width: 283px;
-  margin: 10px;
-  margin-top: 20px;
+  background-color: var(--highlight-color);
 }
 
-.pie-chart {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  background-image: conic-gradient(orange 64%, blue 64%, blue 81%, green 81%, green 90%, black 90%);
+.pieChartContainer {
+  display: flex;
+  flex-direction: column;
+}
+
+.keyColorsContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  width: 100%;
+}
+
+.colorCodeBox {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 
 .keyColors {
-  height: 2px;
-  width: 40px;
-  margin-top: 10px;
+  height: 10px;
+  width: 10px;
+  border-radius: 2px;
   margin-right: 5px;
 }
 
@@ -767,7 +807,7 @@ body {
   left: 0;
   width: 250px; /* Adjust width as needed */
   height: 100%;
-  background-color: var(--background-color); /* Adjust background color as needed */
+  background-color: #fff; /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
   overflow-y: auto; /* Allow scrolling within the sidebar if needed */
@@ -922,10 +962,9 @@ nav ul li a:hover {
 }
 
 .stats>div {
-  background-color: #2B388F;
+  background-color: #fff;
   padding: 10px;
   border-radius: 10px;
-  color: white; 
   flex: 1 1 calc(33.333% - 20px);
   /* Flexible width for each stat */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -935,7 +974,6 @@ nav ul li a:hover {
 .stats h3 {
   display: flex;
   align-items: center;
-  color: white; 
 }
 
 .stats h3 .material-icons {
@@ -946,7 +984,7 @@ nav ul li a:hover {
 .news-updates {
   flex: 1 1 40%;
   padding: 20px;
-  background-color: #2B388F;
+  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
@@ -958,7 +996,7 @@ nav ul li a:hover {
 
 .news-item h4 {
   font-size: 20px;
-  color: white;
+  color: #333;
   display: flex;
   align-items: center;
 }
@@ -969,14 +1007,13 @@ nav ul li a:hover {
 
 .news-item p {
   margin: 5px 0;
-  color: white;
 }
 
 /* Promo Section (below the stats and news) */
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
   padding: 10px;
-  background-color: #2B388F  !important;
+  background-color: #fff !important;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.064) !important;
   display: flex;
@@ -1030,7 +1067,7 @@ nav ul li a:hover {
 /* Your Trades Section (Netflix and Apple Inc.) */
 .your-trades {
   width: 250px;
-  background-color: #2B388F !important;
+  background-color: #ffffff00 !important;
   padding: 20px;
   border-radius: 10px;
   height: 150px !important;
@@ -1053,7 +1090,6 @@ nav ul li a:hover {
   margin: 0;
   font-size: 16px;
   font-weight: 500;
-  color: white;
 }
 
 .trade-amount {
@@ -1071,7 +1107,7 @@ nav ul li a:hover {
 .trade-time {
   display: block;
   font-size: 12px;
-  color: #ffffff;
+  color: #888;
   margin-left: auto;
 }
 
@@ -1337,7 +1373,7 @@ nav ul li a:hover {
   margin: 10px 0;
   transition: all 0.3s ease;
 }
-
+=======
 /* updated /
 / StockAnalysis.css */
 
@@ -1887,125 +1923,5 @@ nav ul li a:hover {
 
 .btn-danger-sm:hover {
   background-color: #c82333;
-}
-
-.chatBot {
-  border: 3px solid #2F8D46;
-  border-radius: 10px;
-  margin: 50px auto;
-  overflow: hidden;
-  width: 500px;
-  overflow-y: clip;
-  height: 600px;
-  background: rgb(255, 255, 255);
-  background-size: contain;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.chatbox {
-  padding: 15px;
-  list-style: none;
-  overflow-y: auto;
-  height: 400px;
-}
-
-.chatbox li {
-  margin-bottom: 10px;
-}
-
-.chat p {
-  padding: 10px;
-  border-radius: 10px;
-  max-width: 70%;
-  word-wrap: break-word;
-}
-
-.chat-outgoing p {
-  background-color: #162887;
-  align-self: flex-end;
-  color: #fff;
-}
-
-.chat-incoming p {
-  background-color: #eaeaea;
-}
-
-.chat-input {
-  padding: 10px;
-  border-top: 1px solid #ccc;
-}
-
-.chat-input textarea {
-  width: 522px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 7px;
-  resize: none;
-  outline: none;
-  overflow-y: scroll;
-  background-color: #dcdcdc85;
-  font-size: 16px;
-  color: green;
-  font-weight: 600;
-  margin-top: -10px;
-  margin-left: -15px;
-  height: 71px;
-}
-
-#cross {
-  float: right;
-  position: relative;
-  top: -38px;
-  left: -15px;
-  cursor: pointer;
-  color: white;
-  font-weight: bolder;
-  font-size: 28px;
-}
-
-#cross:hover {
-  color: red;
-  transition: all .5s;
-}
-
-.chatbox .chat p.error {
-  color: #ffffff;
-  background-color: #ff3737e8;
-}
-
-#sendBTN {
-  width: 100%;
-  padding: 8px;
-  border: 0;
-  outline: none;
-  font-size: 20px;
-  font-weight: 600;
-  border-radius: 7px;
-  background-color: #2F8D46;
-  cursor: pointer;
-  color: white;
-  margin-top: 12px;
-}
-
-.lastMessage {
-  margin-top: 50px;
-  font-size: 35px;
-  font-weight: 600;
-  color: darkgreen;
-  margin-left: 550px;
-}
-
-.chatBot header {
-  background-color: #2F8D46;
-  text-align: center;
-  padding: 10px 0;
-  border-radius: 7px 7px 0 0;
-}
-
-.chatBot header h2 {
-  color: #fff;
-  margin: 0;
 }
 
