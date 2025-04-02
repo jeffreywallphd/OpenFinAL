@@ -24,6 +24,7 @@
     "react-scripts": "^3.0.1",
     "recharts": "^2.12.2",
     "sqlite3": "^5.1.7",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "uuid": "^9.0.1",
     "xml2js": "^0.6.2",
     "yahoo-finance2": "^2.11.1"

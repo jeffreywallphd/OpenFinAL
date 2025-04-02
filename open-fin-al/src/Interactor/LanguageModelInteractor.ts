@@ -4,7 +4,7 @@ import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IModel} from "../Gateway/AI/Model/IModel";
 import { StockGatewayFactory } from "@DataGateway/StockGatewayFactory";
-import {LanguageModelRequest} from "@Entity/LanguageModelRequest";
+import {LanguageModelRequest} from "../Entity/LanguageModelRequest";
 import {NewsGatewayFactory} from "@DataGateway/NewsGatewayFactory";
 import {IDataGateway} from "@DataGateway/IDataGateway";
 import {ChatbotModelGatewayFactory} from "../Gateway/AI/Model/ChatbotModelGatewayFactory";
