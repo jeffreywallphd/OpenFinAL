@@ -89,6 +89,11 @@ button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
+button.HamburgerMenu {
+  font-size: 18px;
+  padding: 10px;
+}
+
 .btn-group button {
   background-color: #CCCCCC;
   color: var(--text-color-medium);
@@ -773,7 +778,26 @@ body {
 .logo img {
   width: 150px;
   margin-bottom: 5px;
+  /*visibility: hidden;*/
 }
+img.logo.hidden{
+  width: 150px;
+  margin-bottom: 5px;
+  display: none;
+}
+
+img.logoNoText {
+  width: 150px;
+  margin-bottom: 5px;
+  visibility: visible;
+  display:none;
+}
+img.logoText {
+  width: 150px;
+  margin-bottom: 5px;
+  display:block;
+}
+
 
 nav ul {
   list-style: none;
@@ -903,7 +927,7 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  height:60%;
+  height:20%;
   margin-bottom: 30px;
 }
 

@@ -25,7 +25,8 @@ import { News } from "./NewsPage";
 import { Learn } from "./Learn";
 import { LearningModuleDetails } from "./LearningModuleDetails";
 import { LearningModulePage } from "./LearningModulePage";
-import logo from "../Asset/Image/openfinal_logo_no_text.png";
+import logo from "../Asset/Image/logo.png";
+import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
 import navIcon from "../Asset/Image/navIcon.png";
 import { Settings } from "./APIConfigSetting";
 import Forecast from "./Forecast";
@@ -64,6 +65,10 @@ class AppLoaded extends Component {
     this.setState(prevState => ({   
       menuCollapsed: !prevState.menuCollapsed
     }));
+    var img = document.getElementById("logo");
+
+    img.src=logoNoText;
+    
     
   };
   
@@ -74,10 +79,15 @@ class AppLoaded extends Component {
       <HashRouter>
         <>
           <div className="main">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={logo} alt="OpenFinAL Logo" />
-                <button onClick={this.handleClick}>toggleMenu</button>
+                <img src={logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={logoNoText} alt="OpenFinAL Logo" class={`logo ${!menuCollapsed ? 'hidden' : ''}`} />
+                
+              </div>
+              <div>
+                <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
                 <h5>Main</h5>
