@@ -6,9 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/OpenAiModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/OpenAiModel.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/preload.js" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/preload.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,6 +107,7 @@
       <workItem from="1743170797278" duration="200000" />
       <workItem from="1743171008733" duration="2049000" />
       <workItem from="1743603066713" duration="2780000" />
+      <workItem from="1743776643708" duration="1847000" />
     </task>
     <servers />
   </component>

@@ -23,7 +23,19 @@ export class LanguageModelRequest implements IEntity {
     }
 
     fillWithRequest(requestModel: IRequestModel): void {
-        throw new Error("Method not implemented.");
+        var json = requestModel.request;
+        if(!json.request.model.hasOwnProperty("name")) {
+            throw new Error("No property MODEL");
+        }
+        if(!json.request.model.hasOwnProperty("messages")) {
+            throw new Error("No property MESSAGES");
+        }
+        if(json.request.model.hasOwnProperty("name")) {
+            this.setFieldValue("model",json.request.model.name);
+        }
+        if(json.request.model.hasOwnProperty("messages")) {
+            this.setFieldValue("messages",json.request.model.messages);
+        }
     }
     fillWithResponse(model: IResponseModel) {
         throw new Error("Method not implemented.");
