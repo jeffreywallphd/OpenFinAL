@@ -32,3 +32,7 @@ contextBridge.exposeInMainWorld('database', {
         
     }
 });
+
+contextBridge.exposeInMainWorld('chatbot', {
+    openai: require('openai')
+});

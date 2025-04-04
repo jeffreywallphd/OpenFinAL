@@ -63,17 +63,19 @@ class Chatbot extends Component {
         this.setState({ messages: updatedMessages, userInput: "" }); // Clear input after sending
         var interactor = new LanguageModelInteractor();
         // TODO: Fix to send all messages rather than most recent.
-        var requestObj = new JSONRequest(`{
-            "request" : {
-                "model" : {
-                    "name" : "gpt-4o",
-                    "messages" : [
-                        "role" : "user",
-                        "content" : "${userInput}"
+        var requestObj = new JSONRequest({
+            "request": {
+                "model": {
+                    "name": "gpt-4o",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": `${userInput}` // Correct use of template literals
+                        }
                     ]
                 }
             }
-        }`);
+        });
     };
 
     render() {
