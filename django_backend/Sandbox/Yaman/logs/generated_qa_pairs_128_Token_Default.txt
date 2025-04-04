@@ -1,0 +1,11 @@
+2025-04-04 16:56:02,629 - INFO - Starting QA generation for chunk size: 128
+2025-04-04 16:58:48,481 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:01:36,994 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:05:11,379 - ERROR - JSONDecodeError for document 'Documents/PrinciplesofFinance-WEB_UPDATED.pdf'
+2025-04-04 17:05:38,028 - ERROR - JSONDecodeError for document 'Documents/Stock market - Wikipedia.pdf'
+2025-04-04 17:05:51,576 - INFO - Total chunks processed: 20
+2025-04-04 17:05:51,576 - INFO - Successful QA generations: 16
+2025-04-04 17:05:51,576 - INFO - Failed QA generations: 4
+2025-04-04 17:05:51,576 - INFO - Total execution time: 0:09:48.946560
+2025-04-04 17:05:51,576 - INFO - Number of Questions: 1
+2025-04-04 17:05:51,576 - INFO - Token Size: Default

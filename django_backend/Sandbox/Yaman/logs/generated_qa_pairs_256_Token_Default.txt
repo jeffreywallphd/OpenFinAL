@@ -1,0 +1,14 @@
+2025-04-04 17:05:51,593 - INFO - Starting QA generation for chunk size: 256
+2025-04-04 17:06:02,459 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:08:56,406 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:09:07,708 - ERROR - JSONDecodeError for document 'Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf'
+2025-04-04 17:09:24,842 - ERROR - JSONDecodeError for document 'Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf'
+2025-04-04 17:09:26,725 - ERROR - JSONDecodeError for document 'Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf'
+2025-04-04 17:12:09,032 - ERROR - JSONDecodeError for document 'Documents/PrinciplesofFinance-WEB_UPDATED.pdf'
+2025-04-04 17:12:56,326 - ERROR - JSONDecodeError for document 'Documents/PrinciplesofFinance-WEB_UPDATED.pdf'
+2025-04-04 17:13:20,570 - INFO - Total chunks processed: 20
+2025-04-04 17:13:20,570 - INFO - Successful QA generations: 13
+2025-04-04 17:13:20,570 - INFO - Failed QA generations: 7
+2025-04-04 17:13:20,570 - INFO - Total execution time: 0:07:28.976947
+2025-04-04 17:13:20,570 - INFO - Number of Questions: 1
+2025-04-04 17:13:20,570 - INFO - Token Size: Default

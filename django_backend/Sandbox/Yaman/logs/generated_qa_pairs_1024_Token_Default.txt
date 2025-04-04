@@ -1,0 +1,14 @@
+2025-04-04 17:16:32,006 - INFO - Starting QA generation for chunk size: 1024
+2025-04-04 17:16:50,526 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:19:42,991 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:22:38,520 - ERROR - JSONDecodeError for document 'Documents/Finance - Wikipedia.pdf'
+2025-04-04 17:23:15,262 - ERROR - JSONDecodeError for document 'Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf'
+2025-04-04 17:24:22,729 - ERROR - JSONDecodeError for document 'Documents/Stock market - Wikipedia.pdf'
+2025-04-04 17:26:58,162 - ERROR - JSONDecodeError for document 'Documents/Stock market - Wikipedia.pdf'
+2025-04-04 17:27:01,883 - WARNING - Invalid JSON object (not a list) in document 'Documents/Stock market - Wikipedia.pdf'
+2025-04-04 17:27:08,623 - INFO - Total chunks processed: 20
+2025-04-04 17:27:08,623 - INFO - Successful QA generations: 13
+2025-04-04 17:27:08,623 - INFO - Failed QA generations: 7
+2025-04-04 17:27:08,624 - INFO - Total execution time: 0:10:36.616943
+2025-04-04 17:27:08,624 - INFO - Number of Questions: 1
+2025-04-04 17:27:08,624 - INFO - Token Size: Default

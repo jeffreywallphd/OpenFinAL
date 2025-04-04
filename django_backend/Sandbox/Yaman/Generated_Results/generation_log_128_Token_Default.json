@@ -1,0 +1,226 @@
+{
+    "Documents/Finance - Wikipedia.pdf": [
+        {
+            "chunk": "Finance\nFinance refers to monetary resources and to the study and discipline of money, currency, assets\nand liabilities.[a] As a",
+            "qa_pairs": [
+                {
+                    "question": "What is Finance?",
+                    "answer": "Finance refers to monetary resources and to the study and discipline of money, currency, assets and liabilities. As a"
+                }
+            ]
+        },
+        {
+            "chunk": "production, distribution, and consumption of goods and services.[b] Based on the\nscope of financial activities in financial sys",
+            "qa_pairs": [
+                {
+                    "question": "What is financial system?",
+                    "answer": "The financial system is a system that is made up of several institutions, markets, and financial instruments that allow individuals, businesses, and governments to borrow and lend money, transfer risk, and invest. It includes banks, insurance companies, securities exchanges, investment funds, and other financial institutions."
+                },
+                {
+                    "question": "How does financial system work?",
+                    "answer": "The financial system works by allowing individuals, businesses, and governments to borrow and lend money, transfer risk, and invest. It does this by providing a range of financial instruments and services, such as loans, mortgages, bonds, stocks, and insurance, that allow individuals, businesses, and governments to manage their financial risks and achieve their financial goals."
+                }
+            ]
+        },
+        {
+            "chunk": "financial systems, assets are bought, sold, or traded as financial instruments, such as\ncurrencies, loans, bonds, shares, stock",
+            "qa_pairs": [
+                {
+                    "question": "What is financial system?",
+                    "answer": "Financial systems, assets are bought, sold, or traded as financial instruments, such as currencies, loans, bonds, shares, stock."
+                },
+                {
+                    "question": "How does financial system work?",
+                    "answer": "It works by buying, selling, or trading assets as financial instruments, such as currencies, loans, bonds, shares, stock."
+                }
+            ]
+        }
+    ],
+    "Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf": [
+        {
+            "chunk": "s \n \nLEARNING OBJECTIVES \n \nAfter reading this chapter, you should be able to do the following: \n1. Distinguish different philos",
+            "qa_pairs": [
+                {
+                    "question": "What is learning objectives?",
+                    "answer": "Learning objectives are statements that describe what a student will know or be able to do after taking a course or completing a learning activity. They are used to help instructors plan instruction and assess student learning."
+                },
+                {
+                    "question": "How does learning objectives work?",
+                    "answer": "Learning objectives work by providing a clear and concise statement of what a student will know or be able to do after taking a course or completing a learning activity. They are used to help instructors plan instruction and assess student learning."
+                }
+            ]
+        },
+        {
+            "chunk": "sh different philosophies of law—schools of legal thought—and explain their relevance. \n2. Identify the various aims that a func",
+            "qa_pairs": [
+                {
+                    "question": "What is...?",
+                    "answer": "The answer is..."
+                },
+                {
+                    "question": "How does... work?",
+                    "answer": "It works by..."
+                }
+            ]
+        },
+        {
+            "chunk": "us aims that a functioning legal system can serve. \n3. Explain how politics and law are related. \n4. Identify the sources of law",
+            "qa_pairs": [
+                {
+                    "question": "What is the law?",
+                    "answer": "The law is a system of rules that are created and enforced through social or governmental institutions to regulate behavior. It can be created by a single sovereign state or can be made by a group of countries, such as the European Union. It can also be created by international organizations, such as the United Nations. The law is often used to protect people's rights and to help them resolve disputes. It can also be used to enforce contracts, to protect property, and to punish criminals."
+                },
+                {
+                    "question": "How does the law work?",
+                    "answer": "The law works by creating a set of rules that people must follow. These rules are enforced by the government, which has the power to punish people who break the law. The law also provides a way for people to resolve disputes, such as through the court system. The law is also used to protect people's rights, such as the right to own property or the right to a fair trial."
+                }
+            ]
+        },
+        {
+            "chunk": "the sources of law and which laws have priority over other laws. \n5. Understand some basic differences between the US legal sys",
+            "qa_pairs": [
+                {
+                    "question": "What is a legal system?",
+                    "answer": "A legal system is a set of rules that govern a society. These rules are usually established by a government or other authority."
+                },
+                {
+                    "question": "What is the difference between civil and criminal law?",
+                    "answer": "Civil law is the body of law that governs relationships between private individuals, while criminal law is the body of law that governs relationships between the government and individuals. Civil law is concerned with private disputes, such as contract disputes, while criminal law is concerned with public disputes, such as crimes."
+                },
+                {
+                    "question": "What is the difference between common law and civil law?",
+                    "answer": "Common law is a legal system based on precedent, while civil law is a legal system based on codes. Common law is used in countries such as the United States, while civil law is used in countries such as France and Germany."
+                },
+                {
+                    "question": "What is the difference between a statute and a case?",
+                    "answer": "A statute is a law passed by a legislature, while a case is a decision made by a court. A statute is a general rule that applies to all cases, while a case is a specific decision that applies only to the parties involved in the case."
+                },
+                {
+                    "question": "What is the difference between a trial and an appeal?",
+                    "answer": "A trial is a hearing in which a judge or jury decides the facts of a case, while an appeal is a review of a decision made by a lower court. A trial is held to determine the facts of a case, while an appeal is held to determine whether the lower court made a mistake in its decision."
+                }
+            ]
+        },
+        {
+            "chunk": "en the US legal system and other legal systems. \n \n \nLaw has different meanings as well as different functions. Philosophers hav",
+            "qa_pairs": [
+                {
+                    "question": "What is...?",
+                    "answer": "The answer is..."
+                },
+                {
+                    "question": "How does... work?",
+                    "answer": "It works by..."
+                }
+            ]
+        }
+    ],
+    "Documents/PrinciplesofFinance-WEB_UPDATED.pdf": [
+        {
+            "chunk": "Figure 1.1 Finance is the linchpin that connects and directs many parts of a business or organization. (credit: modification of",
+            "qa_pairs": [
+                {
+                    "question": "What is finance?",
+                    "answer": "Finance is the linchpin that connects and directs many parts of a business or organization. It is the process of acquiring funds and managing them to accomplish the goals of the business. Finance can be divided into three main categories: financial management, financial reporting, and financial analysis. Financial management involves the planning, organizing, and controlling of financial resources to achieve the goals of the business. Financial reporting involves the preparation and presentation of financial statements to stakeholders. Financial analysis involves the evaluation of financial data to make decisions about the business."
+                },
+                {
+                    "question": "How does finance work?",
+                    "answer": "Finance works by allocating and managing financial resources to achieve the goals of the business. This includes acquiring funds through borrowing, issuing equity, and raising capital through the sale of assets. The funds are then used to finance the operations of the business, such as purchasing inventory, paying employees, and investing in new equipment. The financial manager is responsible for managing the financial resources of the business, including budgeting, forecasting, and managing cash flow. The financial manager also prepares financial statements and reports to stakeholders, such as shareholders and creditors, to provide them with information about the financial health of the business."
+                }
+            ]
+        },
+        {
+            "chunk": "t: modification of work\n“Finance behind the Glass” by Max London/flickr, CC BY 2.0)\nChapter Outline\n1.1 What Is Finance?\n1.2 The",
+            "qa_pairs": [
+                {
+                    "question": "What is finance?",
+                    "answer": "Finance is the study of money and investments. It includes the study of banking, credit, investments, and other money matters. Finance is an important part of the economy because it helps to allocate resources and manage risk. Finance is also important for individuals and businesses because it helps them to make informed decisions about their money."
+                },
+                {
+                    "question": "How does finance work?",
+                    "answer": "Finance works by allocating resources and managing risk. It helps to allocate resources by providing loans, investments, and other financial products. It also helps to manage risk by providing insurance and other financial products. Finance is important for individuals and businesses because it helps them to make informed decisions about their money."
+                }
+            ]
+        },
+        {
+            "chunk": "Is Finance?\n1.2 The Role of Finance in an Organization\n1.3 Importance of Data and Technology\n1.4 Careers in Finance\n1.5 Markets",
+            "qa_pairs": [
+                {
+                    "question": "What is Finance?",
+                    "answer": "Finance is the study of money and how it is used to manage and grow businesses. It includes the study of financial markets, financial institutions, and the management of financial resources. Finance is important for businesses because it helps them to manage their cash flow, make investment decisions, and raise capital."
+                },
+                {
+                    "question": "How does Finance work?",
+                    "answer": "Finance works by providing a way for businesses to raise capital and manage their cash flow. It also helps businesses to make investment decisions and manage their risk. Finance is important for businesses because it helps them to grow and be successful."
+                }
+            ]
+        },
+        {
+            "chunk": "Concepts of Time and Value\nWhy It Matters\nFinance is essential to the management of a business or organization. Without good fi",
+            "qa_pairs": [
+                {
+                    "question": "What is the concept of time and value?",
+                    "answer": "The concept of time and value is the idea that time and value are interconnected and that the value of an asset or investment can be affected by changes in time. This concept is important in finance because it helps to determine the value of an investment or asset at a given point in time. For example, the value of a stock can be affected by changes in interest rates, which can in turn affect the value of the stock over time. Similarly, the value of a bond can be affected by changes in inflation, which can in turn affect the value of the bond over time. The concept of time and value is also important in the valuation of assets and investments, as it helps to determine the fair market value of an asset or investment at a given point in time."
+                },
+                {
+                    "question": "How does the concept of time and value work?",
+                    "answer": "The concept of time and value works by considering the impact of time on the value of an asset or investment. This concept is based on the idea that the value of an asset or investment can change over time, and that these changes can be influenced by a variety of factors, including changes in interest rates, inflation, and other economic factors. The concept of time and value is used in a variety of financial applications, including the valuation of assets and investments, the calculation of interest rates, and the analysis of financial markets. In general, the concept of time and value is used to help determine the fair market value of an asset or investment at a given point in time, and to help understand how the value of an asset or investment can change over time."
+                }
+            ]
+        }
+    ],
+    "Documents/Stock market - Wikipedia.pdf": [
+        {
+            "chunk": "New York Stock Exchange\nLondon Stock Exchange\nNational Stock Exchange of India\nStock market\nA stock market, equity market, or sh",
+            "qa_pairs": [
+                {
+                    "question": "What is the stock market?",
+                    "answer": "The stock market is a place where people buy and sell stocks."
+                },
+                {
+                    "question": "How does the stock market work?",
+                    "answer": "The stock market works by matching buyers and sellers of stocks."
+                }
+            ]
+        },
+        {
+            "chunk": "quity market, or share market is the\naggregation of buyers and sellers of stocks (also called shares),\nwhich represent ownership",
+            "qa_pairs": [
+                {
+                    "question": "What is the stock market?",
+                    "answer": "The stock market is the aggregation of buyers and sellers of stocks (also called shares), which represent ownership of part of a corporation. Stocks are listed on a stock exchange, and the prices are determined by supply and demand. The stock market is a complex entity, and it is important to understand the basics before investing."
+                },
+                {
+                    "question": "How does the stock market work?",
+                    "answer": "The stock market works by matching buyers and sellers of stocks. The price of a stock is determined by supply and demand, and the stock market is a complex entity. It is important to understand the basics before investing."
+                }
+            ]
+        },
+        {
+            "chunk": "ell as\nstock that is only traded privately, such as shares of private\ncompanies  that  are  sold  to  investors  through  equity",
+            "qa_pairs": [
+                {
+                    "question": "What is private equity?",
+                    "answer": "Private equity is an alternative form of financing in which an investor purchases a share of a company, but does not make the company public. Private equity is usually used to finance startups, but it can also be used to finance established companies. The investor typically receives a share of the company's profits and a share of the company's equity. Private equity is a popular form of financing for startups because it allows the company to avoid the costs and risks of going public. Private equity can also be used to finance established companies that are looking to expand or restructure."
+                },
+                {
+                    "question": "How does private equity work?",
+                    "answer": "Private equity is a form of financing that allows investors to buy shares in a company without making the company public. Private equity is often used to finance startups, but it can also be used to finance established companies. Private equity is a popular form of financing for startups because it allows the company to avoid the costs and risks of going public. Private equity can also be used to finance established companies that are looking to expand or restructure."
+                }
+            ]
+        },
+        {
+            "chunk": "rs  through  equity\ncrowdfunding platforms. Investments are usually made with an\ninvestment strategy in mind.\nThe total market c",
+            "qa_pairs": [
+                {
+                    "question": "What is equity crowdfunding?",
+                    "answer": "Equity crowdfunding is a method of raising capital for a business by selling shares of the company to investors. The shares can be sold through an online platform or a traditional investment bank."
+                },
+                {
+                    "question": "How does equity crowdfunding work?",
+                    "answer": "Equity crowdfunding works by allowing investors to purchase shares of a company's equity. The company then uses the money raised to grow and expand its business. The investors then receive a portion of the company's profits in the form of dividends or a share of the company's assets."
+                }
+            ]
+        }
+    ]
+}
