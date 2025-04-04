@@ -67,7 +67,6 @@ class AppLoaded extends Component {
     }));
     var img = document.getElementById("logo");
 
-    img.src=logoNoText;
     
     
   };
