@@ -23,8 +23,8 @@ body.dark-mode {
   --primary-color-hover: #384457;
   --secondary-color: #384457;
   --tertiary-color: #4a5568;
-  --background-color: #5c5858;
-  --background-color-highlight: #3d3d3d; 
+  --background-color: #3d3d3d;
+  --background-color-highlight: #282828; 
   --accent-color: #63b3ed;
   --highlight-color: #ecc94b;
   --text-color-dark: #e2e8f0;
@@ -63,6 +63,19 @@ footer {
   padding: 15px;
   text-align: center;
   border-top: 1px solid #999999;
+}
+
+input, select, option {
+  color: var(--text-color-dark);
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color-medium);
+  box-shadow: none;
+  padding: 8px;
+  border-radius: 4px; 
+}
+
+p, div {
+  color: var(--text-color-dark);
 }
 
 h1 {
