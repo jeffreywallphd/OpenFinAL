@@ -2,7 +2,7 @@ import {IInputBoundary} from "./IInputBoundary";
 import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
-import {IModel} from "../Gateway/AI/Model/IModel";
+import {IModelGateway} from "../Gateway/AI/Model/IModelGateway";
 import { StockGatewayFactory } from "@DataGateway/StockGatewayFactory";
 import {LanguageModelRequest} from "../Entity/LanguageModelRequest";
 import {NewsGatewayFactory} from "@DataGateway/NewsGatewayFactory";
@@ -29,20 +29,20 @@ export class LanguageModelInteractor implements IInputBoundary {
 
         const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
         const ChatbotGatewayFactory = new ChatbotModelGatewayFactory();
-        var ChatbotGateway: IModel = await ChatbotGatewayFactory.createGateway(JSON.parse(config));
+        var chatbotGateway: IModelGateway = await ChatbotGatewayFactory.createGateway(JSON.parse(config));
 
-        //add the API key to the news request object
-        request.setFieldValue("key", ChatbotGateway.key);
+        //add the API key to the request object
+        request.setFieldValue("key", chatbotGateway.key);
 
         var modelName = requestModel.request.request.model.name;
-
         var messages = requestModel.request.request.model.messages;
         //search for the requested information via the API gateway
-        var results = await ChatbotGateway.create(modelName, messages);
+        var results = await chatbotGateway.create(modelName, messages);
 
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
-        response.convertFromEntity(results, false);
+        response.response = results;
+        window.console.log(response)
 
         return response.response;
     }

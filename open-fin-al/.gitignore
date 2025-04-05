@@ -25,6 +25,7 @@ package-lock.json
 sec.json
 
 # misc
+/.idea
 .DS_Store
 .env.local
 .env.development.local

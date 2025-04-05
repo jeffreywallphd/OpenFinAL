@@ -2,7 +2,7 @@ import {IEntity} from "./IEntity";
 import {Field} from "./Field";
 import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
-import {IModel} from "../Gateway/AI/Model/IModel";
+import {IModelGateway} from "../Gateway/AI/Model/IModelGateway";
 
 export class LanguageModelRequest implements IEntity {
     fields: Map<string,Field> = new Map();
@@ -23,20 +23,22 @@ export class LanguageModelRequest implements IEntity {
     }
 
     fillWithRequest(requestModel: IRequestModel): void {
-        var json = requestModel.request;
-        if(!json.request.model.hasOwnProperty("name")) {
-            throw new Error("No property MODEL");
+         var json = requestModel.request;
+        
+        if(!json.request.hasOwnProperty("model")) {
+            throw new Error("Making a request for a language model requires a model property");
         }
-        if(!json.request.model.hasOwnProperty("messages")) {
-            throw new Error("No property MESSAGES");
-        }
+
+        //set properties of model entity based on request model
         if(json.request.model.hasOwnProperty("name")) {
-            this.setFieldValue("model",json.request.model.name);
-        }
+            this.setFieldValue("model", json.request.model.name);
+        } 
+
         if(json.request.model.hasOwnProperty("messages")) {
-            this.setFieldValue("messages",json.request.model.messages);
+            this.setFieldValue("messages", json.request.model.messages);
         }
     }
+
     fillWithResponse(model: IResponseModel) {
         throw new Error("Method not implemented.");
     }

@@ -2,7 +2,7 @@ import {IEntity} from "./IEntity";
 import {Field} from "./Field";
 import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
-import {IModel} from "../Gateway/AI/Model/IModel";
+import {IModelGateway} from "../Gateway/AI/Model/IModelGateway";
 
 export class LanguageModelRequest implements IEntity {
     fields: Map<string,Field> = new Map();
@@ -22,6 +22,7 @@ export class LanguageModelRequest implements IEntity {
     fillWithRequest(requestModel: IRequestModel): void {
         throw new Error("Method not implemented.");
     }
+    
     fillWithResponse(model: IResponseModel) {
         throw new Error("Method not implemented.");
     }

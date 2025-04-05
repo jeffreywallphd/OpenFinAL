@@ -1,6 +1,6 @@
-import {IModel} from "./IModel";
+import {IModelGateway} from "./IModelGateway";
 
-export interface IKeyedModel extends IModel{
+export interface IKeyedModelGateway extends IModelGateway{
     key: any;
     create(model: string, messages: any[]) : Promise<any>;
     //Implementation should include constructor that accepts a key.

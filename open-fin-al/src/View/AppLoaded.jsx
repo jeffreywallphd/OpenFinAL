@@ -35,7 +35,7 @@ import { SecReport } from "./SecReport";
 import InvestmentPool from "./InvestmentPool";
 import StockAnalysis from "./StockAnalysis";
 import Chatbot from "./Chatbot/Chatbot";
-import ChatbotToggle from "./Chatbot/Chatbot-toggle";
+import ChatbotToggle from "./Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop() {
