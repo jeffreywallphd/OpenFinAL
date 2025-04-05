@@ -28,7 +28,7 @@ export class SecInteractor implements IInputBoundary {
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
         if(requestModel.request.request.sec.action === "10-K" || requestModel.request.request.sec.action === "10-Q") {
-            return this.getReport(requestModel);    
+            return this.getReportLink(requestModel);    
         } else {
             //create sec request object and fill with request model
             var sec = new SecRequest();
@@ -62,6 +62,61 @@ export class SecInteractor implements IInputBoundary {
         return this.get(requestModel);
     }
 
+    async getReportLink(requestModel: IRequestModel): Promise<IResponseModel> {
+        var schemaResponse = null;
+        const zeroStrippedCik = requestModel.request.request.sec.cik.replace(/^0+/, "");
+        const type = requestModel.request.request.sec.action;
+
+        // get SEC report data from companyFacts API
+        var secRequestObj = new JSONRequest(`{
+            "request": {
+                "sec": {
+                    "action": "companyLookup",
+                    "cik": "${requestModel.request.request.sec.cik}"
+                }
+            }
+        }`);
+
+        const companyResponse = await this.get(secRequestObj);
+
+        // get SEC submissions from submissions API
+        secRequestObj = new JSONRequest(`{
+            "request": {
+                "sec": {
+                    "action": "submissionsLookup",
+                    "cik": "${requestModel.request.request.sec.cik}"
+                }
+            }
+        }`);
+
+        const submissionsResponse = await this.get(secRequestObj);
+
+        const mostRecentSubmissionIndex:number = this.findMostRecentFilingIndex(submissionsResponse, type);
+
+        // set up response object to fill with data
+        const response: {[key: string]: any } = {response: {
+            reportDate: submissionsResponse.response.results[0].data.filings.recent["reportDate"][mostRecentSubmissionIndex],
+            filingDate: submissionsResponse.response.results[0].data.filings.recent["filingDate"][mostRecentSubmissionIndex],
+            link: null
+        }};
+
+        // accession number associated with the particular report on the SEC's website
+        const accessionNumber = submissionsResponse.response.results[0].data.filings.recent["accessionNumber"][mostRecentSubmissionIndex].replace(/-/g, "");
+        
+        // create consistent filename format used for SEC reports
+        const [year, month, day] = submissionsResponse.response.results[0].data.filings.recent["reportDate"][mostRecentSubmissionIndex].split("-");
+        const htmlFileName = `${requestModel.request.request.sec.ticker.toLowerCase()}-${year}${month}${day}.htm`;
+        
+        // TODO: Should these fetches be moved to a gateway?
+        this.archivesPath = `https://sec.gov/Archives/edgar/data/${zeroStrippedCik}/${accessionNumber}/`;
+
+        response["response"]["link"] = this.archivesPath + htmlFileName;
+
+        schemaResponse = new JSONResponse(JSON.stringify(response));
+        return schemaResponse.response;
+    }
+
+    // TODO: this is an OLD method. Still needs work to build a report from scratch
     // TODO: break up this method into multiple methods
     async getReport(requestModel: IRequestModel): Promise<IResponseModel> {
         const zeroStrippedCik = requestModel.request.request.sec.cik.replace(/^0+/, "");
@@ -132,9 +187,6 @@ export class SecInteractor implements IInputBoundary {
         // get xml file that contains labels for concepts
         const labelString = await fetch(this.archivesPath + labFileName);
         const xmlLabels = new XMLResponse(await labelString.text())
-
-        schemaResponse = new JSONResponse(JSON.stringify(response));
-        return schemaResponse.response;
         
         var schemaResponse = null;
         var reports:any = {};

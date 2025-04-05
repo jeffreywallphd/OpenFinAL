@@ -1018,13 +1018,30 @@ nav ul li a:hover {
 
 .news-item {
   margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.news-item-link {
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.news-item-link:hover {
+  cursor: pointer;
+  color: var(--primary-color-hover);
+}
+
+.news-item-image {
+  vertical-align: top; 
+}
+
+.news-item-image img {
+  display: block;
 }
 
 .news-item h4 {
   font-size: 20px;
-  color: #333;
-  display: flex;
-  align-items: center;
 }
 
 .news-item h4 .material-icons {
@@ -1399,7 +1416,7 @@ nav ul li a:hover {
   margin: 10px 0;
   transition: all 0.3s ease;
 }
-=======
+
 /* updated /
 / StockAnalysis.css */
 
