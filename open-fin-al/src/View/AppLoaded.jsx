@@ -75,26 +75,22 @@ class AppLoaded extends Component {
                 <img src={logo} alt="OpenFinAL Logo" />
               </div>
               <nav className="sidebar-padding">
-                <h5>Main</h5>
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
                   <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock & Fund</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
-                  <li><NavLink to="/browsefaq"><span className="material-icons">help_outline</span> Browse Our FAQs</NavLink></li>
                   <li><NavLink to="/investment-pool"><span className="material-icons">inventory_2</span> Investment Pool</NavLink></li>
-                  <li><NavLink to="/StockAnalysis"><span className="material-icons">timeline</span> Stock Analysis</NavLink></li>
-                </ul>
-              </nav>
-              <div className="tools sidebar-padding">
-                <h5 className="mt-1">Tools</h5>
-                <ul>
+                  <li><NavLink to="/StockAnalysis"><span className="material-icons">assessment</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
-              </div>
+              </nav>
+              <footer>
+                This software is licensed under the GPL-3.0 license.
+              </footer>
             </aside>
             <div className="content">
               <ScrollToTop />
@@ -119,9 +115,6 @@ class AppLoaded extends Component {
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
               <ChatbotToggle/>
-              <footer>
-                This software is licensed under the GPL-3.0 license.
-              </footer>
             </div>
           </div>
         </>

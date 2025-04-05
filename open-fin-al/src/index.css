@@ -14,6 +14,7 @@
   --row-primary-color: #FFFFFF;
   --row-alternating-color: #c1c9ff;
   --footer-height: 90px;
+  --sidebar-width: 220px;
 }
 
 body.dark-mode {
@@ -47,9 +48,14 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
   background-color: var(--background-color);
   color: var(--text-color-medium);
   padding: 15px;
@@ -189,11 +195,11 @@ code {
 
 .main {
   margin-left: 250px;
-  padding: 20px;
+  padding: 0px;
   display: flex;
   height: 100vh;
   background-color: var(--background-color);
-  /* overflow: hidden; */
+  overflow-y: hidden;
 }
 
 .flex {
@@ -267,12 +273,11 @@ code {
 /* Styling for Home, Content, and Page Containers */
 
 .content {
-  padding: 0;
+  padding: 20px;
   margin: 0;
   min-height: 100vh;
   background-color: var(--background-color);
   flex: 1;
-  overflow-y: scroll;
   overflow-x: hidden;
 }
 
@@ -281,7 +286,7 @@ code {
   padding: 20px;
   background-color: var(--background-color);
   overflow-x: hidden;
-  position: static;
+  /*position: static;*/
 }
 
 .homeContainer {
