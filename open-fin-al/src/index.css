@@ -6,6 +6,7 @@
   --secondary-color: #00878E;
   --tertiary-color: #62C0C2;
   --background-color: #FFFFFF;
+  --background-color-highlight: #CCCCCC;
   --accent-color: #27A2CC;
   --highlight-color: #FDCB50;
   --text-color-dark: #000000;
@@ -23,6 +24,7 @@ body.dark-mode {
   --secondary-color: #384457;
   --tertiary-color: #4a5568;
   --background-color: #5c5858;
+  --background-color-highlight: #3d3d3d; 
   --accent-color: #63b3ed;
   --highlight-color: #ecc94b;
   --text-color-dark: #e2e8f0;
@@ -418,7 +420,7 @@ code {
   max-width: 450px;
   margin-left: 20px;
   margin-right: 20px;
-  background-color: #FFFFFF;
+  background-color: var(--background-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -507,7 +509,7 @@ code {
 }
 
 .faq-tableOfContents {
-  background-color: #f5f5f5;
+  background-color: var(--background-color);
   padding: 2%;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
@@ -528,7 +530,7 @@ code {
 
 .riskPage {
   min-width: calc(100vw - 400px);
-  background-color: #F0F4F8;
+  background-color: var(--background-color);
 }
 
 .riskBody {
@@ -814,7 +816,7 @@ div.valueContainer span.numericValue {
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
-  background-color: #F0F4F8;
+  background-color: var(--background-color);
 }
 
 .container {
@@ -859,7 +861,7 @@ nav ul li {
 
 nav ul li a {
   text-decoration: none;
-  color: #000;
+  color: var(--text-color-dark);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -874,7 +876,7 @@ nav ul li a .material-icons {
 
 /* Add background color on hover */
 nav ul li a:hover {
-  background-color: #E0E4E7;
+  background-color: var(--background-color-highlight);
 }
 .mt-1{
   margin-top: 10px;
@@ -895,7 +897,7 @@ nav ul li a:hover {
 
 .tools ul li a {
   text-decoration: none;
-  color: #000;
+  color: var(--text-color-dark);
   display: flex;
   align-items: center;
   padding: 5px;
@@ -926,7 +928,7 @@ nav ul li a:hover {
 
 .nav-left h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--text-color-medium);
   display: flex;
   align-items: center;
 }
@@ -944,7 +946,7 @@ nav ul li a:hover {
   top: 50%;
   left: 10px;
   transform: translateY(-50%);
-  color: #aaa;
+  color: var(--text-color-light);
 }
 
 .nav-center input {
@@ -981,14 +983,14 @@ nav ul li a:hover {
 }
 
 .current-month {
-  background-color: #2B388F;
+  background-color: var(--primary-color);
   position: relative;
   padding: 10px;
   height: 150px!important;
 }
 
 .stats>div {
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 10px;
   border-radius: 10px;
   flex: 1 1 calc(33.333% - 20px);
@@ -1010,7 +1012,7 @@ nav ul li a:hover {
 .news-updates {
   flex: 1 1 40%;
   padding: 20px;
-  background-color: #fff;
+  background-color: var(--background-color);
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
@@ -1056,7 +1058,7 @@ nav ul li a:hover {
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
   padding: 10px;
-  background-color: #fff !important;
+  background-color: var(--background-color) !important;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.064) !important;
   display: flex;
@@ -1074,7 +1076,7 @@ nav ul li a:hover {
   margin-right: 10px;
   padding: 10px 20px;
   border: none;
-  background-color: #5A67D8;
+  background-color: var(--primary-color-hover);
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -1091,7 +1093,7 @@ nav ul li a:hover {
 /* Trades Chart Section */
 .trades-chart {
   flex: 1;
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -1110,7 +1112,7 @@ nav ul li a:hover {
 /* Your Trades Section (Netflix and Apple Inc.) */
 .your-trades {
   width: 250px;
-  background-color: #ffffff00 !important;
+  background-color: var(--background-color) !important;
   padding: 20px;
   border-radius: 10px;
   height: 150px !important;
@@ -1150,7 +1152,7 @@ nav ul li a:hover {
 .trade-time {
   display: block;
   font-size: 12px;
-  color: #888;
+  color: var(--text-color-medium);
   margin-left: auto;
 }
 
@@ -1161,7 +1163,7 @@ nav ul li a:hover {
   border-radius: 5px;
   text-align: right;
   font-size: 14px;
-  color: #2B388F;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -1170,15 +1172,15 @@ nav ul li a:hover {
 }
 
 .current-month {
-  background-color: #2B388F !important;
-  color: white;
+  background-color: var(--primary-color) !important;
+  color: var(--text-color-light);
   padding: 0;
   margin: 0;
 }
 
 .current-month h3 {
   margin-top: 5px;
-  color: white;
+  color: var(--text-color-light);
 }
 
 .current-month p {
@@ -1193,7 +1195,7 @@ nav ul li a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -1227,8 +1229,8 @@ nav ul li a:hover {
 
 .trade-button {
   padding: 10px 20px;
-  background-color: #5A67D8;
-  color: #fff;
+  background-color: var(--primary-color-hover);
+  color: var(--text-color-light);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -1304,7 +1306,7 @@ nav ul li a:hover {
 }
 
 .portfolio-card {
-  background-color: #f5f5f5;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 5px;
   width: 45%;
@@ -1324,7 +1326,7 @@ nav ul li a:hover {
 }
 
 .stock-card {
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 5px;
   width: 30%;
@@ -1353,14 +1355,14 @@ nav ul li a:hover {
 
 .faq-page h1 {
   font-size: 32px;
-  color: #2d2d7d ;
+  color: var(--primary-color) ;
   text-align: center; 
   margin: 0 auto;
 }
 
 .faq-page h2 {
   font-size: 24px;
-  color: #2d2d7d ;
+  color: var(--primary-color) ;
   text-align: center; 
   margin: 0 auto;
 }
@@ -1386,21 +1388,21 @@ nav ul li a:hover {
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
   margin: 10px 0;
   box-sizing: border-box;
 }
 
 .faq-card h3 {
   font-size: 20px;
-  color: #2d2d7d;
+  color: var(--primary-color);
   border-bottom: 2px solid #ddd;
   padding-bottom: 10px;
 }
 
 .faq-card h4 {
   cursor: pointer;
-  color: #2d2d7d;
+  color: var(--primary-color);
 }
 
 .faq-question {
@@ -1423,7 +1425,7 @@ nav ul li a:hover {
 .stock-analysis {
   margin: 20px;
   font-family: Arial, sans-serif;
-  color: #333;
+  color: var(--text-color-medium);
 }
 
 .search-bar {
@@ -1447,14 +1449,14 @@ nav ul li a:hover {
   padding: 10px 20px;
   font-size: 18px;
   border: none;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--secondary-color);
+  color: var(--text-color-light);
   cursor: pointer;
   border-radius: 5px;
 }
 
 .search-bar button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 
 .stock-table {
