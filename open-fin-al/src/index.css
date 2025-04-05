@@ -784,6 +784,10 @@ body {
   padding: 10px;
 }
 
+.logo {
+  text-align: center;
+}
+
 .logo img {
   width: 150px;
   margin-bottom: 5px;
