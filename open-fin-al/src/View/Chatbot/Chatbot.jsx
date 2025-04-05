@@ -56,6 +56,7 @@ class Chatbot extends Component {
             <div className="chatBot">
                 <header>
                     <h2>ChatBot</h2>
+                    <button onClick={this.props.handleToggle} className="close-btn">X</button>
                 </header>
                 <ul className="chatbox">
                     {this.state.messages.map((msg, index) => (

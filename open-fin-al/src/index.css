@@ -2,6 +2,7 @@
 
 :root {
   --primary-color: #2B388F;
+  --primary-color-hover: #5A67D8;
   --secondary-color: #00878E;
   --tertiary-color: #62C0C2;
   --background-color: #FFFFFF;
@@ -17,6 +18,7 @@
 
 body.dark-mode {
   --primary-color: #333c51;
+  --primary-color-hover: #384457;
   --secondary-color: #384457;
   --tertiary-color: #4a5568;
   --background-color: #5c5858;
@@ -1890,7 +1892,7 @@ nav ul li a:hover {
 }
 
 .chatBot {
-  border: 3px solid #2B388F;
+  border: 3px solid var(--primary-color);
   border-radius: 10px;
   margin: 50px auto;
   overflow: hidden;
@@ -1918,18 +1920,18 @@ nav ul li a:hover {
 .chat p {
   padding: 10px;
   border-radius: 10px;
-  max-width: 70%;
   word-wrap: break-word;
 }
 
 .chat-outgoing p {
-  background-color: #162887;
+  background-color: var(--primary-color);
   align-self: flex-end;
   color: #fff;
 }
 
 .chat-incoming p {
-  background-color: #00ffff; /*This is the Chatbot's message*/
+  background-color: var(--primary-color-hover); /*This is the Chatbot's message*/
+  color: #fff;
 }
 
 .chat-input {
@@ -1977,16 +1979,20 @@ nav ul li a:hover {
 
 #sendBTN {
   width: 100%;
-  padding: 8px;
+  padding: 30px;
   border: 0;
   outline: none;
   font-size: 20px;
   font-weight: 600;
-  border-radius: 7px;
-  background-color: #27A2CC;
+  border-radius: 5px;
   cursor: pointer;
   color: white;
   margin-top: 12px;
+  background-color: var(--primary-color);
+}
+
+#sendBTN:hover {
+  background-color: var(--primary-color-hover);
 }
 
 .lastMessage {
@@ -1997,15 +2003,30 @@ nav ul li a:hover {
   margin-left: 550px;
 }
 
+/* Close button */
+.close-btn {
+  background-color: white;
+  color: black;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  margin: 0;
+}
+
 .chatBot header {
-  background-color: #2B388F;
-  text-align: center;
-  padding: 10px 0;
+  display: flex;
+  background-color: var(--primary-color);
+  justify-content: space-between; /* Position items on opposite sides */
+  align-items: center;            /* Vertically center the items */
+  padding: 10px 20px 10px 0px;             /* Optional, adjust padding as needed */
   border-radius: 7px 7px 0 0;
 }
 
 .chatBot header h2 {
+  flex: 1; /* This allows <h2> to take available space */
+  text-align: center; /* Center the <h2> text */
   color: #fff;
   margin: 0;
 }
+
 

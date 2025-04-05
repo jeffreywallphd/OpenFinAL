@@ -26,9 +26,8 @@ class ChatbotToggle extends Component {
 
                 {this.state.toggle && (
                     <div className="chatbot-modal">
-                        <div className="chatbot-modal-content">
-                            <button onClick={this.handleClick} className="close-btn">X</button>
-                            <Chatbot /> {/* The chatbot component */}
+                        <div className="chatbot-modal-content">                            
+                            <Chatbot handleToggle={this.handleClick} /> {/* The chatbot component */}
                         </div>
                     </div>
                 )}
