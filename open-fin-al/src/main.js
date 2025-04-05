@@ -12,6 +12,9 @@ const ipcMain = require('electron').ipcMain;
 
 //////////////////////////// Core Electron Section ////////////////////////////
 
+let win;           // main window
+let urlWindow;     // url window
+
 // TODO: try to remove nodeIntegration, as it may create security vulnerabilities
 const createWindow = () => {
   win = new BrowserWindow({ 
@@ -40,6 +43,47 @@ app.whenReady().then(() => {
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
+});
+
+// securely open a new Electron window with a URL
+// 🔒 Prevents access to Node.js
+// 🔒 Prevents direct access to Electron internals
+// 🔒 Enables Chromium's sandbox
+// 🔒 Disables remote module
+// 🚫 No preload script
+const createUrlWindow = (url) => {
+  urlWindow = new BrowserWindow({
+    show: false,
+    parent: win,
+    title: 'Open FinAL',
+    webPreferences: {
+      nodeIntegration: false,     
+      contextIsolation: true,     
+      sandbox: true,              
+      enableRemoteModule: false,  
+      preload: undefined         
+    }
+  });
+
+  urlWindow.maximize();
+  urlWindow.show();
+
+  urlWindow.webContents.setWindowOpenHandler(({ url }) => {
+    shell.openExternal(url);
+    return { action: 'deny' };
+  });
+
+  urlWindow.loadURL(url);
+  urlWindow.on('closed', () => {
+    urlWindow = null;
+  });
+};
+
+// Listen for the renderer process to request opening second window
+ipcMain.on('open-url-window', (event, url) => {
+  if (!urlWindow) {
+    createUrlWindow(url);
+  }
 });
 
 app.on('window-all-closed', () => {

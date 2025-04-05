@@ -36,7 +36,7 @@ function NewsListing({ listingData }) {
         <img src={listingData.thumbnail} alt="Thumbnail" style={{ width: '100px', height: 'auto', borderRadius: '4px' }} />
       </div>
       <div style={{ flex: 1 }}>
-        <h4 style={{ margin: '0' }}><a href={listingData.url} style={{ color: '#007bff', textDecoration: 'none' }}>{listingData.title}</a></h4>
+        <h4 style={{ margin: '0' }}><a href="#" onClick={() => window.urlWindow.openUrlWindow(listingData.url)} style={{ color: '#007bff', textDecoration: 'none' }}>{listingData.title}</a></h4>
         <p style={{ margin: '5px 0' }}>{listingData.summary}</p>
         <p style={{ fontSize: '0.8rem', color: '#555' }}>
           {formatDate(listingData.date)} {formatTime(listingData.time)} - Src: {listingData.source}

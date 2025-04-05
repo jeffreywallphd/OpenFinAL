@@ -131,7 +131,10 @@ export class SecInteractor implements IInputBoundary {
 
         // get xml file that contains labels for concepts
         const labelString = await fetch(this.archivesPath + labFileName);
-        const xmlLabels = new XMLResponse(await labelString.text());
+        const xmlLabels = new XMLResponse(await labelString.text())
+
+        schemaResponse = new JSONResponse(JSON.stringify(response));
+        return schemaResponse.response;
         
         var schemaResponse = null;
         var reports:any = {};
