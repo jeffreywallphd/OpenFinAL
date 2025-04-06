@@ -6,12 +6,16 @@
   --secondary-color: #00878E;
   --tertiary-color: #62C0C2;
   --background-color: #FFFFFF;
+  --background-color-highlight-light: #F0F0F0;
   --background-color-highlight: #CCCCCC;
   --accent-color: #27A2CC;
   --highlight-color: #FDCB50;
+  --text-color-white: #FFFFFF;
   --text-color-dark: #000000;
   --text-color-light: #FFFFFF;
-  --text-color-medium: #333333;
+  --text-color-medium-light: #CCCCCC;
+  --text-color-medium: #888888;
+  --text-color-medium-dark: #333333;
   --row-primary-color: #FFFFFF;
   --row-alternating-color: #c1c9ff;
   --footer-height: 90px;
@@ -19,17 +23,21 @@
 }
 
 body.dark-mode {
-  --primary-color: #333c51;
-  --primary-color-hover: #384457;
+  --primary-color: #6674f1;
+  --primary-color-hover: #6977f7;
   --secondary-color: #384457;
   --tertiary-color: #4a5568;
   --background-color: #3d3d3d;
+  --background-color-highlight-light: #303030;
   --background-color-highlight: #282828; 
-  --accent-color: #63b3ed;
+  --accent-color: #27A2CC;
   --highlight-color: #ecc94b;
-  --text-color-dark: #e2e8f0;
-  --text-color-light: #ffffff;
-  --text-color-medium: #cbd5e0;
+  --text-color-white: #FFFFFF;
+  --text-color-dark: #FFFFFF;
+  --text-color-light: #777777;
+  --text-color-medium-light: #999999;
+  --text-color-medium: #BBBBBB;
+  --text-color-medium-dark: #DDDDDD;
   --row-primary-color: #2d3748;
   --row-alternating-color: #4a5568;
 }
@@ -59,16 +67,32 @@ footer {
   left: 0;
   width: var(--sidebar-width);
   background-color: var(--background-color);
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   padding: 15px;
   text-align: center;
   border-top: 1px solid #999999;
 }
 
+a {
+  color: var(--primary-color);  
+}
+
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+a:active {
+  color: var(--primary-color);
+}
+
+a:visited {
+  color: var(--primary-color);
+}
+
 input, select, option {
   color: var(--text-color-dark);
   background-color: var(--background-color);
-  border: 1px solid var(--text-color-medium);
+  border: 1px solid var(--text-color-medium-dark);
   box-shadow: none;
   padding: 8px;
   border-radius: 4px; 
@@ -91,16 +115,16 @@ h2 {
 }
 
 h3 {
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 h4 {
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 select {
   padding: 8px;
-  border: 1px solid black;
+  border: 1px solid var(--background-color-highlight);
   height: 40px;
   border-radius: 4px;
 }
@@ -108,7 +132,7 @@ select {
 button {
   cursor: pointer;
   background-color: var(--accent-color);
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   font-size: 16px;
   font-weight: bold;
   border: none;
@@ -123,8 +147,8 @@ button:hover {
 }
 
 .btn-group button {
-  background-color: #CCCCCC;
-  color: var(--text-color-medium);
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
   border-radius: 0px;
   padding: 10px;
   font-size: 12px;
@@ -133,16 +157,16 @@ button:hover {
 
 .btn-group button:hover {
   box-shadow: 0;
-  border-right: 1px solid #999999;
-  border-left: 1px solid #999999;
+  border-right: 1px solid var(--text-color-medium);
+  border-left: 1px solid var(--text-color-medium);
 }
 
 .btn-group button:disabled {
-  color: #999999;
+  color: var(--text-color-medium);
 }
 
 .greyedOut {
-  color: #666666;
+  color: var(--text-color-medium-dark);
 }
 
 /* Styling for Loading Page */
@@ -452,13 +476,13 @@ code {
   padding: 20px;
   height: 100%;
   border-radius: 0px 0px 10px 10px;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 .cardContainer h3 {
   padding: 0;
   margin: 0;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 /* Styling for Stock Charting */
@@ -489,7 +513,6 @@ code {
   width: 50px;
   border-radius: 4px;
   background-color: var(--accent-color);
-  color: var(--text-color-light);
   transition: 0.2s;
 }
 
@@ -676,7 +699,7 @@ code {
 
 .scoreComponent {
   background-color: var(--row-alternating-color);
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   border-radius: 3px;
   min-width: 30%;
   text-align: center;
@@ -941,7 +964,7 @@ nav ul li a:hover {
 
 .nav-left h1 {
   font-size: 24px;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   display: flex;
   align-items: center;
 }
@@ -1003,7 +1026,7 @@ nav ul li a:hover {
 }
 
 .stats>div {
-  background-color: var(--background-color);
+  background-color: var(--background-color-highlight-light);
   padding: 10px;
   border-radius: 10px;
   flex: 1 1 calc(33.333% - 20px);
@@ -1023,9 +1046,9 @@ nav ul li a:hover {
 
 /* News updates section on the same row as stats */
 .news-updates {
+  background-color: var(--background-color-highlight-light);
   flex: 1 1 40%;
   padding: 20px;
-  background-color: var(--background-color);
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
@@ -1071,7 +1094,7 @@ nav ul li a:hover {
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
   padding: 10px;
-  background-color: var(--background-color) !important;
+  background-color: var(--background-color-highlight-light) !important;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.064) !important;
   display: flex;
@@ -1125,7 +1148,7 @@ nav ul li a:hover {
 /* Your Trades Section (Netflix and Apple Inc.) */
 .your-trades {
   width: 250px;
-  background-color: var(--background-color) !important;
+  background-color: var(--background-color-highlight-light) !important;
   padding: 20px;
   border-radius: 10px;
   height: 150px !important;
@@ -1165,7 +1188,7 @@ nav ul li a:hover {
 .trade-time {
   display: block;
   font-size: 12px;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   margin-left: auto;
 }
 
@@ -1186,14 +1209,14 @@ nav ul li a:hover {
 
 .current-month {
   background-color: var(--primary-color) !important;
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   padding: 0;
   margin: 0;
 }
 
 .current-month h3 {
   margin-top: 5px;
-  color: var(--text-color-light);
+  color: var(--text-color-white);
 }
 
 .current-month p {
@@ -1208,7 +1231,6 @@ nav ul li a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -1266,9 +1288,14 @@ nav ul li a:hover {
     /* Two columns on smaller screens */
   }
 
+  .stats div {
+    background-color: var(--background-color-highlight-light);
+  }
+
   .news-updates {
     margin-top: 20px;
     flex: 1 1 100%;
+    background-color: var(--background-color-highlight-light);
     /* Full width news updates on tablet */
   }
 }
@@ -1305,6 +1332,7 @@ nav ul li a:hover {
   .news-updates {
     flex: 1 1 100%;
     margin-top: 20px;
+    background-color: var(--background-color-highlight-light);
   }
 }
 .page {
@@ -1339,7 +1367,7 @@ nav ul li a:hover {
 }
 
 .stock-card {
-  background-color: var(--background-color);
+  background-color: var(--background-color-highlight-light);
   padding: 20px;
   border-radius: 5px;
   width: 30%;
@@ -1385,7 +1413,7 @@ nav ul li a:hover {
   padding: 10px;
   margin: 20px 0;
   font-size: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 50px;
 }
 
@@ -1397,7 +1425,7 @@ nav ul li a:hover {
 
 .faq-card {
   width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -1409,7 +1437,7 @@ nav ul li a:hover {
 .faq-card h3 {
   font-size: 20px;
   color: var(--primary-color);
-  border-bottom: 2px solid #ddd;
+  border-bottom: 2px solid var(--background-color-highlight);
   padding-bottom: 10px;
 }
 
@@ -1438,7 +1466,7 @@ nav ul li a:hover {
 .stock-analysis {
   margin: 20px;
   font-family: Arial, sans-serif;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 .search-bar {
@@ -1453,7 +1481,7 @@ nav ul li a:hover {
   height: 35px;
   padding: 10px;
   font-size: 18px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 5px;
 }
 
@@ -1462,8 +1490,7 @@ nav ul li a:hover {
   padding: 10px 20px;
   font-size: 18px;
   border: none;
-  background-color: var(--secondary-color);
-  color: var(--text-color-light);
+  background-color: var(--accent-color);
   cursor: pointer;
   border-radius: 5px;
 }
@@ -1480,7 +1507,7 @@ nav ul li a:hover {
 
 .stock-table th,
 .stock-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   padding: 12px;
   text-align: center;
 }
@@ -1517,7 +1544,7 @@ nav ul li a:hover {
   font-size: 16px;
   border: none;
   background-color: #28a745;
-  color: white;
+  color: var(--text-color-white);
   cursor: pointer;
   border-radius: 5px;
 }
@@ -1549,8 +1576,7 @@ nav ul li a:hover {
 
 .survey-button,
 .create-pool-button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--accent-color);
   border: none;
   border-radius: 5px;
   padding: 10px 15px;
@@ -1560,7 +1586,7 @@ nav ul li a:hover {
 
 .survey-button:hover,
 .create-pool-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 
 .content-grid {
@@ -1581,8 +1607,8 @@ nav ul li a:hover {
 }
 
 .metric-card {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-highlight-light);
+  border: 1px solid var(--background-color-highlight);
   padding: 15px;
   border-radius: 5px;
   text-align: center;
@@ -1608,13 +1634,13 @@ nav ul li a:hover {
 
 .investment-table th,
 .investment-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   padding: 10px;
   text-align: left;
 }
 
 .investment-table th {
-  background-color: #f1f1f1;
+  background-color: var(--background-color-highlight);
 }
 
 .investment-pools {
@@ -1627,8 +1653,8 @@ nav ul li a:hover {
 }
 
 .pool-list li {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-highlight-light);
+  border: 1px solid var(--background-color-highlight);
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -1660,7 +1686,7 @@ nav ul li a:hover {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   position: relative;
@@ -1680,7 +1706,7 @@ nav ul li a:hover {
 .form-group select {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 5px;
 }
 
@@ -1694,7 +1720,7 @@ nav ul li a:hover {
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 .survey-overlay {
   position: fixed;
@@ -1710,7 +1736,7 @@ nav ul li a:hover {
 }
 
 .survey-container {
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 8px;
   padding: 2rem;
   position: relative;
@@ -1762,10 +1788,10 @@ nav ul li a:hover {
 .option-button {
   padding: 1rem;
   text-align: left;
-  background-color: #f5f5f5;
+  background-color: var(--background-color-highlight-light);
   border: 2px solid transparent;
   border-radius: 6px;
-  color: black;
+  color: var(--text-color-dark);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -1775,8 +1801,8 @@ nav ul li a:hover {
 }
 
 .option-button.selected {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border-color: #2563eb;
 }
 
@@ -1795,13 +1821,13 @@ nav ul li a:hover {
 }
 
 .nav-button {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
 }
 
 .nav-button:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 .nav-button:disabled {
@@ -1850,8 +1876,8 @@ nav ul li a:hover {
 
 .close-survey-button {
   padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -1860,13 +1886,13 @@ nav ul li a:hover {
 }
 
 .close-survey-button:hover {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 .survey-button {
   padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -1875,7 +1901,7 @@ nav ul li a:hover {
 }
 
 .survey-button:hover {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 
@@ -1923,8 +1949,7 @@ nav ul li a:hover {
 }
 
 .agree-button {
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--accent-color);
   padding: 8px 16px;
   border-radius: 4px;
   border: none;
@@ -1934,7 +1959,7 @@ nav ul li a:hover {
 }
 
 .agree-button:hover {
-  background-color: #1d4ed8;
+  background-color: var(--accent-color);
 }
 
 .cancel-button {
@@ -2028,18 +2053,18 @@ nav ul li a:hover {
 
 .chat-input {
   padding: 10px;
-  border-top: 1px solid #ccc;
+  border-top: 1px solid var(--background-color-highlight);
 }
 
 .chat-input textarea {
   width: 522px;
   padding: 10px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 7px;
   resize: none;
   outline: none;
   overflow-y: scroll;
-  background-color: #dcdcdc85;
+  background-color: var(--background-color-highlight-light);
   font-size: 16px;
   color: black;
   font-weight: 600;
@@ -2078,7 +2103,7 @@ nav ul li a:hover {
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
-  color: white;
+  color: var(--text-color-light);
   margin-top: 12px;
   background-color: var(--primary-color);
 }
@@ -2097,8 +2122,8 @@ nav ul li a:hover {
 
 /* Close button */
 .close-btn {
-  background-color: white;
-  color: black;
+  background-color: var(--background-color);
+  color: var(--text-color-dark);
   border: none;
   padding: 5px;
   cursor: pointer;
@@ -2117,7 +2142,7 @@ nav ul li a:hover {
 .chatBot header h2 {
   flex: 1; /* This allows <h2> to take available space */
   text-align: center; /* Center the <h2> text */
-  color: #fff;
+  color: var(--text-color-light);
   margin: 0;
 }
 
