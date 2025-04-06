@@ -2017,7 +2017,7 @@ nav ul li a:hover {
   width: 500px;
   overflow-y: clip;
   height: 600px;
-  background: rgb(255, 255, 255);
+  background-color: var(--background-color);
   background-size: contain;
   box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
   background-repeat: no-repeat;
@@ -2044,12 +2044,12 @@ nav ul li a:hover {
 .chat-outgoing p {
   background-color: var(--primary-color);
   align-self: flex-end;
-  color: #fff;
+  color: var(--text-color-white);
 }
 
 .chat-incoming p {
   background-color: var(--primary-color-hover); /*This is the Chatbot's message*/
-  color: #fff;
+  color: var(--text-color-white);
 }
 
 .chat-input {
@@ -2067,7 +2067,7 @@ nav ul li a:hover {
   overflow-y: scroll;
   background-color: var(--background-color-highlight-light);
   font-size: 16px;
-  color: black;
+  color: var(--text-color-dark);
   font-weight: 600;
   margin-top: -10px;
   margin-left: -15px;
@@ -2104,7 +2104,7 @@ nav ul li a:hover {
   font-weight: 600;
   border-radius: 5px;
   cursor: pointer;
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   margin-top: 12px;
   background-color: var(--primary-color);
 }
@@ -2143,7 +2143,7 @@ nav ul li a:hover {
 .chatBot header h2 {
   flex: 1; /* This allows <h2> to take available space */
   text-align: center; /* Center the <h2> text */
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   margin: 0;
 }
 
