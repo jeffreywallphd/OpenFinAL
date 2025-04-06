@@ -21,7 +21,7 @@ class Forecast extends Component {
     render() {
         return (
             <div className="page">
-                <h2>Forecast</h2>
+                <h2><span className="material-icons">timeline</span> Forecast</h2>
                 <p>
                     There are many different models that can be used to forecast movements in the market.
                 </p>

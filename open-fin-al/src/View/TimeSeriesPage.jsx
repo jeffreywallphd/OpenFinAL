@@ -79,7 +79,7 @@ function TimeSeriesPage(props) {
 
     return (
         <div className="page">
-            <h2>Price and Volume Trends</h2>
+            <h2><span className="material-icons">attach_money</span> Stock Trends</h2>
             <div className="flex">
                 <div>
                     {state ?

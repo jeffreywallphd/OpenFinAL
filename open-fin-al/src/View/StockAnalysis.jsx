@@ -102,59 +102,62 @@ ${rows.join('\n')}`;
   };
 
   return (
-    <div className="stock-analysis">
-      <div className="search-bar" style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search by ticker symbols (e.g., MSFT, AAPL, IBM)..."
-          value={searchTerms}
-          onChange={(e) => setSearchTerms(e.target.value)}
-          style={{ width: '400px', height: '30px', padding: '5px', fontSize: '16px' }}
-        />
-        <button onClick={handleSearch} style={{ marginLeft: '10px', padding: '5px 15px', fontSize: '16px' }}>Search</button>
-      </div>
-      {financialData.length > 0 && (
-        <div className="search-result" ref={chartRef}>
-          <table className="comparison-table" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
-            <thead>
-              <tr>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Symbol</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Market Capitalization</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>EBITDA</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>P/E Ratio</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>PEG Ratio</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Book Value</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Dividend Per Share</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>EPS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {financialData.map((stock) => (
-                <tr key={stock.Symbol}>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Symbol}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Name || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.MarketCapitalization || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.EBITDA || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PERatio || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PEGRatio || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.BookValue || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.DividendPerShare || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.EPS || 'N/A'}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          {chartData && (
-            <div className="stock-chart" style={{ marginTop: '40px' }}>
-              <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
-            </div>
-          )}
+    <div className="page">
+      <h2><span className="material-icons">assessment</span> Stock Comparison</h2>
+      <div className="stock-analysis">
+        <div className="search-bar" style={{ textAlign: 'center', marginBottom: '20px' }}>
+          <input
+            type="text"
+            placeholder="Search by ticker symbols (e.g., MSFT, AAPL, IBM)..."
+            value={searchTerms}
+            onChange={(e) => setSearchTerms(e.target.value)}
+            style={{ width: '400px', height: '30px', padding: '5px', fontSize: '16px' }}
+          />
+          <button onClick={handleSearch} style={{ marginLeft: '10px', padding: '5px 15px', fontSize: '16px' }}>Search</button>
         </div>
-      )}
-      <div className="export-buttons" style={{ textAlign: 'center', marginTop: '20px' }}>
-        <button onClick={() => handleExport('csv')} style={{ marginRight: '10px', padding: '10px 20px', fontSize: '16px' }}>Export to CSV</button>
-        <button onClick={() => handleExport('pdf')} style={{ padding: '10px 20px', fontSize: '16px' }}>Export to PDF</button>
+        {financialData.length > 0 && (
+          <div className="search-result" ref={chartRef}>
+            <table className="comparison-table" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+              <thead>
+                <tr>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Symbol</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Market Capitalization</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>EBITDA</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>P/E Ratio</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>PEG Ratio</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Book Value</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>Dividend Per Share</th>
+                  <th style={{ border: '1px solid #ddd', padding: '8px' }}>EPS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {financialData.map((stock) => (
+                  <tr key={stock.Symbol}>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Symbol}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Name || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.MarketCapitalization || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.EBITDA || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PERatio || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PEGRatio || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.BookValue || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.DividendPerShare || 'N/A'}</td>
+                    <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.EPS || 'N/A'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {chartData && (
+              <div className="stock-chart" style={{ marginTop: '40px' }}>
+                <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
+              </div>
+            )}
+          </div>
+        )}
+        <div className="export-buttons" style={{ textAlign: 'center', marginTop: '20px' }}>
+          <button onClick={() => handleExport('csv')} style={{ marginRight: '10px', padding: '10px 20px', fontSize: '16px' }}>Export to CSV</button>
+          <button onClick={() => handleExport('pdf')} style={{ padding: '10px 20px', fontSize: '16px' }}>Export to PDF</button>
+        </div>
       </div>
     </div>
   );
