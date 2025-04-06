@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-class Chatbot extends Component {
+class ChatbotMessage extends Component {
     render(){
         return(
             <li className="chat-incoming chat">

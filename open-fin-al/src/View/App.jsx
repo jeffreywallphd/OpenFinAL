@@ -42,7 +42,8 @@ function App(props) {
     // Clear localStorage when the app is closed or refreshed
     useEffect(() => {
         const clearDarkMode = () => {
-            localStorage.removeItem("darkMode");
+            //localStorage.removeItem("darkMode");
+            localStorage.setItem("darkMode", "false");
         };
 
         window.addEventListener("beforeunload", clearDarkMode);

@@ -44,7 +44,7 @@ function SecReport(props) {
                         <div>
                             <h3>For period ending {state.secReportData.reportDate}</h3>
                             <p>For the most accurate data, the full report can be viewed on the SEC's website at:</p> 
-                            <p><a href={state.secReportData.link} target="_blank">{state.secReportData.link}</a></p>
+                            <p><a href={state.secReportData.link}>{state.secReportData.link}</a></p>
                     
                             {Object.keys(state.secReportData.statements).map((key) => {
                                 var report = state.secReportData.statements[key];

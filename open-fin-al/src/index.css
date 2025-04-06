@@ -2,17 +2,44 @@
 
 :root {
   --primary-color: #2B388F;
+  --primary-color-hover: #5A67D8;
   --secondary-color: #00878E;
   --tertiary-color: #62C0C2;
   --background-color: #FFFFFF;
+  --background-color-highlight-light: #F0F0F0;
+  --background-color-highlight: #CCCCCC;
   --accent-color: #27A2CC;
   --highlight-color: #FDCB50;
+  --text-color-white: #FFFFFF;
   --text-color-dark: #000000;
   --text-color-light: #FFFFFF;
-  --text-color-medium: #333333;
+  --text-color-medium-light: #CCCCCC;
+  --text-color-medium: #888888;
+  --text-color-medium-dark: #333333;
   --row-primary-color: #FFFFFF;
   --row-alternating-color: #c1c9ff;
   --footer-height: 90px;
+  --sidebar-width: 220px;
+}
+
+body.dark-mode {
+  --primary-color: #6674f1;
+  --primary-color-hover: #6977f7;
+  --secondary-color: #384457;
+  --tertiary-color: #4a5568;
+  --background-color: #3d3d3d;
+  --background-color-highlight-light: #303030;
+  --background-color-highlight: #282828; 
+  --accent-color: #27A2CC;
+  --highlight-color: #ecc94b;
+  --text-color-white: #FFFFFF;
+  --text-color-dark: #FFFFFF;
+  --text-color-light: #777777;
+  --text-color-medium-light: #999999;
+  --text-color-medium: #BBBBBB;
+  --text-color-medium-dark: #DDDDDD;
+  --row-primary-color: #2d3748;
+  --row-alternating-color: #4a5568;
 }
 
 body {
@@ -31,14 +58,48 @@ body {
   margin: 0;
   padding: 0;
   height: 100vh;
+  overflow-y: hidden;
 }
 
 footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: var(--sidebar-width);
   background-color: var(--background-color);
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   padding: 15px;
   text-align: center;
   border-top: 1px solid #999999;
+}
+
+a {
+  color: var(--primary-color);  
+}
+
+a:hover {
+  color: var(--primary-color-hover);
+}
+
+a:active {
+  color: var(--primary-color);
+}
+
+a:visited {
+  color: var(--primary-color);
+}
+
+input, select, option {
+  color: var(--text-color-dark);
+  background-color: var(--background-color);
+  border: 1px solid var(--text-color-medium-dark);
+  box-shadow: none;
+  padding: 8px;
+  border-radius: 4px; 
+}
+
+p, div {
+  color: var(--text-color-dark);
 }
 
 h1 {
@@ -54,16 +115,16 @@ h2 {
 }
 
 h3 {
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 h4 {
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 select {
   padding: 8px;
-  border: 1px solid black;
+  border: 1px solid var(--background-color-highlight);
   height: 40px;
   border-radius: 4px;
 }
@@ -71,7 +132,7 @@ select {
 button {
   cursor: pointer;
   background-color: var(--accent-color);
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   font-size: 16px;
   font-weight: bold;
   border: none;
@@ -86,8 +147,8 @@ button:hover {
 }
 
 .btn-group button {
-  background-color: #CCCCCC;
-  color: var(--text-color-medium);
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
   border-radius: 0px;
   padding: 10px;
   font-size: 12px;
@@ -96,16 +157,16 @@ button:hover {
 
 .btn-group button:hover {
   box-shadow: 0;
-  border-right: 1px solid #999999;
-  border-left: 1px solid #999999;
+  border-right: 1px solid var(--text-color-medium);
+  border-left: 1px solid var(--text-color-medium);
 }
 
 .btn-group button:disabled {
-  color: #999999;
+  color: var(--text-color-medium);
 }
 
 .greyedOut {
-  color: #666666;
+  color: var(--text-color-medium-dark);
 }
 
 /* Styling for Loading Page */
@@ -173,10 +234,11 @@ code {
 
 .main {
   margin-left: 250px;
-  padding: 20px;
+  padding: 0px;
   display: flex;
   height: 100vh;
-  /* overflow: hidden; */
+  background-color: var(--background-color);
+  overflow-y: hidden;
 }
 
 .flex {
@@ -237,7 +299,7 @@ code {
   text-align: left;
   width: 40px;
 } */
-*/
+
 /* .toggle-sidebar:hover {
   background-color: var(--tertiary-color);
 }
@@ -250,12 +312,11 @@ code {
 /* Styling for Home, Content, and Page Containers */
 
 .content {
-  padding: 0;
+  padding: 20px;
   margin: 0;
   min-height: 100vh;
   background-color: var(--background-color);
   flex: 1;
-  overflow-y: scroll;
   overflow-x: hidden;
 }
 
@@ -264,7 +325,7 @@ code {
   padding: 20px;
   background-color: var(--background-color);
   overflow-x: hidden;
-  position: static;
+  /*position: static;*/
 }
 
 .homeContainer {
@@ -396,7 +457,7 @@ code {
   max-width: 450px;
   margin-left: 20px;
   margin-right: 20px;
-  background-color: #FFFFFF;
+  background-color: var(--background-color);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
@@ -415,13 +476,13 @@ code {
   padding: 20px;
   height: 100%;
   border-radius: 0px 0px 10px 10px;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 .cardContainer h3 {
   padding: 0;
   margin: 0;
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
 }
 
 /* Styling for Stock Charting */
@@ -452,7 +513,6 @@ code {
   width: 50px;
   border-radius: 4px;
   background-color: var(--accent-color);
-  color: var(--text-color-light);
   transition: 0.2s;
 }
 
@@ -485,7 +545,7 @@ code {
 }
 
 .faq-tableOfContents {
-  background-color: #f5f5f5;
+  background-color: var(--background-color);
   padding: 2%;
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1)
@@ -506,7 +566,7 @@ code {
 
 .riskPage {
   min-width: calc(100vw - 400px);
-  background-color: #F0F4F8;
+  background-color: var(--background-color);
 }
 
 .riskBody {
@@ -639,7 +699,7 @@ code {
 
 .scoreComponent {
   background-color: var(--row-alternating-color);
-  color: var(--text-color-medium);
+  color: var(--text-color-medium-dark);
   border-radius: 3px;
   min-width: 30%;
   text-align: center;
@@ -792,7 +852,7 @@ div.valueContainer span.numericValue {
 body {
   font-family: 'Arial', sans-serif;
   margin: 0;
-  background-color: #F0F4F8;
+  background-color: var(--background-color);
 }
 
 .container {
@@ -807,7 +867,7 @@ body {
   left: 0;
   width: 250px; /* Adjust width as needed */
   height: 100%;
-  background-color: #fff; /* Adjust background color as needed */
+  background-color: var(--background-color); /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
   overflow-y: auto; /* Allow scrolling within the sidebar if needed */
@@ -817,8 +877,13 @@ body {
   padding: 10px;
 }
 
+.logo {
+  text-align: center;
+}
+
 .logo img {
-  width: 150px;
+  height: 75px;
+  margin-top: 5px;
   margin-bottom: 5px;
 }
 
@@ -833,7 +898,7 @@ nav ul li {
 
 nav ul li a {
   text-decoration: none;
-  color: #000;
+  color: var(--text-color-dark);
   font-size: 14px;
   display: flex;
   align-items: center;
@@ -848,7 +913,7 @@ nav ul li a .material-icons {
 
 /* Add background color on hover */
 nav ul li a:hover {
-  background-color: #E0E4E7;
+  background-color: var(--background-color-highlight);
 }
 .mt-1{
   margin-top: 10px;
@@ -869,7 +934,7 @@ nav ul li a:hover {
 
 .tools ul li a {
   text-decoration: none;
-  color: #000;
+  color: var(--text-color-dark);
   display: flex;
   align-items: center;
   padding: 5px;
@@ -900,7 +965,7 @@ nav ul li a:hover {
 
 .nav-left h1 {
   font-size: 24px;
-  color: #333;
+  color: var(--text-color-medium-dark);
   display: flex;
   align-items: center;
 }
@@ -918,7 +983,7 @@ nav ul li a:hover {
   top: 50%;
   left: 10px;
   transform: translateY(-50%);
-  color: #aaa;
+  color: var(--text-color-light);
 }
 
 .nav-center input {
@@ -955,14 +1020,14 @@ nav ul li a:hover {
 }
 
 .current-month {
-  background-color: #2B388F;
+  background-color: var(--primary-color);
   position: relative;
   padding: 10px;
   height: 150px!important;
 }
 
 .stats>div {
-  background-color: #fff;
+  background-color: var(--background-color-highlight-light);
   padding: 10px;
   border-radius: 10px;
   flex: 1 1 calc(33.333% - 20px);
@@ -982,9 +1047,9 @@ nav ul li a:hover {
 
 /* News updates section on the same row as stats */
 .news-updates {
+  background-color: var(--background-color-highlight-light);
   flex: 1 1 40%;
   padding: 20px;
-  background-color: #fff;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
@@ -992,13 +1057,30 @@ nav ul li a:hover {
 
 .news-item {
   margin-bottom: 20px;
+  display: flex;
+  align-items: flex-start;
+}
+
+.news-item-link {
+  cursor: pointer;
+  color: var(--primary-color);
+}
+
+.news-item-link:hover {
+  cursor: pointer;
+  color: var(--primary-color-hover);
+}
+
+.news-item-image {
+  vertical-align: top; 
+}
+
+.news-item-image img {
+  display: block;
 }
 
 .news-item h4 {
   font-size: 20px;
-  color: #333;
-  display: flex;
-  align-items: center;
 }
 
 .news-item h4 .material-icons {
@@ -1013,7 +1095,7 @@ nav ul li a:hover {
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
   padding: 10px;
-  background-color: #fff !important;
+  background-color: var(--background-color-highlight-light) !important;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.064) !important;
   display: flex;
@@ -1031,7 +1113,7 @@ nav ul li a:hover {
   margin-right: 10px;
   padding: 10px 20px;
   border: none;
-  background-color: #5A67D8;
+  background-color: var(--primary-color-hover);
   color: white;
   border-radius: 5px;
   cursor: pointer;
@@ -1048,7 +1130,7 @@ nav ul li a:hover {
 /* Trades Chart Section */
 .trades-chart {
   flex: 1;
-  background-color: #fff;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -1067,7 +1149,7 @@ nav ul li a:hover {
 /* Your Trades Section (Netflix and Apple Inc.) */
 .your-trades {
   width: 250px;
-  background-color: #ffffff00 !important;
+  background-color: var(--background-color-highlight-light) !important;
   padding: 20px;
   border-radius: 10px;
   height: 150px !important;
@@ -1107,7 +1189,7 @@ nav ul li a:hover {
 .trade-time {
   display: block;
   font-size: 12px;
-  color: #888;
+  color: var(--text-color-medium-dark);
   margin-left: auto;
 }
 
@@ -1118,7 +1200,7 @@ nav ul li a:hover {
   border-radius: 5px;
   text-align: right;
   font-size: 14px;
-  color: #2B388F;
+  color: var(--primary-color);
   text-decoration: none;
 }
 
@@ -1127,15 +1209,15 @@ nav ul li a:hover {
 }
 
 .current-month {
-  background-color: #2B388F !important;
-  color: white;
+  background-color: var(--primary-color) !important;
+  color: var(--text-color-white);
   padding: 0;
   margin: 0;
 }
 
 .current-month h3 {
   margin-top: 5px;
-  color: white;
+  color: var(--text-color-white);
 }
 
 .current-month p {
@@ -1150,7 +1232,6 @@ nav ul li a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #fff;
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
@@ -1184,8 +1265,8 @@ nav ul li a:hover {
 
 .trade-button {
   padding: 10px 20px;
-  background-color: #5A67D8;
-  color: #fff;
+  background-color: var(--primary-color-hover);
+  color: var(--text-color-light);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -1208,9 +1289,14 @@ nav ul li a:hover {
     /* Two columns on smaller screens */
   }
 
+  .stats div {
+    background-color: var(--background-color-highlight-light);
+  }
+
   .news-updates {
     margin-top: 20px;
     flex: 1 1 100%;
+    background-color: var(--background-color-highlight-light);
     /* Full width news updates on tablet */
   }
 }
@@ -1247,6 +1333,7 @@ nav ul li a:hover {
   .news-updates {
     flex: 1 1 100%;
     margin-top: 20px;
+    background-color: var(--background-color-highlight-light);
   }
 }
 .page {
@@ -1261,7 +1348,7 @@ nav ul li a:hover {
 }
 
 .portfolio-card {
-  background-color: #f5f5f5;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 5px;
   width: 45%;
@@ -1281,7 +1368,7 @@ nav ul li a:hover {
 }
 
 .stock-card {
-  background-color: #fff;
+  background-color: var(--background-color-highlight-light);
   padding: 20px;
   border-radius: 5px;
   width: 30%;
@@ -1310,14 +1397,14 @@ nav ul li a:hover {
 
 .faq-page h1 {
   font-size: 32px;
-  color: #2d2d7d ;
+  color: var(--primary-color) ;
   text-align: center; 
   margin: 0 auto;
 }
 
 .faq-page h2 {
   font-size: 24px;
-  color: #2d2d7d ;
+  color: var(--primary-color) ;
   text-align: center; 
   margin: 0 auto;
 }
@@ -1327,7 +1414,7 @@ nav ul li a:hover {
   padding: 10px;
   margin: 20px 0;
   font-size: 16px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 50px;
 }
 
@@ -1339,25 +1426,25 @@ nav ul li a:hover {
 
 .faq-card {
   width: 100%;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 8px;
   padding: 20px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  background-color: #f9f9f9;
+  background-color: var(--background-color);
   margin: 10px 0;
   box-sizing: border-box;
 }
 
 .faq-card h3 {
   font-size: 20px;
-  color: #2d2d7d;
-  border-bottom: 2px solid #ddd;
+  color: var(--primary-color);
+  border-bottom: 2px solid var(--background-color-highlight);
   padding-bottom: 10px;
 }
 
 .faq-card h4 {
   cursor: pointer;
-  color: #2d2d7d;
+  color: var(--primary-color);
 }
 
 .faq-question {
@@ -1373,14 +1460,14 @@ nav ul li a:hover {
   margin: 10px 0;
   transition: all 0.3s ease;
 }
-=======
+
 /* updated /
 / StockAnalysis.css */
 
 .stock-analysis {
   margin: 20px;
   font-family: Arial, sans-serif;
-  color: #333;
+  color: var(--text-color-medium-dark);
 }
 
 .search-bar {
@@ -1395,7 +1482,7 @@ nav ul li a:hover {
   height: 35px;
   padding: 10px;
   font-size: 18px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 5px;
 }
 
@@ -1404,14 +1491,13 @@ nav ul li a:hover {
   padding: 10px 20px;
   font-size: 18px;
   border: none;
-  background-color: #007bff;
-  color: white;
+  background-color: var(--accent-color);
   cursor: pointer;
   border-radius: 5px;
 }
 
 .search-bar button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 
 .stock-table {
@@ -1422,7 +1508,7 @@ nav ul li a:hover {
 
 .stock-table th,
 .stock-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   padding: 12px;
   text-align: center;
 }
@@ -1459,7 +1545,7 @@ nav ul li a:hover {
   font-size: 16px;
   border: none;
   background-color: #28a745;
-  color: white;
+  color: var(--text-color-white);
   cursor: pointer;
   border-radius: 5px;
 }
@@ -1491,8 +1577,7 @@ nav ul li a:hover {
 
 .survey-button,
 .create-pool-button {
-  background-color: #007bff;
-  color: white;
+  background-color: var(--accent-color);
   border: none;
   border-radius: 5px;
   padding: 10px 15px;
@@ -1502,7 +1587,7 @@ nav ul li a:hover {
 
 .survey-button:hover,
 .create-pool-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 
 .content-grid {
@@ -1523,8 +1608,8 @@ nav ul li a:hover {
 }
 
 .metric-card {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-highlight-light);
+  border: 1px solid var(--background-color-highlight);
   padding: 15px;
   border-radius: 5px;
   text-align: center;
@@ -1550,13 +1635,13 @@ nav ul li a:hover {
 
 .investment-table th,
 .investment-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   padding: 10px;
   text-align: left;
 }
 
 .investment-table th {
-  background-color: #f1f1f1;
+  background-color: var(--background-color-highlight);
 }
 
 .investment-pools {
@@ -1569,8 +1654,8 @@ nav ul li a:hover {
 }
 
 .pool-list li {
-  background-color: #f8f9fa;
-  border: 1px solid #ddd;
+  background-color: var(--background-color-highlight-light);
+  border: 1px solid var(--background-color-highlight);
   padding: 10px;
   border-radius: 5px;
   margin-bottom: 10px;
@@ -1602,7 +1687,7 @@ nav ul li a:hover {
 }
 
 .modal-content {
-  background-color: white;
+  background-color: var(--background-color);
   padding: 20px;
   border-radius: 10px;
   position: relative;
@@ -1622,7 +1707,7 @@ nav ul li a:hover {
 .form-group select {
   width: 100%;
   padding: 8px;
-  border: 1px solid #ddd;
+  border: 1px solid var(--background-color-highlight);
   border-radius: 5px;
 }
 
@@ -1636,7 +1721,7 @@ nav ul li a:hover {
 }
 
 .submit-button:hover {
-  background-color: #0056b3;
+  background-color: var(--accent-color);
 }
 .survey-overlay {
   position: fixed;
@@ -1652,7 +1737,7 @@ nav ul li a:hover {
 }
 
 .survey-container {
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 8px;
   padding: 2rem;
   position: relative;
@@ -1704,10 +1789,10 @@ nav ul li a:hover {
 .option-button {
   padding: 1rem;
   text-align: left;
-  background-color: #f5f5f5;
+  background-color: var(--background-color-highlight-light);
   border: 2px solid transparent;
   border-radius: 6px;
-  color: black;
+  color: var(--text-color-dark);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -1717,8 +1802,8 @@ nav ul li a:hover {
 }
 
 .option-button.selected {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border-color: #2563eb;
 }
 
@@ -1737,13 +1822,13 @@ nav ul li a:hover {
 }
 
 .nav-button {
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
 }
 
 .nav-button:hover:not(:disabled) {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 .nav-button:disabled {
@@ -1792,8 +1877,8 @@ nav ul li a:hover {
 
 .close-survey-button {
   padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -1802,13 +1887,13 @@ nav ul li a:hover {
 }
 
 .close-survey-button:hover {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 .survey-button {
   padding: 0.75rem 1.5rem;
-  background-color: #3b82f6;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color-light);
   border: none;
   border-radius: 6px;
   cursor: pointer;
@@ -1817,7 +1902,7 @@ nav ul li a:hover {
 }
 
 .survey-button:hover {
-  background-color: #2563eb;
+  background-color: var(--accent-color);
 }
 
 
@@ -1865,8 +1950,7 @@ nav ul li a:hover {
 }
 
 .agree-button {
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--accent-color);
   padding: 8px 16px;
   border-radius: 4px;
   border: none;
@@ -1876,7 +1960,7 @@ nav ul li a:hover {
 }
 
 .agree-button:hover {
-  background-color: #1d4ed8;
+  background-color: var(--accent-color);
 }
 
 .cancel-button {
@@ -1924,4 +2008,143 @@ nav ul li a:hover {
 .btn-danger-sm:hover {
   background-color: #c82333;
 }
+
+.chatBot {
+  border: 3px solid var(--primary-color);
+  border-radius: 10px;
+  margin: 50px auto;
+  overflow: hidden;
+  width: 500px;
+  overflow-y: clip;
+  height: 600px;
+  background-color: var(--background-color);
+  background-size: contain;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.chatbox {
+  padding: 15px;
+  list-style: none;
+  overflow-y: auto;
+  height: 400px;
+}
+
+.chatbox li {
+  margin-bottom: 10px;
+}
+
+.chat p {
+  padding: 10px;
+  border-radius: 10px;
+  word-wrap: break-word;
+}
+
+.chat-outgoing p {
+  background-color: var(--primary-color);
+  align-self: flex-end;
+  color: var(--text-color-white);
+}
+
+.chat-incoming p {
+  background-color: var(--primary-color-hover); /*This is the Chatbot's message*/
+  color: var(--text-color-white);
+}
+
+.chat-input {
+  padding: 10px;
+  border-top: 1px solid var(--background-color-highlight);
+}
+
+.chat-input textarea {
+  width: 522px;
+  padding: 10px;
+  border: 1px solid var(--background-color-highlight);
+  border-radius: 7px;
+  resize: none;
+  outline: none;
+  overflow-y: scroll;
+  background-color: var(--background-color-highlight-light);
+  font-size: 16px;
+  color: var(--text-color-dark);
+  font-weight: 600;
+  margin-top: -10px;
+  margin-left: -15px;
+  height: 71px;
+}
+
+#cross {
+  float: right;
+  position: relative;
+  top: -38px;
+  left: -15px;
+  cursor: pointer;
+  color: white;
+  font-weight: bolder;
+  font-size: 28px;
+}
+
+#cross:hover {
+  color: red;
+  transition: all .5s;
+}
+
+.chatbox .chat p.error {
+  color: #ffffff;
+  background-color: #ff3737e8;
+}
+
+#sendBTN {
+  width: 100%;
+  padding: 30px;
+  border: 0;
+  outline: none;
+  font-size: 20px;
+  font-weight: 600;
+  border-radius: 5px;
+  cursor: pointer;
+  color: var(--text-color-white);
+  margin-top: 12px;
+  background-color: var(--primary-color);
+}
+
+#sendBTN:hover {
+  background-color: var(--primary-color-hover);
+}
+
+.lastMessage {
+  margin-top: 50px;
+  font-size: 35px;
+  font-weight: 600;
+  color: black;
+  margin-left: 550px;
+}
+
+/* Close button */
+.close-btn {
+  background-color: var(--background-color);
+  color: var(--text-color-dark);
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+  margin: 0;
+}
+
+.chatBot header {
+  display: flex;
+  background-color: var(--primary-color);
+  justify-content: space-between; /* Position items on opposite sides */
+  align-items: center;            /* Vertically center the items */
+  padding: 10px 20px 10px 0px;             /* Optional, adjust padding as needed */
+  border-radius: 7px 7px 0 0;
+}
+
+.chatBot header h2 {
+  flex: 1; /* This allows <h2> to take available space */
+  text-align: center; /* Center the <h2> text */
+  color: var(--text-color-white);
+  margin: 0;
+}
+
 

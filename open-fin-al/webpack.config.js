@@ -54,7 +54,7 @@ const config = {
     resolve: {
         extensions: [".js", ".jsx", ".json", ".ts", ".tsx"],
         alias: {
-            '@DataGateway': path.resolve(__dirname, './src/Gateway/Data')
+            '@DataGateway': path.resolve(__dirname, './src/Gateway/Data'),
         }
     }
 
