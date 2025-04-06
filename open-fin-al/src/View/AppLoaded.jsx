@@ -26,6 +26,7 @@ import { Learn } from "./Learn";
 import { LearningModuleDetails } from "./LearningModuleDetails";
 import { LearningModulePage } from "./LearningModulePage";
 import logo from "../Asset/Image/logo.png";
+import logoDark from "../Asset/Image/logo-dark.png";
 import navIcon from "../Asset/Image/navIcon.png";
 import { Settings } from "./APIConfigSetting";
 import Forecast from "./Forecast";
@@ -38,11 +39,12 @@ import Chatbot from "./Chatbot/Chatbot";
 import ChatbotToggle from "./Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
-function ScrollToTop() {
+function ScrollToTop({ onRouteChange }) {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (onRouteChange) onRouteChange();
   }, [pathname]);
 
   return null;
@@ -51,16 +53,34 @@ function ScrollToTop() {
 class AppLoaded extends Component {
   constructor(props) {
     super(props);
+
+    const darkMode = localStorage.getItem("darkMode") === "true";
+
     this.state = {
-      menuCollapsed: false
+      menuCollapsed: false,
+      darkMode,
+      logo: darkMode ? logoDark : logo
     };
+
     this.toggleMenu = this.toggleMenu.bind(this);
+    this.checkDarkMode = this.checkDarkMode.bind(this);
   }
 
   toggleMenu() {
     this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
+  }
+
+  checkDarkMode() {
+    const darkMode = localStorage.getItem("darkMode") === "true";
+    window.console.log("Dark Mode is: " + darkMode);
+    if (darkMode !== this.state.darkMode) {
+      this.setState({
+        darkMode,
+        logo: darkMode ? logoDark : logo
+      });
+    }
   }
 
   render() {
@@ -72,7 +92,7 @@ class AppLoaded extends Component {
           <div className="main">
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={logo} alt="OpenFinAL Logo" />
+                <img src={this.state.logo} alt="OpenFinAL Logo" />
               </div>
               <nav className="sidebar-padding">
                 <ul>
@@ -93,7 +113,7 @@ class AppLoaded extends Component {
               </footer>
             </aside>
             <div className="content">
-              <ScrollToTop />
+              <ScrollToTop onRouteChange={this.checkDarkMode} />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/portfolio" element={<Portfolio />} />

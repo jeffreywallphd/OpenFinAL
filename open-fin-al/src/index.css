@@ -882,7 +882,8 @@ body {
 }
 
 .logo img {
-  width: 150px;
+  height: 75px;
+  margin-top: 5px;
   margin-bottom: 5px;
 }
 
