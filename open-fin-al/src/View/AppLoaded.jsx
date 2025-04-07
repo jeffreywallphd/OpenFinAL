@@ -27,6 +27,7 @@ import { LearningModuleDetails } from "./LearningModuleDetails";
 import { LearningModulePage } from "./LearningModulePage";
 import logo from "../Asset/Image/logo.png";
 import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
+import logoDark from "../Asset/Image/logo-dark.png";
 import navIcon from "../Asset/Image/navIcon.png";
 import { Settings } from "./APIConfigSetting";
 import Forecast from "./Forecast";
@@ -35,13 +36,16 @@ import ForecastModel from "./ForecastModel";
 import { SecReport } from "./SecReport";
 import InvestmentPool from "./InvestmentPool";
 import StockAnalysis from "./StockAnalysis";
+import Chatbot from "./Chatbot/Chatbot";
+import ChatbotToggle from "./Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
-function ScrollToTop() {
+function ScrollToTop({ onRouteChange }) {
   const { pathname } = useLocation();
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (onRouteChange) onRouteChange();
   }, [pathname]);
 
   return null;
@@ -50,10 +54,17 @@ function ScrollToTop() {
 class AppLoaded extends Component {
   constructor(props) {
     super(props);
+
+    const darkMode = localStorage.getItem("darkMode") === "true";
+
     this.state = {
-      menuCollapsed: false
+      menuCollapsed: false,
+      darkMode,
+      logo: darkMode ? logoDark : logo
     };
+
     this.toggleMenu = this.toggleMenu.bind(this);
+    this.checkDarkMode = this.checkDarkMode.bind(this);
   }
 
   toggleMenu() {
@@ -72,6 +83,17 @@ class AppLoaded extends Component {
   };
   
 
+  checkDarkMode() {
+    const darkMode = localStorage.getItem("darkMode") === "true";
+    window.console.log("Dark Mode is: " + darkMode);
+    if (darkMode !== this.state.darkMode) {
+      this.setState({
+        darkMode,
+        logo: darkMode ? logoDark : logo
+      });
+    }
+  }
+
   render() {
     const { menuCollapsed } = this.state;
     return (
@@ -81,7 +103,7 @@ class AppLoaded extends Component {
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
                 <img src={logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
                 
               </div>
@@ -89,29 +111,26 @@ class AppLoaded extends Component {
                 <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
-                <h5>Main</h5>
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
-                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock & Fund</NavLink></li>
+                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
-                  <li><NavLink to="/browsefaq"><span className="material-icons">help_outline</span> Browse Our FAQs</NavLink></li>
                   <li><NavLink to="/investment-pool"><span className="material-icons">inventory_2</span> Investment Pool</NavLink></li>
-                  <li><NavLink to="/StockAnalysis"><span className="material-icons">timeline</span> Stock Analysis</NavLink></li>
-                </ul>
-              </nav>
-              <div className="tools sidebar-padding">
-                <h5 className="mt-1">Tools</h5>
-                <ul>
+                  <li><NavLink to="/StockAnalysis"><span className="material-icons">assessment</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
-              </div>
+              </nav>
+              <footer>
+                This software is licensed under the GPL-3.0 license.
+              </footer>
             </aside>
             <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
               <ScrollToTop />
+
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/portfolio" element={<Portfolio />} />
@@ -132,7 +151,6 @@ class AppLoaded extends Component {
                 <Route path="/investment-pool" element={<InvestmentPool />} /> 
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
-              
             </div>
           </div>
         </>
@@ -140,7 +158,9 @@ class AppLoaded extends Component {
           This software is licensed under the GPL-3.0 license.
         </footer>
         <ChatbotToggle/>
+
       </HashRouter>
+
     );
   }
 }

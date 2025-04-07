@@ -5,40 +5,49 @@
 
 {% block content %}
 
-        <h2>Configure Environment Variables</h2>
-        <!-- Display success or error messages -->
-        {% if message %}
-        <div class="alert {% if message_type == 'success' %}alert-success{% else %}alert-error{% endif %}">
-            {{ message }}
-        </div>
-        {% endif %}
-        <form method="POST" action="{% url 'settings-view' %}">
-            {% csrf_token %}
-            <label for="DATABASE_NAME">DATABASE_NAME</label>
-            <input type="text" name="DATABASE_NAME" id="DATABASE_NAME" value="{{ settings.DATABASE_NAME }}"><br>
+<h2>Configure Environment Variables</h2>
+<!-- Display success or error messages -->
+{% if message %}
+<div class="alert {% if message_type == 'success' %}alert-success{% else %}alert-error{% endif %}">
+    {{ message }}
+</div>
+{% endif %}
 
-            <label for="DATABASE_USER">DATABASE_USER</label>
-            <input type="text" name="DATABASE_USER" id="DATABASE_USER" value="{{ settings.DATABASE_USER }}"><br>
+<form method="POST" action="{% url 'settings-view' %}">
+    {% csrf_token %}
 
-            <label for="DATABASE_PASSWORD">DATABASE_PASSWORD</label>
-            <input type="password" name="DATABASE_PASSWORD" id="DATABASE_PASSWORD" value="{{ settings.DATABASE_PASSWORD }}"><br>
+    <label for="DATABASE_NAME">DATABASE_NAME</label>
+    <input type="text" name="DATABASE_NAME" id="DATABASE_NAME"
+        value="{{ existing_values.DATABASE_NAME|default:'' }}"><br>
 
-            <label for="DATABASE_HOST">DATABASE_HOST</label>
-            <input type="text" name="DATABASE_HOST" id="DATABASE_HOST" value="{{ settings.DATABASE_HOST }}"><br>
+    <label for="DATABASE_USER">DATABASE_USER</label>
+    <input type="text" name="DATABASE_USER" id="DATABASE_USER"
+        value="{{ existing_values.DATABASE_USER|default:'' }}"><br>
 
-            <label for="DATABASE_PORT">DATABASE_PORT</label>
-            <input type="text" name="DATABASE_PORT" id="DATABASE_PORT" value="{{ settings.DATABASE_PORT }}"><br>
+    <label for="DATABASE_PASSWORD">DATABASE_PASSWORD</label>
+    <input type="password" name="DATABASE_PASSWORD" id="DATABASE_PASSWORD"
+        value="{{ existing_values.DATABASE_PASSWORD|default:'' }}"><br>
 
-            <label for="WANDB_API_KEY">WANDB_API_KEY</label>
-            <input type="text" name="WANDB_API_KEY" id="WANDB_API_KEY" value="{{ settings.WANDB_API_KEY }}"><br>
+    <label for="DATABASE_HOST">DATABASE_HOST</label>
+    <input type="text" name="DATABASE_HOST" id="DATABASE_HOST"
+        value="{{ existing_values.DATABASE_HOST|default:'' }}"><br>
 
-            <label for="HF_API_KEY">HF_API_KEY</label>
-            <input type="text" name="HF_API_KEY" id="HF_API_KEY" value="{{ settings.HF_API_KEY }}"><br>
+    <label for="DATABASE_PORT">DATABASE_PORT</label>
+    <input type="text" name="DATABASE_PORT" id="DATABASE_PORT"
+        value="{{ existing_values.DATABASE_PORT|default:'' }}"><br>
 
-            <label for="OPENAI_API_KEY">OPENAI_API_KEY</label>
-            <input type="text" name="OPENAI_API_KEY" id="OPENAI_API_KEY" value="{{ settings.OPENAI_API_KEY }}"><br>
+    <label for="WANDB_API_KEY">WANDB_API_KEY</label>
+    <input type="text" name="WANDB_API_KEY" id="WANDB_API_KEY"
+        value="{{ existing_values.WANDB_API_KEY|default:'' }}"><br>
 
-            <button type="submit">Save Settings</button>
-        </form>
-    
+    <label for="HF_API_KEY">HF_API_KEY</label>
+    <input type="text" name="HF_API_KEY" id="HF_API_KEY" value="{{ existing_values.HF_API_KEY|default:'' }}"><br>
+
+    <label for="OPENAI_API_KEY">OPENAI_API_KEY</label>
+    <input type="text" name="OPENAI_API_KEY" id="OPENAI_API_KEY"
+        value="{{ existing_values.OPENAI_API_KEY|default:'' }}"><br>
+
+    <button type="submit">Save Settings</button>
+</form>
+
 {% endblock %}

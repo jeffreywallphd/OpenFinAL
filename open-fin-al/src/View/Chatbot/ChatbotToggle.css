@@ -1,0 +1,106 @@
+.chatBotToggle {
+    position: relative;
+    height: 0;
+}
+
+/* Circle styles for the chatbot toggle button */
+.circle {
+    width: 50px;
+    height: 50px;
+    background-color: #3498db; /* Blue color */
+    border-radius: 50%;
+    position: fixed;
+    bottom: 20px; /* 20px from the bottom */
+    left: 95%; /* Position the circle 95% from the left of the screen */
+    transform: translateX(-50%); /* Center the circle horizontally */
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex; /* Use flexbox to center the image */
+    justify-content: center; /* Center the image horizontally */
+    align-items: center; /* Center the image vertically */
+    overflow: hidden; /* Ensures the image stays within the circle */
+}
+
+.chatbotIcon {
+    width: 30px; /* Image size inside the circle */
+    height: 30px; /* Image size inside the circle */
+    object-fit: cover; /* Ensures the image fits within the circle without distortion */
+}
+
+/* Change circle color on hover */
+.circle:hover {
+    background-color: #2980b9; /* Darker blue color on hover */
+}
+
+/* Modal styling */
+.chatbot-modal {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: rgba(0, 0, 0, 0.5); /* Overlay background */
+    z-index: 10000;  /* Make sure it's on top */
+}
+
+.chatbot-modal-content {
+    position: absolute;
+    bottom: 20px; /* Position the modal at the bottom of the screen */
+    right: 20px; /* Position the modal on the right side */
+    background: rgba(255, 255, 255, 0);
+    padding: 10px;
+    width: auto; /* Set a fixed width for the modal */
+    height: auto; /* Set a fixed height for the modal */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden; /* Prevents any overflow of content */
+}
+
+/* Chatbot styles */
+.chatBot {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+    overflow-y: auto; /* Enable scrolling if content overflows */
+}
+
+.chatbox {
+    list-style-type: none;
+    padding: 5px;
+    margin: 5px;
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.chat-incoming {
+    align-self: flex-start;
+    padding: 5px;
+    border-radius: 5px;
+    margin: 5px 0;
+}
+
+.chat-outgoing{
+    align-self: flex-end;
+    text-align: right;
+}
+
+.chat-input {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+textarea {
+    width: 75%;
+    padding: 5px;
+    border-radius: 5px;
+    border: 1px solid #27A2CC;
+    resize: both; /* Prevent resizing of the textarea */
+    min-height: 40px; /* Set a minimum height for the textarea */
+    max-height: 80px; /* Limit the height of the textarea */
+}
+
+

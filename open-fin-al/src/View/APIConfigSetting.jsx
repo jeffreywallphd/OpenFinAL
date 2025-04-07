@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
 import ConfigUpdater from "../Utility/ConfigManager";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Settings(props) {
     const stockApiRef = useRef("AlphaVantageStockGateway");
@@ -24,6 +25,35 @@ function Settings(props) {
         apiSize: 40,
         message: null
     });
+
+    const [darkMode, setDarkMode] = useState(() => {
+
+        return localStorage.getItem("darkMode") === "true"; // Retrieve from localStorage
+    });
+    
+    // Dynamically apply dark mode class to the body and store preference
+    useEffect(() => {
+        if (darkMode) {
+            document.body.classList.add("dark-mode");
+        } else {
+            document.body.classList.remove("dark-mode");
+        }
+        localStorage.setItem("darkMode", darkMode); // Store preference
+        window.console.log(localStorage.getItem("darkMode"));
+    }, [darkMode]);
+    
+    useEffect(() => {
+        const clearDarkMode = () => {
+            //localStorage.removeItem("darkMode");
+            localStorage.setItem("darkMode","false");
+        };
+    
+        window.addEventListener("beforeunload", clearDarkMode);
+        
+        return () => {
+            window.removeEventListener("beforeunload", clearDarkMode);
+        };
+    }, []);    
 
     const getConfigAPI = () => {
         const updater = new ConfigUpdater();
@@ -161,6 +191,11 @@ function Settings(props) {
         setState({...newState});
     }, []);
 
+    const toggleDarkMode = () => {
+        setDarkMode(!darkMode);
+        //Dark mode functionality
+    };
+
     const handleSubmit = (event) => {
         // Handle form submission logic here
         event.preventDefault();
@@ -181,7 +216,7 @@ function Settings(props) {
             if(stockApiKey === null || stockApiKey === undefined || stockApiKey === "" ) {
                 setState({
                     ...state,
-                    message: "You must enter a stock API key for the selected API"
+                    message: "All fields need to be filled in before you can save the configuration"
                 });
                 return;
             }
@@ -192,7 +227,7 @@ function Settings(props) {
             if(newsApiKey === null || newsApiKey === undefined || newsApiKey === "" ) {
                 setState({
                     ...state,
-                    message: "You must enter a news API key for the selected API"
+                    message: "All fields need to be filled in before you can save the configuration"
                 });
                 return;
             }
@@ -203,7 +238,7 @@ function Settings(props) {
             if(reportApiKey === null || reportApiKey === undefined || reportApiKey === "" ) {
                 setState({
                     ...state,
-                    message: "You must enter a report API key for the selected API"
+                    message: "All fields need to be filled in before you can save the configuration"
                 });
                 return;
             }
@@ -214,7 +249,7 @@ function Settings(props) {
             if(ratioApiKey === null || ratioApiKey === undefined || ratioApiKey === "" ) {
                 setState({
                     ...state,
-                    message: "You must enter a ratio API key for the selected API"
+                    message: "All fields need to be filled in before you can save the configuration"
                 });
                 return;
             }
@@ -262,116 +297,197 @@ function Settings(props) {
         }
     };
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
     return (
-            <div className="page">
-                <h2>Settings</h2>
-                <div>
-                    <h3>Stock Data API Configuration</h3>
-                    <form onSubmit={handleSubmit}>
-                        <div><label htmlFor="stockApi">Select a Stock Data API:</label></div>
-                        <select id="stockApi" name="stockApi" ref={stockApiRef} onChange={handleStockApiChange}>
-                            <option value="AlphaVantageStockGateway">Alpha Vantage Stock API</option>
-                            <option value="FinancialModelingPrepGateway">Financial Modeling Prep Stock API</option>
-                            <option value="YFinanceStockGateway">Yahoo Finance (unofficial community) API</option>
-                        </select>
-                        <br />
-                        {/* only show API key textbox if the API requires one */}
-                        {state.hasStockApiKey ?  
-                            ( 
-                            <>
-                                <div><label htmlFor="stockApiKey">Stock API Key:</label></div>
-                                <div>
-                                    <input type="text" id="stockApiKey" name="stockApiKey" size={state.apiSize} ref={stockApiKeyRef} value={state.currentStockApiKey} onChange={e => {
+        <div className="page">
+            <h2 className="settings-title">Settings</h2>
+            
+            {/* API Configuration Card */}
+            <div className="settings-card">
+                <h3 className="card-title">Stock Data API Configuration</h3>
+                <form onSubmit={handleSubmit}>
+                    <div className="api-config-table">
+                        <div className="table-header">
+                            <div className="header-cell">Select a Type of API:</div>
+                            <div className="header-cell">API Keys</div>
+                        </div>
+                        
+                        {/* Stock API Row */}
+                        <div className="table-row">
+                            <div className="api-cell">
+                                <select 
+                                    id="stockApi" 
+                                    name="stockApi" 
+                                    ref={stockApiRef} 
+                                    onChange={handleStockApiChange}
+                                    className="api-select"
+                                >
+                                    <option value="AlphaVantageStockGateway">Alpha Vantage Stock API</option>
+                                    <option value="FinancialModelingPrepGateway">Financial Modeling Prep Stock API</option>
+                                    <option value="YFinanceStockGateway">Yahoo Finance (unofficial community) API</option>
+                                </select>
+                            </div>
+                            <div className="key-cell">
+                                <input 
+                                    type="text" 
+                                    id="stockApiKey" 
+                                    name="stockApiKey" 
+                                    className="api-key-input" 
+                                    ref={stockApiKeyRef} 
+                                    value={state.currentStockApiKey || ''} 
+                                    onChange={e => {
                                         setState({
                                             ...state, 
                                             currentStockApiKey: e.target.value,
                                             message: null
                                         });
-                                    }} />
-                                </div>
-                            </>
-                            ) : (null)
-                        }
-                    
-                        <br />
-                        <div><label htmlFor="newsApi">Select a News Data API:</label></div>
-                        <select id="newsApi" name="newsApi" ref={newsApiRef} onChange={handleNewsApiChange}>
-                            <option value="AlphaVantageNewsGateway">Alpha Vantage News API</option>
-                        </select>
-                        <br />
-                        {/* only show API key textbox if the API requires one */}
-                        {state.hasNewsApiKey ?  
-                            ( 
-                            <>
-                                <div><label htmlFor="newsApiKey">News API Key:</label></div>
-                                <div>
-                                    <input type="text" id="newsApiKey" name="newsApiKey" size={state.apiSize} ref={newsApiKeyRef} value={state.currentNewsApiKey} onChange={e => {
+                                    }}
+                                    disabled={!state.hasStockApiKey}
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* News API Row */}
+                        <div className="table-row">
+                            <div className="api-cell">
+                                <select 
+                                    id="newsApi" 
+                                    name="newsApi" 
+                                    ref={newsApiRef} 
+                                    onChange={handleNewsApiChange}
+                                    className="api-select"
+                                >
+                                    <option value="AlphaVantageNewsGateway">Alpha Vantage News API</option>
+                                </select>
+                            </div>
+                            <div className="key-cell">
+                                <input 
+                                    type="text" 
+                                    id="newsApiKey" 
+                                    name="newsApiKey" 
+                                    className="api-key-input" 
+                                    ref={newsApiKeyRef} 
+                                    value={state.currentNewsApiKey || ''} 
+                                    onChange={e => {
                                         setState({ 
                                             ...state,
                                             currentNewsApiKey: e.target.value,
                                             message: null
                                         });
-                                    }} />
-                                </div>
-                            </>
-                            ) : (null)
-                        }
-
-                        <br />
-                        <div><label htmlFor="reportApi">Select a Financial Report API:</label></div>
-                        <select id="reportApi" name="reportApi" ref={reportApiRef} onChange={handleReportApiChange}>
-                            <option value="SecAPIGateway">SEC Reporting API</option>
-                        </select>
-                        <br />
-                        {/* only show API key textbox if the API requires one */}
-                        {state.hasReportApiKey ?  
-                            ( 
-                            <>
-                                <div><label htmlFor="reportApiKey">Financial Report API Key:</label></div>
-                                <div>
-                                    <input type="text" id="reportApiKey" name="reportApiKey" size={state.apiSize} ref={reportApiKeyRef} value={state.currentReportApiKey} onChange={e => {
+                                    }}
+                                    disabled={!state.hasNewsApiKey}
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* Report API Row */}
+                        <div className="table-row">
+                            <div className="api-cell">
+                                <select 
+                                    id="reportApi" 
+                                    name="reportApi" 
+                                    ref={reportApiRef} 
+                                    onChange={handleReportApiChange}
+                                    className="api-select"
+                                >
+                                    <option value="SecAPIGateway">SEC Reporting API</option>
+                                </select>
+                            </div>
+                            <div className="key-cell">
+                                <input 
+                                    type="text" 
+                                    id="reportApiKey" 
+                                    name="reportApiKey" 
+                                    className="api-key-input" 
+                                    ref={reportApiKeyRef} 
+                                    value={state.currentReportApiKey || ''} 
+                                    onChange={e => {
                                         setState({
                                             ...state, 
                                             currentReportApiKey: e.target.value,
                                             message: null
                                         });
-                                    }} />
-                                </div>
-                            </>
-                            ) : (null)
-                        }
-
-                        <br />
-                        <div><label htmlFor="ratioApi">Select a Financial Ratios API:</label></div>
-                        <select id="ratioApi" name="ratioApi" ref={ratioApiRef} onChange={handleRatioApiChange}>
-                            <option value="AlphaVantageRatioGateway">Alpha Vantage Ratio API</option>
-                        </select>
-                        <br />
-                        {/* only show API key textbox if the API requires one */}
-                        {state.hasRatioApiKey ?  
-                            ( 
-                            <>
-                                <div><label htmlFor="ratioApiKey">Financial Ratio API Key:</label></div>
-                                <div>
-                                    <input type="text" id="ratioApiKey" name="ratioApiKey" size={state.apiSize} ref={ratioApiKeyRef} value={state.currentRatioApiKey} onChange={e => {
+                                    }}
+                                    disabled={!state.hasReportApiKey}
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* Ratio API Row */}
+                        <div className="table-row">
+                            <div className="api-cell">
+                                <select 
+                                    id="ratioApi" 
+                                    name="ratioApi" 
+                                    ref={ratioApiRef} 
+                                    onChange={handleRatioApiChange}
+                                    className="api-select"
+                                >
+                                    <option value="AlphaVantageRatioGateway">Alpha Vantage Ratio API</option>
+                                </select>
+                            </div>
+                            <div className="key-cell">
+                                <input 
+                                    type="text" 
+                                    id="ratioApiKey" 
+                                    name="ratioApiKey" 
+                                    className="api-key-input" 
+                                    ref={ratioApiKeyRef} 
+                                    value={state.currentRatioApiKey || ''} 
+                                    onChange={e => {
                                         setState({
                                             ...state, 
                                             currentRatioApiKey: e.target.value,
                                             message: null
                                         });
-                                    }} />
-                                </div>
-                            </>
-                            ) : (null)
-                        }
+                                    }}
+                                    disabled={!state.hasRatioApiKey}
+                                />
+                            </div>
+                        </div>
+                    </div>
                     
-                        <br />
-                        <button type="submit">Save Configuration</button>
-                        <p>{state.message}</p>
-                    </form>
-                </div>
+                    <div className="save-button-container">
+                        <button type="submit" className="save-button" style={{background: darkMode ? "#4A5568" : "#00a0b0"}}>Save Configuration</button>
+                        {state.message && <p className="message">{state.message}</p>}
+                    </div>
+                </form>
             </div>
+             {/* Application Style Card */}
+            <div className="settings-card">
+                <h3 className="card-title">Application Style Changes</h3>
+                <div className="style-options">
+                    <button
+                    id="dark-mode-toggle"
+                    onClick={() => {
+                        const newDarkMode = !darkMode;
+                        setDarkMode(newDarkMode);
+                
+                        // Force refresh of the route after state change
+                        setTimeout(() => {
+                            navigate('/refresh', { replace: true }); // dummy path
+                            setTimeout(() => {
+                                navigate(location.pathname, { replace: true }); // go back
+                            }, 10);
+                        }, 50); // slight delay to allow localStorage update
+                    }}
+                    style={{
+                        padding: "10px 20px",
+                        marginTop: "20px",
+                        background: darkMode ? "#4A5568" : "#00a0b0",
+                        color: darkMode ? "#E2E8F0" : "#fcfdff",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: "pointer",
+                    }}
+                    >
+                        {darkMode ? "Light Mode" : "Dark Mode"}
+                    </button>
+                </div>
+            </div>                       
+        </div>
     );
 }
-
 export { Settings };

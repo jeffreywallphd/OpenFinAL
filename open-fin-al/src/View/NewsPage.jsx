@@ -28,7 +28,7 @@ class NewsPage extends Component {
     render() {        
         return (
                 <div className="page">
-                    <h2> Investment News </h2>
+                    <h2><span className="material-icons">article</span> Investment News </h2>
                     <NewsSearchBar state={this.state} onDataChange={this.handleDataChange}/>
                    <br></br>
                     {

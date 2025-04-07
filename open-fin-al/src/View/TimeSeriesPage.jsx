@@ -11,12 +11,18 @@ import { TickerSearchBar } from "./TickerSearchBar";
 import { TickerSidePanel } from "./TickerSidePanel";
 import { DataContext } from "./App";
 
+import { SecInteractor } from "../Interactor/SecInteractor";
+import { JSONRequest } from "../Gateway/Request/JSONRequest";
+
 function TimeSeriesPage(props) {
     const location = useLocation();
     const { state, setState } = useContext(DataContext);
     
     //ensure that the state changes
     useEffect(() => {
+
+        state.reportLinks = null;
+
         setState({
             ...state
         })
@@ -26,9 +32,54 @@ function TimeSeriesPage(props) {
         setState(newState);
     };
 
+    // Fetch report links from the SEC API
+    useEffect(() => {
+        const fetchReport = async () => {
+            if (!state?.cik || !state?.ticker) return;
+
+            const secInteractor = new SecInteractor();
+
+            const req10K = new JSONRequest(`{
+                "request": {
+                    "sec": {
+                        "action": "10-K",
+                        "cik": "${state.cik}",
+                        "ticker": "${state.ticker}"
+                    }
+                }
+            }`);
+
+            const req10Q = new JSONRequest(`{
+                "request": {
+                    "sec": {
+                        "action": "10-Q",
+                        "cik": "${state.cik}",
+                        "ticker": "${state.ticker}"
+                    }
+                }
+            }`);
+
+            const reportResults10K = await secInteractor.get(req10K);
+            const reportResults10Q = await secInteractor.get(req10Q);
+
+            // Update the DataContext state to include reportLinks
+            setState((prevState) => ({
+                ...prevState,
+                reportLinks: {
+                    tenK: reportResults10K.response.link,
+                    tenQ: reportResults10Q.response.link
+                }
+            }));
+        };
+
+        if (state?.data) {
+            fetchReport();
+        }
+    }, [state?.cik, state?.ticker, state?.data, setState]); // Added setState to dependency
+
     return (
         <div className="page">
-            <h2>Price and Volume Trends</h2>
+            <h2><span className="material-icons">attach_money</span> Stock Trends</h2>
             <div className="flex">
                 <div>
                     {state ?
@@ -56,11 +107,16 @@ function TimeSeriesPage(props) {
                             <TickerSidePanel state={state} />
                         </>
                     ) : (null)}
-                    { state && state.data? 
+                    { state && state.reportLinks ? 
                             <>
                                 <h4>Financial Statements</h4>
-                                <div><NavLink to="/sec-report" state={{...state, report: "10-K"}}>Most Recent 10-K</NavLink></div>
-                                <div><NavLink to="/sec-report" state={{...state, report: "10-Q"}}>Most Recent 10-Q</NavLink></div>
+                                <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenK)}>
+                                    Most Recent 10-K
+                                </button>
+                                <br />
+                                <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenQ)}>
+                                    Most Recent 10-Q
+                                </button>
                             </>
                         :
                             (null)

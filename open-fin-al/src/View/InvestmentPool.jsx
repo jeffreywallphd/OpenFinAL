@@ -83,7 +83,7 @@ const InvestmentPool = () => {
   return (
     <div className="investment-pool-container">
       <div className="header-container">
-        <h1 className="page-title">Investment Pools</h1>
+        <h2><span className="material-icons">inventory_2</span> Investment Pools</h2>
         <button
           className="survey-button"
           onClick={() => setShowSurvey(true)}
