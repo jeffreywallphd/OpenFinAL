@@ -289,7 +289,7 @@ function Settings(props) {
 
    return (
     <div className="page">
-        <h2>Settings</h2>
+        <h2><span className="material-icons">settings</span> Settings</h2>
         <div>
             <h3>Stock Data API Configuration</h3>
             <form onSubmit={handleSubmit}>
