@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
 import ConfigUpdater from "../Utility/ConfigManager";
+import { useNavigate, useLocation } from 'react-router-dom';
 
 function Settings(props) {
     const stockApiRef = useRef("AlphaVantageStockGateway");
@@ -26,6 +27,7 @@ function Settings(props) {
     });
 
     const [darkMode, setDarkMode] = useState(() => {
+
         return localStorage.getItem("darkMode") === "true"; // Retrieve from localStorage
     });
     
@@ -37,12 +39,13 @@ function Settings(props) {
             document.body.classList.remove("dark-mode");
         }
         localStorage.setItem("darkMode", darkMode); // Store preference
+        window.console.log(localStorage.getItem("darkMode"));
     }, [darkMode]);
-    
     
     useEffect(() => {
         const clearDarkMode = () => {
-            localStorage.removeItem("darkMode");
+            //localStorage.removeItem("darkMode");
+            localStorage.setItem("darkMode","false");
         };
     
         window.addEventListener("beforeunload", clearDarkMode);
