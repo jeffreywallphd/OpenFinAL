@@ -107,7 +107,7 @@ class AppLoaded extends Component {
                 <img src={logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
                 
               </div>
-              <div>
+              <div className="sidebar-padding">
                 <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
@@ -116,7 +116,6 @@ class AppLoaded extends Component {
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
                   <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
-                  <li><NavLink to="/investment-pool"><span className="material-icons">inventory_2</span> Investment Pool</NavLink></li>
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">assessment</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
@@ -126,7 +125,7 @@ class AppLoaded extends Component {
               </nav>
             </aside>
             <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
-              <ScrollToTop />
+              <ScrollToTop  onRouteChange={this.checkDarkMode}/>
 
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -149,11 +148,11 @@ class AppLoaded extends Component {
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
             </div>
+            <footer>
+              This software is licensed under the GPL-3.0 license.
+            </footer>
           </div>
         </>
-        <footer>
-          This software is licensed under the GPL-3.0 license.
-        </footer>
         <ChatbotToggle/>
 
       </HashRouter>
