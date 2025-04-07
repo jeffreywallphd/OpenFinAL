@@ -289,6 +289,9 @@ function Settings(props) {
         }
     };
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
     return (
         <div className="page">
             <h2 className="settings-title">Settings</h2>
