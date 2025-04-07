@@ -26,6 +26,8 @@ import { Learn } from "./Learn";
 import { LearningModuleDetails } from "./LearningModuleDetails";
 import { LearningModulePage } from "./LearningModulePage";
 import logo from "../Asset/Image/logo.png";
+import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
+import logoNoTextDark from "../Asset/Image/openfinal_logo_dark_no_text.png";
 import logoDark from "../Asset/Image/logo-dark.png";
 import navIcon from "../Asset/Image/navIcon.png";
 import { Settings } from "./APIConfigSetting";
@@ -59,7 +61,8 @@ class AppLoaded extends Component {
     this.state = {
       menuCollapsed: false,
       darkMode,
-      logo: darkMode ? logoDark : logo
+      logo: darkMode ? logoDark : logo,
+      logoNoText: darkMode ? logoNoTextDark : logoNoText
     };
 
     this.toggleMenu = this.toggleMenu.bind(this);
@@ -67,10 +70,17 @@ class AppLoaded extends Component {
   }
 
   toggleMenu() {
-    this.setState(prevState => ({
+    this.setState(prevState => ({   
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
+
+  handleClick = () => {
+    this.setState(prevState => ({   
+      menuCollapsed: !prevState.menuCollapsed
+    }));
+    var img = document.getElementById("logo");
+  };
 
   checkDarkMode() {
     const darkMode = localStorage.getItem("darkMode") === "true";
@@ -78,21 +88,26 @@ class AppLoaded extends Component {
     if (darkMode !== this.state.darkMode) {
       this.setState({
         darkMode,
-        logo: darkMode ? logoDark : logo
+        logo: darkMode ? logoDark : logo,
+        logoNoText: darkMode ? logoNoTextDark : logoNoText
       });
     }
   }
 
   render() {
     const { menuCollapsed } = this.state;
-  
     return (
       <HashRouter>
         <>
           <div className="main">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={this.state.logo} alt="OpenFinAL Logo" />
+                <img src={this.state.logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
+              </div>
+              <div className="sidebar-padding">
+                <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
                 <ul>
@@ -100,20 +115,17 @@ class AppLoaded extends Component {
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
                   <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
-                  <li><NavLink to="/investment-pool"><span className="material-icons">inventory_2</span> Investment Pool</NavLink></li>
-                  <li><NavLink to="/StockAnalysis"><span className="material-icons">assessment</span> Stock Comparison</NavLink></li>
+                  <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
               </nav>
-              <footer>
-                This software is licensed under the GPL-3.0 license.
-              </footer>
             </aside>
-            <div className="content">
-              <ScrollToTop onRouteChange={this.checkDarkMode} />
+            <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
+              <ScrollToTop  onRouteChange={this.checkDarkMode}/>
+
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/portfolio" element={<Portfolio />} />
@@ -134,10 +146,13 @@ class AppLoaded extends Component {
                 <Route path="/investment-pool" element={<InvestmentPool />} /> 
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
-              <ChatbotToggle/>
             </div>
+            <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
+              This software is licensed under the GPL-3.0 license.
+            </footer>
           </div>
         </>
+        <ChatbotToggle/>
 
       </HashRouter>
 

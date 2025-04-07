@@ -167,12 +167,20 @@ function Settings(props) {
     };
 
     useEffect(() => {
-        const config = getConfigAPI(); // Get the current API from config
+        try {
+            const config = getConfigAPI(); // Get the current API from config
 
-        stockApiRef.current.value = config.StockGateway;
-        newsApiRef.current.value = config.NewsGateway;
-        reportApiRef.current.value = config.ReportGateway;
-        ratioApiRef.current.value = config.RatioGateway;
+            stockApiRef.current.value = config.StockGateway;
+            newsApiRef.current.value = config.NewsGateway;
+            reportApiRef.current.value = config.ReportGateway;
+            ratioApiRef.current.value = config.RatioGateway;
+        } catch (error) {
+            stockApiRef.current.value = "";
+            newsApiRef.current.value = "";
+            reportApiRef.current.value = "";
+            ratioApiRef.current.value = "";
+        }
+       
 
         var newState = state;
         newState = handleStockApiChange(null, newState, true);
@@ -183,10 +191,6 @@ function Settings(props) {
         setState({...newState});
     }, []);
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-        //Dark mode functionality
-    };
 
     const handleSubmit = (event) => {
         // Handle form submission logic here
@@ -294,7 +298,7 @@ function Settings(props) {
 
     return (
         <div className="page">
-            <h2 className="settings-title">Settings</h2>
+            <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
             
             {/* API Configuration Card */}
             <div className="settings-card">
