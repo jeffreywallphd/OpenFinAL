@@ -882,7 +882,7 @@ body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   background-color: var(--background-color);
-  width:fit-content;
+  /* width:fit-content; */
 }
 
 .container {
@@ -895,7 +895,7 @@ body {
   position: static;
   top: 0;
   left: 0;
-  width: 50%; /* Adjust width as needed */
+  width: 20%; /* Adjust width as needed */
   height: 100%;
   background-color: var(--background-color); /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
@@ -925,6 +925,7 @@ img.logo.hidden{
 
 img.logoNoText {
   width: 32px;
+  height: fit-content;
   margin-bottom: 5px;
   visibility: visible;
   /* display:none; */
