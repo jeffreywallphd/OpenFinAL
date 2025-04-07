@@ -453,7 +453,18 @@ function Settings(props) {
                 <div className="style-options">
                     <button
                     id="dark-mode-toggle"
-                    onClick={toggleDarkMode}
+                    onClick={() => {
+                        const newDarkMode = !darkMode;
+                        setDarkMode(newDarkMode);
+                
+                        // Force refresh of the route after state change
+                        setTimeout(() => {
+                            navigate('/refresh', { replace: true }); // dummy path
+                            setTimeout(() => {
+                                navigate(location.pathname, { replace: true }); // go back
+                            }, 10);
+                        }, 50); // slight delay to allow localStorage update
+                    }}
                     style={{
                         padding: "10px 20px",
                         marginTop: "20px",
