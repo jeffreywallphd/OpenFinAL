@@ -137,12 +137,20 @@ function Settings(props) {
     };
 
     useEffect(() => {
-        const config = getConfigAPI(); // Get the current API from config
+        try {
+            const config = getConfigAPI(); // Get the current API from config
 
-        stockApiRef.current.value = config.StockGateway;
-        newsApiRef.current.value = config.NewsGateway;
-        reportApiRef.current.value = config.ReportGateway;
-        ratioApiRef.current.value = config.RatioGateway;
+            stockApiRef.current.value = config.StockGateway;
+            newsApiRef.current.value = config.NewsGateway;
+            reportApiRef.current.value = config.ReportGateway;
+            ratioApiRef.current.value = config.RatioGateway;
+        } catch (error) {
+            stockApiRef.current.value = "";
+            newsApiRef.current.value = "";
+            reportApiRef.current.value = "";
+            ratioApiRef.current.value = "";
+        }
+       
 
         var newState = state;
         newState = handleStockApiChange(null, newState, true);
