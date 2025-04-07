@@ -113,6 +113,7 @@ function TimeSeriesPage(props) {
                                 <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenK)}>
                                     Most Recent 10-K
                                 </button>
+                                <br />
                                 <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenQ)}>
                                     Most Recent 10-Q
                                 </button>

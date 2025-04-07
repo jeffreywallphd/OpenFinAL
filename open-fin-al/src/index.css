@@ -960,7 +960,7 @@ nav ul li a:hover {
 }
 
 .tools ul li a:hover {
-  background-color: #E0E4E7;
+  background-color: var(--highlight-color);
 }
 
 /* Top Navigation */
@@ -2173,4 +2173,162 @@ nav ul li a:hover {
   border: 1px solid var(--background-color-highlight);
   padding: 10px;
   text-align: right;
+}/* Settings Component Styles */
+.page {
+  padding: 20px;
+  background-color: var(--background-color);
+  min-height: 100vh;
+}
+
+.settings-title {
+  margin-bottom: 20px;
+  font-size: 24px;
+  font-weight: 500;
+  color: var(--text-color-dark);
+}
+
+.settings-card {
+  background-color: white;
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card-title {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-color-dark);
+}
+
+.api-config-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-header {
+  display: flex;
+  background-color: #e0e0e0;
+  font-weight: bold;
+  border-radius: 4px 4px 0 0;
+}
+
+.header-cell {
+  flex: 1;
+  padding: 10px;
+  text-align: center;
+}
+
+.table-row {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  background-color: #f5f5f5;
+}
+
+.api-cell, .key-cell {
+  flex: 1;
+  padding: 5px 10px;
+}
+
+.api-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: #f5f5f5;
+}
+
+.api-key-input {
+  width: 100%;
+  padding: 8px;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  background-color: white;
+}
+
+.save-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.save-button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #008999;
+}
+
+.message {
+  margin-top: 10px;
+  color: green;
+  text-align: center;
+}
+
+.message.error {
+  color: red;
+}
+
+.style-options {
+  display: flex;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+.dark-mode-button {
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.dark-mode-button:hover {
+  background-color: #008999;
+}
+
+/* Settings Card Component Styles */
+.dark-mode {
+  background-color: #292929;
+  color: #f0f0f0;
+}
+
+.dark-mode .settings-card {
+  background-color: #333;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  color: var(--text-color-light);
+}
+
+.dark-mode .table-header {
+  background-color: #444;
+  color: var(--text-color-light);
+}
+
+.dark-mode .card-title {
+  color: var(--text-color-light);
+}
+
+.dark-mode .table-row {
+  background-color: #3a3a3a;
+  border-bottom: 1px solid #444;
+  color: var(--text-color-light);
+}
+
+.dark-mode .api-select,
+.dark-mode .api-key-input {
+  background-color: #444;
+  border: 1px solid #555;
+  color: white;
 }
