@@ -82,7 +82,7 @@ class AppLoaded extends Component {
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
                 <img src={logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
-                <img src={logoNoText} alt="OpenFinAL Logo" class={`logo ${!menuCollapsed ? 'hidden' : ''}`} />
+                <img src={logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
                 
               </div>
               <div>
@@ -110,7 +110,7 @@ class AppLoaded extends Component {
                 </ul>
               </div>
             </aside>
-            <div className="content">
+            <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
               <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Home />} />

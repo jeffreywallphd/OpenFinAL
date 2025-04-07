@@ -181,8 +181,8 @@ code {
 /* Styling for Main Container and Sidebar */
 
 .main {
-  margin-left: 250px;
-  padding: 20px;
+  /*margin-left: 250px;*/
+  /*padding: 20px;*/
   display: flex;
   height: 100vh;
   /* overflow: hidden; */
@@ -208,7 +208,7 @@ code {
 } */
 
 .sidebar.collapsed {
-  width: 47px;
+  max-width: 48px;
 }
 
 .sidebar.collapsed::-webkit-scrollbar {
@@ -270,6 +270,13 @@ code {
   flex: 1;
   overflow-y: scroll;
   overflow-x: hidden;
+}
+.content{
+  padding: 20px;
+}
+.content.closed{
+  /* position: relative; */
+  right: 200px;
 }
 
 .page {
@@ -751,6 +758,7 @@ body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   background-color: #F0F4F8;
+  width:fit-content;
 }
 
 .container {
@@ -760,10 +768,10 @@ body {
 }
 
 .sidebar {
-  position: fixed;
+  position: static;
   top: 0;
   left: 0;
-  width: 250px; /* Adjust width as needed */
+  width: 50%; /* Adjust width as needed */
   height: 100%;
   background-color: #fff; /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
@@ -787,10 +795,14 @@ img.logo.hidden{
 }
 
 img.logoNoText {
-  width: 150px;
+  width: 32px;
   margin-bottom: 5px;
   visibility: visible;
-  display:none;
+  /* display:none; */
+}
+img.logoNoText.hidden{
+  margin-bottom: 5px;
+  display: none;
 }
 img.logoText {
   width: 150px;
