@@ -124,9 +124,6 @@ class AppLoaded extends Component {
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
               </nav>
-              <footer>
-                This software is licensed under the GPL-3.0 license.
-              </footer>
             </aside>
             <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
               <ScrollToTop />
