@@ -248,9 +248,9 @@ code {
   margin-left: 250px;
   padding: 0px;
   display: flex;
-  min-height: 100vh; /* Ensures the container is at least the height of the viewport */
+  height: 100vh;
   background-color: var(--background-color);
-  flex-direction: column; /* Ensures content stacks vertically */
+  overflow-y: hidden;
 }
 
 .flex {
