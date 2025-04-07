@@ -191,10 +191,6 @@ function Settings(props) {
         setState({...newState});
     }, []);
 
-    const toggleDarkMode = () => {
-        setDarkMode(!darkMode);
-        //Dark mode functionality
-    };
 
     const handleSubmit = (event) => {
         // Handle form submission logic here
@@ -302,7 +298,7 @@ function Settings(props) {
 
     return (
         <div className="page">
-            <h2 className="settings-title">Settings</h2>
+            <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
             
             {/* API Configuration Card */}
             <div className="settings-card">

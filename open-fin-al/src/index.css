@@ -20,6 +20,7 @@
   --row-alternating-color: #c1c9ff;
   --footer-height: 90px;
   --sidebar-width: 220px;
+  --sidebar-footer-width: 190px;
 }
 
 body.dark-mode {
@@ -61,15 +62,23 @@ body {
   overflow-y: hidden;
 }
 
-footer {
+.footer {
   position: fixed;
   bottom: 0;
   left: 0;
+  width: var(--sidebar-footer-width);
   background-color: var(--background-color);
   color: var(--text-color-medium-dark);
+  font-size: 12px;
   padding: 15px;
   text-align: center;
   border-top: 1px solid #999999;
+  z-index: 10000; /* Ensure it stays on top of other elements */
+  visibility: visible;
+}
+
+.footer.collapsed {
+  visibility: hidden;
 }
 
 a {
@@ -154,6 +163,7 @@ button:hover {
 button.HamburgerMenu {
   font-size: 18px;
   padding: 10px;
+  margin: 0px;
 }
 
 .btn-group button {
@@ -279,6 +289,7 @@ code {
 
 .sidebar.collapsed {
   max-width: 55px;
+  overflow-x: hidden;
 }
 
 .sidebar.collapsed::-webkit-scrollbar {
@@ -894,7 +905,7 @@ body {
   position: static;
   top: 0;
   left: 0;
-  width: 20%; /* Adjust width as needed */
+  width: var(--sidebar-width); /* Adjust width as needed */
   height: 100vh;
   background-color: var(--background-color); /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
@@ -903,7 +914,7 @@ body {
 }
 
 .sidebar-padding {
-  padding: 10px;
+  padding: 10px 10px 0px 10px;
 }
 
 .logo {
@@ -916,6 +927,7 @@ body {
   margin-bottom: 5px;
   /*visibility: hidden;*/
 }
+
 img.logo.hidden{
   width: 150px;
   margin-bottom: 5px;
@@ -923,16 +935,17 @@ img.logo.hidden{
 }
 
 img.logoNoText {
-  width: 32px;
-  height: fit-content;
-  margin-bottom: 5px;
+  height: 40px;
+  margin-bottom: 40px;
   visibility: visible;
   /* display:none; */
 }
+
 img.logoNoText.hidden{
   margin-bottom: 5px;
   display: none;
 }
+
 img.logoText {
   width: 150px;
   margin-bottom: 5px;

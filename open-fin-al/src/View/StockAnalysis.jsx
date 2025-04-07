@@ -170,7 +170,7 @@ const StockAnalysis = () => {
 
   return (
     <div className="page">
-      <h2><span className="material-icons">assessment</span> Stock Comparison</h2>
+      <h2><span className="material-icons">compare</span> Stock Comparison</h2>
       <div>
           <StockAnalysisSearchBar state={state} handleDataChange={handleDataChange} />
       </div>
