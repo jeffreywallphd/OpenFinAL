@@ -98,7 +98,7 @@ class AppLoaded extends Component {
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
-                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock & Fund</NavLink></li>
+                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
                   <li><NavLink to="/investment-pool"><span className="material-icons">inventory_2</span> Investment Pool</NavLink></li>
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">assessment</span> Stock Comparison</NavLink></li>

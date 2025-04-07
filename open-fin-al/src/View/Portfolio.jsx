@@ -24,7 +24,7 @@ class Portfolio extends Component {
     render() {
         return (
             <div className="page portfolioPage">
-                <h2>My Portfolio</h2>
+                <h2><span className="material-icons">pie_chart</span> My Portfolio</h2>
 
                 {/* Portfolio Value and Buying Power Section */}
                 <div className="portfolio-overview">

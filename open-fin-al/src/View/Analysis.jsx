@@ -372,7 +372,7 @@ function Analysis(props) {
     return (
             <div className="page riskPage">
                 <div className="riskTitleContainer">
-                    <span className="material-icons riskIcon">assessment</span><h2 style={{margin: "0px"}}>Risk Analysis</h2>
+                    <h2 style={{margin: "0px"}}><span className="material-icons riskIcon">assessment</span> Risk Analysis</h2>
                 </div>
                 <div className='riskBody'>
                 <div className="riskContainer">

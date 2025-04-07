@@ -7,6 +7,7 @@
 
 ## Description of Changes
 Please document the following about this pull request:
+
 ### Identify the organization for which you completed this work
 If this work is associated with a university course, please identify the university/course/semester (ex. MTU/MIS3200/Fall2023).
 * List the organizaiton here: 
@@ -24,16 +25,17 @@ If this work is associated with a university course, please identify the univers
 - [ ] Bug fix (non-breaking change which fixes an issue)
 - [ ] New feature (non-breaking change which adds functionality)
 - [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Change to the design of the user interface
 - [ ] Documentation addition/update (non-breaking change that adds documentation to the system)
 
 ## Checklist Before Review
-- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
-- [ ] I have followed the git practices outlined [here](GitPractices.md) to ensure code conflicts are minimized
-- [ ] My code follows the style guidelines of this project outlined [here](documentation/StyleGuide.md)
-- [ ] Update any dependency files. eg.(requirements.txt)
-- [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](BestCodingPractices.md)
+- [ ] I want to keep this branch for future work after the review is complete?
+- [ ] I have followed the git practices outlined [here](guides/GitPractices.md) to ensure code conflicts are minimized
+- [ ] My code follows the style guidelines of this project outlined [here](documentation/design/style_guide.md)
+- [ ] I have added any new library dependencies to the software. eg.(requirements.txt)
+- [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](guides/BestCodingPractices.md)
 - [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
+- [ ] I have made corresponding changes to the documentation to make future maintenance easier
 - [ ] My changes generate no new warnings
-- [ ] There are no API keys, passwords, usernames, or other secrets in the code. I am using .env files for all secrets.
-- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] There are NO API keys, passwords, usernames, or other secrets in the code. I am storing all secrets in .env files.
+- [ ] I have added tests that prove my code is effective or that my feature works

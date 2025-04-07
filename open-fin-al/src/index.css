@@ -109,9 +109,15 @@ h1 {
 }
 
 h2 {
+  display: flex;
+  align-items: center;
   color: var(--text-color-dark);
   padding-top: 0px;
   margin-top: 0px;
+}
+
+h2 .material-icons {
+  margin-right: 10px;
 }
 
 h3 {
@@ -144,6 +150,12 @@ button {
 
 button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.note {
+  color: var(--text-color-medium);
+  padding: 0px;
+  margin: 0px;
 }
 
 .btn-group button {
@@ -1465,9 +1477,20 @@ nav ul li a:hover {
 / StockAnalysis.css */
 
 .stock-analysis {
-  margin: 20px;
   font-family: Arial, sans-serif;
   color: var(--text-color-medium-dark);
+}
+
+.chart-container {
+  display: flex;
+  justify-content: space-between; /* or you can use `gap` for spacing */
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.chart-comparison {
+  flex: 1;
+  max-width: 45%;
 }
 
 .search-bar {
@@ -1535,23 +1558,7 @@ nav ul li a:hover {
 }
 
 .export-buttons {
-  text-align: center;
   margin-top: 20px;
-}
-
-.export-buttons button {
-  margin-right: 10px;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  background-color: #28a745;
-  color: var(--text-color-white);
-  cursor: pointer;
-  border-radius: 5px;
-}
-
-.export-buttons button:hover {
-  background-color: #218838;
 }
 
 .stock-chart {
@@ -2147,7 +2154,26 @@ nav ul li a:hover {
   margin: 0;
 }
 
-/* Settings Component Styles */
+/* Comparison Table in StockAnalysis.jsx */
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.comparison-table th {
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-dark);
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.comparison-table td {
+  border: 1px solid var(--background-color-highlight);
+  padding: 10px;
+  text-align: right;
+}/* Settings Component Styles */
 .page {
   padding: 20px;
   background-color: var(--background-color);
