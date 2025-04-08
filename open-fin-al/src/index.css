@@ -311,6 +311,11 @@ code {
   /*position: static;*/
 }
 
+.page.only {
+  height: 100vh;
+   overflow-y: auto;
+}
+
 .homeContainer {
   width: 75%;
   height: 400px;

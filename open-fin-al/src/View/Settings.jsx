@@ -23,6 +23,9 @@ function Settings(props) {
     useEffect(() => {
         fetchSettingSections();
     }, []);
+
+    const configRefs = useRef({});
+    const configKeyRefs = useRef({});
     
     window.console.log("Settings Sections");
     window.console.log(sections);
@@ -319,9 +322,11 @@ function Settings(props) {
 
     const navigate = useNavigate();
     const location = useLocation();
+    window.console.log("Initial Config");
+    window.console.log(props.initialConfiguration);
 
     return (
-        <div className="page">
+        <div className={`page ${props.initialConfiguration ? 'only' : ''}`}>
             <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
             
             {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
@@ -339,7 +344,12 @@ function Settings(props) {
                                     <select 
                                         id="stockApi" 
                                         name="stockApi" 
-                                        ref={stockApiRef} 
+                                        ref={(el) => {
+                                            if (el) {
+                                                //dynamically generate refs to grant access to each select element
+                                                configRefs.current[`${section.id}-${configuration.id}`] = el;
+                                            }
+                                        }} 
                                         onChange={handleStockApiChange}
                                         className="api-select"
                                     >
@@ -354,7 +364,12 @@ function Settings(props) {
                                         id="stockApiKey" 
                                         name="stockApiKey" 
                                         className="api-key-input" 
-                                        ref={stockApiKeyRef} 
+                                        ref={(el) => {
+                                            if (el) {
+                                                //dynamically generate refs to grant access to each input element
+                                                configKeyRefs.current[`${section.id}-${configuration.id}`] = el;
+                                            }
+                                        }} 
                                         value={state.currentStockApiKey || ''} 
                                         onChange={e => {
                                             setState({

@@ -63,6 +63,7 @@ export class SettingsInteractor implements IInputBoundary {
         var currentStockGateway = null;
 
         var AlphaVantageStockGateway = new ConfigurationOption();
+        AlphaVantageStockGateway.setFieldValue("id", this.generateId());
         AlphaVantageStockGateway.setFieldValue("name", "Alpha Vantage Stock API");
         AlphaVantageStockGateway.setFieldValue("value", "AlphaVantageStockGateway");
         AlphaVantageStockGateway.setFieldValue("hasKey", true);
@@ -73,6 +74,7 @@ export class SettingsInteractor implements IInputBoundary {
         currentStockGateway = config.StockGateway === "AlphaVantageStockGateway" ? AlphaVantageStockGateway : currentStockGateway;
 
         var FMPStockGateway = new ConfigurationOption();
+        FMPStockGateway.setFieldValue("id", this.generateId());
         FMPStockGateway.setFieldValue("name", "Financial Modeling Prep Stock API");
         FMPStockGateway.setFieldValue("value", "FinancialModelingPrepGateway");
         FMPStockGateway.setFieldValue("hasKey", true);
@@ -83,6 +85,7 @@ export class SettingsInteractor implements IInputBoundary {
         currentStockGateway = config.StockGateway === "FinancialModelingPrepGateway" ? FMPStockGateway : currentStockGateway;
 
         var YFinanceStockGateway = new ConfigurationOption();
+        YFinanceStockGateway.setFieldValue("id", this.generateId());
         YFinanceStockGateway.setFieldValue("name", "Yahoo Finance Stock API (Unofficial Community Version)");
         YFinanceStockGateway.setFieldValue("value", "YFinanceStockGateway");
         YFinanceStockGateway.setFieldValue("hasKey", false);
@@ -93,6 +96,7 @@ export class SettingsInteractor implements IInputBoundary {
         const stockGateways = [AlphaVantageStockGateway, FMPStockGateway, YFinanceStockGateway];
         
         var stockGatewayConfiguration = new Configuration();
+        stockGatewayConfiguration.setFieldValue("id", this.generateId());
         stockGatewayConfiguration.setFieldValue("name", "StockGateway");
         stockGatewayConfiguration.setFieldValue("options", stockGateways);
         
@@ -100,6 +104,7 @@ export class SettingsInteractor implements IInputBoundary {
         var currentNewsGateway = null;
 
         var AlphaVantageNewsGateway = new ConfigurationOption();
+        AlphaVantageNewsGateway.setFieldValue("id", this.generateId());
         AlphaVantageNewsGateway.setFieldValue("name", "Alpha Vantage News API");
         AlphaVantageNewsGateway.setFieldValue("value", "AlphaVantageNewsGateway");
         AlphaVantageNewsGateway.setFieldValue("hasKey", true);
@@ -112,6 +117,7 @@ export class SettingsInteractor implements IInputBoundary {
         const newsGateways = [AlphaVantageNewsGateway];
         
         var newsGatewayConfiguration = new Configuration();
+        newsGatewayConfiguration.setFieldValue("id", this.generateId());
         newsGatewayConfiguration.setFieldValue("name", "NewsGateway");
         newsGatewayConfiguration.setFieldValue("options", newsGateways);
 
@@ -119,6 +125,7 @@ export class SettingsInteractor implements IInputBoundary {
         var currentReportGateway = null;
 
         var SecReportGateway = new ConfigurationOption();
+        SecReportGateway.setFieldValue("id", this.generateId());
         SecReportGateway.setFieldValue("name", "SEC Financial Report Gateway");
         SecReportGateway.setFieldValue("value", "SecAPIGateway");
         SecReportGateway.setFieldValue("hasKey", false);
@@ -129,6 +136,7 @@ export class SettingsInteractor implements IInputBoundary {
         const reportGateways = [SecReportGateway];
         
         var reportGatewayConfiguration = new Configuration();
+        reportGatewayConfiguration.setFieldValue("id", this.generateId());
         reportGatewayConfiguration.setFieldValue("name", "ReportGateway");
         reportGatewayConfiguration.setFieldValue("options", reportGateways);
 
@@ -136,6 +144,7 @@ export class SettingsInteractor implements IInputBoundary {
         var currentRatioGateway = null;
 
         var RatioGateway = new ConfigurationOption();
+        RatioGateway.setFieldValue("id", this.generateId());
         RatioGateway.setFieldValue("name", "Alpha Vantage Ratio API Gateway");
         RatioGateway.setFieldValue("value", "AlphaVantageRatioGateway");
         RatioGateway.setFieldValue("hasKey", true);
@@ -148,6 +157,7 @@ export class SettingsInteractor implements IInputBoundary {
         const ratioGateways = [RatioGateway];
         
         var ratioGatewayConfiguration = new Configuration();
+        ratioGatewayConfiguration.setFieldValue("id", this.generateId());
         ratioGatewayConfiguration.setFieldValue("name", "RatioGateway");
         ratioGatewayConfiguration.setFieldValue("options", ratioGateways);
 
@@ -155,6 +165,7 @@ export class SettingsInteractor implements IInputBoundary {
         var currentAIModel = null;
 
         var OpenAIModelGateway = new ConfigurationOption();
+        OpenAIModelGateway.setFieldValue("id", this.generateId());
         OpenAIModelGateway.setFieldValue("name", "OpenAI Model API Gateway");
         OpenAIModelGateway.setFieldValue("value", "OpenAIModel");
         OpenAIModelGateway.setFieldValue("hasKey", true);
@@ -167,15 +178,18 @@ export class SettingsInteractor implements IInputBoundary {
         const chatbotGateways = [OpenAIModelGateway];
         
         var chatbotModelGatewayConfiguration = new Configuration();
+        chatbotModelGatewayConfiguration.setFieldValue("id", this.generateId());
         chatbotModelGatewayConfiguration.setFieldValue("name", "ChatbotModel");
         chatbotModelGatewayConfiguration.setFieldValue("options", chatbotGateways);
 
         //Configuration Sections
         const dataConfigSection = new ConfigurationSection();
+        dataConfigSection.setFieldValue("id", this.generateId());
         dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
         dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration]);
 
         const modelConfigSection = new ConfigurationSection();
+        modelConfigSection.setFieldValue("id", this.generateId());
         modelConfigSection.setFieldValue("label", "AI Model Configurations");
         modelConfigSection.setFieldValue("configurations", [chatbotModelGatewayConfiguration]);
 
@@ -216,5 +230,10 @@ export class SettingsInteractor implements IInputBoundary {
     
     async delete(requestModel: IRequestModel): Promise<IResponseModel> {
         throw new Error("Configurations cannot be deleted.");
+    }
+
+    generateId(length = 10) {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+        return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
     }
 }
