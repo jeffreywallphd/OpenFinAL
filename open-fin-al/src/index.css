@@ -28,9 +28,9 @@ body.dark-mode {
   --primary-color-hover: #6977f7;
   --secondary-color: #384457;
   --tertiary-color: #4a5568;
-  --background-color: #3d3d3d;
-  --background-color-highlight-light: #303030;
-  --background-color-highlight: #282828; 
+  --background-color: #282828;
+  --background-color-highlight-light: #202020;
+  --background-color-highlight: #181818; 
   --accent-color: #27A2CC;
   --highlight-color: #ecc94b;
   --text-color-white: #FFFFFF;
@@ -272,20 +272,9 @@ code {
   display: flex;
 }
 
-/* .sidePanel {
-  flex: 1;
-  padding: 20px;
-  margin-left: 10px;
-} */
-
-/* .sidebar {
-  padding:0;
-  margin:0; 
-  width: 200px; 
-  height: 100vh;
-  background-color: var(--primary-color);
-  transition: width 0.5s ease;
-} */
+.sidePanel {
+  margin-left: 30px;
+} 
 
 .sidebar.collapsed {
   max-width: 55px;
@@ -295,51 +284,6 @@ code {
 .sidebar.collapsed::-webkit-scrollbar {
   display: none;
 }
-
-/* .header {
-  text-align: center;
-  padding: 0;
-  margin-bottom: 10px;
-}
-
-.header.collapsed {
-  display: none;
-}
-
-.menu-items a:hover {
-  background-color: var(--accent-color);
-}
-
-.menu-items.collapsed a {
-  display: none;
-}
-
-.sidebar a {
-  color: var(--text-color-light);
-  font-weight: bold;
-  display: block;
-  padding: 12px;
-  text-decoration: none;
-}
-
-/* .toggle-sidebar {
-  color: var(--text-color-light);
-  background-color: var(--primary-color);
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  text-align: left;
-  width: 40px;
-} */
-
-/* .toggle-sidebar:hover {
-  background-color: var(--tertiary-color);
-}
-
-.isActive{
-  background-color: var(--secondary-color);
-  color: var(--text-color-light);
-} */
 
 /* Styling for Home, Content, and Page Containers */
 
@@ -529,6 +473,38 @@ code {
 .chartContainer {
   width: 700px;
   margin-left: 10px;
+}
+
+.stockDetails {
+  background-color: var(--background-color-highlight-light);
+  border-radius: 4px;
+  padding: 20px;
+  color: var(--text-color-medium);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stockDetails div {
+  margin-bottom: 10px;
+}
+
+.stockDetails div span {
+  width: 125px;
+  display: inline-block;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.stockRatios {
+  color: var(--text-color-medium-dark);
+  font-size: 14px;
+}
+
+.stockRatios p span {
+  width: 125px;
+  display: inline-block;
+  font-weight: 600;
+  font-style: italic;
 }
 
 .priceSearchFormContainer {

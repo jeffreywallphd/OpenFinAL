@@ -30,14 +30,13 @@ import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
 import logoNoTextDark from "../Asset/Image/openfinal_logo_dark_no_text.png";
 import logoDark from "../Asset/Image/logo-dark.png";
 import navIcon from "../Asset/Image/navIcon.png";
-import { Settings } from "./APIConfigSetting";
+import { Settings } from "./Settings";
 import Forecast from "./Forecast";
 import { ForecastFeature } from "./ForecastFeature";
 import ForecastModel from "./ForecastModel";
 import { SecReport } from "./SecReport";
 import InvestmentPool from "./InvestmentPool";
 import StockAnalysis from "./StockAnalysis";
-import Chatbot from "./Chatbot/Chatbot";
 import ChatbotToggle from "./Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
@@ -48,6 +47,18 @@ function ScrollToTop({ onRouteChange }) {
     window.scrollTo(0, 0);
     if (onRouteChange) onRouteChange();
   }, [pathname]);
+
+  useEffect(() => {
+          const clearDarkMode = () => {
+              //localStorage.removeItem("darkMode");
+              localStorage.setItem("darkMode", "false");
+          };
+  
+          window.addEventListener("beforeunload", clearDarkMode);
+          return () => {
+              window.removeEventListener("beforeunload", clearDarkMode);
+          };
+      }, []); 
 
   return null;
 }
@@ -67,6 +78,7 @@ class AppLoaded extends Component {
 
     this.toggleMenu = this.toggleMenu.bind(this);
     this.checkDarkMode = this.checkDarkMode.bind(this);
+    this.checkDarkMode();
   }
 
   toggleMenu() {
