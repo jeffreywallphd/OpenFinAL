@@ -125,7 +125,7 @@ function TimeSeriesChart(props) {
                             <div><span>Exchange:</span> {props.state.secData.response.results[0].data.Exchange}</div>
                             <div><span>Sector:</span> {props.state.secData.response.results[0].data.Sector}</div>
                             <div><span>Industry:</span> {props.state.secData.response.results[0].data.Industry}</div>
-                            <div><span>Fiscal Year End:</span> {props.state.secData.response.results[0].data.FiscalYearEnd}</div>
+                            <div><span>Fiscal Yr End:</span> {props.state.secData.response.results[0].data.FiscalYearEnd}</div>
                             <div><span>Market Cap:</span> {formatter.format(props.state.secData.response.results[0].data.MarketCapitalization)}</div>
                             <div>
                                 { props.state && props.state.reportLinks ? 
