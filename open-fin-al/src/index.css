@@ -219,7 +219,7 @@ button:hover {
   }
 }
 
-Styling for Navigation
+/*Styling for Navigation*/
 
 #navButton{
   padding:0;
@@ -250,7 +250,7 @@ code {
   display: flex;
   min-height: 100vh; /* Ensures the container is at least the height of the viewport */
   background-color: var(--background-color);
-  flex-direction: column; /* Ensures content stacks vertically */
+  overflow-y: hidden /* Ensures content stacks vertically */
 }
 
 .flex {
@@ -2317,7 +2317,7 @@ nav ul li a:hover {
 }
 
 .dark-mode .card-title {
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .dark-mode .table-row {
