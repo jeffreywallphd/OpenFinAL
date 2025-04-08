@@ -14,30 +14,28 @@ import {
 } from "react-router-dom";
 
 // Imports for react pages and assets
-import Home from "./Home";
-import Portfolio from "./Portfolio";
-import { Analysis } from "./Analysis";
-import BrowseFAQ from "./BrowseFAQ";
-import TermDefinitions from "./TermDefinitions";
-import BuyReport from "./BuyReport";
-import { TimeSeries } from "./TimeSeriesPage";
-import { News } from "./NewsPage";
-import { Learn } from "./Learn";
-import { LearningModuleDetails } from "./LearningModuleDetails";
-import { LearningModulePage } from "./LearningModulePage";
-import logo from "../Asset/Image/logo.png";
-import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
-import logoNoTextDark from "../Asset/Image/openfinal_logo_dark_no_text.png";
-import logoDark from "../Asset/Image/logo-dark.png";
-import navIcon from "../Asset/Image/navIcon.png";
-import { Settings } from "./Settings";
-import Forecast from "./Forecast";
-import { ForecastFeature } from "./ForecastFeature";
-import ForecastModel from "./ForecastModel";
-import { SecReport } from "./SecReport";
-import InvestmentPool from "./InvestmentPool";
-import StockAnalysis from "./StockAnalysis";
-import ChatbotToggle from "./Chatbot/ChatbotToggle";
+import Home from "../Home";
+import Portfolio from "../Portfolio";
+import { Analysis } from "../Analysis";
+import BuyReport from "../BuyReport";
+import { TimeSeries } from "../TimeSeriesPage";
+import { News } from "../NewsPage";
+import { Learn } from "../Learn";
+import { LearningModuleDetails } from "../LearningModuleDetails";
+import { LearningModulePage } from "../LearningModulePage";
+import logo from "../../Asset/Image/logo.png";
+import logoNoText from "../../Asset/Image/openfinal_logo_no_text.png";
+import logoNoTextDark from "../../Asset/Image/openfinal_logo_dark_no_text.png";
+import logoDark from "../../Asset/Image/logo-dark.png";
+import navIcon from "../../Asset/Image/navIcon.png";
+import { Settings } from "../Settings";
+import Forecast from "../Forecast";
+import { ForecastFeature } from "../ForecastFeature";
+import ForecastModel from "../ForecastModel";
+import { SecReport } from "../SecReport";
+import InvestmentPool from "../InvestmentPool";
+import StockAnalysis from "../StockAnalysis";
+import ChatbotToggle from "../Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop({ onRouteChange }) {

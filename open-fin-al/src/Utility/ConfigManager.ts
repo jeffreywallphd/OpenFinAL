@@ -1,16 +1,17 @@
 class ConfigUpdater {
-    configFile = './config/default.json';
-    envFile = './.env';
-    stockApi;
-    newsApi;
-    stockApiKey;
-    newsApiKey;
-    reportsApi;
-    reportsApiKey;
-    ratioApi;
-    ratioApiKey;
+    configFile:string = './config/default.json';
+    envFile:string = './.env';
+    stockApi:string;
+    newsApi:string;
+    stockApiKey:string;
+    newsApiKey:string;
+    reportsApi:string;
+    reportsApiKey:string;
+    ratioApi:string;
+    ratioApiKey:string;
+    openAIKey:string;
     
-    constructor(args={stockApi: null, stockApiKey:null, newsApi:null, newsApiKey:null, reportApi:null, reportApiKey:null, ratioApi:null, ratioApiKey:null}) {
+    constructor(args:any={stockApi: null, stockApiKey:null, newsApi:null, newsApiKey:null, reportApi:null, reportApiKey:null, ratioApi:null, ratioApiKey:null}) {
         this.stockApi = args["stockApi"];
         this.newsApi = args["newsApi"];
         this.stockApiKey = args["stockApiKey"];
@@ -36,13 +37,47 @@ class ConfigUpdater {
                     FMP_API_KEY: "",
                     STOCK_API_KEY: "",
                     NEWS_API_KEY: "",
-                    RATIO_API_KEY: ""
+                    RATIO_API_KEY: "",
+                    OPENAI_API_KEY: ""
                 }
 
                 fs.writeFileSync("./.env", JSON.stringify(envJson, null, 4));
             } catch(error2) {
-                console.error(error);
+                console.error(error2);
             }
+        }
+    }
+
+    createConfigIfNotExists() {
+        const fs = window.fs.fs;
+
+        try {
+            const config = fs.statSync("./config");     
+        } catch(error) { 
+            console.error(error);
+
+            try {
+                fs.mkdirSync("./config", { recursive: true }); 
+            } catch(error2) {
+                console.error(error2);
+                return false;
+            }
+        }
+
+        try {
+            fs.statSync(this.configFile)
+        } catch(error3) {
+            fs.openSync(this.configFile, "w");
+
+            const defaultConfig = {
+                StockGateway: "AlphaVantageStockGateway",
+                NewsGateway: "AlphaVantageNewsGateway",
+                ReportGateway: "SecAPIGateway",
+                RatioGateway: "AlphaVantageRatioGateway",
+                ChatbotModel: "OpenAIModel"
+            };
+
+            fs.writeFileSync(this.configFile, JSON.stringify(defaultConfig, null, 4));
         }
     }
 
@@ -71,7 +106,7 @@ class ConfigUpdater {
                 config.NewsGateway = 'AlphaVantageNewsGateway';
             }
 
-            if (this.reportApi === "SecReportGateway") {
+            if (this.reportsApi === "SecReportGateway") {
                 config.ReportGateway = 'SecAPIGateway';
             } else {
                 config.ReportGateway = 'SecAPIGateway';
@@ -139,6 +174,7 @@ class ConfigUpdater {
             return envConfig;
         } catch (err) {
             console.error('Error updating .env file:', err);
+            return null;
         }
     }
 
@@ -155,6 +191,7 @@ class ConfigUpdater {
             return config;
         } catch (err) {
             console.error('Error updating configuration:', err);
+            return null;
         }
     }
 }
