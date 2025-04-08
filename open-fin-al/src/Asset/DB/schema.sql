@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS Portfolio (
     FOREIGN KEY (userId) REFERENCES User(id)
 );
 
-CREATE TRIGGER SetDefaultPortfolio
+CREATE TRIGGER IF NOT EXISTS SetDefaultPortfolio
 AFTER UPDATE OF isDefault ON Portfolio
 WHEN NEW.isDefault = 1
 BEGIN
@@ -26,7 +26,7 @@ BEGIN
       AND id != NEW.id;
 END;
 
-CREATE TRIGGER SetDefaultPortfolioOnInsert
+CREATE TRIGGER IF NOT EXISTS SetDefaultPortfolioOnInsert
 AFTER INSERT ON Portfolio
 WHEN NEW.isDefault = 1
 BEGIN
