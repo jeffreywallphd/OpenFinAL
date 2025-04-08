@@ -14,8 +14,11 @@ export class Configuration implements IEntity {
         var name = new Field("name", "string", null);
         this.fields.set("name", name);
 
-        var configurationOptions = new Field("configurationOptions", "array<ConfigurationOption>", null);
-        this.fields.set("configurationOptions", configurationOptions);
+        var type = new Field("type", "string", null);
+        this.fields.set("type", type);
+
+        var options = new Field("options", "array<ConfigurationOption>", []);
+        this.fields.set("options", options);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -25,17 +28,25 @@ export class Configuration implements IEntity {
             throw new Error("A configuration must have a name");
         }
 
-        if(!json.request.hasOwnProperty("configurationOptions")) {
+        if(!json.request.hasOwnProperty("type")) {
+            throw new Error("A configuration must have a type");
+        }
+
+        if(!json.request.hasOwnProperty("options")) {
             throw new Error("A configuration must have at least one configuration option. None were provided.");
         }
 
-        //set properties of Stock entity based on request model
+        //set properties of Configuration entity based on request model
         if(json.request.configuration.hasOwnProperty("name")) {
             this.setFieldValue("name", json.request.configuration.name);
         }
 
+        if(json.request.configuration.hasOwnProperty("type")) {
+            this.setFieldValue("type", json.request.configuration.type);
+        }
+
         if(json.request.configuration.hasOwnProperty("options")) {
-            this.setFieldValue("configurationOptions", json.request.configuration.options);
+            this.setFieldValue("options", json.request.configuration.options);
         }
     }
 
@@ -61,5 +72,22 @@ export class Configuration implements IEntity {
 
     getId() {
         return this.fields.get("id").value;
+    }
+
+    toObject() {
+        var options = [];
+        
+        for(var option of this.getFieldValue("options")) {
+            options.push(option.toObject());
+        }
+
+        var obj = {
+            id: this.getFieldValue("id"),
+            name: this.getFieldValue("name"),
+            type: this.getFieldValue("type"),
+            options: options
+        };
+        
+        return obj;
     }
 }

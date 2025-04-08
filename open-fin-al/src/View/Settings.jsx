@@ -1,8 +1,32 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
 import ConfigUpdater from "../Utility/ConfigManager";
 import { useNavigate, useLocation } from 'react-router-dom';
+import { SettingsInteractor } from "../Interactor/SettingsInteractor";
+import { JSONRequest } from "../Gateway/Request/JSONRequest";
 
 function Settings(props) {
+    const [sections, setSections] = useState([]);
+    
+    const interactor = new SettingsInteractor();
+
+    // Function to get setting sections from interactor
+    const fetchSettingSections = async () => {
+        const settingSectionRequest = new JSONRequest(JSON.stringify({}));
+        try {
+            const response = await interactor.get(settingSectionRequest);
+            setSections(response); // save to state or handle however needed
+        } catch (error) {
+            console.error("Failed to fetch setting sections:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSettingSections();
+    }, []);
+    
+    window.console.log("Settings Sections");
+    window.console.log(sections);
+
     const stockApiRef = useRef("AlphaVantageStockGateway");
     const newsApiRef = useRef("AlphaVantageNewsGateway");
     const reportApiRef = useRef("SecAPIGateway");
@@ -300,6 +324,55 @@ function Settings(props) {
         <div className="page">
             <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
             
+            {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
+                <div className="settings-card">
+                    <h3 className="card-title">{section.label}</h3>
+                    <form onSubmit={handleSubmit}>
+                    <div className="api-config-table">
+                        <div className="table-header">
+                            <div className="header-cell">Select an API:</div>
+                            <div className="header-cell">API Keys</div>
+                        </div>
+                        {section.configurations.map((configuration) => (
+                            <div className="table-row">
+                                <div className="api-cell">
+                                    <select 
+                                        id="stockApi" 
+                                        name="stockApi" 
+                                        ref={stockApiRef} 
+                                        onChange={handleStockApiChange}
+                                        className="api-select"
+                                    >
+                                        {configuration.options.map((option) => (
+                                            <option value={option.value}>{option.name}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div className="key-cell">
+                                    <input 
+                                        type="text" 
+                                        id="stockApiKey" 
+                                        name="stockApiKey" 
+                                        className="api-key-input" 
+                                        ref={stockApiKeyRef} 
+                                        value={state.currentStockApiKey || ''} 
+                                        onChange={e => {
+                                            setState({
+                                                ...state, 
+                                                currentStockApiKey: e.target.value,
+                                                message: null
+                                            });
+                                        }}
+                                        disabled={!state.hasStockApiKey}
+                                    />
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    </form>
+                </div>
+            ))}
+
             {/* API Configuration Card */}
             <div className="settings-card">
                 <h3 className="card-title">Stock Data API Configuration</h3>

@@ -19,8 +19,14 @@ export class ConfigurationOption implements IEntity {
         var hasKey = new Field("hasKey", "boolean", true);
         this.fields.set("hasKey", hasKey);
 
+        var keyName = new Field("keyName", "string", null);
+        this.fields.set("keyName", keyName);
+
         var key = new Field("key", "string", null);
         this.fields.set("key", key);
+
+        var isActive = new Field("isActive", "boolean", false);
+        this.fields.set("isActive", isActive);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -38,16 +44,24 @@ export class ConfigurationOption implements IEntity {
             this.setFieldValue("name", json.request.option.name);
         }
 
-        if(json.request.user.hasOwnProperty("value")) {
+        if(json.request.option.hasOwnProperty("value")) {
             this.setFieldValue("value", json.request.option.value);
         }
 
-        if(json.request.configuration.hasOwnProperty("hasKey")) {
-            this.setFieldValue("hasKey", json.request.configuration.hasKey);
+        if(json.request.option.hasOwnProperty("hasKey")) {
+            this.setFieldValue("hasKey", json.request.option.hasKey);
+        }
+        
+        if(json.request.option.hasOwnProperty("keyName")) {
+            this.setFieldValue("keyName", json.request.option.keyName);
         }
 
-        if(json.request.configuration.hasOwnProperty("key")) {
-            this.setFieldValue("key", json.request.configuration.key);
+        if(json.request.option.hasOwnProperty("key")) {
+            this.setFieldValue("key", json.request.option.key);
+        }
+
+        if(json.request.option.hasOwnProperty("isActive")) {
+            this.setFieldValue("isActive", json.request.option.isActive);
         }
     }
 
@@ -73,5 +87,19 @@ export class ConfigurationOption implements IEntity {
 
     getId() {
         return this.fields.get("id").value;
+    }
+
+    toObject() {
+        var obj = {
+            id: this.getFieldValue("id"),
+            name: this.getFieldValue("name"),
+            value: this.getFieldValue("value"),
+            hasKey: this.getFieldValue("hasKey"),
+            keyName: this.getFieldValue("keyName"),
+            key: this.getFieldValue("key"),
+            isActive: this.getFieldValue("isActive")
+        };
+        
+        return obj;
     }
 }

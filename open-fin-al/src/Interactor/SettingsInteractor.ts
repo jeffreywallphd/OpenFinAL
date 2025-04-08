@@ -2,6 +2,7 @@ import {IInputBoundary} from "./IInputBoundary";
 import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
+import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSection";
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
 import ConfigUpdater from "../Utility/ConfigManager";
@@ -10,38 +11,210 @@ export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
 
-    async post(requestModel: IRequestModel): Promise<IResponseModel> {    
-        return this.get(requestModel);
-    }
-    
-    async get(requestModel: IRequestModel): Promise<IResponseModel> {
+    async post(requestModel: IRequestModel): Promise<IResponseModel> {   
         const configUpdater = new ConfigUpdater();
         const env = configUpdater.getEnv();
         const config = configUpdater.getConfig();
 
-        //create StockGateway Configuration
+        const configurations = requestModel.request.configurations;
+
+        for(var configuration of configurations) { 
+            if(configuration.options.hasKey === true) {
+                env[configuration.options.keyName] = configuration.options.key;
+            }
+            
+            config[configuration.name] = configuration.options.value;
+        }
+        
+        const configSaved = configUpdater.saveConfig(config);
+        const envSaved = configUpdater.saveEnv(env);
+
+        var status = null;
+
+        if(config && envSaved) {
+            status = 200;
+        } else {
+            status = 400;
+        }
+
+        const data = {
+            response: {
+                status: status,
+                results: [
+                    {configSaved: configSaved},
+                    {envSaved: envSaved}
+                ]
+            }
+        };
+
+        const response = new JSONResponse(JSON.stringify(data));
+
+        return response.response;
+    }
+    
+    async get(requestModel: IRequestModel): Promise<IResponseModel> {
+        var json = requestModel.request;
+
+        const configUpdater = new ConfigUpdater();
+        const env = configUpdater.getEnv();
+        const config = configUpdater.getConfig();
+
+        //create StockGateway Configurations
+        var currentStockGateway = null;
+
         var AlphaVantageStockGateway = new ConfigurationOption();
         AlphaVantageStockGateway.setFieldValue("name", "Alpha Vantage Stock API");
         AlphaVantageStockGateway.setFieldValue("value", "AlphaVantageStockGateway");
         AlphaVantageStockGateway.setFieldValue("hasKey", true);
+        AlphaVantageStockGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
         AlphaVantageStockGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
-        
+        AlphaVantageStockGateway.setFieldValue("isActive", config.StockGateway === "AlphaVantageStockGateway" ? true : false);
 
+        currentStockGateway = config.StockGateway === "AlphaVantageStockGateway" ? AlphaVantageStockGateway : currentStockGateway;
+
+        var FMPStockGateway = new ConfigurationOption();
+        FMPStockGateway.setFieldValue("name", "Financial Modeling Prep Stock API");
+        FMPStockGateway.setFieldValue("value", "FinancialModelingPrepGateway");
+        FMPStockGateway.setFieldValue("hasKey", true);
+        FMPStockGateway.setFieldValue("keyName", "FMP_API_KEY");
+        FMPStockGateway.setFieldValue("key", env["FMP_API_KEY"]);
+        FMPStockGateway.setFieldValue("isActive", config.StockGateway === "FinancialModelingPrepGateway" ? true : false);
+
+        currentStockGateway = config.StockGateway === "FinancialModelingPrepGateway" ? FMPStockGateway : currentStockGateway;
+
+        var YFinanceStockGateway = new ConfigurationOption();
+        YFinanceStockGateway.setFieldValue("name", "Yahoo Finance Stock API (Unofficial Community Version)");
+        YFinanceStockGateway.setFieldValue("value", "YFinanceStockGateway");
+        YFinanceStockGateway.setFieldValue("hasKey", false);
+        YFinanceStockGateway.setFieldValue("isActive", config.StockGateway === "YFinanceStockGateway" ? true : false);
+        
+        currentStockGateway = config.StockGateway === "YFinanceStockGateway" ? YFinanceStockGateway : currentStockGateway;
+
+        const stockGateways = [AlphaVantageStockGateway, FMPStockGateway, YFinanceStockGateway];
+        
         var stockGatewayConfiguration = new Configuration();
         stockGatewayConfiguration.setFieldValue("name", "StockGateway");
-        stockGatewayConfiguration.setFieldValue("configurationOptions", [
-            
-        ]);
+        stockGatewayConfiguration.setFieldValue("options", stockGateways);
         
+        //create NewsGateway Configurations
+        var currentNewsGateway = null;
 
-        return;
+        var AlphaVantageNewsGateway = new ConfigurationOption();
+        AlphaVantageNewsGateway.setFieldValue("name", "Alpha Vantage News API");
+        AlphaVantageNewsGateway.setFieldValue("value", "AlphaVantageNewsGateway");
+        AlphaVantageNewsGateway.setFieldValue("hasKey", true);
+        AlphaVantageNewsGateway.setFieldValue("keyName", "NEWS_API_KEY");
+        AlphaVantageNewsGateway.setFieldValue("key", env["NEWS_API_KEY"]);
+        AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
+
+        currentNewsGateway = config.NewsGateway === "AlphaVantageNewsGateway" ? AlphaVantageNewsGateway : currentNewsGateway;
+
+        const newsGateways = [AlphaVantageNewsGateway];
+        
+        var newsGatewayConfiguration = new Configuration();
+        newsGatewayConfiguration.setFieldValue("name", "NewsGateway");
+        newsGatewayConfiguration.setFieldValue("options", newsGateways);
+
+        //create ReportGateway Configurations
+        var currentReportGateway = null;
+
+        var SecReportGateway = new ConfigurationOption();
+        SecReportGateway.setFieldValue("name", "SEC Financial Report Gateway");
+        SecReportGateway.setFieldValue("value", "SecAPIGateway");
+        SecReportGateway.setFieldValue("hasKey", false);
+        SecReportGateway.setFieldValue("isActive", config.ReportGateway === "SecAPIGateway" ? true : false);
+
+        currentReportGateway = config.ReportGateway === "SecAPIGateway" ? SecReportGateway : currentReportGateway;
+
+        const reportGateways = [SecReportGateway];
+        
+        var reportGatewayConfiguration = new Configuration();
+        reportGatewayConfiguration.setFieldValue("name", "ReportGateway");
+        reportGatewayConfiguration.setFieldValue("options", reportGateways);
+
+        //create RatioGateway Configurations
+        var currentRatioGateway = null;
+
+        var RatioGateway = new ConfigurationOption();
+        RatioGateway.setFieldValue("name", "Alpha Vantage Ratio API Gateway");
+        RatioGateway.setFieldValue("value", "AlphaVantageRatioGateway");
+        RatioGateway.setFieldValue("hasKey", true);
+        RatioGateway.setFieldValue("keyName", "RATIO_API_KEY");
+        RatioGateway.setFieldValue("key", env["RATIO_API_KEY"]);
+        RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
+
+        currentRatioGateway = config.RatioGateway === "AlphaVantageRatioGateway" ? RatioGateway : currentReportGateway;
+
+        const ratioGateways = [RatioGateway];
+        
+        var ratioGatewayConfiguration = new Configuration();
+        ratioGatewayConfiguration.setFieldValue("name", "RatioGateway");
+        ratioGatewayConfiguration.setFieldValue("options", ratioGateways);
+
+        //create Chatbot Model Configurations
+        var currentAIModel = null;
+
+        var OpenAIModelGateway = new ConfigurationOption();
+        OpenAIModelGateway.setFieldValue("name", "OpenAI Model API Gateway");
+        OpenAIModelGateway.setFieldValue("value", "OpenAIModel");
+        OpenAIModelGateway.setFieldValue("hasKey", true);
+        OpenAIModelGateway.setFieldValue("keyName", "OPENAI_API_KEY");
+        OpenAIModelGateway.setFieldValue("key", env["OPENAI_API_KEY"]);
+        OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
+
+        currentAIModel = config.ChatbotModel === "OpenAIModel" ? OpenAIModelGateway : currentAIModel;
+
+        const chatbotGateways = [OpenAIModelGateway];
+        
+        var chatbotModelGatewayConfiguration = new Configuration();
+        chatbotModelGatewayConfiguration.setFieldValue("name", "ChatbotModel");
+        chatbotModelGatewayConfiguration.setFieldValue("options", chatbotGateways);
+
+        //Configuration Sections
+        const dataConfigSection = new ConfigurationSection();
+        dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
+        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration]);
+
+        const modelConfigSection = new ConfigurationSection();
+        modelConfigSection.setFieldValue("label", "AI Model Configurations");
+        modelConfigSection.setFieldValue("configurations", [chatbotModelGatewayConfiguration]);
+
+        var data = {};
+
+        if(json.action && json.action == "getCurrent") {     
+            data = {
+                response: {   
+                    results: [
+                        {
+                            StockGateway: currentStockGateway,
+                            NewsGateway: currentNewsGateway,
+                            ReportGateway: currentReportGateway,
+                            RatioGateway: currentRatioGateway,
+                            ChatbotModel: currentAIModel
+                        }
+                    ]
+                }
+            };
+        } else {
+            data = {
+                response: {   
+                    results: [
+                        dataConfigSection.toObject(),
+                        modelConfigSection.toObject()
+                    ]
+            }};
+        }
+
+        const response = new JSONResponse(JSON.stringify(data));
+
+        return response.response;
     }
     
     async put(requestModel: IRequestModel): Promise<IResponseModel> {
-        return this.get(requestModel);
+        return this.post(requestModel);
     }
     
     async delete(requestModel: IRequestModel): Promise<IResponseModel> {
-        return this.get(requestModel);
+        throw new Error("Configurations cannot be deleted.");
     }
 }

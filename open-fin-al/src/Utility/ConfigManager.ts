@@ -81,6 +81,32 @@ class ConfigUpdater {
         }
     }
 
+    saveEnv(env:object) {
+        try {
+            const fs = window.fs.fs;
+            fs.openSync(this.envFile, "w");
+            fs.writeFileSync(this.envFile, JSON.stringify(env, null, 4));
+
+            return true;
+        } catch(error) {
+            console.error(error);
+            return false;
+        }
+    }
+
+    saveConfig(config:object) {
+        try {
+            const fs = window.fs.fs;
+            fs.openSync(this.configFile, "w");
+            fs.writeFileSync(this.configFile, JSON.stringify(config, null, 4));
+
+            return true;
+        } catch(error) {
+            console.error(error);
+            return false;
+        }
+    }
+
     updateConfigFile() {
         try {
             // Access fs module from the preload script
