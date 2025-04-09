@@ -61,6 +61,10 @@ class Chatbot extends Component {
                     <div className="chatHistory">
                         <h3>Chat History</h3>
                     </div>
+                    <div className="chatControls">
+                        <button>New Chat</button>
+                        <div className="chatSettings"><span className="material-icons">settings</span></div>
+                    </div>
                     <div className="chatBot">                        
                         <ul className="chatbox">
                             {this.state.messages.map((msg, index) => (
