@@ -19,9 +19,15 @@ export class SettingsInteractor implements IInputBoundary {
 
         const configurations = requestModel.request.configurations;
 
+        //for the same key being used across different API gateways
+        var previouslySetKeys:any = [];
+
         for(var [configName, configuration] of Object.entries(configurations) as any[]) { 
-            if(configuration.hasKey === true) {
-                env[configuration.keyName] = configuration.key;
+            if(configuration.hasKey === true && !previouslySetKeys.includes(configuration.keyName)) {
+                if(env[configuration.keyName] !== configuration.key) {
+                    env[configuration.keyName] = configuration.key;
+                    previouslySetKeys.push(configuration.keyName);
+                }   
             }
             
             config[configName] = configuration.value;
@@ -211,7 +217,7 @@ export class SettingsInteractor implements IInputBoundary {
             }};
         } else if(json.action && json.action == "isConfigured") {
             var validCount = 0;
-            
+
             const currentConfigurations = [
                 currentStockGateway.toObject(), 
                 currentNewsGateway.toObject(), 

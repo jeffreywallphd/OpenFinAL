@@ -66,13 +66,19 @@ function Settings(props) {
 
         if(response.response.status == 200) {
             setMessage("Successfully saved the configuration");
-            await sleep(2000);
+            await sleep(1000);
             setMessage(null);
             
             if(props.initialConfiguration) {
                 props.handleConfigured();
             }
 
+            setTimeout(() => {
+                navigate('/refresh', { replace: true }); // dummy path
+                setTimeout(() => {
+                    navigate(location.pathname, { replace: true }); // go back
+                }, 10);
+            }, 50); // slight delay to allow localStorage update
         } else {
             setMessage("Failed to save the configuration");
         }
