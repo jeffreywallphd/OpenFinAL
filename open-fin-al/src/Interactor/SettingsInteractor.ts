@@ -18,12 +18,12 @@ export class SettingsInteractor implements IInputBoundary {
 
         const configurations = requestModel.request.configurations;
 
-        for(var configuration of configurations) { 
-            if(configuration.options.hasKey === true) {
-                env[configuration.options.keyName] = configuration.options.key;
+        for(var [configName, configuration] of Object.entries(configurations) as any[]) { 
+            if(configuration.hasKey === true) {
+                env[configuration.keyName] = configuration.key;
             }
             
-            config[configuration.name] = configuration.options.value;
+            config[configName] = configuration.value;
         }
         
         const configSaved = configUpdater.saveConfig(config);
@@ -43,7 +43,7 @@ export class SettingsInteractor implements IInputBoundary {
                 results: [
                     {configSaved: configSaved},
                     {envSaved: envSaved}
-                ]
+                ] 
             }
         };
 
@@ -195,20 +195,19 @@ export class SettingsInteractor implements IInputBoundary {
 
         var data = {};
 
-        if(json.action && json.action == "getCurrent") {     
+        if(json.action && json.action == "getCurrent") {  
             data = {
                 response: {   
                     results: [
                         {
-                            StockGateway: currentStockGateway,
-                            NewsGateway: currentNewsGateway,
-                            ReportGateway: currentReportGateway,
-                            RatioGateway: currentRatioGateway,
-                            ChatbotModel: currentAIModel
+                            StockGateway: currentStockGateway.toObject(),
+                            NewsGateway: currentNewsGateway.toObject(),
+                            ReportGateway: currentReportGateway.toObject(),
+                            RatioGateway: currentRatioGateway.toObject(),
+                            ChatbotModel: currentAIModel.toObject()
                         }
                     ]
-                }
-            };
+            }};
         } else {
             data = {
                 response: {   
@@ -220,7 +219,6 @@ export class SettingsInteractor implements IInputBoundary {
         }
 
         const response = new JSONResponse(JSON.stringify(data));
-
         return response.response;
     }
     
