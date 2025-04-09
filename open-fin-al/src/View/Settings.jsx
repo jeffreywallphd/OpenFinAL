@@ -147,8 +147,12 @@ function Settings(props) {
                         </div>
                         {section.configurations.map((configuration) => (
                             <>
-                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} />
-                                {}                                                                                    
+                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedKeys={setSharedKeys} />
+                                {configuration.type === "AIModel" && (
+                                    <>
+
+                                    </>
+                                )}                                                                                    
                             </>
                         ))}
                     </div>
