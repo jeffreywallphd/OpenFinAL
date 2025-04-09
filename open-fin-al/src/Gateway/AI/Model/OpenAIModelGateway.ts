@@ -15,12 +15,6 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
     }
 
     async create(model: string, messages: any[]): Promise<any> {
-        window.console.log("The key is: " + this.key);
-        window.console.log(JSON.stringify({
-            model: model,
-            message: messages,
-            max_tokens: 20,
-        }));
         try {
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",

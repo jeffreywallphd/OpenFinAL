@@ -6,6 +6,7 @@ import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSecti
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
 import ConfigUpdater from "../Utility/ConfigManager";
+import { valid } from "node-html-parser";
 
 export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -208,6 +209,38 @@ export class SettingsInteractor implements IInputBoundary {
                         }
                     ]
             }};
+        } else if(json.action && json.action == "isConfigured") {
+            var validCount = 0;
+            
+            const currentConfigurations = [
+                currentStockGateway.toObject(), 
+                currentNewsGateway.toObject(), 
+                currentReportGateway.toObject(), 
+                currentRatioGateway.toObject(), 
+                currentAIModel.toObject()
+            ];
+
+            for(var configuration of currentConfigurations as any) {
+                if(configuration.hasKey && env[configuration.keyName].length > 1) {
+                    validCount++;
+                } else if(!configuration.hasKey) {
+                    validCount++;
+                }
+            }
+
+            if(validCount == currentConfigurations.length) {    
+                data = {
+                    response: {
+                        status: 200
+                    }
+                };
+            } else {
+                data = {
+                    response: {
+                        status: 400
+                    }
+                };
+            }
         } else {
             data = {
                 response: {   

@@ -26,7 +26,7 @@ export function AppConfiguring(props) {
     return (
         <HashRouter>
             <Routes>
-                <Route path="/" element={<Settings initialConfiguration={true} />} />
+                <Route path="/" element={<Settings initialConfiguration={true} handleConfigured={props.handleConfigured} />} />
             </Routes>
         </HashRouter>        
     );

@@ -98,7 +98,6 @@ const StockAnalysis = () => {
       for (const metric in selectedMetrics) {
         var chartData = [];
         for (const stock of Object.values(state.comparisonData)) {
-          window.console.log(stock);
           if(selectedMetrics[metric].isSelected) {
             chartData.push({
               label: stock.response.results[0].data.Symbol,
@@ -125,7 +124,6 @@ const StockAnalysis = () => {
   }, [state.searchRef, state.comparisonData]);
   
   const handleDataChange = (newState) => {
-    window.console.log(newState.comparisonData);
     setState(newState);
   };
 

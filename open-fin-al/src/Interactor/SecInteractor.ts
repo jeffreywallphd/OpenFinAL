@@ -229,8 +229,6 @@ export class SecInteractor implements IInputBoundary {
                         reports[reportId]["primaryDivisor"] = key;
                     }
                 }
-
-                window.console.log(conceptLookupObj);
                 
                 // infer the parent and children of each concept
                 for(var conceptCalc of report.getElementsByTagName("link:calculationArc")) {

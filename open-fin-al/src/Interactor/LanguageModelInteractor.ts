@@ -42,7 +42,6 @@ export class LanguageModelInteractor implements IInputBoundary {
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
         response.response = results;
-        window.console.log(response)
 
         return response.response;
     }

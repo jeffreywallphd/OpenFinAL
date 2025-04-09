@@ -11,6 +11,8 @@ import AppLoaded from "./AppLoaded";
 import { AppPreparing } from "./AppPreparing";
 import  ConfigUpdater  from "../../Utility/ConfigManager";
 import { AppConfiguring } from "./AppConfiguring";
+import { SettingsInteractor } from "../../Interactor/SettingsInteractor";
+import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 
 const DataContext = createContext();
 
@@ -64,6 +66,33 @@ function App(props) {
     const handleConfigured = () => {
         setConfigured(true);
     };
+
+    useEffect(() => {
+        checkIfConfigured();
+    }, []);
+
+    useEffect(() => {
+        checkIfConfigured();
+    }, [configured]);
+
+    const checkIfConfigured = async () => { 
+        const interactor = new SettingsInteractor();
+
+        const request = new JSONRequest(JSON.stringify({
+            action: "isConfigured"
+        }));
+
+        const response = await interactor.get(request);
+        window.console.log(response);
+        if(response.response.status === 200) {
+            setConfigured(true);
+        } else {
+            setConfigured(false);
+        }
+
+        return configured;
+    };
+    
 
     const configurator = new ConfigUpdater();
     var env = null;

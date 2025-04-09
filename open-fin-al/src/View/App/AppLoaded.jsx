@@ -94,7 +94,7 @@ class AppLoaded extends Component {
 
   checkDarkMode() {
     const darkMode = localStorage.getItem("darkMode") === "true";
-    window.console.log("Dark Mode is: " + darkMode);
+
     if (darkMode !== this.state.darkMode) {
       this.setState({
         darkMode,
@@ -113,11 +113,11 @@ class AppLoaded extends Component {
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={this.state.logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
-                <img src={this.state.logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
               </div>
               <div className="sidebar-padding">
-                <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
+                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
                 <ul>

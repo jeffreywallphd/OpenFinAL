@@ -63,8 +63,6 @@ function TimeSeriesChart(props) {
     const tickInterval = (priceMaxPadded - priceMinPadded) / (tickCount - 1);
     const ticks = Array.from({ length: tickCount }, (_, index) => (priceMinPadded + tickInterval * index).toFixed(2));
 
-    window.console.log(props.state.secData);
-
     //TODO: calculate a max value for the y-axis that adds a little padding to top of graph    
     //TODO: set the min value for the x-axis to 9:00 AM and the max value to 5:00 PM when intraday data
     return(<>
