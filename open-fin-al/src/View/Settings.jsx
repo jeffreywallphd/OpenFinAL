@@ -55,6 +55,15 @@ function Settings(props) {
         }));
     };
 
+    const setSharedKeys = (keyName, key) => {
+        window.console.log(settings);
+        for(var setting of Object.values(settings)) {
+            if(setting.keyName === keyName) {
+                setting.key = key;
+            }
+        }
+    };
+
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const handleSubmit = async (event) => {
@@ -143,9 +152,10 @@ function Settings(props) {
                                             }
                                         }} 
                                         onChange={(e) => {
+                                            var option = getOption(configuration, e.target.value);
                                             setSettings(prev => ({
                                                 ...prev,
-                                                [configuration.name]: getOption(configuration, e.target.value)
+                                                [configuration.name]: option
                                             }));
                                         }}
                                         className="api-select" 
@@ -159,8 +169,8 @@ function Settings(props) {
                                 <div className="key-cell">
                                     <input 
                                         type="text" 
-                                        id="stockApiKey" 
-                                        name="stockApiKey" 
+                                        id={configuration.name + "Key"} 
+                                        name={configuration.name + "Key"} 
                                         className="api-key-input" 
                                         ref={(el) => {
                                             if (el) {
@@ -172,6 +182,9 @@ function Settings(props) {
                                         value={settings[configuration.name] && settings[configuration.name].hasKey ? settings[configuration.name].key : ''} 
                                         onChange={e => {
                                             setOptionKey(configuration.name, e.target.value);
+                                            window.console.log("TESTING1");
+                                            setSharedKeys(settings[configuration.name].keyName, e.target.value);
+                                            window.console.log("TESTING2");
                                         }}
                                         disabled={!settings[configuration.name].hasKey}
                                     />
