@@ -5,9 +5,9 @@
 
 /* Circle styles for the chatbot toggle button */
 .circle {
-    width: 50px;
-    height: 50px;
-    background-color: #3498db; /* Blue color */
+    width: 55px;
+    height: 55px;
+    background-color: var(--accent-color); /* Blue color */
     border-radius: 50%;
     position: fixed;
     bottom: 20px; /* 20px from the bottom */
@@ -25,6 +25,7 @@
     width: 30px; /* Image size inside the circle */
     height: 30px; /* Image size inside the circle */
     object-fit: cover; /* Ensures the image fits within the circle without distortion */
+    filter: invert(1);
 }
 
 /* Change circle color on hover */
