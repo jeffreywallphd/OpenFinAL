@@ -3,6 +3,7 @@ import ConfigUpdater from "../Utility/ConfigManager";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { SettingsRow } from "./Settings/Row";
 
 function Settings(props) {
     const [sections, setSections] = useState([]);
@@ -40,20 +41,6 @@ function Settings(props) {
     useEffect(() => {
         fetchCurrentSettings();
     }, []);
-
-    const getOption = (configuration, value) => {
-        return configuration.options.find((option) => option.value === value);
-    };
-
-    const setOptionKey = (configurationName, key) => {
-        setSettings(prev => ({
-            ...prev,
-            [configurationName]: {
-                ...prev[configurationName],
-                key: key
-            }
-        }));
-    };
 
     const setSharedKeys = (keyName, key) => {
         window.console.log(settings);
@@ -93,9 +80,6 @@ function Settings(props) {
         }
     };
 
-    const configRefs = useRef({});
-    const configKeyRefs = useRef({});
-
     const [darkMode, setDarkMode] = useState(() => {
         return localStorage.getItem("darkMode") === "true"; // Retrieve from localStorage
     });
@@ -134,21 +118,21 @@ function Settings(props) {
                 <div className="settings-card">
                     <div className="style-options">
                         <button
-                        id="dark-mode-toggle"
-                        onClick={() => {
-                            const newDarkMode = !darkMode;
-                            setDarkMode(newDarkMode);
-                    
-                            // Force refresh of the route after state change
-                            setTimeout(() => {
-                                navigate('/refresh', { replace: true }); // dummy path
+                            id="dark-mode-toggle"
+                            onClick={() => {
+                                const newDarkMode = !darkMode;
+                                setDarkMode(newDarkMode);
+                        
+                                // Force refresh of the route after state change
                                 setTimeout(() => {
-                                    navigate(location.pathname, { replace: true }); // go back
-                                }, 10);
-                            }, 50); // slight delay to allow localStorage update
-                        }}
-                        >
-                            {darkMode ? "Light Mode" : "Dark Mode"}
+                                    navigate('/refresh', { replace: true }); // dummy path
+                                    setTimeout(() => {
+                                        navigate(location.pathname, { replace: true }); // go back
+                                    }, 10);
+                                }, 50); // slight delay to allow localStorage update
+                            }}
+                            >
+                                {darkMode ? "Light Mode" : "Dark Mode"}
                         </button>
                     </div>
                 </div>
@@ -162,73 +146,10 @@ function Settings(props) {
                             <div className="header-cell">API Keys</div>
                         </div>
                         {section.configurations.map((configuration) => (
-                            <div className="table-row">
-                                <div className="api-cell">
-                                    <select 
-                                        id={configuration.name} 
-                                        name={configuration.name} 
-                                        ref={(el) => {
-                                            if (el) {
-                                                //dynamically generate refs to grant access to each select element
-                                                configRefs.current[configuration.name] = el;
-                                            }
-                                        }} 
-                                        onChange={(e) => {
-                                            var option = getOption(configuration, e.target.value);
-                                            setSettings(prev => ({
-                                                ...prev,
-                                                [configuration.name]: option
-                                            }));
-                                        }}
-                                        className="api-select" 
-                                        value={settings[configuration.name] ? settings[configuration.name].value : ''} 
-                                    >
-                                        {configuration.options.map((option) => (
-                                            <option key={option.value} value={option.value}>{option.name}</option>
-                                        ))}
-                                    </select>
-                                    { configuration.purpose && (
-                                            <>
-                                                <br/>
-                                                <span className="configDescription">{configuration.purpose}</span>
-                                            </>
-                                        ) 
-                                    }
-                                </div>
-                                <div className="key-cell">
-                                    <input 
-                                        type="text" 
-                                        id={configuration.name + "Key"} 
-                                        name={configuration.name + "Key"} 
-                                        className="api-key-input" 
-                                        ref={(el) => {
-                                            if (el) {
-                                                //dynamically generate refs to grant access to each input element
-                                                configKeyRefs.current[configuration.name] = el;
-                                            }
-                                        }} 
-                                        value={settings[configuration.name] && settings[configuration.name].hasKey ? settings[configuration.name].key : ''} 
-                                        onChange={e => {
-                                            setOptionKey(configuration.name, e.target.value);
-                                            setSharedKeys(settings[configuration.name].keyName, e.target.value);
-                                        }}
-                                        disabled={!settings[configuration.name].hasKey}
-                                    />
-                                    { settings[configuration.name].hasKey ? (
-                                        <>
-                                            <br/>
-                                            <span className="configDescription">To obtain a key to retrieve data, please visit: <span className="spanLink" onClick={() => window.urlWindow.openUrlWindow(settings[configuration.name].keySite)}>{settings[configuration.name].keySite}</span></span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <br/>
-                                            <span className="configDescription">A key is not required to retrieve data from this API</span>
-                                        </>
-                                    )
-                                      
-                                    }
-                                </div>
-                            </div>
+                            <>
+                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} />
+                                {}                                                                                    
+                            </>
                         ))}
                     </div>
                     <div className="save-button-container">

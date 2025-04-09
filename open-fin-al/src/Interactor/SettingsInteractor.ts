@@ -5,6 +5,7 @@ import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSection";
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
+import { ConfigurationModelOption } from "../Entity/Configuration/ConfigurationModelOption";
 import ConfigUpdater from "../Utility/ConfigManager";
 import { valid } from "node-html-parser";
 
@@ -183,7 +184,7 @@ export class SettingsInteractor implements IInputBoundary {
         //create Chatbot Model Configurations
         var currentAIModel = null;
 
-        var OpenAIModelGateway = new ConfigurationOption();
+        var OpenAIModelGateway = new ConfigurationModelOption();
         OpenAIModelGateway.setFieldValue("id", this.generateId());
         OpenAIModelGateway.setFieldValue("name", "OpenAI Model API Gateway");
         OpenAIModelGateway.setFieldValue("value", "OpenAIModel");
@@ -192,6 +193,10 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("keySite", "https://platform.openai.com/api-keys");
         OpenAIModelGateway.setFieldValue("key", env["OPENAI_API_KEY"]);
         OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
+        OpenAIModelGateway.setFieldValue("modelName", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("modelName") ? config.ChatbotModelSettings.modelName : ""); 
+        OpenAIModelGateway.setFieldValue("maxOutputTokens", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("maxOutputTokens") ? config.ChatbotModelSettings.maxOutputTokens : 0);
+        OpenAIModelGateway.setFieldValue("temperature", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("temperature") ? config.ChatbotModelSettings.temperature : 0);
+        OpenAIModelGateway.setFieldValue("topP", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("topP") ? config.ChatbotModelSettings.topP : 1)
 
         currentAIModel = config.ChatbotModel === "OpenAIModel" ? OpenAIModelGateway : currentAIModel;
 
@@ -200,7 +205,7 @@ export class SettingsInteractor implements IInputBoundary {
         var chatbotModelGatewayConfiguration = new Configuration();
         chatbotModelGatewayConfiguration.setFieldValue("id", this.generateId());
         chatbotModelGatewayConfiguration.setFieldValue("name", "ChatbotModel");
-        chatbotModelGatewayConfiguration.setFieldValue("type", "select");
+        chatbotModelGatewayConfiguration.setFieldValue("type", "AIModel");
         chatbotModelGatewayConfiguration.setFieldValue("purpose", "An AI API will allow you to use the chatbot to ask financial questions");
         chatbotModelGatewayConfiguration.setFieldValue("options", chatbotGateways);
 
@@ -212,7 +217,7 @@ export class SettingsInteractor implements IInputBoundary {
 
         const modelConfigSection = new ConfigurationSection();
         modelConfigSection.setFieldValue("id", this.generateId());
-        modelConfigSection.setFieldValue("label", "AI Model Configurations");
+        modelConfigSection.setFieldValue("label", "Chatbot Configurations");
         modelConfigSection.setFieldValue("configurations", [chatbotModelGatewayConfiguration]);
 
         var data = {};

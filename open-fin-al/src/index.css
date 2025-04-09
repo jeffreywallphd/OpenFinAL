@@ -2102,8 +2102,8 @@ nav ul li a:hover {
   width: 500px; /* Set a fixed width for the modal */
   height: 100vh; /* Set a fixed height for the modal */
   display: flex;
-  border-left: 3px solid var(--primary-color);
   flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   overflow: hidden; /* Prevents any overflow of content */
 }
 
@@ -2127,7 +2127,7 @@ nav ul li a:hover {
 }
 
 .chatHistory {
-  height: 300px;
+  height: 150px;
   width: 100%;
   padding: 15px;
   background-color: var(--background-color);
@@ -2159,6 +2159,7 @@ nav ul li a:hover {
 .chatControls button {
   padding: 10px;
   margin:0;
+  margin-left: 10px;
   background-color: var(--primary-color-hover);
 }
 
@@ -2261,7 +2262,7 @@ nav ul li a:hover {
 
 #sendBTN {
   width: 100%;
-  padding: 30px;
+  padding: 20px;
   border: 0;
   margin: 0;
   outline: none;
