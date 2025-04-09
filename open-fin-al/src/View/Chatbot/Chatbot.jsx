@@ -53,28 +53,32 @@ class Chatbot extends Component {
 
     render() {
         return (
-            <div className="chatBot">
-                <header>
-                    <h2>ChatBot</h2>
-                    <button onClick={this.props.handleToggle} className="close-btn">X</button>
-                </header>
-                <ul className="chatbox">
-                    {this.state.messages.map((msg, index) => (
-                        <li key={index} className={`chat ${msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
-                            <p>{msg.content}</p>
-                        </li>
-                    ))}
-                </ul>
-                <div className="chat-input">
-                    <textarea
-                        rows="1"
-                        cols="17"
-                        placeholder="Enter a message..."
-                        value={this.state.userInput}
-                        onChange={this.handleInputChange}
-                    ></textarea>
+            <div className="chatbot-modal">
+                <div className="chatbot-modal-content">
+                    <header>
+                        <button onClick={this.props.handleToggle} className="close-btn">X</button>
+                    </header>
+                    <div className="chatHistory">
+                        <h3>Chat History</h3>
+                    </div>
+                    <div className="chatBot">                        
+                        <ul className="chatbox">
+                            {this.state.messages.map((msg, index) => (
+                                <li key={index} className={`chat ${msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
+                                    <p>{msg.content}</p>
+                                </li>
+                            ))}
+                        </ul>
+                        <div className="chat-input">
+                            <textarea
+                                placeholder="Enter a message..."
+                                value={this.state.userInput}
+                                onChange={this.handleInputChange}
+                            ></textarea>
+                        </div>
+                        <button id="sendBTN" onClick={this.handleSendMessage}>Send</button>
+                    </div>
                 </div>
-                <button id="sendBTN" onClick={this.handleSendMessage}>Send</button>
             </div>
         );
     }

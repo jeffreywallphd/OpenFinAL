@@ -2051,68 +2051,171 @@ nav ul li a:hover {
   background-color: #c82333;
 }
 
-.chatBot {
-  border: 3px solid var(--primary-color);
-  border-radius: 10px;
-  margin: 50px auto;
-  overflow: hidden;
-  width: 500px;
-  overflow-y: clip;
-  height: 600px;
+/* Chatbot and Toggle Icon*/
+
+.chatBotToggle {
+  position: relative;
+  height: 0;
+}
+
+.circle {
+  width: 55px;
+  height: 55px;
+  background-color: var(--accent-color); /* Blue color */
+  border-radius: 50%;
+  position: fixed;
+  bottom: 20px; /* 20px from the bottom */
+  left: 95%; /* Position the circle 95% from the left of the screen */
+  transform: translateX(-50%); /* Center the circle horizontally */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex; /* Use flexbox to center the image */
+  justify-content: center; /* Center the image horizontally */
+  align-items: center; /* Center the image vertically */
+  overflow: hidden; /* Ensures the image stays within the circle */
+}
+
+.circle:hover {
+  background-color: #2980b9; /* Darker blue color on hover */
+}
+
+.chatbotIcon {
+  width: 30px; /* Image size inside the circle */
+  height: 30px; /* Image size inside the circle */
+  object-fit: cover; /* Ensures the image fits within the circle without distortion */
+  filter: invert(1);
+}
+
+.chatbot-modal {
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 9000;  /* Make sure it's on top */
+}
+
+.chatbot-modal-content {
+  padding: 0;
+  margin: 0;
+  width: 500px; /* Set a fixed width for the modal */
+  height: 100vh; /* Set a fixed height for the modal */
+  display: flex;
+  border-left: 3px solid var(--primary-color);
+  flex-direction: column;
+  overflow: hidden; /* Prevents any overflow of content */
+}
+
+.chatbot-modal-content header {
+  display: flex;
+  background-color: var(--primary-color);
+  align-items: center;            /* Vertically center the items */
+  border-radius: 0px;
+  width: 100%;
+}
+
+.close-btn {
+  margin-left: auto; /* pushes it to the right */
+  margin-right: 10px;
+  background-color: var(--primary-color);
+  color: var(--text-color-white);
+  border: none;
+  padding: 5px 10px 5px 10px;;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.chatHistory {
+  width: 100%;
+  padding: 15px;
   background-color: var(--background-color);
-  background-size: contain;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  background-repeat: no-repeat;
-  background-position: center;
+  flex-grow: 1;
+  overflow-y: auto;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.chatHistory h3 {
+  color: var(--text-color-dark);
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+.chatBot {
+  border-radius: 0px;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 550px;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  flex-grow: 0;
+  /* overflow-y: auto;  Enable scrolling if content overflows */
 }
 
 .chatbox {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  list-style-type: none;
   padding: 15px;
-  list-style: none;
+  margin: 0;
   overflow-y: auto;
-  height: 400px;
 }
 
 .chatbox li {
+  margin: 0;
   margin-bottom: 10px;
 }
 
 .chat p {
-  padding: 10px;
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: 5px;
   word-wrap: break-word;
+  line-height: 20px;
+}
+
+.chat-incoming {
+  margin: 0;
+}
+
+.chat-outgoing{
+  text-align: right;
 }
 
 .chat-outgoing p {
-  background-color: var(--primary-color);
-  align-self: flex-end;
+  background-color: var(--primary-color-hover);
   color: var(--text-color-white);
 }
 
 .chat-incoming p {
-  background-color: var(--primary-color-hover); /*This is the Chatbot's message*/
+  background-color: var(--primary-color); /*This is the Chatbot's message*/
   color: var(--text-color-white);
 }
 
 .chat-input {
   padding: 10px;
+  margin: 0;
   border-top: 1px solid var(--background-color-highlight);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chat-input textarea {
-  width: 522px;
+  width: 500px;
   padding: 10px;
   border: 1px solid var(--background-color-highlight);
-  border-radius: 7px;
+  border-radius: 4px;
   resize: none;
   outline: none;
   overflow-y: scroll;
   background-color: var(--background-color-highlight-light);
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-color-dark);
   font-weight: 600;
-  margin-top: -10px;
-  margin-left: -15px;
   height: 71px;
 }
 
@@ -2141,13 +2244,13 @@ nav ul li a:hover {
   width: 100%;
   padding: 30px;
   border: 0;
+  margin: 0;
   outline: none;
   font-size: 20px;
   font-weight: 600;
-  border-radius: 5px;
+  border-radius: 0px;
   cursor: pointer;
   color: var(--text-color-white);
-  margin-top: 12px;
   background-color: var(--primary-color);
 }
 
@@ -2161,32 +2264,6 @@ nav ul li a:hover {
   font-weight: 600;
   color: black;
   margin-left: 550px;
-}
-
-/* Close button */
-.close-btn {
-  background-color: var(--background-color);
-  color: var(--text-color-dark);
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-  margin: 0;
-}
-
-.chatBot header {
-  display: flex;
-  background-color: var(--primary-color);
-  justify-content: space-between; /* Position items on opposite sides */
-  align-items: center;            /* Vertically center the items */
-  padding: 10px 20px 10px 0px;             /* Optional, adjust padding as needed */
-  border-radius: 7px 7px 0 0;
-}
-
-.chatBot header h2 {
-  flex: 1; /* This allows <h2> to take available space */
-  text-align: center; /* Center the <h2> text */
-  color: var(--text-color-white);
-  margin: 0;
 }
 
 /* Comparison Table in StockAnalysis.jsx */
