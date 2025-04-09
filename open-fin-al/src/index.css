@@ -2208,11 +2208,27 @@ nav ul li a:hover {
   border: 1px solid var(--background-color-highlight);
   padding: 10px;
   text-align: right;
-}/* Settings Component Styles */
+}
+
+/* Settings Component Styles */
 .page {
   padding: 20px;
   background-color: var(--background-color);
   min-height: 100vh;
+}
+
+.page header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.page header h2 {
+  display: flex;
+}
+
+.page header button {
+  display: flex;
+  flex: 1;
 }
 
 .settings-title {
@@ -2223,11 +2239,11 @@ nav ul li a:hover {
 }
 
 .settings-card {
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 5px;
+  /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
 .card-title {
@@ -2245,7 +2261,8 @@ nav ul li a:hover {
 
 .table-header {
   display: flex;
-  background-color: #e0e0e0;
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
   font-weight: bold;
   border-radius: 4px 4px 0 0;
 }
@@ -2258,8 +2275,10 @@ nav ul li a:hover {
 
 .table-row {
   display: flex;
-  border-bottom: 1px solid #e0e0e0;
-  background-color: #f5f5f5;
+  border-bottom: 1px solid var(--background-color-highlight);
+  background-color: var(--background-color-highlight-light);
+  color: var(--text-color-dark);
+  padding: 10px;
 }
 
 .api-cell, .key-cell {
@@ -2271,22 +2290,30 @@ nav ul li a:hover {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: #f5f5f5;
+  border: 1px solid var(--background-color-highlight-light);
+  background-color: var(--background-color);
 }
 
 .api-key-input {
-  width: 100%;
-  padding: 8px;
+  width: 95%;
+  padding: 12px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--background-color-highlight-light);
+  background-color: var(--background-color);
+}
+
+.configDescription {
+  font-size: 13px;
+}
+
+.spanLink {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--primary-color);
+  display: inline-block;
 }
 
 .save-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-top: 20px;
 }
 
@@ -2306,6 +2333,7 @@ nav ul li a:hover {
 
 .message {
   margin-top: 10px;
+  margin-left: 20px;
   color: green;
   text-align: center;
 }
@@ -2317,12 +2345,13 @@ nav ul li a:hover {
 .style-options {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  padding: 0px;
+  margin: 0px;
 }
 
 .dark-mode-button {
   background-color: var(--accent-color);
-  color: white;
+  color: var(--text-color-white);
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
@@ -2340,30 +2369,6 @@ nav ul li a:hover {
   color: #f0f0f0;
 }
 
-.dark-mode .settings-card {
-  background-color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  color: var(--text-color-light);
-}
 
-.dark-mode .table-header {
-  background-color: #444;
-  color: var(--text-color-light);
-}
 
-.dark-mode .card-title {
-  color: var(--text-color-light);
-}
 
-.dark-mode .table-row {
-  background-color: #3a3a3a;
-  border-bottom: 1px solid #444;
-  color: var(--text-color-light);
-}
-
-.dark-mode .api-select,
-.dark-mode .api-key-input {
-  background-color: #444;
-  border: 1px solid #555;
-  color: white;
-}

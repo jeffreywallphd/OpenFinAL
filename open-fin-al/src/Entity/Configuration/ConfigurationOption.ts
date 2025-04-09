@@ -22,6 +22,9 @@ export class ConfigurationOption implements IEntity {
         var keyName = new Field("keyName", "string", null);
         this.fields.set("keyName", keyName);
 
+        var keySite = new Field("keySite", "string", null);
+        this.fields.set("keySite", keySite);
+
         var key = new Field("key", "string", null);
         this.fields.set("key", key);
 
@@ -60,6 +63,10 @@ export class ConfigurationOption implements IEntity {
             this.setFieldValue("key", json.request.option.key);
         }
 
+        if(json.request.option.hasOwnProperty("keySite")) {
+            this.setFieldValue("keySite", json.request.option.keySite);
+        }
+
         if(json.request.option.hasOwnProperty("isActive")) {
             this.setFieldValue("isActive", json.request.option.isActive);
         }
@@ -96,6 +103,7 @@ export class ConfigurationOption implements IEntity {
             value: this.getFieldValue("value"),
             hasKey: this.getFieldValue("hasKey"),
             keyName: this.getFieldValue("keyName"),
+            keySite: this.getFieldValue("keySite"),
             key: this.getFieldValue("key"),
             isActive: this.getFieldValue("isActive")
         };

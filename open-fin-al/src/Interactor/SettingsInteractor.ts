@@ -75,6 +75,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageStockGateway.setFieldValue("value", "AlphaVantageStockGateway");
         AlphaVantageStockGateway.setFieldValue("hasKey", true);
         AlphaVantageStockGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageStockGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
         AlphaVantageStockGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
         AlphaVantageStockGateway.setFieldValue("isActive", config.StockGateway === "AlphaVantageStockGateway" ? true : false);
 
@@ -86,6 +87,7 @@ export class SettingsInteractor implements IInputBoundary {
         FMPStockGateway.setFieldValue("value", "FinancialModelingPrepGateway");
         FMPStockGateway.setFieldValue("hasKey", true);
         FMPStockGateway.setFieldValue("keyName", "FMP_API_KEY");
+        FMPStockGateway.setFieldValue("keySite", "https://site.financialmodelingprep.com/pricing-plans");
         FMPStockGateway.setFieldValue("key", env["FMP_API_KEY"]);
         FMPStockGateway.setFieldValue("isActive", config.StockGateway === "FinancialModelingPrepGateway" ? true : false);
 
@@ -105,6 +107,8 @@ export class SettingsInteractor implements IInputBoundary {
         var stockGatewayConfiguration = new Configuration();
         stockGatewayConfiguration.setFieldValue("id", this.generateId());
         stockGatewayConfiguration.setFieldValue("name", "StockGateway");
+        stockGatewayConfiguration.setFieldValue("type", "select");
+        stockGatewayConfiguration.setFieldValue("purpose", "A stock API will allow you to view price and volume data for stocks");
         stockGatewayConfiguration.setFieldValue("options", stockGateways);
         
         //create NewsGateway Configurations
@@ -116,6 +120,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageNewsGateway.setFieldValue("value", "AlphaVantageNewsGateway");
         AlphaVantageNewsGateway.setFieldValue("hasKey", true);
         AlphaVantageNewsGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageNewsGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
         AlphaVantageNewsGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
         AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
 
@@ -126,6 +131,8 @@ export class SettingsInteractor implements IInputBoundary {
         var newsGatewayConfiguration = new Configuration();
         newsGatewayConfiguration.setFieldValue("id", this.generateId());
         newsGatewayConfiguration.setFieldValue("name", "NewsGateway");
+        newsGatewayConfiguration.setFieldValue("type", "select");
+        newsGatewayConfiguration.setFieldValue("purpose", "A news API will allow you to search for investment news");
         newsGatewayConfiguration.setFieldValue("options", newsGateways);
 
         //create ReportGateway Configurations
@@ -145,6 +152,8 @@ export class SettingsInteractor implements IInputBoundary {
         var reportGatewayConfiguration = new Configuration();
         reportGatewayConfiguration.setFieldValue("id", this.generateId());
         reportGatewayConfiguration.setFieldValue("name", "ReportGateway");
+        reportGatewayConfiguration.setFieldValue("type", "select");
+        reportGatewayConfiguration.setFieldValue("purpose", "A report API will allow you to retrieve 10-Q and 10-K reports");
         reportGatewayConfiguration.setFieldValue("options", reportGateways);
 
         //create RatioGateway Configurations
@@ -156,6 +165,7 @@ export class SettingsInteractor implements IInputBoundary {
         RatioGateway.setFieldValue("value", "AlphaVantageRatioGateway");
         RatioGateway.setFieldValue("hasKey", true);
         RatioGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
+        RatioGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
         RatioGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
         RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
 
@@ -166,6 +176,8 @@ export class SettingsInteractor implements IInputBoundary {
         var ratioGatewayConfiguration = new Configuration();
         ratioGatewayConfiguration.setFieldValue("id", this.generateId());
         ratioGatewayConfiguration.setFieldValue("name", "RatioGateway");
+        ratioGatewayConfiguration.setFieldValue("type", "select");
+        ratioGatewayConfiguration.setFieldValue("purpose", "A stock ratio API will allow you to view important financial ratios");
         ratioGatewayConfiguration.setFieldValue("options", ratioGateways);
 
         //create Chatbot Model Configurations
@@ -177,6 +189,7 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("value", "OpenAIModel");
         OpenAIModelGateway.setFieldValue("hasKey", true);
         OpenAIModelGateway.setFieldValue("keyName", "OPENAI_API_KEY");
+        OpenAIModelGateway.setFieldValue("keySite", "https://platform.openai.com/api-keys");
         OpenAIModelGateway.setFieldValue("key", env["OPENAI_API_KEY"]);
         OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
 
@@ -187,6 +200,8 @@ export class SettingsInteractor implements IInputBoundary {
         var chatbotModelGatewayConfiguration = new Configuration();
         chatbotModelGatewayConfiguration.setFieldValue("id", this.generateId());
         chatbotModelGatewayConfiguration.setFieldValue("name", "ChatbotModel");
+        chatbotModelGatewayConfiguration.setFieldValue("type", "select");
+        chatbotModelGatewayConfiguration.setFieldValue("purpose", "An AI API will allow you to use the chatbot to ask financial questions");
         chatbotModelGatewayConfiguration.setFieldValue("options", chatbotGateways);
 
         //Configuration Sections

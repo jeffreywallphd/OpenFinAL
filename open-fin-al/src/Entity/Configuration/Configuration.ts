@@ -17,6 +17,9 @@ export class Configuration implements IEntity {
         var type = new Field("type", "string", null);
         this.fields.set("type", type);
 
+        var purpose = new Field("purpose", "string", null);
+        this.fields.set("purpose", purpose);
+
         var options = new Field("options", "array<ConfigurationOption>", []);
         this.fields.set("options", options);
     }
@@ -39,6 +42,10 @@ export class Configuration implements IEntity {
         //set properties of Configuration entity based on request model
         if(json.request.configuration.hasOwnProperty("name")) {
             this.setFieldValue("name", json.request.configuration.name);
+        }
+
+        if(json.request.configuration.hasOwnProperty("purpose")) {
+            this.setFieldValue("purpose", json.request.configuration.purpose);
         }
 
         if(json.request.configuration.hasOwnProperty("type")) {
@@ -84,6 +91,7 @@ export class Configuration implements IEntity {
         var obj = {
             id: this.getFieldValue("id"),
             name: this.getFieldValue("name"),
+            purpose: this.getFieldValue("purpose"),
             type: this.getFieldValue("type"),
             options: options
         };

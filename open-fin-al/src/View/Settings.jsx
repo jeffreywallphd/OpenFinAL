@@ -128,8 +128,31 @@ function Settings(props) {
 
     return (
         <div className={`page ${props.initialConfiguration ? 'only' : ''}`}>
-            <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
-            
+            <header>
+                <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
+                {/* Application Style Card */}
+                <div className="settings-card">
+                    <div className="style-options">
+                        <button
+                        id="dark-mode-toggle"
+                        onClick={() => {
+                            const newDarkMode = !darkMode;
+                            setDarkMode(newDarkMode);
+                    
+                            // Force refresh of the route after state change
+                            setTimeout(() => {
+                                navigate('/refresh', { replace: true }); // dummy path
+                                setTimeout(() => {
+                                    navigate(location.pathname, { replace: true }); // go back
+                                }, 10);
+                            }, 50); // slight delay to allow localStorage update
+                        }}
+                        >
+                            {darkMode ? "Light Mode" : "Dark Mode"}
+                        </button>
+                    </div>
+                </div>
+            </header> 
             {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
                 <div className="settings-card">
                     <h3 className="card-title">{section.label}</h3>
@@ -147,7 +170,6 @@ function Settings(props) {
                                         ref={(el) => {
                                             if (el) {
                                                 //dynamically generate refs to grant access to each select element
-                                                //configRefs.current[`${section.id}-${configuration.id}`] = el;
                                                 configRefs.current[configuration.name] = el;
                                             }
                                         }} 
@@ -165,6 +187,13 @@ function Settings(props) {
                                             <option key={option.value} value={option.value}>{option.name}</option>
                                         ))}
                                     </select>
+                                    { configuration.purpose && (
+                                            <>
+                                                <br/>
+                                                <span className="configDescription">{configuration.purpose}</span>
+                                            </>
+                                        ) 
+                                    }
                                 </div>
                                 <div className="key-cell">
                                     <input 
@@ -175,62 +204,39 @@ function Settings(props) {
                                         ref={(el) => {
                                             if (el) {
                                                 //dynamically generate refs to grant access to each input element
-                                                //configKeyRefs.current[`${section.id}-${configuration.id}`] = el;
                                                 configKeyRefs.current[configuration.name] = el;
                                             }
                                         }} 
                                         value={settings[configuration.name] && settings[configuration.name].hasKey ? settings[configuration.name].key : ''} 
                                         onChange={e => {
                                             setOptionKey(configuration.name, e.target.value);
-                                            window.console.log("TESTING1");
                                             setSharedKeys(settings[configuration.name].keyName, e.target.value);
-                                            window.console.log("TESTING2");
                                         }}
                                         disabled={!settings[configuration.name].hasKey}
                                     />
+                                    { settings[configuration.name].hasKey ? (
+                                        <>
+                                            <br/>
+                                            <span className="configDescription">To obtain a key to retrieve data, please visit: <span className="spanLink" onClick={() => window.urlWindow.openUrlWindow(settings[configuration.name].keySite)}>{settings[configuration.name].keySite}</span></span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <br/>
+                                            <span className="configDescription">A key is not required to retrieve data from this API</span>
+                                        </>
+                                    )
+                                      
+                                    }
                                 </div>
                             </div>
                         ))}
                     </div>
                     <div className="save-button-container">
                         <button onClick={handleSubmit} className="save-button">Save Configuration</button>
-                        {message && <p className="message">{message}</p>}
+                        {message && <span className="message">{message}</span>}
                     </div>
                 </div>
-            ))}
-
-            {/* Application Style Card */}
-            <div className="settings-card">
-                <h3 className="card-title">Application Style Changes</h3>
-                <div className="style-options">
-                    <button
-                    id="dark-mode-toggle"
-                    onClick={() => {
-                        const newDarkMode = !darkMode;
-                        setDarkMode(newDarkMode);
-                
-                        // Force refresh of the route after state change
-                        setTimeout(() => {
-                            navigate('/refresh', { replace: true }); // dummy path
-                            setTimeout(() => {
-                                navigate(location.pathname, { replace: true }); // go back
-                            }, 10);
-                        }, 50); // slight delay to allow localStorage update
-                    }}
-                    style={{
-                        padding: "10px 20px",
-                        marginTop: "20px",
-                        background: darkMode ? "#4A5568" : "#00a0b0",
-                        color: darkMode ? "#E2E8F0" : "#fcfdff",
-                        border: "none",
-                        borderRadius: "5px",
-                        cursor: "pointer",
-                    }}
-                    >
-                        {darkMode ? "Light Mode" : "Dark Mode"}
-                    </button>
-                </div>
-            </div>                       
+            ))}                      
         </div>
     );
 }
