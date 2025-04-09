@@ -156,7 +156,7 @@ class AppLoaded extends Component {
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
-              This software is licensed under the GPL-3.0 license.
+              Licensed under GPL-3.0<br/>&copy;2023 All rights reserved
             </footer>
           </div>
         </>
