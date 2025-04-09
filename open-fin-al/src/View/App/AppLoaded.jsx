@@ -141,8 +141,6 @@ class AppLoaded extends Component {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/buy-report" element={<BuyReport />} />
-                <Route path="/browsefaq" element={<BrowseFAQ />}/>
-                <Route path="/termdefinitions" element={<TermDefinitions />}/>
                 <Route path="/price" element={<TimeSeries />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/learn" element={<Learn />} />

@@ -7,11 +7,11 @@ export class FinancialRatioGatewayFactory {
         const extractor = new EnvVariableExtractor();
 
         if(config["RatioGateway"] === "AlphaVantageRatioGateway") {
-            const key = await extractor.extract("RATIO_API_KEY");
+            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageRatioGateway(key);
         } else {
             //default will be AlphaVantage for now
-            const key = await extractor.extract("RATIO_API_KEY");
+            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageRatioGateway(key);
         }
     }

@@ -108,8 +108,8 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageNewsGateway.setFieldValue("name", "Alpha Vantage News API");
         AlphaVantageNewsGateway.setFieldValue("value", "AlphaVantageNewsGateway");
         AlphaVantageNewsGateway.setFieldValue("hasKey", true);
-        AlphaVantageNewsGateway.setFieldValue("keyName", "NEWS_API_KEY");
-        AlphaVantageNewsGateway.setFieldValue("key", env["NEWS_API_KEY"]);
+        AlphaVantageNewsGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageNewsGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
         AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
 
         currentNewsGateway = config.NewsGateway === "AlphaVantageNewsGateway" ? AlphaVantageNewsGateway : currentNewsGateway;
@@ -148,8 +148,8 @@ export class SettingsInteractor implements IInputBoundary {
         RatioGateway.setFieldValue("name", "Alpha Vantage Ratio API Gateway");
         RatioGateway.setFieldValue("value", "AlphaVantageRatioGateway");
         RatioGateway.setFieldValue("hasKey", true);
-        RatioGateway.setFieldValue("keyName", "RATIO_API_KEY");
-        RatioGateway.setFieldValue("key", env["RATIO_API_KEY"]);
+        RatioGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
+        RatioGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
         RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
 
         currentRatioGateway = config.RatioGateway === "AlphaVantageRatioGateway" ? RatioGateway : currentReportGateway;

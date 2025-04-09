@@ -8,11 +8,11 @@ export class NewsGatewayFactory {
         
         //TODO: add other gateways, such as Yahoo Finance API
         if(config["NewsGateway"] === "AlphaVantageNewsGateway") {
-            const key = await extractor.extract("NEWS_API_KEY");
+            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageNewsGateway(key);
         } else {
             //default will be AlphaVantage for now
-            const key = await extractor.extract("NEWS_API_KEY");
+            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageNewsGateway(key);
         }
     }

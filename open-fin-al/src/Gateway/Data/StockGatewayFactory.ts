@@ -10,12 +10,12 @@ export class StockGatewayFactory {
         
         // For AlphaVantage API
         if(config["StockGateway"] === "AlphaVantageStockGateway") {
-            const key = await extractor.extract("STOCK_API_KEY");
+            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageStockGateway(key);
         }
         // For Financial Modeling Prep API
         else if(config["StockGateway"] === "FinancialModelingPrepGateway"){
-            const key = await extractor.extract("STOCK_API_KEY");
+            const key = await extractor.extract("FMP_API_KEY");
             return new FinancialModelingPrepGateway(key);
         }
         // For Yahoo Finance Community API

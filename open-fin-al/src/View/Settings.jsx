@@ -68,6 +68,11 @@ function Settings(props) {
             setMessage("Successfully saved the configuration");
             await sleep(2000);
             setMessage(null);
+            
+            if(props.initialConfiguration) {
+                props.handleConfigured();
+            }
+
         } else {
             setMessage("Failed to save the configuration");
         }

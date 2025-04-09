@@ -85,7 +85,7 @@ function App(props) {
             <AppPreparing handleLoading={handleLoading}/> 
         : 
             (
-                env && config ? 
+                configured ? 
                     <DataContext.Provider value={value}>
                         <AppLoaded />
                     </DataContext.Provider>
