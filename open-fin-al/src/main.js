@@ -91,11 +91,26 @@ app.on('window-all-closed', () => {
 });
 
 //////////////////////////// Database Section ////////////////////////////
+const userDataPath = app.getPath('userData');
+const dbFileName = 'my-app-database.sqlite';
+const dbPath = path.join(userDataPath, dbFileName);
+
+if (!fs.existsSync(userDataPath)) {
+  fs.mkdirSync(userDataPath, { recursive: true });
+}
+
 let db;
 
 const initDatabase = async () => {
   try {
-    db = new sqlite3.Database('./src/Asset/DB/OpenFinAL.db');
+    //dbPath = './src/Asset/DB/OpenFinAL.db';
+    db = new sqlite3.Database(dbPath, (err) => {
+      if (err) {
+        console.error('Error opening database:', err);
+      } else {
+        console.log('Connected to the database.');
+      }
+    });
     const schema = await fs.promises.readFile('./src/Asset/DB/schema.sql', 'utf-8');
     await db.exec(schema);
   } catch (error) {
