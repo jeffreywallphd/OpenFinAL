@@ -5,7 +5,6 @@ import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSection";
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
-import { ConfigurationModelOption } from "../Entity/Configuration/ConfigurationModelOption";
 import ConfigUpdater from "../Utility/ConfigManager";
 import { valid } from "node-html-parser";
 
@@ -20,18 +19,24 @@ export class SettingsInteractor implements IInputBoundary {
 
         const configurations = requestModel.request.configurations;
 
-        //for the same key being used across different API gateways
-        var previouslySetKeys:any = [];
+        //for the same value being used across different API gateways
+        var previouslySetValues:any = [];
 
-        for(var [configName, configuration] of Object.entries(configurations) as any[]) { 
-            if(configuration.hasKey === true && !previouslySetKeys.includes(configuration.keyName)) {
-                if(env[configuration.keyName] !== configuration.key) {
-                    env[configuration.keyName] = configuration.key;
-                    previouslySetKeys.push(configuration.keyName);
+        window.console.log(configurations);
+
+        for(var configuration of Object.values(configurations) as any[]) { 
+            if(configuration.hasValue === true && configuration.valueIsKey === true && !previouslySetValues.includes(configuration.valueName)) {
+                if(env[configuration.valueName] !== configuration.value) {
+                    env[configuration.valueName] = configuration.value;
+                    previouslySetValues.push(configuration.valueName);
                 }   
             }
             
-            config[configName] = configuration.value;
+            if(configuration.name === configuration.valueName) {
+                config[configuration.setting][configuration.name] = isNaN(Number(String(configuration.value).trim())) ? configuration.value : Number(String(configuration.value).trim());;
+            } else {
+                config[configuration.setting] = configuration.name;
+            }
         }
         
         const configSaved = configUpdater.saveConfig(config);
@@ -72,33 +77,38 @@ export class SettingsInteractor implements IInputBoundary {
 
         var AlphaVantageStockGateway = new ConfigurationOption();
         AlphaVantageStockGateway.setFieldValue("id", this.generateId());
-        AlphaVantageStockGateway.setFieldValue("name", "Alpha Vantage Stock API");
-        AlphaVantageStockGateway.setFieldValue("value", "AlphaVantageStockGateway");
-        AlphaVantageStockGateway.setFieldValue("hasKey", true);
-        AlphaVantageStockGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
-        AlphaVantageStockGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageStockGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
+        AlphaVantageStockGateway.setFieldValue("setting", "StockGateway");
+        AlphaVantageStockGateway.setFieldValue("label", "Alpha Vantage Stock API");
+        AlphaVantageStockGateway.setFieldValue("name", "AlphaVantageStockGateway");
+        AlphaVantageStockGateway.setFieldValue("hasValue", true);
+        AlphaVantageStockGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageStockGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        AlphaVantageStockGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
         AlphaVantageStockGateway.setFieldValue("isActive", config.StockGateway === "AlphaVantageStockGateway" ? true : false);
+        AlphaVantageStockGateway.setFieldValue("valueIsKey", true);
 
         currentStockGateway = config.StockGateway === "AlphaVantageStockGateway" ? AlphaVantageStockGateway : currentStockGateway;
 
         var FMPStockGateway = new ConfigurationOption();
         FMPStockGateway.setFieldValue("id", this.generateId());
-        FMPStockGateway.setFieldValue("name", "Financial Modeling Prep Stock API");
-        FMPStockGateway.setFieldValue("value", "FinancialModelingPrepGateway");
-        FMPStockGateway.setFieldValue("hasKey", true);
-        FMPStockGateway.setFieldValue("keyName", "FMP_API_KEY");
-        FMPStockGateway.setFieldValue("keySite", "https://site.financialmodelingprep.com/pricing-plans");
-        FMPStockGateway.setFieldValue("key", env["FMP_API_KEY"]);
+        FMPStockGateway.setFieldValue("setting", "StockGateway");
+        FMPStockGateway.setFieldValue("label", "Financial Modeling Prep Stock API");
+        FMPStockGateway.setFieldValue("name", "FinancialModelingPrepGateway");
+        FMPStockGateway.setFieldValue("hasValue", true);
+        FMPStockGateway.setFieldValue("valueName", "FMP_API_KEY");
+        FMPStockGateway.setFieldValue("valueSite", "https://site.financialmodelingprep.com/pricing-plans");
+        FMPStockGateway.setFieldValue("value", env["FMP_API_KEY"]);
         FMPStockGateway.setFieldValue("isActive", config.StockGateway === "FinancialModelingPrepGateway" ? true : false);
+        FMPStockGateway.setFieldValue("valueIsKey", true);
 
         currentStockGateway = config.StockGateway === "FinancialModelingPrepGateway" ? FMPStockGateway : currentStockGateway;
 
         var YFinanceStockGateway = new ConfigurationOption();
         YFinanceStockGateway.setFieldValue("id", this.generateId());
-        YFinanceStockGateway.setFieldValue("name", "Yahoo Finance Stock API (Unofficial Community Version)");
-        YFinanceStockGateway.setFieldValue("value", "YFinanceStockGateway");
-        YFinanceStockGateway.setFieldValue("hasKey", false);
+        YFinanceStockGateway.setFieldValue("setting", "StockGateway");
+        YFinanceStockGateway.setFieldValue("label", "Yahoo Finance Stock API (Unofficial Community Version)");
+        YFinanceStockGateway.setFieldValue("name", "YFinanceStockGateway");
+        YFinanceStockGateway.setFieldValue("hasValue", false);
         YFinanceStockGateway.setFieldValue("isActive", config.StockGateway === "YFinanceStockGateway" ? true : false);
         
         currentStockGateway = config.StockGateway === "YFinanceStockGateway" ? YFinanceStockGateway : currentStockGateway;
@@ -117,13 +127,15 @@ export class SettingsInteractor implements IInputBoundary {
 
         var AlphaVantageNewsGateway = new ConfigurationOption();
         AlphaVantageNewsGateway.setFieldValue("id", this.generateId());
-        AlphaVantageNewsGateway.setFieldValue("name", "Alpha Vantage News API");
-        AlphaVantageNewsGateway.setFieldValue("value", "AlphaVantageNewsGateway");
-        AlphaVantageNewsGateway.setFieldValue("hasKey", true);
-        AlphaVantageNewsGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
-        AlphaVantageNewsGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageNewsGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
+        AlphaVantageNewsGateway.setFieldValue("setting", "NewsGateway");
+        AlphaVantageNewsGateway.setFieldValue("label", "Alpha Vantage News API");
+        AlphaVantageNewsGateway.setFieldValue("name", "AlphaVantageNewsGateway");
+        AlphaVantageNewsGateway.setFieldValue("hasValue", true);
+        AlphaVantageNewsGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageNewsGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        AlphaVantageNewsGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
         AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
+        AlphaVantageNewsGateway.setFieldValue("valueIsKey", true);
 
         currentNewsGateway = config.NewsGateway === "AlphaVantageNewsGateway" ? AlphaVantageNewsGateway : currentNewsGateway;
 
@@ -141,9 +153,10 @@ export class SettingsInteractor implements IInputBoundary {
 
         var SecReportGateway = new ConfigurationOption();
         SecReportGateway.setFieldValue("id", this.generateId());
-        SecReportGateway.setFieldValue("name", "SEC Financial Report Gateway");
-        SecReportGateway.setFieldValue("value", "SecAPIGateway");
-        SecReportGateway.setFieldValue("hasKey", false);
+        SecReportGateway.setFieldValue("setting", "ReportGateway");
+        SecReportGateway.setFieldValue("label", "SEC Financial Report Gateway");
+        SecReportGateway.setFieldValue("name", "SecAPIGateway");
+        SecReportGateway.setFieldValue("hasValue", false);
         SecReportGateway.setFieldValue("isActive", config.ReportGateway === "SecAPIGateway" ? true : false);
 
         currentReportGateway = config.ReportGateway === "SecAPIGateway" ? SecReportGateway : currentReportGateway;
@@ -162,13 +175,15 @@ export class SettingsInteractor implements IInputBoundary {
 
         var RatioGateway = new ConfigurationOption();
         RatioGateway.setFieldValue("id", this.generateId());
-        RatioGateway.setFieldValue("name", "Alpha Vantage Ratio API Gateway");
-        RatioGateway.setFieldValue("value", "AlphaVantageRatioGateway");
-        RatioGateway.setFieldValue("hasKey", true);
-        RatioGateway.setFieldValue("keyName", "ALPHAVANTAGE_API_KEY");
-        RatioGateway.setFieldValue("keySite", "https://www.alphavantage.co/support/#api-key");
-        RatioGateway.setFieldValue("key", env["ALPHAVANTAGE_API_KEY"]);
+        RatioGateway.setFieldValue("setting", "RatioGateway");
+        RatioGateway.setFieldValue("label", "Alpha Vantage Ratio API Gateway");
+        RatioGateway.setFieldValue("name", "AlphaVantageRatioGateway");
+        RatioGateway.setFieldValue("hasValue", true);
+        RatioGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        RatioGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        RatioGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
         RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
+        RatioGateway.setFieldValue("valueIsKey", true);
 
         currentRatioGateway = config.RatioGateway === "AlphaVantageRatioGateway" ? RatioGateway : currentReportGateway;
 
@@ -184,19 +199,17 @@ export class SettingsInteractor implements IInputBoundary {
         //create Chatbot Model Configurations
         var currentAIModel = null;
 
-        var OpenAIModelGateway = new ConfigurationModelOption();
+        var OpenAIModelGateway = new ConfigurationOption();
         OpenAIModelGateway.setFieldValue("id", this.generateId());
-        OpenAIModelGateway.setFieldValue("name", "OpenAI Model API Gateway");
-        OpenAIModelGateway.setFieldValue("value", "OpenAIModel");
-        OpenAIModelGateway.setFieldValue("hasKey", true);
-        OpenAIModelGateway.setFieldValue("keyName", "OPENAI_API_KEY");
-        OpenAIModelGateway.setFieldValue("keySite", "https://platform.openai.com/api-keys");
-        OpenAIModelGateway.setFieldValue("key", env["OPENAI_API_KEY"]);
+        OpenAIModelGateway.setFieldValue("setting", "ChatbotModel");
+        OpenAIModelGateway.setFieldValue("label", "OpenAI Model API Gateway");
+        OpenAIModelGateway.setFieldValue("name", "OpenAIModel");
+        OpenAIModelGateway.setFieldValue("hasValue", true);
+        OpenAIModelGateway.setFieldValue("valueName", "OPENAI_API_KEY");
+        OpenAIModelGateway.setFieldValue("valueSite", "https://platform.openai.com/api-keys");
+        OpenAIModelGateway.setFieldValue("value", env["OPENAI_API_KEY"]);
         OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
-        OpenAIModelGateway.setFieldValue("modelName", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("modelName") ? config.ChatbotModelSettings.modelName : ""); 
-        OpenAIModelGateway.setFieldValue("maxOutputTokens", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("maxOutputTokens") ? config.ChatbotModelSettings.maxOutputTokens : 0);
-        OpenAIModelGateway.setFieldValue("temperature", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("temperature") ? config.ChatbotModelSettings.temperature : 0);
-        OpenAIModelGateway.setFieldValue("topP", config.hasOwnProperty("ChatbotModelSettings") && config.ChatbotModelSettings.hasOwnProperty("topP") ? config.ChatbotModelSettings.topP : 1)
+        OpenAIModelGateway.setFieldValue("valueIsKey", true);
 
         currentAIModel = config.ChatbotModel === "OpenAIModel" ? OpenAIModelGateway : currentAIModel;
 
@@ -205,9 +218,77 @@ export class SettingsInteractor implements IInputBoundary {
         var chatbotModelGatewayConfiguration = new Configuration();
         chatbotModelGatewayConfiguration.setFieldValue("id", this.generateId());
         chatbotModelGatewayConfiguration.setFieldValue("name", "ChatbotModel");
-        chatbotModelGatewayConfiguration.setFieldValue("type", "AIModel");
-        chatbotModelGatewayConfiguration.setFieldValue("purpose", "An AI API will allow you to use the chatbot to ask financial questions");
+        chatbotModelGatewayConfiguration.setFieldValue("type", "select");
+        chatbotModelGatewayConfiguration.setFieldValue("purpose", "An AI API that will allow you to ask questions to the financial chatbot");
         chatbotModelGatewayConfiguration.setFieldValue("options", chatbotGateways);
+
+        //create Chatbot Name Parameter Configuration
+        var chatbotModelName = new ConfigurationOption();
+        chatbotModelName.setFieldValue("id", this.generateId());
+        chatbotModelName.setFieldValue("setting", "ChatbotModelSettings");
+        chatbotModelName.setFieldValue("label", "Model Name");
+        chatbotModelName.setFieldValue("name", "modelName");
+        chatbotModelName.setFieldValue("hasValue", true);
+        chatbotModelName.setFieldValue("valueName", "modelName");
+        chatbotModelName.setFieldValue("value", config.ChatbotModelSettings.modelName);
+
+        var chatbotModelNameConfiguration = new Configuration();
+        chatbotModelNameConfiguration.setFieldValue("id", this.generateId());
+        chatbotModelNameConfiguration.setFieldValue("name", "modelName");
+        chatbotModelNameConfiguration.setFieldValue("type", "AIModel");
+        chatbotModelNameConfiguration.setFieldValue("purpose", "The name of the language model you plan to use");
+        chatbotModelNameConfiguration.setFieldValue("options", [chatbotModelName]);
+        
+        //create Chatbot Max Tokens Parameter Configuration
+        var chatbotMaxTokens = new ConfigurationOption();
+        chatbotMaxTokens.setFieldValue("id", this.generateId());
+        chatbotMaxTokens.setFieldValue("setting", "ChatbotModelSettings");
+        chatbotMaxTokens.setFieldValue("label", "Max Output Tokens");
+        chatbotMaxTokens.setFieldValue("name", "maxOutputTokens");
+        chatbotMaxTokens.setFieldValue("hasValue", true);
+        chatbotMaxTokens.setFieldValue("valueName", "maxOutputTokens");
+        chatbotMaxTokens.setFieldValue("value", config.ChatbotModelSettings.maxOutputTokens);
+
+        var chatbotMaxTokensConfiguration = new Configuration();
+        chatbotMaxTokensConfiguration.setFieldValue("id", this.generateId());
+        chatbotMaxTokensConfiguration.setFieldValue("name", "maxOutputTokens");
+        chatbotMaxTokensConfiguration.setFieldValue("type", "AIModel");
+        chatbotMaxTokensConfiguration.setFieldValue("purpose", 'The maximum number of "words" the model is allowed to output');
+        chatbotMaxTokensConfiguration.setFieldValue("options", [chatbotMaxTokens]);
+
+        //create Chatbot Temperature Parameter Configuration
+        var chatbotTemperature = new ConfigurationOption();
+        chatbotTemperature.setFieldValue("id", this.generateId());
+        chatbotTemperature.setFieldValue("setting", "ChatbotModelSettings");
+        chatbotTemperature.setFieldValue("label", "Temperature");
+        chatbotTemperature.setFieldValue("name", "temperature");
+        chatbotTemperature.setFieldValue("hasValue", true);
+        chatbotTemperature.setFieldValue("valueName", "temperature");
+        chatbotTemperature.setFieldValue("value", config.ChatbotModelSettings.temperature);
+
+        var chatbotTemperatureConfiguration = new Configuration();
+        chatbotTemperatureConfiguration.setFieldValue("id", this.generateId());
+        chatbotTemperatureConfiguration.setFieldValue("name", "temperature");
+        chatbotTemperatureConfiguration.setFieldValue("type", "AIModel");
+        chatbotTemperatureConfiguration.setFieldValue("purpose", 'Temperature values range between 0 and 1 with larger values representing greater randomness');
+        chatbotTemperatureConfiguration.setFieldValue("options", [chatbotTemperature]);
+        
+        //create Chatbot TopP Parameter Configuration
+        var chatbotTopP = new ConfigurationOption();
+        chatbotTopP.setFieldValue("id", this.generateId());
+        chatbotTopP.setFieldValue("setting", "ChatbotModelSettings");
+        chatbotTopP.setFieldValue("label", "Top-p");
+        chatbotTopP.setFieldValue("name", "topP");
+        chatbotTopP.setFieldValue("hasValue", true);
+        chatbotTopP.setFieldValue("valueName", "topP");
+        chatbotTopP.setFieldValue("value", config.ChatbotModelSettings.topP);
+
+        var chatbotTopPConfiguration = new Configuration();
+        chatbotTopPConfiguration.setFieldValue("id", this.generateId());
+        chatbotTopPConfiguration.setFieldValue("name", "topP");
+        chatbotTopPConfiguration.setFieldValue("type", "AIModel");
+        chatbotTopPConfiguration.setFieldValue("purpose", 'Top-p values range between 0 and 1 with smaller values limiting output predictions');
+        chatbotTopPConfiguration.setFieldValue("options", [chatbotTopP]);        
 
         //Configuration Sections
         const dataConfigSection = new ConfigurationSection();
@@ -218,7 +299,7 @@ export class SettingsInteractor implements IInputBoundary {
         const modelConfigSection = new ConfigurationSection();
         modelConfigSection.setFieldValue("id", this.generateId());
         modelConfigSection.setFieldValue("label", "Chatbot Configurations");
-        modelConfigSection.setFieldValue("configurations", [chatbotModelGatewayConfiguration]);
+        modelConfigSection.setFieldValue("configurations", [chatbotModelGatewayConfiguration, chatbotModelNameConfiguration, chatbotMaxTokensConfiguration, chatbotTemperatureConfiguration, chatbotTopPConfiguration]);
 
         var data = {};
 
@@ -231,7 +312,11 @@ export class SettingsInteractor implements IInputBoundary {
                             NewsGateway: currentNewsGateway.toObject(),
                             ReportGateway: currentReportGateway.toObject(),
                             RatioGateway: currentRatioGateway.toObject(),
-                            ChatbotModel: currentAIModel.toObject()
+                            ChatbotModel: currentAIModel.toObject(),
+                            modelName: chatbotModelName.toObject(),
+                            maxOutputTokens: chatbotMaxTokens.toObject(),
+                            temperature: chatbotTemperature.toObject(),
+                            topP: chatbotTopP.toObject()
                         }
                     ]
             }};
@@ -247,9 +332,9 @@ export class SettingsInteractor implements IInputBoundary {
             ];
 
             for(var configuration of currentConfigurations as any) {
-                if(configuration.hasKey && env[configuration.keyName].length > 1) {
+                if(configuration.hasValue && env[configuration.valueName].length > 1) {
                     validCount++;
-                } else if(!configuration.hasKey) {
+                } else if(!configuration.hasValue) {
                     validCount++;
                 }
             }

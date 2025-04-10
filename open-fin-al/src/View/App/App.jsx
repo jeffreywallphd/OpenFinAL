@@ -83,7 +83,7 @@ function App(props) {
         }));
 
         const response = await interactor.get(request);
-        window.console.log(response);
+
         if(response.response.status === 200) {
             setConfigured(true);
         } else {

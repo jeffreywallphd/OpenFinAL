@@ -10,66 +10,36 @@ export class ConfigurationOption implements IEntity {
         var id = new Field("id","integer", null);
         this.fields.set("id", id);
 
+        var setting = new Field("setting", "string", null);
+        this.fields.set("setting", setting);
+
         var name = new Field("name", "string", null);
         this.fields.set("name", name);
 
-        var value = new Field("value", "any", null);
+        var label = new Field("label", "any", null);
+        this.fields.set("label", label);
+
+        var hasValue = new Field("hasValue", "boolean", true);
+        this.fields.set("hasValue", hasValue);
+
+        var valueName = new Field("valueName", "string", null);
+        this.fields.set("valueName", valueName);
+
+        var valueSite = new Field("valueSite", "string", null);
+        this.fields.set("valueSite", valueSite);
+
+        var value = new Field("value", "string", null);
         this.fields.set("value", value);
-
-        var hasKey = new Field("hasKey", "boolean", true);
-        this.fields.set("hasKey", hasKey);
-
-        var keyName = new Field("keyName", "string", null);
-        this.fields.set("keyName", keyName);
-
-        var keySite = new Field("keySite", "string", null);
-        this.fields.set("keySite", keySite);
-
-        var key = new Field("key", "string", null);
-        this.fields.set("key", key);
 
         var isActive = new Field("isActive", "boolean", false);
         this.fields.set("isActive", isActive);
+
+        var valueIsKey = new Field("valueIsKey", "boolean", false);
+        this.fields.set("valueIsKey", valueIsKey);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
-        var json = requestModel.request;
-
-        if(!json.request.hasOwnProperty("name")) {
-            throw new Error("A name must be provided to create a configuration option");
-        }
-
-        if(!json.request.hasOwnProperty("value")) {
-            throw new Error("A value must be provided to create a configuration option");
-        }
-
-        if(json.request.option.hasOwnProperty("name")) {
-            this.setFieldValue("name", json.request.option.name);
-        }
-
-        if(json.request.option.hasOwnProperty("value")) {
-            this.setFieldValue("value", json.request.option.value);
-        }
-
-        if(json.request.option.hasOwnProperty("hasKey")) {
-            this.setFieldValue("hasKey", json.request.option.hasKey);
-        }
-        
-        if(json.request.option.hasOwnProperty("keyName")) {
-            this.setFieldValue("keyName", json.request.option.keyName);
-        }
-
-        if(json.request.option.hasOwnProperty("key")) {
-            this.setFieldValue("key", json.request.option.key);
-        }
-
-        if(json.request.option.hasOwnProperty("keySite")) {
-            this.setFieldValue("keySite", json.request.option.keySite);
-        }
-
-        if(json.request.option.hasOwnProperty("isActive")) {
-            this.setFieldValue("isActive", json.request.option.isActive);
-        }
+        throw new Error("Method not implemented.");
     }
 
     fillWithResponse(model: IResponseModel) {
@@ -99,13 +69,15 @@ export class ConfigurationOption implements IEntity {
     toObject() {
         var obj = {
             id: this.getFieldValue("id"),
+            setting: this.getFieldValue("setting"),
             name: this.getFieldValue("name"),
+            label: this.getFieldValue("label"),
+            hasValue: this.getFieldValue("hasValue"),
+            valueName: this.getFieldValue("valueName"),
+            valueSite: this.getFieldValue("valueSite"),
             value: this.getFieldValue("value"),
-            hasKey: this.getFieldValue("hasKey"),
-            keyName: this.getFieldValue("keyName"),
-            keySite: this.getFieldValue("keySite"),
-            key: this.getFieldValue("key"),
-            isActive: this.getFieldValue("isActive")
+            isActive: this.getFieldValue("isActive"),
+            valueIsKey: this.getFieldValue("valueIsKey")
         };
         
         return obj;

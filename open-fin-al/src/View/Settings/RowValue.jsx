@@ -1,13 +1,12 @@
 import React from "react";
 
-
 function SettingsRowValue(props) {
-    const setOptionValue = (configurationName, key) => {
+    const setOptionValue = (configurationName, value) => {
         props.setSettings(prev => ({
             ...prev,
             [configurationName]: {
                 ...prev[configurationName],
-                key: key
+                value: value
             }
         }));
     };
@@ -16,26 +15,28 @@ function SettingsRowValue(props) {
         <div className="key-cell">
             <input 
                 type="text" 
-                id={props.configuration.name + "Key"} 
-                name={props.configuration.name + "Key"} 
+                id={props.configuration.name + "Value"} 
+                name={props.configuration.name + "Value"} 
                 className="api-key-input" 
-                value={props.settings[props.configuration.name] && props.settings[props.configuration.name].hasKey ? props.settings[props.configuration.name].key : ''} 
+                value={props.settings[props.configuration.name] && props.settings[props.configuration.name].hasValue ? props.settings[props.configuration.name].value : ''} 
                 onChange={e => {
                     setOptionValue(props.configuration.name, e.target.value);
-                    props.setSharedKeys(props.settings[props.configuration.name].keyName, e.target.value);
+                    props.setSharedValues(props.settings[props.configuration.name].valueName, e.target.value);
                 }}
-                disabled={!props.settings[props.configuration.name].hasKey}
+                disabled={!props.settings[props.configuration.name].hasValue}
             />
-            { props.settings[props.configuration.name].hasKey ? (
+            { props.settings[props.configuration.name].hasValue && props.settings[props.configuration.name].valueSite ? (
                 <>
                     <br/>
-                    <span className="configDescription">To obtain a key to retrieve data, please visit: <span className="spanLink" onClick={() => window.urlWindow.openUrlWindow(props.settings[props.configuration.name].keySite)}>{props.settings[props.configuration.name].keySite}</span></span>
+                    <span className="configDescription">To obtain a key to retrieve data, please visit: <span className="spanLink" onClick={() => window.urlWindow.openUrlWindow(props.settings[props.configuration.name].valueSite)}>{props.settings[props.configuration.name].valueSite}</span></span>
                 </>
             ) : (
-                <>
-                    <br/>
-                    <span className="configDescription">A key is not required to retrieve data from this API</span>
-                </>
+                !props.settings[props.configuration.name].hasValue  && (
+                    <>
+                        <br/>
+                        <span className="configDescription">A value is not required for this setting.</span>
+                    </>
+                )
             )
                 
             }

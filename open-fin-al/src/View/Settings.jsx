@@ -42,11 +42,10 @@ function Settings(props) {
         fetchCurrentSettings();
     }, []);
 
-    const setSharedKeys = (keyName, key) => {
-        window.console.log(settings);
+    const setSharedValues = (valueName, value) => {
         for(var setting of Object.values(settings)) {
-            if(setting.keyName === keyName) {
-                setting.key = key;
+            if(setting.valueName === valueName) {
+                setting.value = value;
             }
         }
     };
@@ -142,17 +141,12 @@ function Settings(props) {
                     <h3 className="card-title">{section.label}</h3>
                     <div className="api-config-table">
                         <div className="table-header">
-                            <div className="header-cell">Select an API:</div>
-                            <div className="header-cell">API Keys</div>
+                            <div className="header-cell">Setting</div>
+                            <div className="header-cell">Value</div>
                         </div>
                         {section.configurations.map((configuration) => (
                             <>
-                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedKeys={setSharedKeys} />
-                                {configuration.type === "AIModel" && (
-                                    <>
-
-                                    </>
-                                )}                                                                                    
+                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} />                                                                                   
                             </>
                         ))}
                     </div>

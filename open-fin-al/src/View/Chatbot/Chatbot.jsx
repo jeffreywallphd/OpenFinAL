@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import {LanguageModelInteractor} from "../../Interactor/LanguageModelInteractor";
 import {JSONRequest} from "../../Gateway/Request/JSONRequest";
+import ConfigUpdater from "../../Utility/ConfigManager"
 
 class Chatbot extends Component {
     constructor(props) {
@@ -18,6 +19,9 @@ class Chatbot extends Component {
     };
 
     handleSendMessage = async () => {
+        const configManager = new ConfigUpdater();
+        const config = configManager.getConfig();
+
         const { userInput, messages } = this.state;
         if (userInput.trim() === "") return; // Prevent sending empty messages
 
@@ -30,7 +34,7 @@ class Chatbot extends Component {
         var requestObj = new JSONRequest(`{
             "request": {
                 "model": {
-                    "name": "gpt-4",
+                    "name":"${config.ChatbotModelSettings.modelName}",
                     "messages": [
                         {
                             "role": "user",

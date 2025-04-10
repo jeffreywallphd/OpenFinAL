@@ -53,7 +53,13 @@ class ConfigUpdater {
                 NewsGateway: "AlphaVantageNewsGateway",
                 ReportGateway: "SecAPIGateway",
                 RatioGateway: "AlphaVantageRatioGateway",
-                ChatbotModel: "OpenAIModel"
+                ChatbotModel: "OpenAIModel",
+                ChatbotModelSettings: {
+                    modelName: "gpt-4",
+                    maxOutputTokens: 100,
+                    temperature: 0.5,
+                    topP: 1
+                }
             };
 
             fs.writeFileSync(this.configFile, JSON.stringify(defaultConfig, null, 4));
