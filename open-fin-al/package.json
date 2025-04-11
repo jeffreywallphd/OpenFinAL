@@ -15,7 +15,7 @@
     "howler": "^2.2.4",
     "html2canvas": "^1.4.1",
     "node-html-parser": "^6.1.13",
-    "openai": "^4.87.4",
+    "openai": "^4.92.0",
     "react": "^18.2.0",
     "react-chartjs-2": "^5.2.0",
     "react-dom": "^18.2.0",

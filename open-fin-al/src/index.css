@@ -26,7 +26,7 @@
 body.dark-mode {
   --primary-color: #6674f1;
   --primary-color-hover: #6977f7;
-  --secondary-color: #384457;
+  --secondary-color: #516a91;
   --tertiary-color: #4a5568;
   --background-color: #282828;
   --background-color-highlight-light: #202020;
@@ -234,7 +234,7 @@ button.HamburgerMenu {
   }
 }
 
-Styling for Navigation
+/*Styling for Navigation*/
 
 #navButton{
   padding:0;
@@ -2347,7 +2347,7 @@ nav ul li a:hover {
 }
 
 .dark-mode .card-title {
-  color: var(--text-color-light);
+  color: var(--text-color-dark);
 }
 
 .dark-mode .table-row {
