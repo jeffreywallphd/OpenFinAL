@@ -9,12 +9,17 @@ import React, { useState, createContext, useEffect } from "react";
 // Imports for react pages and assets
 import AppLoaded from "./AppLoaded";
 import { AppPreparing } from "./AppPreparing";
+import  ConfigUpdater  from "../../Utility/ConfigManager";
+import { AppConfiguring } from "./AppConfiguring";
+import { SettingsInteractor } from "../../Interactor/SettingsInteractor";
+import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 
 const DataContext = createContext();
 
 function App(props) {
     const currentDate = new Date();
     const [loading, setLoading] = useState(true);
+    const [configured, setConfigured] = useState(false);
     const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
@@ -58,13 +63,64 @@ function App(props) {
         setLoading(false);
     };
 
+    const handleConfigured = () => {
+        setConfigured(true);
+    };
+
+    useEffect(() => {
+        checkIfConfigured();
+    }, []);
+
+    useEffect(() => {
+        checkIfConfigured();
+    }, [configured]);
+
+    const checkIfConfigured = async () => { 
+        const interactor = new SettingsInteractor();
+
+        const request = new JSONRequest(JSON.stringify({
+            action: "isConfigured"
+        }));
+
+        const response = await interactor.get(request);
+
+        if(response.response.status === 200) {
+            setConfigured(true);
+        } else {
+            setConfigured(false);
+        }
+
+        return configured;
+    };
+    
+
+    const configurator = new ConfigUpdater();
+    var env = null;
+    var config = null;
+
+    useEffect(() => {
+        try {
+            configurator.createEnvIfNotExists();
+            configurator.createConfigIfNotExists()
+            env = configurator.getEnv();
+            config = configurator.getConfig();
+        } catch(error) {
+            console.log(error);
+        } 
+    }, []);
+
     return (
         loading ? 
             <AppPreparing handleLoading={handleLoading}/> 
         : 
-            <DataContext.Provider value={value}>
-                <AppLoaded />
-            </DataContext.Provider>
+            (
+                configured ? 
+                    <DataContext.Provider value={value}>
+                        <AppLoaded />
+                    </DataContext.Provider>
+                :
+                    <AppConfiguring config={config} handleConfigured={handleConfigured}/>
+            )   
     );
 }
 

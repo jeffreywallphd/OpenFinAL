@@ -14,30 +14,28 @@ import {
 } from "react-router-dom";
 
 // Imports for react pages and assets
-import Home from "./Home";
-import Portfolio from "./Portfolio";
-import { Analysis } from "./Analysis";
-import BrowseFAQ from "./BrowseFAQ";
-import TermDefinitions from "./TermDefinitions";
-import BuyReport from "./BuyReport";
-import { TimeSeries } from "./TimeSeriesPage";
-import { News } from "./NewsPage";
-import { Learn } from "./Learn";
-import { LearningModuleDetails } from "./LearningModuleDetails";
-import { LearningModulePage } from "./LearningModulePage";
-import logo from "../Asset/Image/logo.png";
-import logoNoText from "../Asset/Image/openfinal_logo_no_text.png";
-import logoNoTextDark from "../Asset/Image/openfinal_logo_dark_no_text.png";
-import logoDark from "../Asset/Image/logo-dark.png";
-import navIcon from "../Asset/Image/navIcon.png";
-import { Settings } from "./Settings";
-import Forecast from "./Forecast";
-import { ForecastFeature } from "./ForecastFeature";
-import ForecastModel from "./ForecastModel";
-import { SecReport } from "./SecReport";
-import InvestmentPool from "./InvestmentPool";
-import StockAnalysis from "./StockAnalysis";
-import ChatbotToggle from "./Chatbot/ChatbotToggle";
+import Home from "../Home";
+import Portfolio from "../Portfolio";
+import { Analysis } from "../Analysis";
+import BuyReport from "../BuyReport";
+import { TimeSeries } from "../TimeSeriesPage";
+import { News } from "../NewsPage";
+import { Learn } from "../Learn";
+import { LearningModuleDetails } from "../LearningModuleDetails";
+import { LearningModulePage } from "../LearningModulePage";
+import logo from "../../Asset/Image/logo.png";
+import logoNoText from "../../Asset/Image/openfinal_logo_no_text.png";
+import logoNoTextDark from "../../Asset/Image/openfinal_logo_dark_no_text.png";
+import logoDark from "../../Asset/Image/logo-dark.png";
+import navIcon from "../../Asset/Image/navIcon.png";
+import { Settings } from "../Settings";
+import Forecast from "../Forecast";
+import { ForecastFeature } from "../ForecastFeature";
+import ForecastModel from "../ForecastModel";
+import { SecReport } from "../SecReport";
+import InvestmentPool from "../InvestmentPool";
+import StockAnalysis from "../StockAnalysis";
+import ChatbotToggle from "../Chatbot/ChatbotToggle";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop({ onRouteChange }) {
@@ -96,7 +94,7 @@ class AppLoaded extends Component {
 
   checkDarkMode() {
     const darkMode = localStorage.getItem("darkMode") === "true";
-    window.console.log("Dark Mode is: " + darkMode);
+
     if (darkMode !== this.state.darkMode) {
       this.setState({
         darkMode,
@@ -115,11 +113,11 @@ class AppLoaded extends Component {
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
-                <img src={this.state.logo} alt="OpenFinAL Logo" class={`logo ${menuCollapsed ? 'hidden' : ''}`} />
-                <img src={this.state.logoNoText} alt="OpenFinAL Logo" class={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
               </div>
               <div className="sidebar-padding">
-                <button onClick={this.handleClick} class="HamburgerMenu"><i class="fa fa-bars"></i></button>
+                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
                 <ul>
@@ -143,8 +141,6 @@ class AppLoaded extends Component {
                 <Route path="/portfolio" element={<Portfolio />} />
                 <Route path="/analysis" element={<Analysis />} />
                 <Route path="/buy-report" element={<BuyReport />} />
-                <Route path="/browsefaq" element={<BrowseFAQ />}/>
-                <Route path="/termdefinitions" element={<TermDefinitions />}/>
                 <Route path="/price" element={<TimeSeries />} />
                 <Route path="/news" element={<News />} />
                 <Route path="/learn" element={<Learn />} />
@@ -160,7 +156,7 @@ class AppLoaded extends Component {
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
-              This software is licensed under the GPL-3.0 license.
+              Licensed under GPL-3.0<br/>&copy;2023 All rights reserved
             </footer>
           </div>
         </>

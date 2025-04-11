@@ -18,7 +18,7 @@ export class LanguageModelInteractor implements IInputBoundary {
     responseModel: IResponseModel;
 
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
-        return this.get(requestModel);
+        return this.post(requestModel);
     }
 
     async post(requestModel: IRequestModel): Promise<IResponseModel> {
@@ -42,16 +42,15 @@ export class LanguageModelInteractor implements IInputBoundary {
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
         response.response = results;
-        window.console.log(response)
 
         return response.response;
     }
 
     async put(requestModel: IRequestModel): Promise<IResponseModel> {
-        return this.get(requestModel);
+        return this.post(requestModel);
     }
 
     async delete(requestModel: IRequestModel): Promise<IResponseModel> {
-        return this.get(requestModel);
+        return this.post(requestModel);
     }
 }
