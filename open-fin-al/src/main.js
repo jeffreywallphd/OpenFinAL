@@ -15,6 +15,9 @@ const ipcMain = require('electron').ipcMain;
 let win;           // main window
 let urlWindow;     // url window
 
+//change userData folder name from open-fin-al to OpenFinal
+app.setPath('userData', path.join(app.getPath('appData'), 'OpenFinAL'));
+
 // TODO: try to remove nodeIntegration, as it may create security vulnerabilities
 const createWindow = () => {
   win = new BrowserWindow({ 
@@ -92,7 +95,8 @@ app.on('window-all-closed', () => {
 
 //////////////////////////// Database Section ////////////////////////////
 const userDataPath = app.getPath('userData');
-const dbFileName = 'my-app-database.sqlite';
+console.log(userDataPath);
+const dbFileName = 'OpenFinal.sqlite';
 const dbPath = path.join(userDataPath, dbFileName);
 
 if (!fs.existsSync(userDataPath)) {
@@ -111,7 +115,8 @@ const initDatabase = async () => {
         console.log('Connected to the database.');
       }
     });
-    const schema = await fs.promises.readFile('./src/Asset/DB/schema.sql', 'utf-8');
+    
+    const schema = await fs.promises.readFile(path.join(app.getAppPath(), 'src/Asset/DB/schema.sql'), 'utf-8');
     await db.exec(schema);
   } catch (error) {
     console.error('Error initializing database:', error);

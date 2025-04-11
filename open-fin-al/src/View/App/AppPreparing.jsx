@@ -39,7 +39,7 @@ export function AppPreparing(props) {
         <div className="loadingContainer">
             <div className="loadingContent">
                 <div><img src={logo} alt="Logo" width="150" /></div>
-                <div>
+                <div className="loadingText">
                     <p>Downloading data resources...</p>
                     <p>This may take a few minutes</p>
                     <div className="loader"></div>
