@@ -270,7 +270,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotTemperatureConfiguration.setFieldValue("id", this.generateId());
         chatbotTemperatureConfiguration.setFieldValue("name", "temperature");
         chatbotTemperatureConfiguration.setFieldValue("type", "AIModel");
-        chatbotTemperatureConfiguration.setFieldValue("purpose", 'Temperature values range between 0 and 1 with larger values representing greater randomness');
+        chatbotTemperatureConfiguration.setFieldValue("purpose", 'Temperature values range from 0 and 2 with smaller values decreasing randomness in responses');
         chatbotTemperatureConfiguration.setFieldValue("options", [chatbotTemperature]);
         
         //create Chatbot TopP Parameter Configuration
@@ -287,7 +287,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotTopPConfiguration.setFieldValue("id", this.generateId());
         chatbotTopPConfiguration.setFieldValue("name", "topP");
         chatbotTopPConfiguration.setFieldValue("type", "AIModel");
-        chatbotTopPConfiguration.setFieldValue("purpose", 'Top-p values range between 0 and 1 with smaller values limiting output predictions');
+        chatbotTopPConfiguration.setFieldValue("purpose", 'Top-p values range from 0 and 1 with smaller values decreasing randomness in responses');
         chatbotTopPConfiguration.setFieldValue("options", [chatbotTopP]);        
 
         //Configuration Sections
