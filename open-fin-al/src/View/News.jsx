@@ -5,8 +5,8 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React, { Component } from "react";
-import { NewsSearchBar } from "./NewsSearchBar";
-import { NewsListing } from "./NewsListing";
+import { NewsSearchBar } from "./News/NewsSearchBar";
+import { NewsListing } from "./News/NewsListing";
 
 class NewsPage extends Component {
     constructor(props) {

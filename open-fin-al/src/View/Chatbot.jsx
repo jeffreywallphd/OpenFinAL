@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import {LanguageModelInteractor} from "../../Interactor/LanguageModelInteractor";
-import {JSONRequest} from "../../Gateway/Request/JSONRequest";
-import ConfigUpdater from "../../Utility/ConfigManager"
+import {LanguageModelInteractor} from "../Interactor/LanguageModelInteractor";
+import {JSONRequest} from "../Gateway/Request/JSONRequest";
+import ConfigUpdater from "../Utility/ConfigManager"
 
 class Chatbot extends Component {
     constructor(props) {

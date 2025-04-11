@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { TickerSearchBar } from "./TickerSearchBar";
-import { DataContext } from "./App/App";
+import { TickerSearchBar } from "./Stock/TickerSearchBar";
+import { DataContext } from "./App";
 import { RSIChart } from "./RSIChart";
 import { MovingAvgChart } from "./MovingAVGChart";
 import { ROCChart } from "./ROCChart";

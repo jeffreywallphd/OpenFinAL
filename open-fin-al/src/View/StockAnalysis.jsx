@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import '../index.css';
 import { StockAnalysisSearchBar } from './StockAnalysisSearchBar';
-import { DataContext } from "./App/App";
+import { DataContext } from "./App";
 
 import { saveAs } from 'file-saver';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";

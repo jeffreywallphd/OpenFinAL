@@ -47,7 +47,7 @@ function Slide(props) {
         return React.createElement(tagName, attributes, children);
     };
 
-    const contents = props.page.pageContentUrl !== null ? window.fs.fs.readFileSync(`src/View/LearningModuleSlideshows/${props.page.pageContentUrl}`, 'utf-8') : null;
+    const contents = props.page.pageContentUrl !== null ? window.fs.fs.readFileSync(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`, 'utf-8') : null;
 
     // stop playing sound after leaving page
     useEffect(() => {

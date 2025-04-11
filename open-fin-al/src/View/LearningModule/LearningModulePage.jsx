@@ -9,7 +9,7 @@ import {
     useLocation
 } from "react-router-dom";
 
-import { SlideshowWindow } from "./LearningModuleSlideshows/SlideshowWindow";
+import { SlideshowWindow } from "./Slideshow/SlideshowWindow";
 
 export function LearningModulePage(props) {
     const location = useLocation();

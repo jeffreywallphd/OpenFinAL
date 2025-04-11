@@ -5,9 +5,9 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React from "react";
-import {NewsInteractor} from "../Interactor/NewsInteractor";
-import {JSONRequest} from "../Gateway/Request/JSONRequest";
-import { SymbolSearchBar } from "./Shared/SymbolSearchBar";
+import {NewsInteractor} from "../../Interactor/NewsInteractor";
+import {JSONRequest} from "../../Gateway/Request/JSONRequest";
+import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
 
 function NewsSearchBar(props) {
     //TODO: implement error handling

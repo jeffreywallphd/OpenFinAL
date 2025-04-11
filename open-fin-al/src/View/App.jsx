@@ -7,12 +7,12 @@
 import React, { useState, createContext, useEffect } from "react";
 
 // Imports for react pages and assets
-import AppLoaded from "./AppLoaded";
-import { AppPreparing } from "./AppPreparing";
-import  ConfigUpdater  from "../../Utility/ConfigManager";
-import { AppConfiguring } from "./AppConfiguring";
-import { SettingsInteractor } from "../../Interactor/SettingsInteractor";
-import { JSONRequest } from "../../Gateway/Request/JSONRequest";
+import AppLoaded from "./App/Loaded";
+import { AppPreparing } from "./App/Preparing";
+import { AppConfiguring } from "./App/Configuring";
+import  ConfigUpdater  from "../Utility/ConfigManager";
+import { SettingsInteractor } from "../Interactor/SettingsInteractor";
+import { JSONRequest } from "../Gateway/Request/JSONRequest";
 
 const DataContext = createContext();
 

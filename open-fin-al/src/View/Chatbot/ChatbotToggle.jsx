@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import chatbotIcon from './comment-alt.png';
-import Chatbot from "./Chatbot";
+import Chatbot from "../Chatbot";
 
 class ChatbotToggle extends Component {
     constructor(props) {

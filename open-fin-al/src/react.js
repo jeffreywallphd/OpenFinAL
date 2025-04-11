@@ -7,7 +7,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import './index.css';
-import { App } from './View/App/App';
+import { App } from './View/App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 

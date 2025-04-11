@@ -5,7 +5,7 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React from "react";
-import RatioCalculator from "../Utility/RatioCalculator";
+import RatioCalculator from "../../Utility/RatioCalculator";
 
 function TickerSidePanel(props) {
     const ratioCalculator = new RatioCalculator(props.state.secData.response.results[0]["data"]);

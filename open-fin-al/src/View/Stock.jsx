@@ -6,15 +6,15 @@
 
 import React, { useContext, useEffect } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { TimeSeriesChart } from "./TimeSeriesChart";
-import { TickerSearchBar } from "./TickerSearchBar";
-import { TickerSidePanel } from "./TickerSidePanel";
-import { DataContext } from "./App/App";
+import { TimeSeriesChart } from "./Stock/TimeSeriesChart";
+import { TickerSearchBar } from "./Stock/TickerSearchBar";
+import { TickerSidePanel } from "./Stock/TickerSidePanel";
+import { DataContext } from "./App";
 
 import { SecInteractor } from "../Interactor/SecInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 
-function TimeSeriesPage(props) {
+function Stock(props) {
     const location = useLocation();
     const { state, setState } = useContext(DataContext);
     
@@ -117,5 +117,5 @@ function TimeSeriesPage(props) {
 
 // In case hooks are needed for this class. Can remove later if not necessary
 export function TimeSeries() {
-    return <TimeSeriesPage />
+    return <Stock />
 };

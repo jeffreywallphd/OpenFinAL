@@ -5,10 +5,10 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React, { useEffect } from "react";
-import { StockInteractor } from "../Interactor/StockInteractor";
-import { FinancialRatioInteractor } from "../Interactor/FinancialRatioInteractor";
-import { JSONRequest } from "../Gateway/Request/JSONRequest";
-import { SymbolSearchBar } from "./Shared/SymbolSearchBar";
+import { StockInteractor } from "../../Interactor/StockInteractor";
+import { FinancialRatioInteractor } from "../../Interactor/FinancialRatioInteractor";
+import { JSONRequest } from "../../Gateway/Request/JSONRequest";
+import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
 
 function  TickerSearchBar(props) {
     //TODO: implement error handling
