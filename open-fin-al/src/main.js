@@ -21,7 +21,7 @@ const createWindow = () => {
     show: false,
     webPreferences: {
       preload: path.join(app.getAppPath(), 'src/preload.js'),
-      //contextIsolation: true
+      contextIsolation: true,
       nodeIntegration: true
     } 
   });
@@ -29,8 +29,8 @@ const createWindow = () => {
   win.maximize();
   win.show();
 
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    shell.openExternal(url);
+  win.webContents.setWindowOpenHandler(() => {
+    //shell.openExternal(url);
     return { action: 'deny' };
   });
 
