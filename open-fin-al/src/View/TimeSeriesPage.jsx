@@ -93,7 +93,9 @@ function TimeSeriesPage(props) {
                                     </>
                                 ) : state.error ? (
                                     <p>The ticker you entered is not valid. Please choose a valid ticker.</p>
-                                ) : (<p>Data Source: {state.dataSource}</p>) }
+                                ) : (
+                                    <p>Data Source: {state.dataSource}</p>   
+                                )}
                             
                                 <TimeSeriesChart state={state} handleDataChange={handleDataChange} />
                             </>
@@ -107,20 +109,6 @@ function TimeSeriesPage(props) {
                             <TickerSidePanel state={state} />
                         </>
                     ) : (null)}
-                    { state && state.reportLinks ? 
-                            <>
-                                <h4>Financial Statements</h4>
-                                <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenK)}>
-                                    Most Recent 10-K
-                                </button>
-                                <br />
-                                <button onClick={() => window.urlWindow.openUrlWindow(state.reportLinks.tenQ)}>
-                                    Most Recent 10-Q
-                                </button>
-                            </>
-                        :
-                            (null)
-                    }
                 </div>
             </div>
         </div>
