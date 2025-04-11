@@ -34,7 +34,7 @@ const createWindow = () => {
     return { action: 'deny' };
   });
 
-  win.loadFile('./public/index.html');
+  win.loadFile(path.join(app.getAppPath(), 'public/index.html'));
 };
 
 app.whenReady().then(() => {
