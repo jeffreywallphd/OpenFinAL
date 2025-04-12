@@ -16,7 +16,8 @@ contextBridge.exposeInMainWorld('yahoo', {
 });
 
 contextBridge.exposeInMainWorld('urlWindow', {
-    openUrlWindow: (url) => ipcRenderer.send('open-url-window', url)
+    openUrlWindow: (url) => ipcRenderer.send('open-url-window', url),
+    getUrlBodyTextHidden: (url) => ipcRenderer.invoke('get-url-body-text-hidden', url)
 });
 
 contextBridge.exposeInMainWorld('convert', {
@@ -33,10 +34,6 @@ contextBridge.exposeInMainWorld('database', {
         } catch(error) {
             window.console.error(error);
         }
-        
     }
 });
 
-contextBridge.exposeInMainWorld('chatbot', {
-    openai: require('openai')
-});

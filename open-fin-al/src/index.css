@@ -2469,9 +2469,79 @@ nav ul li a:hover {
   color: #f0f0f0;
 }
 
-
-
 .dark-mode .card-title {
   color: var(--text-color-dark);
+}
+
+/* Styles for the news summary modal */
+
+.news-summary-modal {
+  position: fixed; /* Stay in place */
+  z-index: 100000; /* Sit on top of everything else */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.news-summary-content {
+  background-color: var(--background-color);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 700px;
+  border-radius: 7px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* To position potential close button */
+  display: flex; /* Make content a flex container */
+  flex-direction: column; /* Stack items vertically */
+}
+
+.news-summary-content p {
+  color: var(--text-color-medium-dark);
+  margin-bottom: 10px;
+  overflow-y: auto;
+}
+
+.news-summary-header {
+  display: flex; /* Make the header a flex container */
+  justify-content: space-between; /* Put space between the title and the button */
+  align-items: center; /* Optional: Vertically align items in the center */
+  margin-bottom: 10px; /* Add some space below the header */
+}
+
+.news-summary-header h2 {
+  margin-top: 0;
+  color: var(--text-color-dark);
+}
+
+.news-summary-header button {
+  background: var(--background-color-highlight-light);
+  color: var(--text-color-medium);
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: var(--text-color-medium);
+}
+
+.news-summary-header button:hover {
+  background: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
+}
+
+
+/* Styles for the backdrop to block interaction */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+  z-index: 999; /* Sit below the modal but above the page content */
 }
 

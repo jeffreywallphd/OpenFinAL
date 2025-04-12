@@ -8,6 +8,7 @@ const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 const sqlite3 = require('sqlite3').verbose();
 const fs = require("fs");
+const { create } = require('domain');
 const ipcMain = require('electron').ipcMain;
 
 //////////////////////////// Core Electron Section ////////////////////////////
@@ -32,10 +33,8 @@ const createWindow = () => {
   win.maximize();
   win.show();
 
-  win.webContents.setWindowOpenHandler(() => {
-    //shell.openExternal(url);
-    return { action: 'deny' };
-  });
+  //stop the main window from opening links to external sites
+  win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
 
   win.loadFile(path.join(app.getAppPath(), 'public/index.html'));
 };
@@ -54,31 +53,64 @@ app.whenReady().then(() => {
 // 🔒 Enables Chromium's sandbox
 // 🔒 Disables remote module
 // 🚫 No preload script
-const createUrlWindow = (url) => {
-  urlWindow = new BrowserWindow({
+const createUrlWindow = (url, { hidden = false } = {}) => {
+  const win2 = new BrowserWindow({
     show: false,
-    parent: win,
+    parent: hidden ? null : win,
     title: 'Open FinAL',
     webPreferences: {
       nodeIntegration: false,     
       contextIsolation: true,     
       sandbox: true,              
       enableRemoteModule: false,  
-      preload: undefined         
+      preload: path.join(app.getAppPath(), 'src/urlWindowPreload.js')      
     }
   });
 
-  urlWindow.maximize();
-  urlWindow.show();
+  if(!hidden) {
+    win2.maximize();
+    win2.show();
+    urlWindow = win2;
+  }
 
-  urlWindow.webContents.setWindowOpenHandler(({ url }) => {
+  win2.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: 'deny' };
   });
 
-  urlWindow.loadURL(url);
-  urlWindow.on('closed', () => {
+  win2.loadURL(url);
+  
+  win2.on('closed', () => {
     urlWindow = null;
+  });
+
+  return win2;
+};
+
+ipcMain.handle('get-url-body-text-hidden', async (event, url) => {
+  return await extractTextFromUrlWindowSilently(url);
+});
+
+//extract text from hidden window then close
+const extractTextFromUrlWindowSilently = (url) => {
+  return new Promise((resolve, reject) => {
+    const child = createUrlWindow(url, { hidden: true });
+
+    child.webContents.once('did-finish-load', async () => {
+      try {
+        const text = await child.webContents.executeJavaScript('window.childWindow.getUrlBodyText()');
+        child.close();
+        resolve(text);
+      } catch (err) {
+        child.close();
+        reject(err);
+      }
+    });
+
+    child.on('unresponsive', () => {
+      child.close();
+      reject(new Error('Child window became unresponsive.'));
+    });
   });
 };
 
@@ -86,6 +118,9 @@ const createUrlWindow = (url) => {
 ipcMain.on('open-url-window', (event, url) => {
   if (!urlWindow) {
     createUrlWindow(url);
+  } else {
+    urlWindow.close();
+    urlWindow = createUrlWindow(url);
   }
 });
 

@@ -11,6 +11,8 @@ function SettingsRowValue(props) {
         }));
     };
 
+    window.console.log(props.configuration.name);
+
     return (            
         <div className="key-cell">
             <input 

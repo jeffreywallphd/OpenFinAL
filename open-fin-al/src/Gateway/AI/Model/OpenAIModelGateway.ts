@@ -7,15 +7,27 @@ declare global {
 
 export class OpenAIModelGateway implements IKeyedModelGateway{
     key: any;
+    purpose: string;
 
-    constructor(key: string) {
+    constructor(key: string, purpose: string = "ChatbotModel") {
         this.key = key;
+        this.purpose = purpose;
     }
 
     async create(model: string, messages: any[]): Promise<any> {
         try {
             const configManager = new ConfigUpdater();
             const config = configManager.getConfig();
+
+            var maxTokens = config.ChatbotModelSettings.maxOutputTokens;
+            var temperature = config.ChatbotModelSettings.temperature;
+            var topP = config.ChatbotModelSettings.topP;    
+
+            if(this.purpose === "NewsSummaryModel") {
+                maxTokens = config.NewsSummaryModelSettings.maxOutputTokens;
+                temperature = config.NewsSummaryModelSettings.temperature;
+                topP = config.NewsSummaryModelSettings.topP;
+            }
 
             const response = await fetch("https://api.openai.com/v1/chat/completions", {
                 method: "POST",
@@ -26,9 +38,9 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                 body: JSON.stringify({
                     model: model,
                     messages: messages,
-                    max_tokens: config.ChatbotModelSettings.maxOutputTokens,
-                    temperature: config.ChatbotModelSettings.temperature,
-                    top_p: config.ChatbotModelSettings.topP
+                    max_tokens: maxTokens,
+                    temperature: temperature,
+                    top_p: topP
                 }),
             });
             

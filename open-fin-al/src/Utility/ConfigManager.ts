@@ -55,10 +55,17 @@ class ConfigUpdater {
                 RatioGateway: "AlphaVantageRatioGateway",
                 ChatbotModel: "OpenAIModel",
                 ChatbotModelSettings: {
-                    modelName: "gpt-4",
-                    maxOutputTokens: 100,
-                    temperature: 0.5,
-                    topP: 1
+                    ChatbotModelName: "gpt-4",
+                    ChatbotModelMaxOutputTokens: 100,
+                    ChatbotModelTemperature: 0.5,
+                    ChatbotModelTopP: 1
+                },
+                NewsSummaryModel: "OpenAIModel",
+                NewsSummaryModelSettings: {
+                    NewsSummaryModelName: "gpt-4",
+                    NewsSummaryModelMaxOutputTokens: 200,
+                    NewsSummaryModelTemperature: 0.2,
+                    NewsSummaryModelTopP: 0.2
                 }
             };
 

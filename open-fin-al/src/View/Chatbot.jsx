@@ -34,11 +34,11 @@ class Chatbot extends Component {
         var requestObj = new JSONRequest(`{
             "request": {
                 "model": {
-                    "name":"${config.ChatbotModelSettings.modelName}",
+                    "name":"${config.ChatbotModelSettings.ChatbotModelName}",
                     "messages": [
                         {
                             "role": "user",
-                            "content": "${userInput.replace(/[\r\n\t\f\b]/g, " ")}"
+                            "content": "${userInput.replace(/[^a-zA-Z0-9 ]/g, "")}"
                         }
                     ]
                 }
