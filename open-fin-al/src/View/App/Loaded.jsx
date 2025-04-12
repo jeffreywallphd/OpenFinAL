@@ -32,8 +32,6 @@ import { Settings } from "../Settings";
 import Forecast from "../Forecast";
 import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
-import { SecReport } from "../SecReport";
-import InvestmentPool from "../InvestmentPool";
 import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
 
@@ -150,8 +148,6 @@ class AppLoaded extends Component {
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
-                <Route path="/sec-report" element={<SecReport />} />
-                <Route path="/investment-pool" element={<InvestmentPool />} /> 
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
               </Routes>
             </div>
