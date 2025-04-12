@@ -12,6 +12,8 @@ import ConfigUpdater from "../../Utility/ConfigManager";
 
 function NewsListing({ listingData }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState("");
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -44,8 +46,9 @@ function NewsListing({ listingData }) {
         <p style={{ fontSize: '0.8rem', color: '#555' }}>
           {formatDate(listingData.date)} {formatTime(listingData.time)} - Src: {listingData.source}
         </p>
-        <div>
+        <div className="news-item-actions">
           <button onClick={async () => {
+            setIsLoading(true);
             const text = await window.urlWindow.getUrlBodyTextHidden(listingData.url);
             
             if(text) {
@@ -74,14 +77,21 @@ function NewsListing({ listingData }) {
               if(response.content) {
                 listingData["articleText"] = response.content;
                 openModal();
+              } else {
+                setMessage("The AI model failed to provide a response");
               }
+              setIsLoading(false);
             } else {
+              setIsLoading(false);
+              setMessage("Unable to extract article text");
               window.console.log("No text was provided");
             }
             window.console.log(response);
           }}>
             Create AI Summary of Article
-          </button>
+          </button> 
+          <div className={`small-loader ${isLoading ? '' : 'hidden'}`}></div>
+          <span className="error-message">{message}</span>
           {isModalOpen && (
             <>
               <div className="modal-backdrop" onClick={closeModal}></div>
