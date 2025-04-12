@@ -10,6 +10,7 @@ const sqlite3 = require('sqlite3').verbose();
 const fs = require("fs");
 const { create } = require('domain');
 const ipcMain = require('electron').ipcMain;
+const puppeteer = require('puppeteer');
 
 //////////////////////////// Core Electron Section ////////////////////////////
 
@@ -38,6 +39,21 @@ const createWindow = () => {
 
   win.loadFile(path.join(app.getAppPath(), 'public/index.html'));
 };
+
+ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto(url, { waitUntil: 'networkidle2' });
+    const text = await page.evaluate(() => document.body.innerText);
+    await browser.close();
+    return text;
+  } catch (err) {
+    await browser.close();
+    console.log(err);
+  }
+});
 
 app.whenReady().then(() => {
   createWindow()

@@ -49,7 +49,8 @@ function NewsListing({ listingData }) {
         <div className="news-item-actions">
           <button onClick={async () => {
             setIsLoading(true);
-            const text = await window.urlWindow.getUrlBodyTextHidden(listingData.url);
+            const text = await window.puppetApi.getPageText(listingData.url);
+            //const text = await window.urlWindow.getUrlBodyTextHidden(listingData.url);
             
             if(text) {
               var interactor = new LanguageModelInteractor();

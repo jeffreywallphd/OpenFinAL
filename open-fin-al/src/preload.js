@@ -20,6 +20,10 @@ contextBridge.exposeInMainWorld('urlWindow', {
     getUrlBodyTextHidden: (url) => ipcRenderer.invoke('get-url-body-text-hidden', url)
 });
 
+contextBridge.exposeInMainWorld('puppetApi', {
+    getPageText: (url) => ipcRenderer.invoke('puppeteer:get-page-text', url)
+  });
+
 contextBridge.exposeInMainWorld('convert', {
     xmlToJson: require('xml2js')
 });
