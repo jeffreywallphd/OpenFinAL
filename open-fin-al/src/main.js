@@ -46,6 +46,12 @@ ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
 
   try {
     await page.goto(url, { waitUntil: 'networkidle2' });
+    
+    if(url.includes("zacks.com")) {
+      await page.waitForSelector('.show_article');
+      await page.click('.show_article');
+    }
+    
     const text = await page.evaluate(() => document.body.innerText);
     await browser.close();
     return text;
