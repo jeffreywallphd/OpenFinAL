@@ -28,7 +28,7 @@ input[type="text"] {
     width: calc(100% - 16px);  /* Make input fields responsive */
     box-sizing: border-box;
 }
-button, .button {
+button, .button{
     padding: 10px 15px;
     background-color: #333;
     color: white;
@@ -42,6 +42,7 @@ button, .button {
 button:hover, .button:hover {
     background-color: #575757;
 }
+
 
 .success{
     background-color: #198754;
@@ -227,7 +228,9 @@ button:hover, .button:hover {
 }
 
 #sidebar.active {
-    transform: translateX(250px); /* Slide in */
+    width: 48px;
+    overflow-y: hidden;
+    overflow-x: hidden;
 }
 
 #sidebar .closebtn {

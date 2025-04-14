@@ -27,6 +27,13 @@ function TimeSeriesChart(props) {
         });
     };
 
+    const formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      });
+
     var priceMinPadded;
     var priceMaxPadded;
     var volumeMax;
@@ -34,7 +41,6 @@ function TimeSeriesChart(props) {
     var header = "Search for a Company";
     var data = null;
     
-
     if(props.state.data) {
         header = `${props.state.data.response.results[0]["companyName"]} (${props.state.data.response.results[0]["ticker"]})`;
         data = props.state.data.response.results[0]["data"];
@@ -49,9 +55,7 @@ function TimeSeriesChart(props) {
             //set min to 0 if max-min is less than 0
             priceMinPadded = (Math.round((props.state.priceMin - ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100) > 0 ? Math.round((props.state.priceMin - ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100 : 0;
             priceMaxPadded = Math.round((props.state.priceMax + ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100;
-        }
-        
-        
+        }   
     }
 
     //evenly spaces the ticks of the time series chart by putting the ticks in a fixed intervall into Array "ticks" determined by tickCount
@@ -59,13 +63,14 @@ function TimeSeriesChart(props) {
     const tickInterval = (priceMaxPadded - priceMinPadded) / (tickCount - 1);
     const ticks = Array.from({ length: tickCount }, (_, index) => (priceMinPadded + tickInterval * index).toFixed(2));
 
+    window.console.log(props.state.secData);
 
     //TODO: calculate a max value for the y-axis that adds a little padding to top of graph    
     //TODO: set the min value for the x-axis to 9:00 AM and the max value to 5:00 PM when intraday data
     return(<>
             <div className="chartContainer">
                 <h3>{header}</h3>
-
+                
                 {/* A button group that will eventually be clickable to change the chart timeframe. */}
                 <div className="btn-group">
                     { props.state.data ? 
@@ -111,6 +116,37 @@ function TimeSeriesChart(props) {
                     <Tooltip />
                     <Bar type="monotone" dataKey="volume" fill="#62C0C2"/>
                 </BarChart>
+
+                {props.state.secData ? 
+                    <>
+                        <h3>Stock Details</h3>
+                        <div className="stockDetails">
+                            <div><span>Description:</span> {props.state.secData.response.results[0].data.Description}</div>
+                            <div><span>Exchange:</span> {props.state.secData.response.results[0].data.Exchange}</div>
+                            <div><span>Sector:</span> {props.state.secData.response.results[0].data.Sector}</div>
+                            <div><span>Industry:</span> {props.state.secData.response.results[0].data.Industry}</div>
+                            <div><span>Fiscal Yr End:</span> {props.state.secData.response.results[0].data.FiscalYearEnd}</div>
+                            <div><span>Market Cap:</span> {formatter.format(props.state.secData.response.results[0].data.MarketCapitalization)}</div>
+                            <div>
+                                { props.state && props.state.reportLinks ? 
+                                    <>
+                                        <h3>Financial Statements</h3>
+                                        <button onClick={() => window.urlWindow.openUrlWindow(props.state.reportLinks.tenQ)}>
+                                            Most Recent 10-Q
+                                        </button>
+                                        &nbsp;&nbsp;
+                                        <button onClick={() => window.urlWindow.openUrlWindow(props.state.reportLinks.tenK)}>
+                                            Most Recent 10-K
+                                        </button>
+                                    </>
+                                :
+                                    (null)
+                                }
+                            </div>
+                        </div>
+                    </> 
+                    : null 
+                }
             </div>
     </>);
 } 

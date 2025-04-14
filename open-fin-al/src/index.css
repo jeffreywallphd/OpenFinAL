@@ -20,6 +20,7 @@
   --row-alternating-color: #c1c9ff;
   --footer-height: 90px;
   --sidebar-width: 220px;
+  --sidebar-footer-width: 190px;
 }
 
 body.dark-mode {
@@ -27,17 +28,17 @@ body.dark-mode {
   --primary-color-hover: #6977f7;
   --secondary-color: #516a91;
   --tertiary-color: #4a5568;
-  --background-color: #3d3d3d;
-  --background-color-highlight-light: #303030;
-  --background-color-highlight: #282828; 
-  --accent-color: #27A2CC;
+  --background-color: #282828;
+  --background-color-highlight-light: #202020;
+  --background-color-highlight: #181818; 
+  --accent-color: #4a5568;
   --highlight-color: #ecc94b;
-  --text-color-white: #FFFFFF;
-  --text-color-dark: #FFFFFF;
-  --text-color-light: #777777;
-  --text-color-medium-light: #999999;
-  --text-color-medium: #BBBBBB;
-  --text-color-medium-dark: #DDDDDD;
+  --text-color-white: #EEEEEE;
+  --text-color-dark: #DDDDDD;
+  --text-color-light: #555555;
+  --text-color-medium-light: #777777;
+  --text-color-medium: #999999;
+  --text-color-medium-dark: #BBBBBB;
   --row-primary-color: #2d3748;
   --row-alternating-color: #4a5568;
 }
@@ -61,16 +62,23 @@ body {
   overflow-y: hidden;
 }
 
-footer {
+.footer {
   position: fixed;
   bottom: 0;
   left: 0;
-  width: var(--sidebar-width);
+  width: var(--sidebar-footer-width);
   background-color: var(--background-color);
   color: var(--text-color-medium-dark);
+  font-size: 12px;
   padding: 15px;
   text-align: center;
   border-top: 1px solid #999999;
+  z-index: 10000; /* Ensure it stays on top of other elements */
+  visibility: visible;
+}
+
+.footer.collapsed {
+  visibility: hidden;
 }
 
 a {
@@ -152,7 +160,14 @@ button:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-.note {
+button.HamburgerMenu {
+  font-size: 18px;
+  padding: 10px;
+  margin: 0px;
+}
+
+.btn-group button {
+  background-color: #CCCCCC;
   color: var(--text-color-medium);
   padding: 0px;
   margin: 0px;
@@ -245,8 +260,8 @@ code {
 /* Styling for Main Container and Sidebar */
 
 .main {
-  margin-left: 250px;
-  padding: 0px;
+  /*margin-left: 250px;*/
+  /*padding: 20px;*/
   display: flex;
   height: 100vh;
   background-color: var(--background-color);
@@ -257,69 +272,18 @@ code {
   display: flex;
 }
 
-/* .sidePanel {
-  flex: 1;
-  padding: 20px;
-  margin-left: 10px;
-} */
-
-/* .sidebar {
-  padding:0;
-  margin:0; 
-  width: 200px; 
-  height: 100vh;
-  background-color: var(--primary-color);
-  transition: width 0.5s ease;
-} */
+.sidePanel {
+  margin-left: 30px;
+} 
 
 .sidebar.collapsed {
-  width: 40px;
+  max-width: 55px;
+  overflow-x: hidden;
 }
 
-/* .header {
-  text-align: center;
-  padding: 0;
-  margin-bottom: 10px;
-}
-
-.header.collapsed {
+.sidebar.collapsed::-webkit-scrollbar {
   display: none;
 }
-
-.menu-items a:hover {
-  background-color: var(--accent-color);
-}
-
-.menu-items.collapsed a {
-  display: none;
-}
-
-.sidebar a {
-  color: var(--text-color-light);
-  font-weight: bold;
-  display: block;
-  padding: 12px;
-  text-decoration: none;
-}
-
-/* .toggle-sidebar {
-  color: var(--text-color-light);
-  background-color: var(--primary-color);
-  border: none;
-  cursor: pointer;
-  padding: 10px;
-  text-align: left;
-  width: 40px;
-} */
-
-/* .toggle-sidebar:hover {
-  background-color: var(--tertiary-color);
-}
-
-.isActive{
-  background-color: var(--secondary-color);
-  color: var(--text-color-light);
-} */
 
 /* Styling for Home, Content, and Page Containers */
 
@@ -330,6 +294,13 @@ code {
   background-color: var(--background-color);
   flex: 1;
   overflow-x: hidden;
+}
+.content{
+  padding: 20px;
+}
+.content.closed{
+  /* position: relative; */
+  right: 200px;
 }
 
 .page {
@@ -502,6 +473,38 @@ code {
 .chartContainer {
   width: 700px;
   margin-left: 10px;
+}
+
+.stockDetails {
+  background-color: var(--background-color-highlight-light);
+  border-radius: 4px;
+  padding: 20px;
+  color: var(--text-color-medium);
+  margin-bottom: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.stockDetails div {
+  margin-bottom: 10px;
+}
+
+.stockDetails div span {
+  width: 125px;
+  display: inline-block;
+  font-weight: 600;
+  font-style: italic;
+}
+
+.stockRatios {
+  color: var(--text-color-medium-dark);
+  font-size: 14px;
+}
+
+.stockRatios p span {
+  width: 125px;
+  display: inline-block;
+  font-weight: 600;
+  font-style: italic;
 }
 
 .priceSearchFormContainer {
@@ -865,6 +868,7 @@ body {
   font-family: 'Arial', sans-serif;
   margin: 0;
   background-color: var(--background-color);
+  /* width:fit-content; */
 }
 
 .container {
@@ -874,11 +878,11 @@ body {
 }
 
 .sidebar {
-  position: fixed;
+  position: static;
   top: 0;
   left: 0;
-  width: 250px; /* Adjust width as needed */
-  height: 100%;
+  width: var(--sidebar-width); /* Adjust width as needed */
+  height: 100vh;
   background-color: var(--background-color); /* Adjust background color as needed */
   z-index: 1000; /* Ensure it stays on top of other elements */
   box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1); /* Optional: add a shadow for better visibility */
@@ -886,7 +890,7 @@ body {
 }
 
 .sidebar-padding {
-  padding: 10px;
+  padding: 10px 10px 0px 10px;
 }
 
 .logo {
@@ -897,7 +901,33 @@ body {
   height: 75px;
   margin-top: 5px;
   margin-bottom: 5px;
+  /*visibility: hidden;*/
 }
+
+img.logo.hidden{
+  width: 150px;
+  margin-bottom: 5px;
+  display: none;
+}
+
+img.logoNoText {
+  height: 40px;
+  margin-bottom: 40px;
+  visibility: visible;
+  /* display:none; */
+}
+
+img.logoNoText.hidden{
+  margin-bottom: 5px;
+  display: none;
+}
+
+img.logoText {
+  width: 150px;
+  margin-bottom: 5px;
+  display:block;
+}
+
 
 nav ul {
   list-style: none;
@@ -920,7 +950,7 @@ nav ul li a {
 }
 
 nav ul li a .material-icons {
-  margin-right: 10px;
+  margin-right: 16px;
 }
 
 /* Add background color on hover */
@@ -972,7 +1002,7 @@ nav ul li a:hover {
   /* background-color: #fff; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   margin-bottom: 20px;
-  border-radius: 10px;
+  border-radius: 10px; 
 }
 
 .nav-left h1 {
@@ -1027,7 +1057,7 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  height:60%;
+  height:20%;
   margin-bottom: 30px;
 }
 
@@ -2099,7 +2129,7 @@ nav ul li a:hover {
 
 .chatbox .chat p.error {
   color: #ffffff;
-  background-color: #ff3737e8;
+  background-color: #ff3737;
 }
 
 #sendBTN {
@@ -2257,7 +2287,7 @@ nav ul li a:hover {
 
 .save-button {
   background-color: var(--accent-color);
-  color: white;
+  color: var(--text-color-white);
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
