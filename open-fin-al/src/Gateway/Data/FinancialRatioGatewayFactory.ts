@@ -1,4 +1,4 @@
-import { AlphaVantageRatioGateway } from "@DataGateway/AlphaVantageRatioGateway";
+import { AlphaVantageRatioGateway } from "./AlphaVantageRatioGateway";
 import { IDataGateway } from "./IDataGateway";
 import { EnvVariableExtractor } from "../../Utility/EnvVariableExtractor";
 

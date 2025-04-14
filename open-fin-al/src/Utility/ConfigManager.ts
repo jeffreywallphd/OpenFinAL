@@ -1,18 +1,42 @@
-class ConfigUpdater {
-    configFile:string = './config/default.json';
-    envFile:string = './.env';
-    
-    constructor() {}
+// allow the transformers contextBridge to be used in TypeScript
+declare global {
+    interface Window { fs: any }
+}
 
-    createEnvIfNotExists() {
-        const fs = window.fs.fs;
+declare global {
+    interface Window { vault: any }
+}
+
+declare global {
+    interface Window { config: any }
+}
+
+class ConfigUpdater {
+    configFile:string = '../config/default.json';
+    envFile:string = '../.env';
+    vault:any;
+    keys = ["ALPHAVANTAGE_API_KEY","FMP_API_KEY","OPENAI_API_KEY","HUGGINGFACE_API_KEY"];
+    
+    constructor() {
+        console.log(window.vault);
+        this.vault = window.vault;
+    }
+
+    async createEnvIfNotExists() {
+        for (let key of this.keys) {
+            if(!await this.vault.getSecret("OpenFinAL", key)) {   
+                this.vault.setSecret("OpenFinAL", key, "");
+            }
+        }
+        
+        /*const fs = window.fs.fs;
 
         try {
-            const envExists = fs.statSync("./.env");     
+            const envExists = await fs.stat(this.envFile);     
         } catch(error) {
             // .env file didn't exist throws error. Try to create .env
             try {
-                fs.openSync("./.env", "w");
+                await fs.open(this.envFile, "w");
                 
                 var envJson = {
                     ALPHAVANTAGE_API_KEY: "",
@@ -20,114 +44,142 @@ class ConfigUpdater {
                     OPENAI_API_KEY: ""
                 }
 
-                fs.writeFileSync("./.env", JSON.stringify(envJson, null, 4));
+                await fs.writeFile(this.envFile, JSON.stringify(envJson, null, 4));
             } catch(error2) {
                 console.error(error2);
             }
-        }
+        }*/
     }
 
-    createConfigIfNotExists() {
-        const fs = window.fs.fs;
+    async createConfigIfNotExists() {
+        //const fs = window.fs.fs;
 
         try {
-            const config = fs.statSync("./config");     
-        } catch(error) { 
-            console.error(error);
-
-            try {
-                fs.mkdirSync("./config", { recursive: true }); 
-            } catch(error2) {
-                console.error(error2);
-                return false;
-            }
-        }
-
-        try {
-            fs.statSync(this.configFile)
-        } catch(error3) {
-            fs.openSync(this.configFile, "w");
-
-            const defaultConfig = {
-                StockGateway: "AlphaVantageStockGateway",
-                NewsGateway: "AlphaVantageNewsGateway",
-                ReportGateway: "SecAPIGateway",
-                RatioGateway: "AlphaVantageRatioGateway",
-                ChatbotModel: "OpenAIModel",
-                ChatbotModelSettings: {
-                    ChatbotModelName: "gpt-4",
-                    ChatbotModelMaxOutputTokens: 100,
-                    ChatbotModelTemperature: 0.5,
-                    ChatbotModelTopP: 1
-                },
-                NewsSummaryModel: "OpenAIModel",
-                NewsSummaryModelSettings: {
-                    NewsSummaryModelName: "gpt-4",
-                    NewsSummaryModelMaxOutputTokens: 200,
-                    NewsSummaryModelTemperature: 0.2,
-                    NewsSummaryModelTopP: 0.2
+            window.console.log("DOES THE CONFIG EXIST: ", await window.config.exists());
+            if(!await window.config.exists()) {
+                const defaultConfig = {
+                    StockGateway: "AlphaVantageStockGateway",
+                    NewsGateway: "AlphaVantageNewsGateway",
+                    ReportGateway: "SecAPIGateway",
+                    RatioGateway: "AlphaVantageRatioGateway",
+                    ChatbotModel: "OpenAIModel",
+                    ChatbotModelSettings: {
+                        ChatbotModelName: "gpt-4",
+                        ChatbotModelMaxOutputTokens: 100,
+                        ChatbotModelTemperature: 0.5,
+                        ChatbotModelTopP: 1
+                    },
+                    NewsSummaryModel: "OpenAIModel",
+                    NewsSummaryModelSettings: {
+                        NewsSummaryModelName: "gpt-4",
+                        NewsSummaryModelMaxOutputTokens: 200,
+                        NewsSummaryModelTemperature: 0.2,
+                        NewsSummaryModelTopP: 0.2
+                    }
                 }
-            };
 
-            fs.writeFileSync(this.configFile, JSON.stringify(defaultConfig, null, 4));
+                await window.config.save(defaultConfig);
+            }
+        } catch(e) {
+            console.error("Unable to save the configuration file: ", e);
         }
     }
 
-    saveEnv(env:object) {
-        try {
+    async saveEnv(env:object) {
+        /*try {
             const fs = window.fs.fs;
-            fs.openSync(this.envFile, "w");
-            fs.writeFileSync(this.envFile, JSON.stringify(env, null, 4));
+            await fs.open(this.envFile, "w");
+            await fs.writeFile(this.envFile, JSON.stringify(env, null, 4));
 
             return true;
         } catch(error) {
             console.error(error);
             return false;
-        }
+        }*/
     }
 
-    saveConfig(config:object) {
+    async saveConfig(config:object) {
         try {
+            window.config.save(config);
+            return true;
+        } catch(error) {
+            console.error("Unable to save the configuration file: ", error);
+            return false;
+        }
+        /*try {
             const fs = window.fs.fs;
-            fs.openSync(this.configFile, "w");
-            fs.writeFileSync(this.configFile, JSON.stringify(config, null, 4));
+            await fs.open(this.configFile, "w");
+            await fs.writeFile(this.configFile, JSON.stringify(config, null, 4));
 
             return true;
         } catch(error) {
             console.error(error);
             return false;
-        }
+        }*/
     }
 
-    getEnv() {
-        const fs = window.fs.fs;
+    async getSecret(key:string) {
+        return await this.vault.getSecret("OpenFinAL", key);
+    }
+
+    async setSecret(key:string, value:string) {
+        await this.vault.setSecret("OpenFinAL", key, value);
+    }
+
+    async getEnv() {
+
+        /*const fs = window.fs.fs;
     
         try {
-            let envData = fs.readFileSync(this.envFile, 'utf8');
-            let envConfig = JSON.parse(envData);
-    
-            return envConfig;
+            try {
+                let envData = await fs.readFile(this.envFile, 'utf8');
+
+                envData = fs.readFile(this.envFile, 'utf8', (err:any, data:any) => {
+                    if (err) {
+                      console.log('An error occurred:', err);
+                      return;
+                    }
+                    console.log('File content:', data);
+                  });
+
+                let envConfig = JSON.parse(envData.toString());
+                return envConfig;
+            } catch(error) {
+                console.log("Error reading .env file:",error);
+                return null;
+            }    
         } catch (err) {
             console.error('Error updating .env file:', err);
             return null;
-        }
+        }*/
     }
 
-    getConfig() {
-        const fs = window.fs.fs;
+    async getConfig() {
+        try {
+            let config;
+            if(config = window.config.load()) {
+                return config;
+            } else {
+
+
+
+                throw new Error("");
+            }
+        } catch(e) {
+            console.error("Unable to load the configuration file: ", e);
+            return null;
+        }
+        /*const fs = window.fs.fs;
 
         try {
-            // Access fs module from the preload script
-            const fs = window.fs.fs;
-            
-            let configData = fs.readFileSync(this.configFile, 'utf8');
-            let config = JSON.parse(configData);
+            let configData = await fs.readFile(this.configFile, 'utf8');
+            let config = JSON.parse(configData.toString());
             
             return config;
         } catch (err) {
             console.error('Error updating configuration:', err);
             return null;
-        }
+        }*/
     }
 }
 

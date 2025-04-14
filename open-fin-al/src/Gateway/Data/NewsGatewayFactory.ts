@@ -1,4 +1,4 @@
-import { AlphaVantageNewsGateway } from "@DataGateway/AlphaVantageNewsGateway";
+import { AlphaVantageNewsGateway } from "./AlphaVantageNewsGateway";
 import { IDataGateway } from "./IDataGateway";
 import { EnvVariableExtractor } from "../../Utility/EnvVariableExtractor";
 

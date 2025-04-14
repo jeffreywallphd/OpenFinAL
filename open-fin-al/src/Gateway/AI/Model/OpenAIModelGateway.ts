@@ -1,10 +1,6 @@
 import {IKeyedModelGateway} from "./IKeyedModelGateway";
 import ConfigUpdater from "../../../Utility/ConfigManager";
 
-declare global {
-    interface Window { chatbot: any; }
-}
-
 export class OpenAIModelGateway implements IKeyedModelGateway{
     key: any;
     purpose: string;
@@ -17,7 +13,7 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
     async create(model: string, messages: any[]): Promise<any> {
         try {
             const configManager = new ConfigUpdater();
-            const config = configManager.getConfig();
+            const config:any = configManager.getConfig();
 
             var maxTokens = config.ChatbotModelSettings.maxOutputTokens;
             var temperature = config.ChatbotModelSettings.temperature;

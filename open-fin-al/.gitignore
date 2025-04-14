@@ -13,6 +13,7 @@ package-lock.json
 /build
 /public
 /out
+/.webpack
 
 #configuration
 /config

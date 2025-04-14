@@ -30,7 +30,7 @@ export function LearningModuleDetails(props) {
             var query = "SELECT * FROM LearningModulePage WHERE moduleId=? ORDER BY pageNumber ASC";
             
             inputData.push(location.state.moduleId);
-            await window.electron.ipcRenderer.invoke('select-data', { query, inputData }).then((data) => {
+            await window.database.SQLiteSelectData({ query, inputData }).then((data) => {
                 setState({
                     pages: data,
                     isLoading: false

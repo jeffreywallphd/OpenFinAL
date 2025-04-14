@@ -1,4 +1,4 @@
-import { SecAPIGateway } from "@DataGateway/SecAPIGateway";
+import { SecAPIGateway } from "./SecAPIGateway";
 import { IDataGateway } from "./IDataGateway";
 import { EnvVariableExtractor } from "../../Utility/EnvVariableExtractor";
 

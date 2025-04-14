@@ -4,7 +4,7 @@ import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {NewsRequest} from "../Entity/NewsRequest";
-import { NewsGatewayFactory } from "@DataGateway/NewsGatewayFactory";
+import { NewsGatewayFactory } from "../Gateway/Data/NewsGatewayFactory";
 
 declare global {
     interface Window { fs: any; }

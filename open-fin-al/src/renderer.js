@@ -1,39 +1,48 @@
-document.addEventListener('DOMContentLoaded', () => {
-  // Select the canvas element by ID
-  const ctx = document.getElementById('tradesChart').getContext('2d');
+/**
+ * This file will automatically be loaded by webpack and run in the "renderer" context.
+ * To learn more about the differences between the "main" and the "renderer" context in
+ * Electron, visit:
+ *
+ * https://electronjs.org/docs/tutorial/process-model
+ *
+ * By default, Node.js integration in this file is disabled. When enabling Node.js integration
+ * in a renderer process, please be aware of potential security implications. You can read
+ * more about security risks here:
+ *
+ * https://electronjs.org/docs/tutorial/security
+ *
+ * To enable Node.js integration in this file, open up `main.js` and enable the `nodeIntegration`
+ * flag:
+ *
+ * ```
+ *  // Create the browser window.
+ *  mainWindow = new BrowserWindow({
+ *    width: 800,
+ *    height: 600,
+ *    webPreferences: {
+ *      nodeIntegration: true
+ *    }
+ *  });
+ * ```
+ */
 
-  // Create the chart
-  const tradesChart = new Chart(ctx, {
-    type: 'line', // Chart type
-    data: {
-      labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Sep', 'Oct'], // X-axis labels
-      datasets: [{
-        label: 'Your Trades',
-        data: [560, 620, 580, 680, 560, 620, 580, 680, 560, 620], // Data points for trades
-        backgroundColor: 'rgba(54, 162, 235, 0.2)', // Light blue background color
-        borderColor: 'rgba(54, 162, 235, 1)', // Line color
-        borderWidth: 2,
-        fill: true, // Fill below the line
-        tension: 0.1 // Curve tension
-      }]
-    },
-    options: {
-      responsive: true,
-      plugins: {
-        legend: {
-          display: false // Disable the legend
-        }
-      },
-      scales: {
-        x: {
-          beginAtZero: true,
-          display: false
-        },
-        y: {
-          beginAtZero: true,
-          display: false
-        }
-      }
-    }
-  });
-});
+import './index.css';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { App } from './View/App';
+
+console.log(window.fs);
+console.log(window.fs.fs);
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+//root.render(<h1>Hello from React!</h1>);
+
+React.StrictMode //can cause weird side effects, such as stock data running twice on page load
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
+
+console.log('👋 This message is being logged by "renderer.js", included via webpack');
+

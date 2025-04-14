@@ -5,7 +5,7 @@ import { parse } from 'node-html-parser';
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
-    interface Window { electron: any }
+    interface Window { database: any }
 }
 
 export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
@@ -26,7 +26,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         try {
             const query = "INSERT INTO PublicCompany (ticker, cik) VALUES (?, ?)";
             const args  = [entity.getFieldValue("ticker"), entity.getFieldValue("cik")];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-insert', { database: this.databasePath, query: query, parameters: args });
+            const result = await window.database.SQLiteGet({ database: this.databasePath, query: query, parameters: args });
             return true;
         } catch(error) {
             return false;
@@ -108,15 +108,13 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
                     query += " ORDER BY ticker ASC LIMIT 10";
                 }
                 
-                data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query, parameters: parameterArray });
-                
-                
+                data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });
             } catch(error) {
                 window.console.error(error);
             }
         } else if(action === "selectRandomSP500") {
             query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
-            data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query });
+            data = await window.database.SQLiteQuery({ query: query });
         }
 
         var entities;
@@ -181,10 +179,10 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         try {
             const query = "DELETE FROM PublicCompany;";
             const args:any[]  = [];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-delete', { query: query, parameters: args });
+            const result = await window.database.SQLiteDelete({ query: query, parameters: args });
             
             const query2 = "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='PublicCompany'";
-            await window.electron.ipcRenderer.invoke('sqlite-update', { query: query2, parameters: args });
+            await window.database.SQLiteUpdate({ query: query2, parameters: args });
             
             return result;
         } catch(error) {
@@ -197,7 +195,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async checkTableExists() {
         const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PublicCompany';"
         const args:any[]  = [];
-        const rows = await window.electron.ipcRenderer.invoke('sqlite-query', { query: query, parameters: args });
+        const rows = await window.database.SQLiteQuery({ query: query, parameters: args });
         
         if(rows !== null && rows[0].name) {
             return true;
@@ -210,7 +208,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async checkLastTableUpdate() {
         const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
-        const data = await window.electron.ipcRenderer.invoke('sqlite-get', { query: query, parameters: args });
+        const data = await window.database.SQLiteSelect({ query: query, parameters: args });
         
         if(data && data.changedAt) {
             return new Date(data.changedAt);
@@ -244,7 +242,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
             
             const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
             const args  = [companyName, ticker, cik];
-            await window.electron.ipcRenderer.invoke('sqlite-insert', { query: query, parameters: args });
+            await window.database.SQLiteInsert({ query: query, parameters: args });
         } 
 
         // get the S&P 500 companies and store those in a database
@@ -263,7 +261,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
                 var SP500ticker = tds[0].querySelector("a").innerText;
                 const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
                 const updateArgs = [SP500ticker];
-                await window.electron.ipcRenderer.invoke('sqlite-update', { query: updateQuery, parameters: updateArgs });
+                await window.database.SQLiteUpdate({ query: updateQuery, parameters: updateArgs });
             }
         }
 

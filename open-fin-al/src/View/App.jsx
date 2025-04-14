@@ -95,14 +95,12 @@ function App(props) {
     
 
     const configurator = new ConfigUpdater();
-    var env = null;
     var config = null;
 
     useEffect(() => {
         try {
             configurator.createEnvIfNotExists();
             configurator.createConfigIfNotExists()
-            env = configurator.getEnv();
             config = configurator.getConfig();
         } catch(error) {
             console.log(error);

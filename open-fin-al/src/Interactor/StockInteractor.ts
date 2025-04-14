@@ -4,8 +4,8 @@ import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {StockRequest} from "../Entity/StockRequest";
-import { StockGatewayFactory } from "@DataGateway/StockGatewayFactory";
-import { SQLiteCompanyLookupGateway } from "@DataGateway/SQLiteCompanyLookupGateway";
+import { StockGatewayFactory } from "../Gateway/Data/StockGatewayFactory";
+import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLiteCompanyLookupGateway";
 
 declare global {
     interface Window { fs: any; }

@@ -11,24 +11,31 @@ import { valid } from "node-html-parser";
 export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
+    configUpdater: ConfigUpdater;
+
+    constructor() {
+        this.configUpdater = new ConfigUpdater();
+    }
 
     async post(requestModel: IRequestModel): Promise<IResponseModel> {   
-        const configUpdater = new ConfigUpdater();
-        const env = configUpdater.getEnv();
-        const config = configUpdater.getConfig();
+        const config:any = await this.configUpdater.getConfig();
 
         const configurations = requestModel.request.configurations;
 
         //for the same value being used across different API gateways
+        let envSaved = true;
         var previouslySetValues:any = [];
-
-        window.console.log(configurations);
 
         for(var configuration of Object.values(configurations) as any[]) { 
             if(configuration.hasValue === true && configuration.valueIsKey === true && !previouslySetValues.includes(configuration.valueName)) {
-                if(env[configuration.valueName] !== configuration.value) {
-                    env[configuration.valueName] = configuration.value;
-                    previouslySetValues.push(configuration.valueName);
+                if(await this.configUpdater.getSecret(configuration.valueName) !== configuration.value) {
+                    try {
+                        await this.configUpdater.setSecret(configuration.valueName, configuration.value);
+                        previouslySetValues.push(configuration.valueName);
+                    } catch(e) {
+                        envSaved = false;
+                        continue;
+                    }
                 }   
             }
             
@@ -39,8 +46,7 @@ export class SettingsInteractor implements IInputBoundary {
             }
         }
         
-        const configSaved = configUpdater.saveConfig(config);
-        const envSaved = configUpdater.saveEnv(env);
+        const configSaved = this.configUpdater.saveConfig(config);
 
         var status = null;
 
@@ -69,8 +75,7 @@ export class SettingsInteractor implements IInputBoundary {
         var json = requestModel.request;
 
         const configUpdater = new ConfigUpdater();
-        const env = configUpdater.getEnv();
-        const config = configUpdater.getConfig();
+        const config:any = await configUpdater.getConfig();
 
         //create StockGateway Configurations
         var currentStockGateway = null;
@@ -83,7 +88,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageStockGateway.setFieldValue("hasValue", true);
         AlphaVantageStockGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         AlphaVantageStockGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageStockGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
+        AlphaVantageStockGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
         AlphaVantageStockGateway.setFieldValue("isActive", config.StockGateway === "AlphaVantageStockGateway" ? true : false);
         AlphaVantageStockGateway.setFieldValue("valueIsKey", true);
 
@@ -97,7 +102,7 @@ export class SettingsInteractor implements IInputBoundary {
         FMPStockGateway.setFieldValue("hasValue", true);
         FMPStockGateway.setFieldValue("valueName", "FMP_API_KEY");
         FMPStockGateway.setFieldValue("valueSite", "https://site.financialmodelingprep.com/pricing-plans");
-        FMPStockGateway.setFieldValue("value", env["FMP_API_KEY"]);
+        FMPStockGateway.setFieldValue("value", await this.configUpdater.getSecret("FMP_API_KEY"));
         FMPStockGateway.setFieldValue("isActive", config.StockGateway === "FinancialModelingPrepGateway" ? true : false);
         FMPStockGateway.setFieldValue("valueIsKey", true);
 
@@ -133,7 +138,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageNewsGateway.setFieldValue("hasValue", true);
         AlphaVantageNewsGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         AlphaVantageNewsGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageNewsGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
+        AlphaVantageNewsGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
         AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
         AlphaVantageNewsGateway.setFieldValue("valueIsKey", true);
 
@@ -181,7 +186,7 @@ export class SettingsInteractor implements IInputBoundary {
         RatioGateway.setFieldValue("hasValue", true);
         RatioGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         RatioGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        RatioGateway.setFieldValue("value", env["ALPHAVANTAGE_API_KEY"]);
+        RatioGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
         RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
         RatioGateway.setFieldValue("valueIsKey", true);
 
@@ -197,10 +202,10 @@ export class SettingsInteractor implements IInputBoundary {
         ratioGatewayConfiguration.setFieldValue("options", ratioGateways);
 
         //create Chatbot Model Configurations
-        const chatbotModelSettings = this.createChatbotModelSettings(env, config);
+        const chatbotModelSettings = await this.createChatbotModelSettings(config);
 
         //create News Summary Model Configurations
-        const newsSummaryModelSettings = this.createNewsSummaryModelSettings(env, config);
+        const newsSummaryModelSettings = await this.createNewsSummaryModelSettings(config);
         
         //Configuration Sections
         const dataConfigSection = new ConfigurationSection();
@@ -255,7 +260,7 @@ export class SettingsInteractor implements IInputBoundary {
             ];
 
             for(var configuration of currentConfigurations as any) {
-                if(configuration.hasValue && env[configuration.valueName].length > 1) {
+                if(configuration.hasValue && await this.configUpdater.getSecret(configuration.valueName)) {
                     validCount++;
                 } else if(!configuration.hasValue) {
                     validCount++;
@@ -303,7 +308,7 @@ export class SettingsInteractor implements IInputBoundary {
         return Array.from({ length }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
     }
 
-    createChatbotModelSettings(env:any, config:any) {
+    async createChatbotModelSettings(config:any) {
         var currentAIModel = null;
         
         var OpenAIModelGateway = new ConfigurationOption();
@@ -314,13 +319,27 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("hasValue", true);
         OpenAIModelGateway.setFieldValue("valueName", "OPENAI_API_KEY");
         OpenAIModelGateway.setFieldValue("valueSite", "https://platform.openai.com/api-keys");
-        OpenAIModelGateway.setFieldValue("value", env["OPENAI_API_KEY"]);
+        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY"));
         OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
         OpenAIModelGateway.setFieldValue("valueIsKey", true);
 
         currentAIModel = config.ChatbotModel === "OpenAIModel" ? OpenAIModelGateway : currentAIModel;
 
-        const chatbotGateways = [OpenAIModelGateway];
+        var HuggingFaceModelGateway = new ConfigurationOption();
+        HuggingFaceModelGateway.setFieldValue("id", this.generateId());
+        HuggingFaceModelGateway.setFieldValue("setting", "ChatbotModel");
+        HuggingFaceModelGateway.setFieldValue("label", "HuggingFace Model API Gateway");
+        HuggingFaceModelGateway.setFieldValue("name", "HuggingFaceModel");
+        HuggingFaceModelGateway.setFieldValue("hasValue", true);
+        HuggingFaceModelGateway.setFieldValue("valueName", "HUGGINGFACE_API_KEY");
+        HuggingFaceModelGateway.setFieldValue("valueSite", "https://huggingface.co/settings/tokens");
+        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY"));
+        HuggingFaceModelGateway.setFieldValue("isActive", config.ChatbotModel === "HuggingFaceModel" ? true : false);
+        HuggingFaceModelGateway.setFieldValue("valueIsKey", true);
+
+        currentAIModel = config.ChatbotModel === "HuggingFaceModel" ? HuggingFaceModelGateway : currentAIModel;
+
+        const chatbotGateways = [OpenAIModelGateway, HuggingFaceModelGateway];
         
         var chatbotModelGatewayConfiguration = new Configuration();
         chatbotModelGatewayConfiguration.setFieldValue("id", this.generateId());
@@ -413,7 +432,7 @@ export class SettingsInteractor implements IInputBoundary {
         return chatbotObject;
     }
 
-    createNewsSummaryModelSettings(env:any, config:any) {
+    async createNewsSummaryModelSettings(config:any) {
         var currentAIModel = null;
 
         var OpenAIModelGateway = new ConfigurationOption();
@@ -424,13 +443,27 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("hasValue", true);
         OpenAIModelGateway.setFieldValue("valueName", "OPENAI_API_KEY");
         OpenAIModelGateway.setFieldValue("valueSite", "https://platform.openai.com/api-keys");
-        OpenAIModelGateway.setFieldValue("value", env["OPENAI_API_KEY"]);
+        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY"));
         OpenAIModelGateway.setFieldValue("isActive", config.NewsSummaryModel === "OpenAIModel" ? true : false);
         OpenAIModelGateway.setFieldValue("valueIsKey", true);
 
         currentAIModel = config.NewsSummaryModel === "OpenAIModel" ? OpenAIModelGateway : currentAIModel;
 
-        const newsSummaryModeGateways = [OpenAIModelGateway];
+        var HuggingFaceModelGateway = new ConfigurationOption();
+        HuggingFaceModelGateway.setFieldValue("id", this.generateId());
+        HuggingFaceModelGateway.setFieldValue("setting", "NewsSummaryModel");
+        HuggingFaceModelGateway.setFieldValue("label", "HuggingFace Model API Gateway");
+        HuggingFaceModelGateway.setFieldValue("name", "HuggingFaceModel");
+        HuggingFaceModelGateway.setFieldValue("hasValue", true);
+        HuggingFaceModelGateway.setFieldValue("valueName", "HUGGINGFACE_API_KEY");
+        HuggingFaceModelGateway.setFieldValue("valueSite", "https://huggingface.co/settings/tokens");
+        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY"));
+        HuggingFaceModelGateway.setFieldValue("isActive", config.NewsSummaryModel === "HuggingFaceModel" ? true : false);
+        HuggingFaceModelGateway.setFieldValue("valueIsKey", true);
+
+        currentAIModel = config.ChatbotModel === "HuggingFaceModel" ? HuggingFaceModelGateway : currentAIModel;
+
+        const newsSummaryModeGateways = [OpenAIModelGateway, HuggingFaceModelGateway];
         
         var newsSummaryModelGatewayConfiguration = new Configuration();
         newsSummaryModelGatewayConfiguration.setFieldValue("id", this.generateId());

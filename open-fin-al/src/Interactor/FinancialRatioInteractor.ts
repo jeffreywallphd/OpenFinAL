@@ -5,7 +5,7 @@ import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {SecRequest} from "../Entity/SecRequest";
 import { XMLResponse } from "../Gateway/Response/XMLResponse";
-import { FinancialRatioGatewayFactory } from "@DataGateway/FinancialRatioGatewayFactory";
+import { FinancialRatioGatewayFactory } from "../Gateway/Data/FinancialRatioGatewayFactory";
 
 declare global {
     interface Window { fs: any; }

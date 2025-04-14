@@ -6,7 +6,7 @@
 
 import React, { useEffect, useState, useRef } from "react";
 
-function Slide(props) {
+async function Slide(props) {
     const [state, setState] = useState({ disable: false });
     const soundRef = useRef(null);
 
@@ -47,7 +47,7 @@ function Slide(props) {
         return React.createElement(tagName, attributes, children);
     };
 
-    const contents = props.page.pageContentUrl !== null ? window.fs.fs.readFileSync(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`, 'utf-8') : null;
+    const contents = props.page.pageContentUrl !== null ? await window.fs.fs.readFile(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`, 'utf-8') : null;
 
     // stop playing sound after leaving page
     useEffect(() => {
