@@ -5,10 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="8690cde8-78a0-4212-995c-6f9f59a975db" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IKeyedModel.ts" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IKeylessModel.ts" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/Model/IModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Entity/LanguageModelRequest.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/OpenAiModel.ts" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/Gateway/AI/Model/OpenAiModel.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/open-fin-al/src/View/Chatbot/Chatbot-toggle.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -45,7 +45,7 @@
     &quot;dart.analysis.tool.window.visible&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;Chatbot-Interface&quot;,
     &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/tjwat/Documents/GitHub/OpenFinAL&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/tjwat/Documents/GitHub/OpenFinAL/open-fin-al/src/Entity&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -57,14 +57,18 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\Entity" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\Gateway\AI" />
       <recent name="C:\Users\tjwat\Documents\GitHub\OpenFinAL\open-fin-al\src\View\Chatbot" />
     </key>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.25659.40" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-WS-243.26053.12" />
       </set>
     </attachedChunks>
   </component>
@@ -90,7 +94,20 @@
       <workItem from="1741615305679" duration="6371000" />
       <workItem from="1741789268849" duration="2612000" />
       <workItem from="1741796593112" duration="653000" />
-      <workItem from="1741802487225" duration="1216000" />
+      <workItem from="1741802487225" duration="1967000" />
+      <workItem from="1741963159099" duration="49000" />
+      <workItem from="1741963288806" duration="747000" />
+      <workItem from="1741965455455" duration="1355000" />
+      <workItem from="1742220435681" duration="3103000" />
+      <workItem from="1742392980785" duration="3093000" />
+      <workItem from="1742565918233" duration="2780000" />
+      <workItem from="1742824219043" duration="655000" />
+      <workItem from="1742925761150" duration="66000" />
+      <workItem from="1742997649789" duration="3717000" />
+      <workItem from="1743170797278" duration="200000" />
+      <workItem from="1743171008733" duration="2049000" />
+      <workItem from="1743603066713" duration="2780000" />
+      <workItem from="1743776643708" duration="1847000" />
     </task>
     <servers />
   </component>

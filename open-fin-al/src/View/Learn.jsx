@@ -79,7 +79,7 @@ export function Learn() {
 
     return (
         <div className="page">
-            <h2>Financial Learning Modules</h2>
+            <h2><span className="material-icons">school</span> Financial Learning Modules</h2>
             <form onSubmit={async (e) => {
                 e.preventDefault();
                 await selectData();

@@ -1,73 +1,143 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import '../index.css';
+import { StockAnalysisSearchBar } from './StockAnalysisSearchBar';
+import { DataContext } from "./App";
+
 import { saveAs } from 'file-saver';
-import html2canvas from 'html2canvas';
-import { Bar } from 'react-chartjs-2';
+import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const StockAnalysis = () => {
-  const [searchTerms, setSearchTerms] = useState('');
-  const [financialData, setFinancialData] = useState([]);
-  const [selectedMetrics, setSelectedMetrics] = useState([]);
-  const [chartData, setChartData] = useState(null);
-  const chartRef = useRef();
-
-  const API_KEY = '#';
-
-  const fetchFinancialOverview = async () => {
-    try {
-      const symbols = searchTerms.split(',').map(s => s.trim().toUpperCase());
-      const financialDataArray = [];
-      for (const symbol of symbols) {
-        const overviewResponse = await fetch(`https://www.alphavantage.co/query?function=OVERVIEW&symbol=${symbol}&apikey=${API_KEY}`);
-        if (!overviewResponse.ok) {
-          throw new Error(`Failed to fetch financial overview for ${symbol}`);
-        }
-        const overviewData = await overviewResponse.json();
-        if (Object.keys(overviewData).length > 0) {
-          financialDataArray.push(overviewData);
-        }
-      }
-      setFinancialData(financialDataArray);
-    } catch (error) {
-      console.error('Error fetching financial overview:', error);
-      setFinancialData([]);
+  const { state, setState } = useContext(DataContext);
+  
+  const selectedMetrics = {
+    "50DayMovingAverage": {
+      label: "50 Day Moving Average",
+      isSelected: true
+    },
+    "52WeekHigh": {
+      label: "52 Week High",
+      isSelected: true
+    },
+    "52WeekLow": {
+      label: "52 Week Low",
+      isSelected: true
+    },
+    "200DayMovingAverage": {
+      label: "200 Day Moving Average",
+      isSelected: true
+    },
+    "PERatio": {
+      label: "P/E Ratio",
+      isSelected: true
+    },
+    "PEGRatio": {
+      label: "PEG Ratio",
+      isSelected: true
+    },
+    "Beta": {
+      label: "Beta",
+      isSelected: true
+    },
+    "BookValue": {
+      label: "Book Value",
+      isSelected: true
+    },
+    "DilutedEPSTTM": {
+      label: "Diluted EPS",
+      isSelected: true
+    },
+    "DividendPerShare": {
+      label: "Dividend/Share",
+      isSelected: true
+    },
+    "DividendYield": {
+      label: "Dividend Yield",
+      isSelected: true
+    },
+    "EPS": {
+      label: "Earnings Per Share",
+      isSelected: true
+    },
+    "EBITDA": {
+      label: "EBITDA",
+      isSelected: true
+    },
+    "EVToEBITDA": {
+      label: "EV/EBITDA",
+      isSelected: true
+    },
+    "EVToRevenue": {
+      label: "EV/Revenue",
+      isSelected: true
+    },
+    "ForwardPE": {
+      label: "Forward P/E",
+      isSelected: true
+    },
+    "GrossProfitTTM": {
+      label: "Gross Profit",
+      isSelected: true
+    },
+    "MarketCapitalization": {
+      label: "Market Capitalization",
+      isSelected: true
     }
   };
 
-  const handleSearch = () => {
-    if (searchTerms.trim() === '') {
-      alert('Please enter valid stock symbols separated by commas');
-    } else {
-      fetchFinancialOverview();
-    }
-  };
-
-  const handleMetricChange = (event) => {
-    const { value, checked } = event.target;
-    setSelectedMetrics(prevMetrics =>
-      checked ? [...prevMetrics, value] : prevMetrics.filter(metric => metric !== value)
-    );
-  };
+  //ensure that the state changes
+  useEffect(() => {
+      setState({
+          ...state
+      })
+  }, [state.searchRef, state.comparisonData]);
 
   useEffect(() => {
-    if (selectedMetrics.length > 0 && financialData.length > 0) {
-      setChartData({
-        labels: financialData.map(stock => stock.Symbol),
-        datasets: selectedMetrics.map(metric => ({
-          label: metric,
-          data: financialData.map(stock => parseFloat(stock[metric]) || 0),
-          backgroundColor: 'rgba(75, 192, 192, 0.6)',
-          borderColor: 'rgba(75, 192, 192, 1)',
-          borderWidth: 1
-        }))
+    if (state.comparisonData && Object.keys(state.comparisonData).length > 0) {
+      var chart = [];
+
+      for (const metric in selectedMetrics) {
+        var chartData = [];
+        for (const stock of Object.values(state.comparisonData)) {
+          window.console.log(stock);
+          if(selectedMetrics[metric].isSelected) {
+            chartData.push({
+              label: stock.response.results[0].data.Symbol,
+              value: stock.response.results[0].data[metric]
+            });
+          }
+        }
+
+        if (chartData.length > 0) {
+          chart.push({
+            metric: metric,
+            metricLabel: selectedMetrics[metric].label,
+            data: chartData,
+            max: Math.max(...chartData.map(data => data.value))
+          });
+        }
+      }
+
+      setState({
+        ...state,
+        chartData: chart
       });
-    } else {
-      setChartData(null);
-    }
-  }, [selectedMetrics, financialData]);
+    } 
+  }, [state.searchRef, state.comparisonData]);
+  
+  const handleDataChange = (newState) => {
+    window.console.log(newState.comparisonData);
+    setState(newState);
+  };
+
+  const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
 
   const handleExport = (type) => {
-    if (financialData.length > 0) {
+    if (state.comparisonData && Object.keys(state.comparisonData).length > 0) {
       if (type === 'csv') {
         const headers = [
           'Symbol', 'Name', 'Fiscal Year End', 'Latest Quarter', 'Market Capitalization', 'EBITDA',
@@ -76,85 +146,92 @@ const StockAnalysis = () => {
           'Return On Equity TTM', 'Revenue TTM', 'Gross Profit TTM', '52 Week High', '52 Week Low',
           '50 Day Moving Average', '200 Day Moving Average'
         ];
-        const rows = financialData.map(stock => [
-          stock.Symbol, stock.Name, stock.FiscalYearEnd, stock.LatestQuarter, stock.MarketCapitalization,
-          stock.EBITDA, stock.PERatio, stock.PEGRatio, stock.BookValue, stock.DividendPerShare,
-          stock.DividendYield, stock.EPS, stock.RevenuePerShareTTM, stock.ProfitMargin,
-          stock.OperatingMarginTTM, stock.ReturnOnAssetsTTM, stock.ReturnOnEquityTTM,
-          stock.RevenueTTM, stock.GrossProfitTTM, stock['52WeekHigh'], stock['52WeekLow'],
-          stock['50DayMovingAverage'], stock['200DayMovingAverage']
+
+        const rows = Object.values(state.comparisonData).map(stock => [
+          stock.response.results[0].data.Symbol, stock.response.results[0].data.Name, stock.response.results[0].data.FiscalYearEnd, stock.response.results[0].data.LatestQuarter, stock.response.results[0].data.MarketCapitalization,
+          stock.response.results[0].data.EBITDA, stock.response.results[0].data.PERatio, stock.response.results[0].data.PEGRatio, stock.response.results[0].data.BookValue, stock.response.results[0].data.DividendPerShare,
+          stock.response.results[0].data.DividendYield, stock.response.results[0].data.EPS, stock.response.results[0].data.RevenuePerShareTTM, stock.response.results[0].data.ProfitMargin,
+          stock.response.results[0].data.OperatingMarginTTM, stock.response.results[0].data.ReturnOnAssetsTTM, stock.response.results[0].data.ReturnOnEquityTTM,
+          stock.response.results[0].data.RevenueTTM, stock.response.results[0].data.GrossProfitTTM, stock.response.results[0].data['52WeekHigh'], stock.response.results[0].data['52WeekLow'],
+          stock.response.results[0].data['50DayMovingAverage'], stock.response.results[0].data['200DayMovingAverage']
         ].join(','));
+        
         const csvString = `${headers.join(',')}
-${rows.join('\n')}`;
+
+        ${rows.join('\n')}`;
+
         const blob = new Blob([csvString], { type: 'text/csv;charset=utf-8;' });
-        saveAs(blob, 'financial_data.csv');
-      } else if (type === 'pdf') {
-        const input = chartRef.current;
-        html2canvas(input).then((canvas) => {
-          const imgData = canvas.toDataURL('image/png');
-          const pdfWindow = window.open('');
-          pdfWindow.document.write('<img src="' + imgData + '" />');
-        });
-      }
+        saveAs(blob, 'stock_comparison.csv');
+      } 
     } else {
       alert('No data available to export');
     }
   };
 
   return (
-    <div className="stock-analysis">
-      <div className="search-bar" style={{ textAlign: 'center', marginBottom: '20px' }}>
-        <input
-          type="text"
-          placeholder="Search by ticker symbols (e.g., MSFT, AAPL, IBM)..."
-          value={searchTerms}
-          onChange={(e) => setSearchTerms(e.target.value)}
-          style={{ width: '400px', height: '30px', padding: '5px', fontSize: '16px' }}
-        />
-        <button onClick={handleSearch} style={{ marginLeft: '10px', padding: '5px 15px', fontSize: '16px' }}>Search</button>
+    <div className="page">
+      <h2><span className="material-icons">compare</span> Stock Comparison</h2>
+      <div>
+          <StockAnalysisSearchBar state={state} handleDataChange={handleDataChange} />
       </div>
-      {financialData.length > 0 && (
-        <div className="search-result" ref={chartRef}>
-          <table className="comparison-table" style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px' }}>
+      <div className="stock-analysis">
+        <p>You can compare multiple stocks by searching for each individual ticker above. Each time you search, the new stock will be included in the table.</p>
+        <div>
+          <p className="note">*All dollar values in millions unless otherwise stated</p>
+          <table className="comparison-table">
             <thead>
               <tr>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Symbol</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Name</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Market Capitalization</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>EBITDA</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>P/E Ratio</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>PEG Ratio</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Book Value</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>Dividend Per Share</th>
-                <th style={{ border: '1px solid #ddd', padding: '8px' }}>EPS</th>
+                <th>Symbol</th>
+                <th>Market Capitalization</th>
+                <th>EBITDA</th>
+                <th>Beta</th>
+                <th>P/E Ratio</th>
+                <th>PEG Ratio</th>
+                <th>P/B Ratio</th>
+                <th>ROA</th>
+                <th>ROE</th>
+                <th>EPS</th>
+                <th>Dividend Yield</th>
               </tr>
             </thead>
             <tbody>
-              {financialData.map((stock) => (
-                <tr key={stock.Symbol}>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Symbol}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.Name || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.MarketCapitalization || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.EBITDA || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PERatio || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.PEGRatio || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.BookValue || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>${stock.DividendPerShare || 'N/A'}</td>
-                  <td style={{ border: '1px solid #ddd', padding: '8px' }}>{stock.EPS || 'N/A'}</td>
+              {state.comparisonData && Object.keys(state.comparisonData).length > 0 && Object.values(state.comparisonData).map((stock) => (
+                <tr key={stock.response.results[0].data.Symbol}>
+                  <td>{stock.response.results[0].data.Symbol}</td>
+                  <td>{formatter.format(stock.response.results[0].data.MarketCapitalization/1000000) || 'N/A'}</td>
+                  <td>{formatter.format(stock.response.results[0].data.EBITDA/1000000) || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.Beta || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.PERatio || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.PEGRatio || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.PriceToBookRatio || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.ReturnOnAssetsTTM || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.ReturnOnEquityTTM || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.EPS || 'N/A'}</td>
+                  <td>{stock.response.results[0].data.DividendYield || 'N/A'}</td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {chartData && (
-            <div className="stock-chart" style={{ marginTop: '40px' }}>
-              <Bar data={chartData} options={{ responsive: true, plugins: { legend: { position: 'top' } } }} />
-            </div>
-          )}
         </div>
-      )}
-      <div className="export-buttons" style={{ textAlign: 'center', marginTop: '20px' }}>
-        <button onClick={() => handleExport('csv')} style={{ marginRight: '10px', padding: '10px 20px', fontSize: '16px' }}>Export to CSV</button>
-        <button onClick={() => handleExport('pdf')} style={{ padding: '10px 20px', fontSize: '16px' }}>Export to PDF</button>
+        {state.comparisonData && Object.keys(state.comparisonData).length > 0 && (
+          <div className="export-buttons">
+            <button onClick={() => handleExport('csv')}>Export to CSV</button>
+          </div>
+        )}
+        <div className="chart-container">
+          {state.chartData && state.chartData.length > 0 && state.chartData.map((chart) => (
+            <div className="chart-comparison">
+              <h3>{chart.metricLabel}</h3>
+              <BarChart key={chart.metric} width={400} height={300} data={chart.data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                  <XAxis dataKey="label" />
+                  <YAxis domain={[0, chart.max]} angle={-45} />
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <Tooltip />
+                  <Bar type="monotone" dataKey="value" fill="#62C0C2"/>
+              </BarChart>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

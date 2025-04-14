@@ -1,6 +1,6 @@
 .chatBotToggle {
     position: relative;
-    height: 100vh; /* Make sure it's the full height of the viewport */
+    height: 0;
 }
 
 /* Circle styles for the chatbot toggle button */
@@ -47,29 +47,14 @@
     position: absolute;
     bottom: 20px; /* Position the modal at the bottom of the screen */
     right: 20px; /* Position the modal on the right side */
-    background: white;
+    background: rgba(255, 255, 255, 0);
     padding: 10px;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
     width: auto; /* Set a fixed width for the modal */
     height: auto; /* Set a fixed height for the modal */
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     overflow: hidden; /* Prevents any overflow of content */
-}
-
-/* Close button */
-.close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: red;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    padding: 5px;
-    cursor: pointer;
 }
 
 /* Chatbot styles */
@@ -91,10 +76,15 @@
 }
 
 .chat-incoming {
-    background-color: #f1f1f1;
+    align-self: flex-start;
     padding: 5px;
     border-radius: 5px;
     margin: 5px 0;
+}
+
+.chat-outgoing{
+    align-self: flex-end;
+    text-align: right;
 }
 
 .chat-input {
@@ -107,21 +97,10 @@ textarea {
     width: 75%;
     padding: 5px;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid #27A2CC;
     resize: both; /* Prevent resizing of the textarea */
     min-height: 40px; /* Set a minimum height for the textarea */
     max-height: 80px; /* Limit the height of the textarea */
 }
 
-#sendBTN {
-    padding: 30px 10px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-}
 
-#sendBTN:hover {
-    background-color: #0056b3;
-}

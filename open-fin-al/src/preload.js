@@ -1,5 +1,5 @@
 const path = require('path');
-const { contextBridge } = require('electron')
+const { contextBridge, ipcRenderer } = require('electron')
 const { promises: fsPromises } = require('fs');
 const fs = require('fs');
   
@@ -13,6 +13,10 @@ contextBridge.exposeInMainWorld('fs', {
 
 contextBridge.exposeInMainWorld('yahoo', {
     finance: require('yahoo-finance2').default
+});
+
+contextBridge.exposeInMainWorld('urlWindow', {
+    openUrlWindow: (url) => ipcRenderer.send('open-url-window', url)
 });
 
 contextBridge.exposeInMainWorld('convert', {
@@ -31,4 +35,8 @@ contextBridge.exposeInMainWorld('database', {
         }
         
     }
+});
+
+contextBridge.exposeInMainWorld('chatbot', {
+    openai: require('openai')
 });
