@@ -17,6 +17,22 @@ contextBridge.exposeInMainWorld('fs', {
     fs: require('fs')
 });
 
+contextBridge.exposeInMainWorld('api', {
+    fetch: async (url) => {
+        try {
+            const response = await fetch(`http://localhost:3001/proxy?url=${encodeURIComponent(url)}`);
+            if (!response.ok) {
+              throw new Error(`The request failed with status: ${response.status}`);
+            }
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error('Fetch error: ', error);
+            return {}; // Return a default value (empty object)
+        }
+    }
+});
+
 contextBridge.exposeInMainWorld('vault', {
     getSecret: (key) => ipcRenderer.invoke('get-secret', key),
     setSecret: (key, value) => ipcRenderer.invoke('set-secret', key, value)

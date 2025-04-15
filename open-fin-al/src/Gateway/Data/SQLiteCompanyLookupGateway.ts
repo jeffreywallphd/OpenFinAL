@@ -5,7 +5,10 @@ import { parse } from 'node-html-parser';
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
-    interface Window { database: any }
+    interface Window { 
+        database: any,
+        api: any
+    }
 }
 
 export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
@@ -220,7 +223,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async refreshTableCache(entity: IEntity) {
         await this.delete(entity, "");
 
-        const response = await fetch('https://www.sec.gov/files/company_tickers.json');
+        const response = await window.api.fetch('https://www.sec.gov/files/company_tickers.json');
         const secData = await response.json();
 
         // Parse the SEC JSON file to extract ticker, CIK, and companyName
@@ -246,7 +249,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         } 
 
         // get the S&P 500 companies and store those in a database
-        const SP500Response = await fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
+        const SP500Response = await window.api.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
         const SP500Object = parse(await SP500Response.text());
 
         // get all of the rows from the consituents table that stores the S&P500 companies

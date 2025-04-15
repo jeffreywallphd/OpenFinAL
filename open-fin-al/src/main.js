@@ -6,11 +6,17 @@
 
 const { app, BrowserWindow, shell, session } = require('electron');
 const path = require('path');
-const sqlite3 = require('sqlite3').verbose();
 const fs = require("fs");
 const ipcMain = require('electron').ipcMain;
+
+const sqlite3 = require('sqlite3').verbose();
 const puppeteer = require('puppeteer');
 const keytar = require('keytar');
+const express = require('express');
+const axios = require('axios');
+const cors = require('cors');
+const https = require("https");
+const crypto = require("crypto");
 
 //////////////////////////// Core Electron Section ////////////////////////////
 
@@ -44,6 +50,143 @@ const createWindow = () => {
   win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY); 
   //win.loadURL(path.join(app.getAppPath(), 'src/index.html'));
 };
+
+//utilize express to create a server for API communication so that the main window can maintain CORS security
+async function startAPIFetcher() {
+  const expressApp = express();
+  expressApp.use(cors());
+  expressApp.use(express.json());
+
+  expressApp.all('/proxy', async (req, res) => {
+    const targetUrl = req.query.url || req.body.url;
+    
+    console.log('THE TARGET URL IS: ', targetUrl);
+    if (!targetUrl) {
+      console.log("A url was not provided with the request.");
+      return res.status(400).send('Target URL is required');
+    }
+    
+    try {
+      const urlObject = new URL(targetUrl);
+      const hostname = urlObject.hostname;
+      const companyName = 'OpenFinAL'; // Replace with your actual company name
+      const companyEmail = 'jeffrey.d.wall@gmail.com'; // Replace with your actual email
+
+      //search for stored certificate in keytar
+      var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
+      console.log(storedFingerprint);
+      if (!storedFingerprint) {
+        // Retrieve and store the certificate if it's not in Keytar
+        try {
+          console.log(`Trying to retrieve the certificate from ${hostname}`);
+          storedFingerprint = await getCertificateFingerprint(hostname, companyName, companyEmail);
+          console.log(storedFingerprint);
+          if (storedFingerprint) {
+            await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
+            console.log(`Stored new certificate fingerprint for ${hostname}`);
+          } else {
+            console.log("Failed to retrieve the certificate");
+            return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
+          }
+        } catch (fingerprintError) {
+          console.error('Error retrieving certificate fingerprint:', fingerprintError);
+          return res.status(500).send('Error retrieving certificate fingerprint'); // Or handle this differently
+        }
+      }
+
+      const response = await new Promise((resolve, reject) => {
+        req.headers['User-Agent'] = `${companyName} ${companyEmail}`;
+
+        const options = {
+          protocol: "https:",
+          method: req.method,
+          hostname: hostname,
+          port: 443,
+          path: urlObject.pathname + urlObject.search,
+          headers: req.headers,
+          rejectUnauthorized: false,
+        };
+
+        const reqHttps = https.request(options, (resHttps) => {
+          let responseData = '';
+
+          resHttps.setEncoding('utf8');
+
+          resHttps.on('data', (chunk) => {
+            responseData += chunk;
+          });
+
+          resHttps.socket.on('secureConnect', () => {
+            const cert = resHttps.socket.getPeerCertificate();
+            if (!cert) {
+              reject(new Error(`No certificate found for ${hostname}`));
+              return;
+            }
+
+            const fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+
+            if (storedFingerprint && fingerprint !== storedFingerprint) {
+              reject(new Error('Certificate validation failed'));
+              return;
+            }
+
+            resHttps.on('end', () => {
+              try {
+                const parsedData = JSON.parse(responseData);
+                resolve({ data: parsedData, headers: resHttps.headers });
+              } catch (parseError) {
+                resolve({ data: responseData, headers: resHttps.headers });
+              }
+            });
+          });
+
+          resHttps.on('error', reject);
+        });
+
+        reqHttps.on('error', reject);
+        if (req.body) {
+          reqHttps.write(JSON.stringify(req.body));
+        }
+
+        reqHttps.end();
+      });
+
+      console.log("THIS IS THE RESPONSE DATA");
+      console.log(response.data);
+      res.json(response.data);
+
+    } catch (error) {
+      console.error('Proxy error:', error);
+      res.status(500).json({message: 'Proxy error'});
+    }
+  });
+
+  expressApp.listen(3001, () => {
+    console.log('Proxy server listening on port 3001');
+  });
+}
+
+async function getCertificateFingerprint(hostname, companyName, companyEmail) {
+  try {
+    var response = await axios.get(`https://${hostname}`, {
+      headers: {
+        'User-Agent': `${companyName} ${companyEmail}`,
+      },
+    });
+
+    var cert = response.request.socket.getPeerCertificate();
+    if (!cert) {
+      console.error(`No certificate found for ${hostname}`);
+      return null;
+    }
+
+    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+    return fingerprint;
+  } catch (error) {
+    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
+    return null;
+  }
+}
 
 //keytar allows for the secure storage of API keys and other secrets
 async function getSecret(key) {
@@ -152,17 +295,19 @@ app.whenReady().then(() => {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           `default-src 'self'; 
-          script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net https://www.sec.gov; 
+          script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; 
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
           img-src 'self' data: https://*.gstatic.com; 
           font-src 'self' https://fonts.gstatic.com; 
-          connect-src 'self' https://www.sec.gov;`
+          connect-src 'self' http://localhost:3001;`
         ],
       },
     });
   });
 
-  createWindow()
+  startAPIFetcher();
+
+  createWindow();
 
   app.on('activate', () => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
