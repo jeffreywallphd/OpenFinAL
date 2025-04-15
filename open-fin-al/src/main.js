@@ -72,89 +72,52 @@ async function startAPIFetcher() {
       const companyName = 'OpenFinAL'; // Replace with your actual company name
       const companyEmail = 'jeffrey.d.wall@gmail.com'; // Replace with your actual email
 
-      //search for stored certificate in keytar
       var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
-      console.log(storedFingerprint);
+
       if (!storedFingerprint) {
         // Retrieve and store the certificate if it's not in Keytar
         try {
-          console.log(`Trying to retrieve the certificate from ${hostname}`);
           storedFingerprint = await getCertificateFingerprint(hostname, companyName, companyEmail);
-          console.log(storedFingerprint);
+
           if (storedFingerprint) {
             await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
-            console.log(`Stored new certificate fingerprint for ${hostname}`);
           } else {
-            console.log("Failed to retrieve the certificate");
             return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
           }
         } catch (fingerprintError) {
-          console.error('Error retrieving certificate fingerprint:', fingerprintError);
-          return res.status(500).send('Error retrieving certificate fingerprint'); // Or handle this differently
+          return res.status(500).send(`Error retrieving certificate fingerprint: ${fingerprintError}` ); // Or handle this differently
         }
       }
 
-      const response = await new Promise((resolve, reject) => {
-        req.headers['User-Agent'] = `${companyName} ${companyEmail}`;
-
-        const options = {
-          protocol: "https:",
-          method: req.method,
-          hostname: hostname,
-          port: 443,
-          path: urlObject.pathname + urlObject.search,
-          headers: req.headers,
-          rejectUnauthorized: false,
-        };
-
-        const reqHttps = https.request(options, (resHttps) => {
-          let responseData = '';
-
-          resHttps.setEncoding('utf8');
-
-          resHttps.on('data', (chunk) => {
-            responseData += chunk;
-          });
-
-          resHttps.socket.on('secureConnect', () => {
-            const cert = resHttps.socket.getPeerCertificate();
-            if (!cert) {
-              reject(new Error(`No certificate found for ${hostname}`));
-              return;
-            }
-
-            const fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-
-            if (storedFingerprint && fingerprint !== storedFingerprint) {
-              reject(new Error('Certificate validation failed'));
-              return;
-            }
-
-            resHttps.on('end', () => {
-              try {
-                const parsedData = JSON.parse(responseData);
-                resolve({ data: parsedData, headers: resHttps.headers });
-              } catch (parseError) {
-                resolve({ data: responseData, headers: resHttps.headers });
-              }
-            });
-          });
-
-          resHttps.on('error', reject);
-        });
-
-        reqHttps.on('error', reject);
-        if (req.body) {
-          reqHttps.write(JSON.stringify(req.body));
-        }
-
-        reqHttps.end();
+      var response = await axios.get(`${targetUrl}`, {
+        headers: {
+          'User-Agent': `${companyName} ${companyEmail}`,
+        },
       });
 
-      console.log("THIS IS THE RESPONSE DATA");
-      console.log(response.data);
-      res.json(response.data);
+      var cert = response.request.socket?.getPeerCertificate();
+      if (!cert) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
+            }
+        });
+        return;
+      }
 
+      var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+      if (storedFingerprint !== fingerprint) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
+            }
+        });
+        return;
+      }
+
+      res.json(response.data);
     } catch (error) {
       console.error('Proxy error:', error);
       res.status(500).json({message: 'Proxy error'});
@@ -174,7 +137,7 @@ async function getCertificateFingerprint(hostname, companyName, companyEmail) {
       },
     });
 
-    var cert = response.request.socket.getPeerCertificate();
+    var cert = response.request.socket?.getPeerCertificate();
     if (!cert) {
       console.error(`No certificate found for ${hostname}`);
       return null;
@@ -298,7 +261,7 @@ app.whenReady().then(() => {
           script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; 
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
           img-src 'self' data: https://*.gstatic.com; 
-          font-src 'self' https://fonts.gstatic.com; 
+          font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
           connect-src 'self' http://localhost:3001;`
         ],
       },

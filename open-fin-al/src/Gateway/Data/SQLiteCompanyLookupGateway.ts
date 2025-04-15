@@ -223,8 +223,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async refreshTableCache(entity: IEntity) {
         await this.delete(entity, "");
 
-        const response = await window.api.fetch('https://www.sec.gov/files/company_tickers.json');
-        const secData = await response.json();
+        const secData = await window.api.fetch('https://www.sec.gov/files/company_tickers.json');
 
         // Parse the SEC JSON file to extract ticker, CIK, and companyName
         for(var key in secData) {
@@ -243,9 +242,14 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
                 cik = newCik + cik;
             }
             
-            const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
-            const args  = [companyName, ticker, cik];
-            await window.database.SQLiteInsert({ query: query, parameters: args });
+            try {
+                const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
+                const args  = [companyName, ticker, cik];
+                await window.database.SQLiteInsert({ query: query, parameters: args });
+            } catch(error) {
+                console.log(error);
+                continue;
+            }
         } 
 
         // get the S&P 500 companies and store those in a database
