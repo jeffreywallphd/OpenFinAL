@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import profileIcon from "../Asset/Image/profile.jpg";
 import newsImage from "../Asset/Image/news.jpg";
-import tradenow from "../Asset/Image/trade.jpg";
+
 class Home extends Component {
   render() {
     return (

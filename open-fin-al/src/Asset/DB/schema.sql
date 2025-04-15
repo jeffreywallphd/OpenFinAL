@@ -8,6 +8,45 @@ CREATE TABLE IF NOT EXISTS User (
   username TEXT UNIQUE NOT NULL
 );
 
+CREATE TABLE IF NOT EXISTS Portfolio (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    userId INTEGER NOT NULL,
+    isDefault INTEGER DEFAULT 0,
+    FOREIGN KEY (userId) REFERENCES User(id)
+);
+
+CREATE TRIGGER IF NOT EXISTS SetDefaultPortfolio
+AFTER UPDATE OF isDefault ON Portfolio
+WHEN NEW.isDefault = 1
+BEGIN
+    UPDATE Portfolio
+    SET isDefault = 0
+    WHERE userId = NEW.userId
+      AND id != NEW.id;
+END;
+
+CREATE TRIGGER IF NOT EXISTS SetDefaultPortfolioOnInsert
+AFTER INSERT ON Portfolio
+WHEN NEW.isDefault = 1
+BEGIN
+    UPDATE Portfolio
+    SET isDefault = 0
+    WHERE userId = NEW.userId
+      AND id != NEW.id;
+END;
+
+CREATE TABLE IF NOT EXISTS PortfolioTransaction (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    portfolioId INTEGER NOT NULL,
+    assetType TEXT CHECK( assetType IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash') ) NOT NULL DEFAULT 'Stock',
+    transactionType TEXT CHECK(transactionType IN ('Buy','Sell')),
+    quantity INTEGER NOT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    transactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (portfolioId) REFERENCES Portfolio(id)
+);
+
 CREATE TABLE IF NOT EXISTS PublicCompany (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     companyName TEXT,
