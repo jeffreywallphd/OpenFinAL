@@ -37,8 +37,7 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             throw Error("Either no action was sent in the request or an incorrect action was used.");
         }     
 
-        const response = await fetch(url);
-        const data = await response.json();
+        const data = await window.api.fetch(url);
         
         if("Information" in data) {
             throw Error("The API key used for Alpha Vantage has reached its daily limit");

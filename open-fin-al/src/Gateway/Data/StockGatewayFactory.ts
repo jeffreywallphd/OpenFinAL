@@ -5,17 +5,15 @@ import { FinancialModelingPrepGateway } from "./FMPStockGateway";
 import { YFinanceStockGateway } from "./YFinanceStockGateway";
 
 export class StockGatewayFactory {
-    async createGateway(config: any): Promise<IDataGateway> {
-        const extractor = new EnvVariableExtractor();
-        
+    async createGateway(config: any): Promise<IDataGateway> {        
         // For AlphaVantage API
         if(config["StockGateway"] === "AlphaVantageStockGateway") {
-            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
+            const key = await window.vault.getSecret("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageStockGateway(key);
         }
         // For Financial Modeling Prep API
         else if(config["StockGateway"] === "FinancialModelingPrepGateway"){
-            const key = await extractor.extract("FMP_API_KEY");
+            const key = await window.vault.getSecret("FMP_API_KEY");
             return new FinancialModelingPrepGateway(key);
         }
         // For Yahoo Finance Community API
@@ -24,7 +22,7 @@ export class StockGatewayFactory {
         }
          else {
             //default will be AlphaVantage for now
-            const key = await extractor.extract("ALPHAVANTAGE_API_KEY");
+            const key = window.vault.getSecret("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageStockGateway(key);
         }
     }

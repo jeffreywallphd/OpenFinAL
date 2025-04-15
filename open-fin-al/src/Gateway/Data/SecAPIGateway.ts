@@ -31,8 +31,7 @@ export class SecAPIGateway implements IKeylessDataGateway {
             throw Error("Either no action was sent in the request or an incorrect action was used.");
         }   
           
-        const response = await fetch(url);
-        const data = await response.json();
+        const data = await window.api.fetch(url);
 
         entity.setFieldValue("data", data);
 

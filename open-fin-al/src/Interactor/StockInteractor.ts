@@ -61,9 +61,10 @@ export class StockInteractor implements IInputBoundary {
             stockGateway = new SQLiteCompanyLookupGateway();
         } else {
             //instantiate the correct API gateway
-            const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
+            const config = await window.config.load();
+            window.console.log(config);
             const stockGatewayFactory = new StockGatewayFactory();
-            stockGateway = await stockGatewayFactory.createGateway(JSON.parse(config));
+            stockGateway = await stockGatewayFactory.createGateway(config);
             
             //add the API key to the stock request object
             stock.setFieldValue("key", stockGateway.key);

@@ -9,10 +9,6 @@ import {SecRequest} from "../Entity/SecRequest";
 import {SecReportGatewayFactory} from "../Gateway/Data/FinancialReportGatewayFactory";
 
 declare global {
-    interface Window { fs: any; }
-}
-
-declare global {
     interface Window { convert: any; }
 }
 
@@ -35,9 +31,9 @@ export class SecInteractor implements IInputBoundary {
             sec.fillWithRequest(requestModel);
 
             //instantiate the correct API gateway
-            const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
+            const config = await window.config.load();
             const secGatewayFactory = new SecReportGatewayFactory();
-            var secGateway: IDataGateway = await secGatewayFactory.createGateway(JSON.parse(config));
+            var secGateway: IDataGateway = await secGatewayFactory.createGateway(config);
 
             sec.setFieldValue("key", secGateway.key);
             
