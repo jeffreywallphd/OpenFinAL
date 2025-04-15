@@ -1,0 +1,34 @@
+{
+    "Documents/Finance - Wikipedia.pdf": [],
+    "Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf": [],
+    "Documents/PrinciplesofFinance-WEB_UPDATED.pdf": [
+        {
+            "chunk": "you really want? A better understanding of finance makes these types of decisions easier and can provide you,\nas the decision maker, with statistics instead of just intuition.\nReturn is compensation for making an investment and waiting for the benefit (see Figure 1.4). Return could be\n12\n1 • Introduction to Finance\nAccess for free at openstax.org\nthe interest earned on an investment in a bond or the dividend from the purchase of stock. Return could be\nthe higher income received and the greater job satisfaction realized from investing in a college education.\nIndividuals tend to be risk averse. This means that for investors to take greater risks, they must have the\nexpectation of greater returns. Investors would not be satisfied if the average return on stocks and bonds\nwere the same as that for a risk-free savings account. Stocks and bonds have greater risk than a savings\naccount, and that means investors expect a greater average return.\nThe study of finance provides us with the tools to make better and more consistent assessments of the risk-\nreturn trade-offs in all decision-making, but especially in financial decision-making. Finance has many different\ndefinitions and measurements for risk. Portfolios of investment securities tend to demonstrate the\ncharacteristics of a normal return distribution, or the familiar “bell-shaped” curve you studied in your statistics\nclasses. Understanding a security’s average and variability of returns can help us estimate the range and\nlikelihood of higher- or lower-than-expected outcomes. This assessment in turn helps determine appropriate\nprices that satisfy investors’ required return premiums based on quantifiable expectations about risk or\nuncertainty. In other words, finance attempts to measure with numbers what we already “know.”\nFigure 1.4 Risk and Expected Return This describes the trade-off that invested money can bring higher profits if the investor is\nwilling to accept the risk of possible loss.\nThe overall uncertainty of returns has several components.\n•\nDefault risk on a financial security is the chance that the issuer will fail to make the required payment. For\nexample, a homeowner may fail to make a monthly mortgage payment, or a corporation may default on\nrequired semiannual interest payments on a bond.\n•\nInflation risk occurs when investors have less purchasing power from the realized cash flows from an\ninvestment due to rising prices or inflation.\n•\nDiversifiable risk, also known as unsystematic risk, occurs when investors hold individual securities or",
+            "qa_pairs": [
+                {
+                    "question": "What is the average return on stocks and bonds?",
+                    "answer": "The average return on stocks and bonds is the interest earned on an investment in a bond or the dividend from the purchase of stock."
+                },
+                {
+                    "question": "What does finance provide us with?",
+                    "answer": "Finance provides us with the tools to make better and more consistent assessments of the risk-return trade-offs in all decision-making, but especially in financial decision-making."
+                }
+            ]
+        }
+    ],
+    "Documents/Stock market - Wikipedia.pdf": [
+        {
+            "chunk": "the form of retirement accounts rose from 39.3% in 1992 to 52.6% in 2007, with the median value\nof these accounts more than doubling from $22,000 to $45,000 in that time.[13][14] Rydqvist,\nSpizman,  and  Strebulaev  attribute  the  differential  growth  in  direct  and  indirect  holdings  to\ndifferences in the way each are taxed in the United States. Investments in pension funds and 401ks,\nthe two most common vehicles of indirect participation, are taxed only when funds are withdrawn\nfrom the accounts. Conversely, the money used to directly purchase stock is subject to taxation as\nare any dividends or capital gains they generate for the holder. In this way, the current tax code\nincentivizes individuals to invest indirectly.[15]\nRates of participation and the value of holdings differ significantly across strata of income. In the\nbottom quintile of income, 5.5% of households directly own stock and 10.7% hold stocks indirectly\nin the form of retirement accounts.[14] The top decile of income has a direct participation rate of\n47.5% and an indirect participation rate in the form of retirement accounts of 89.6%.[14]  The\nmedian value of directly owned stock in the bottom quintile of income is $4,000 and is $78,600 in\nthe top decile of income as of 2007.[16] The median value of indirectly held stock in the form of\nretirement accounts for the same two groups in the same year is $6,300 and $214,800 respectively.\n[16] Since the Great Recession of 2008 households in the bottom half of the income distribution\nhave lessened their participation rate both directly and indirectly from 53.2% in 2007 to 48.8% in\n2013, while over the same period households in the top decile of the income distribution slightly\nincreased participation 91.7% to 92.1%.[17] The mean value of direct and indirect holdings at the\nbottom half of the income distribution moved slightly downward from $53,800 in 2007 to $53,600\nin 2013.[17] In the top decile, mean value of all holdings fell from $982,000 to $969,300 in the\nsame time.[17] The mean value of all stock holdings across the entire income distribution is valued\nat $269,900 as of 2013.[17]\nThe racial composition of stock market ownership shows households headed by whites are nearly\nfour and six times as likely to directly own stocks than households headed by blacks and Hispanics\nrespectively. As of 2011 the national rate of direct participation was 19.6%, for white households\nDemographics of market participation\nIndirect vs. Direct Investment\nParticipation by income and wealth strata",
+            "qa_pairs": [
+                {
+                    "question": "What is the median value of directly owned stock in the bottom quintile of income?",
+                    "answer": "The median value of directly owned stock in the bottom quintile of income is $4,000."
+                },
+                {
+                    "question": "What is the median value of indirectly held stock in the form of retirement accounts for the same two groups in the same year?",
+                    "answer": "The median value of indirectly held stock in the form of retirement accounts for the same two groups in the same year is $6,300."
+                }
+            ]
+        }
+    ]
+}

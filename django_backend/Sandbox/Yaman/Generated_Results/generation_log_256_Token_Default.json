@@ -1,65 +1,313 @@
 {
     "Documents/Finance - Wikipedia.pdf": [
         {
-            "chunk": "Finance\nFinance refers to monetary resources and to the study and discipline of money, currency, assets\nand liabilities.[a] As a subject of study, it is related to but distinct from economics, which is the\nstudy of the production, distribution, and consump",
-            "qa_pairs": [
-                {
-                    "question": "What is Finance?",
-                    "answer": "Finance refers to monetary resources and to the study and discipline of money, currency, assets and liabilities.[a] As a subject of study, it is related to but distinct from economics, which is the study of the production, distribution, and consumption of goods and services."
-                },
-                {
-                    "question": "How does Finance work?",
-                    "answer": "Finance works by providing a means of exchange for goods and services, and of storing wealth. It also provides a means of allocating resources and a way of measuring and comparing the wealth of different countries and people. "
-                },
-                {
-                    "question": "What is the difference between Finance and Economics?",
-                    "answer": "The difference between Finance and Economics is that Finance is the study of money, currency, assets and liabilities, while Economics is the study of the production, distribution, and consumption of goods and services."
-                }
-            ]
-        },
-        {
-            "chunk": "financial systems, assets are bought, sold, or traded as financial instruments, such as\ncurrencies, loans, bonds, shares, stocks, options, futures, etc. Assets can also be banked, invested,\nand insured to maximize value and minimize loss. In practice, ris",
-            "qa_pairs": [
-                {
-                    "question": "What is financial system?",
-                    "answer": "A financial system is a network of financial institutions and markets that provide financial services to individuals, businesses, and governments. It is a system that facilitates the transfer of funds, the exchange of financial assets, and the provision of financial services. The financial system includes banks, investment firms, insurance companies, and other financial institutions, as well as financial markets such as stock exchanges, bond markets, and derivatives markets. The financial system plays a crucial role in the economy by providing the means for businesses to access capital, for individuals to save and invest, and for governments to raise funds to finance public services."
-                },
-                {
-                    "question": "How does financial system work?",
-                    "answer": "The financial system works by facilitating the transfer of funds, the exchange of financial assets, and the provision of financial services. Banks, investment firms, insurance companies, and other financial institutions provide financial services such as lending, borrowing, investing, and insuring. Financial markets, such as stock exchanges, bond markets, and derivatives markets, provide a platform for the buying and selling of financial assets. The financial system is regulated by government agencies and financial institutions to ensure the stability of the system and to protect consumers."
-                }
-            ]
-        },
-        {
-            "chunk": "ue and minimize loss. In practice, risks are always present in any\nfinancial action and entities.\nDue to its wide scope, a broad range of subfields exists within finance. Asset-, money-, risk- and\ninvestment  management  aim  to  maximize  value  and  mini",
+            "chunk": "engineering and financial technology. These fields are the foundation of business and accounting.\nIn  some  cases,  theories  in  finance  can  be  tested  using  the  scientific  method,  covered  by\nexperimental finance.\nThe early history of finance parallels the early history of money, which is prehistoric. Ancient and\nmedieval  civilizations  incorporated  basic  functions  of  finance,  such  as  banking,  trading  and\naccounting, into their economies. In the late 19th century, the global financial system was formed.\nIn the middle of the 20th century, finance emerged as a distinct academic discipline,[c] separate\nfrom economics.[1] The earliest doctoral programs in finance were established in the 1960s and\n1970s.[2] Today, finance is also widely studied through career-focused undergraduate and master's\nlevel programs.[3][4]\nAs outlined, the financial system consists of the flows of capital that take place between individuals\nand  households  (personal  finance),  governments  (public  finance),  and  businesses  (corporate\nfinance). \"Finance\" thus studies the process of channeling money from savers and investors to\nentities that need it. [d] Savers and investors have money available which could earn interest or",
             "qa_pairs": [
                 {
                     "question": "What is finance?",
-                    "answer": "Finance is a field that deals with the study of investments. It includes the dynamics of assets and liabilities over time under conditions of different degrees of uncertainty."
+                    "answer": "Finance is the study of how money is used to allocate resources."
                 },
                 {
-                    "question": "How does finance work?",
-                    "answer": "Finance works by managing and allocating resources to maximize value and minimize risk. It involves the use of financial instruments such as stocks, bonds, and derivatives to create a portfolio that meets the investor's goals."
+                    "question": "What is the role of finance in society?",
+                    "answer": "Finance plays an important role in society by facilitating economic activity, promoting economic growth, and supporting the creation of wealth."
+                },
+                {
+                    "question": "What are some common financial products and services?",
+                    "answer": "Common financial products and services include loans, investments, insurance, and banking services."
+                },
+                {
+                    "question": "How do financial markets work?",
+                    "answer": "Financial markets are where buyers and sellers of financial products and services come together to trade."
+                },
+                {
+                    "question": "What is the difference between public and private finance?",
+                    "answer": "Public finance is the study of how governments raise and spend money, while private finance is the study of how individuals and businesses manage their finances."
+                },
+                {
+                    "question": "What is the relationship between finance and economics?",
+                    "answer": "Finance and economics are closely related fields, with finance focusing on the allocation of resources and the management of money, while economics focuses on the production and distribution of goods and services."
+                },
+                {
+                    "question": "What are some common financial tools and techniques?",
+                    "answer": "Common financial tools and techniques include budgeting, saving, investing, and risk management."
+                },
+                {
+                    "question": "What is the role of financial institutions in the economy?",
+                    "answer": "Financial institutions play an important role in the economy by facilitating the flow of money and resources, providing financial services, and promoting economic growth."
+                },
+                {
+                    "question": "What is the difference between finance and accounting?",
+                    "answer": "Finance focuses on the management of money, while accounting focuses on the recording and reporting of financial transactions."
+                },
+                {
+                    "question": "What is the role of financial regulation in the economy?",
+                    "answer": "Financial regulation is important for promoting financial stability, protecting consumers, and promoting economic growth."
+                },
+                {
+                    "question": "What is the relationship between finance and international trade?",
+                    "answer": "Finance plays an important role in international trade by facilitating the flow of money and resources, promoting economic growth, and supporting the creation of wealth."
+                },
+                {
+                    "question": "What is the role of financial technology in the economy?",
+                    "answer": "Financial technology (also known as fintech) is playing an increasingly important role in the economy by providing innovative financial services and promoting financial inclusion."
+                },
+                {
+                    "question": "What is the role of financial literacy in the economy?",
+                    "answer": "Financial literacy is important for promoting financial stability, protecting consumers, and promoting economic growth."
+                }
+            ]
+        },
+        {
+            "chunk": "corporate bonds; (ii) by a corporation selling equity, also called\nstock or shares (which may take various forms: preferred stock\nor common stock). The owners of both bonds and stock may be\ninstitutional  investors—financial  institutions  such  as\ninvestment banks and pension funds—or private individuals,\ncalled  private  investors  or  retail  investors.  (See  Financial\nmarket participants.)\nThe lending is often indirect, through a financial intermediary\nsuch as a bank, or via the purchase of notes or bonds (corporate\nbonds,  government  bonds,  or  mutual  bonds)  in  the  bond\nmarket.  The  lender  receives  interest,  the  borrower  pays  a\nhigher  interest  than  the  lender  receives,  and  the  financial\nintermediary earns the difference for arranging the loan.[6][7][8]\nA  bank  aggregates  the  activities  of  many  borrowers  and\nlenders.  Banks  accept  deposits  from  individuals  and\nbusinesses, paying interest on these funds. The bank then lends\nthese  deposits  to  borrowers.  Banks  facilitate  transactions\nbetween  borrowers  and  lenders  of  various  sizes,  enabling\nefficient financial coordination.\nInvesting  typically  entails  the  purchase  of  stock,  either\nindividual securities or via a mutual fund, for example. Stocks",
+            "qa_pairs": [
+                {
+                    "question": "What is financial coordination?",
+                    "answer": "Financial coordination is the process of bringing together financial resources from multiple sources to fund a project or investment. It involves the careful allocation of capital, risk, and return among various stakeholders to ensure the success of the venture. Financial coordination is essential for the efficient allocation of resources in a market economy and plays a crucial role in economic development."
+                },
+                {
+                    "question": "How does financial coordination work?",
+                    "answer": "Financial coordination works by bringing together the financial resources of different parties to fund a project or investment. This involves identifying the needs and goals of the parties involved, assessing the risks and returns associated with the venture, and developing a plan for the allocation of capital, risk, and return among the stakeholders. The goal of financial coordination is to ensure that the project or investment is funded in a way that maximizes the returns for all parties while minimizing the risks."
+                }
+            ]
+        },
+        {
+            "chunk": "efficient financial coordination.\nInvesting  typically  entails  the  purchase  of  stock,  either\nindividual securities or via a mutual fund, for example. Stocks\nare usually sold by corporations to investors so as to raise\nrequired capital in the form of \"equity financing\", as distinct\nfrom  the  debt  financing  described  above.  The  financial\nintermediaries here are the investment banks. The investment\nbanks find the initial investors and facilitate the listing of the\nsecurities,  typically  shares  and  bonds.  Additionally,  they\nfacilitate  the  securities  exchanges,  which  allow  their  trade\nthereafter,  as  well  as  the  various  service  providers  which\nmanage the performance or risk of these investments. These\nlatter include mutual funds, pension funds, wealth managers,\nand stock brokers, typically servicing retail investors (private\nindividuals).\nInter-institutional trade and investment, and fund-management at this scale, is referred to as\n\"wholesale finance\". Institutions here extend the products offered, with related trading, to include\nbespoke options, swaps, and structured products, as well as specialized financing; this \"financial\nengineering\" is inherently mathematical, and these institutions are then the major employers of",
+            "qa_pairs": [
+                {
+                    "question": "What is financial engineering?",
+                    "answer": "Financial engineering is the discipline of applying mathematical methods to financial problems in order to improve decision-making. It is a field that combines mathematics, statistics, and finance, and is often used to create and analyze financial models, risk management strategies, and investment portfolios. Financial engineers work in a variety of industries, including investment banking, asset management, and insurance, and are responsible for developing and implementing complex financial models and algorithms. Some of the key skills required for financial engineering include strong mathematical and statistical skills, proficiency in programming languages such as Python, R, and C++, and the ability to analyze and interpret large amounts of data. Additionally, financial engineers must have a strong understanding of financial markets and instruments, and be able to communicate effectively with both technical and non-technical stakeholders."
+                },
+                {
+                    "question": "How does financial engineering work?",
+                    "answer": "Financial engineering is the process of applying mathematical and statistical techniques to solve financial problems. It involves the development and analysis of financial models, algorithms, and systems to optimize decision-making in the financial industry. Financial engineers use a variety of tools and techniques, including calculus, linear algebra, probability theory, and computer programming, to analyze financial data and develop solutions to complex financial problems. Some of the key areas of financial engineering include risk management, asset pricing, portfolio optimization, and derivative pricing. Financial engineers work in a variety of industries, including investment banking, asset management, and insurance, and are responsible for developing and implementing complex financial models and algorithms. Some of the key skills required for financial engineering include strong mathematical and statistical skills, proficiency in programming languages such as Python, R, and C++, and the ability to analyze and interpret large amounts of data. Additionally, financial engineers must have a strong understanding of financial markets and instruments, and be able to communicate effectively with both technical and non-technical stakeholders."
+                }
+            ]
+        },
+        {
+            "chunk": "finance  may  also  involve  paying  for  a  loan  or  other  debt\nobligations. The main areas of personal finance are considered\nto be income, spending, saving, investing, and protection. The\nfollowing  steps,  as  outlined  by  the  Financial  Planning\nStandards Board,[10] suggest that an individual will understand\na potentially secure personal finance plan after:\n▪ Purchasing insurance to ensure protection against\nunforeseen personal events;\n▪ Understanding the effects of tax policies, subsidies, or\npenalties on the management of personal finances;\n▪ Understanding the effects of credit on individual financial\nstanding;\n▪ Developing a savings plan or financing for large purchases\n(auto, education, home);\n▪ Planning a secure financial future in an environment of\neconomic instability;\n▪ Pursuing a checking or a savings account;\n▪ Preparing for retirement or other long term expenses.[11]\nCorporate finance deals with the actions that managers take to increase the value of the firm to the\nshareholders, the sources of funding and the capital structure of corporations, and the tools and\nanalysis used to allocate financial resources. While corporate finance is in principle different from",
+            "qa_pairs": [
+                {
+                    "question": "What is personal finance?",
+                    "answer": "Personal finance is the financial management which an individual or a family unit performs to budget, save, and spend monetary resources over time, taking into account various financial risks and future life events."
+                },
+                {
+                    "question": "What is corporate finance?",
+                    "answer": "Corporate finance is the area of finance dealing with sources of funding and the capital structure of corporations, the actions that managers take to increase the value of the firm to the shareholders, and the tools and analysis used to allocate financial resources."
                 }
             ]
         }
     ],
     "Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf": [
         {
-            "chunk": "sh different philosophies of law—schools of legal thought—and explain their relevance. \n2. Identify the various aims that a functioning legal system can serve. \n3. Explain how politics and law are related. \n4. Identify the sources of law and which laws hav",
+            "chunk": "European nations often imposed peace in countries whose borders were somewhat arbitrarily created by \nthose same European nations. Over several centuries prior to the twentieth century, empires were built by \nSpain, Portugal, Britain, Holland, France, Germany, Belgium, and Italy. With regard to the functions of \nthe law, the empire may have kept the peace—largely with force—but it changed the status quo and \nseldom promoted the native peoples’ rights or social justice within the colonized nation. \n \nIn nations that were former colonies of European nations, various ethnic and tribal factions have \nfrequently made it difficult for a single, united government to rule effectively. In Rwanda, for example, \npower struggles between Hutus and Tutsis resulted in genocide of the Tutsi minority. (Genocide is the \ndeliberate and systematic killing or displacement of one group of people by another group. In 1948, the \ninternational community formally condemned the crime of genocide.) In nations of the former Soviet \nUnion, the withdrawal of a central power created power vacuums that were exploited by ethnic leaders. \nWhen Yugoslavia broke up, the different ethnic groups—Croats, Bosnians, and Serbians—fought bitterly",
             "qa_pairs": [
                 {
-                    "question": "What is...?",
-                    "answer": "The answer is..."
+                    "question": "What is genocide?",
+                    "answer": "Genocide is the deliberate and systematic killing or displacement of one group of people by another group. In 1948, the international community formally condemned the crime of genocide."
                 },
                 {
-                    "question": "How does... work?",
-                    "answer": "It works by..."
+                    "question": "What are the main causes of war?",
+                    "answer": "The main causes of war are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of conflict?",
+                    "answer": "The main causes of conflict are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of violence?",
+                    "answer": "The main causes of violence are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of terrorism?",
+                    "answer": "The main causes of terrorism are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of crime?",
+                    "answer": "The main causes of crime are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of corruption?",
+                    "answer": "The main causes of corruption are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of poverty?",
+                    "answer": "The main causes of poverty are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of inequality?",
+                    "answer": "The main causes of inequality are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of discrimination?",
+                    "answer": "The main causes of discrimination are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of injustice?",
+                    "answer": "The main causes of injustice are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of oppression?",
+                    "answer": "The main causes of oppression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of exploitation?",
+                    "answer": "The main causes of exploitation are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of abuse?",
+                    "answer": "The main causes of abuse are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of addiction?",
+                    "answer": "The main causes of addiction are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of depression?",
+                    "answer": "The main causes of depression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of suicide?",
+                    "answer": "The main causes of suicide are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of crime?",
+                    "answer": "The main causes of crime are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of corruption?",
+                    "answer": "The main causes of corruption are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of poverty?",
+                    "answer": "The main causes of poverty are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of inequality?",
+                    "answer": "The main causes of inequality are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of discrimination?",
+                    "answer": "The main causes of discrimination are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of injustice?",
+                    "answer": "The main causes of injustice are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of oppression?",
+                    "answer": "The main causes of oppression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of exploitation?",
+                    "answer": "The main causes of exploitation are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of abuse?",
+                    "answer": "The main causes of abuse are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of addiction?",
+                    "answer": "The main causes of addiction are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of depression?",
+                    "answer": "The main causes of depression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of suicide?",
+                    "answer": "The main causes of suicide are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of crime?",
+                    "answer": "The main causes of crime are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of corruption?",
+                    "answer": "The main causes of corruption are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of poverty?",
+                    "answer": "The main causes of poverty are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of inequality?",
+                    "answer": "The main causes of inequality are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of discrimination?",
+                    "answer": "The main causes of discrimination are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of injustice?",
+                    "answer": "The main causes of injustice are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of oppression?",
+                    "answer": "The main causes of oppression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of exploitation?",
+                    "answer": "The main causes of exploitation are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of abuse?",
+                    "answer": "The main causes of abuse are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of addiction?",
+                    "answer": "The main causes of addiction are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of depression?",
+                    "answer": "The main causes of depression are the desire for power, the desire for resources, and the desire for revenge."
+                },
+                {
+                    "question": "What are the main causes of suicide?",
+                    "answer": "The main causes of suicide are the desire for power, the desire for resources, and the desire for revenge."
                 }
             ]
         },
         {
-            "chunk": "s. Philosophers have considered issues of \njustice and law for centuries, and several different approaches, or schools of legal thought, have \nemerged. In this chapter, we will look at those different meanings and approaches and will consider \nhow social a",
+            "chunk": "conclude that sixty-one miles per hour is generally allowed by most state troopers, but that occasionally \nsomeone gets ticketed for doing fifty-seven miles per hour in a fifty-five miles per hour zone. Either \napproach is empirical, even if not rigorously scientific. The first approach, examining in a precise way \nwhat the rule itself says, is sometimes known as the “positivist” school of legal thought. The second \napproach—which relies on social context and the actual behavior of the principal actors who enforce the \nlaw—is akin to the “legal realist” school of thought (see Section 1.2.3 \"Other Schools of Legal Thought\"). \n \nPositivism has its limits and its critics. New Testament readers may recall that King Herod, fearing the \nbirth of a Messiah, issued a decree that all male children below a certain age be killed. Because it was the \ncommand of a sovereign, the decree was carried out (or, in legal jargon, the decree was “executed”). \nSuppose a group seizes power in a particular place and commands that women cannot attend school and \ncan only be treated medically by women, even if their condition is life-threatening and women doctors are \nfew and far between. Suppose also that this command is carried out, just because it is the law and is",
+            "qa_pairs": [
+                {
+                    "question": "What is positivism?",
+                    "answer": "Positivism is a school of legal thought that examines in a precise way what the rule itself says."
+                },
+                {
+                    "question": "How does positivism work?",
+                    "answer": "Positivism works by examining the rule itself and seeing what it says."
+                }
+            ]
+        },
+        {
+            "chunk": "Natural Law \nThe natural-law school of thought emphasizes that law should be based on a universal moral order. \nNatural law was “discovered” by humans through the use of reason and by choosing between that which is \ngood and that which is evil. Here is the definition of natural law according to the Cambridge Dictionary of \nPhilosophy: “Natural law, also called the law of nature in moral and political philosophy, is an objective \nnorm or set of objective norms governing human behavior, similar to the positive laws of a human ruler, \nbut binding on all people alike and usually understood as involving a superhuman legislator.” [1] \n \nBoth the US Constitution and the United Nations (UN) Charter have an affinity for the natural-law \noutlook, as it emphasizes certain objective norms and rights of individuals and nations. The US \nDeclaration of Independence embodies a natural-law philosophy. The following short extract should \nprovide some sense of the deep beliefs in natural law held by those who signed the document. \n \n \n \n \nThe Unanimous Declaration of the Thirteen United States of America \nJuly 4, 1776 \nWhen in the Course of human events, it becomes necessary for one people to dissolve the political",
+            "qa_pairs": [
+                {
+                    "question": "What is natural law?",
+                    "answer": "Natural law is a philosophy that emphasizes that law should be based on a universal moral order. Natural law was discovered by humans through the use of reason and by choosing between what is good and what is evil. Natural law is an objective norm or set of objective norms governing human behavior, similar to the positive laws of a human ruler, but binding on all people alike and usually understood as involving a superhuman legislator."
+                },
+                {
+                    "question": "How does natural law work?",
+                    "answer": "Natural law works by emphasizing certain objective norms and rights of individuals and nations. The US Constitution and the United Nations (UN) Charter have an affinity for the natural-law outlook, as it emphasizes certain objective norms and rights of individuals and nations. The US Declaration of Independence embodies a natural-law philosophy. The following short extract should provide some sense of the deep beliefs in natural law held by those who signed the document."
+                }
+            ]
+        },
+        {
+            "chunk": "John Locke) is consistent with this view of the law. Individuals may have “God-given” or “natural” rights \nthat government cannot legitimately take away. Government only by consent of the governed is a natural \noutgrowth of this view. \n \nCivil disobedience—in the tradition of Henry Thoreau, Mahatma Gandhi, or Martin Luther King Jr.—\nbecomes a matter of morality over “unnatural” law. For example, in his “Letter from Birmingham Jail,” \nMartin Luther King Jr. claims that obeying an unjust law is not moral and that deliberately disobeying an \nunjust law is in fact a moral act that expresses “the highest respect for law”: “An individual who breaks a \nlaw that conscience tells him is unjust, and who willingly accepts the penalty of imprisonment in order to \narouse the conscience of the community over its injustice, is in reality expressing the highest respect for \nlaw.…One who breaks an unjust law must do so openly, lovingly, and with a willingness to accept the \npenalty.” [2] \nLegal positivists, on the other hand, would say that we cannot know with real confidence what “natural” \nlaw or “universal” law is. In studying law, we can most effectively learn by just looking at what the written",
+            "qa_pairs": [
+                {
+                    "question": "What is the law?",
+                    "answer": "The law is a set of rules that governs a particular society. It can be created by a legislature, or it can be created by a court. The law is created to protect the rights of individuals, and to maintain order in society."
+                },
+                {
+                    "question": "How does the law work?",
+                    "answer": "The law works by creating rules that govern society. These rules are created to protect the rights of individuals, and to maintain order in society. The law is enforced by the government, which has the power to create and enforce the law."
+                }
+            ]
+        },
+        {
+            "chunk": "priori means “existing in the mind prior to and independent of experience.”) Or is the statement about \nequality a matter of faith or belief, not really provable either scientifically or rationally? The dialogue \nbetween natural-law theorists and more empirically oriented theories of “what law is” will raise similar \nquestions. In this book, we will focus mostly on the law as it is, but not without also raising questions \nabout what it could or should be. \n \nOther Schools of Legal Thought \nThe historical school of law believes that societies should base their legal decisions today on the examples \nof the past. Precedent would be more important than moral arguments. \n \nThe legal realist school flourished in the 1920s and 1930s as a reaction to the historical school. Legal \nrealists pointed out that because life and society are constantly changing, certain laws and doctrines have \nto be altered or modernized in order to remain current. The social context of law was more important to \nlegal realists than the formal application of precedent to current or future legal disputes. Rather than \nsuppose that judges inevitably acted objectively in applying an existing rule to a set of facts, legal realists",
             "qa_pairs": [
                 {
                     "question": "What is...?",
@@ -74,108 +322,87 @@
     ],
     "Documents/PrinciplesofFinance-WEB_UPDATED.pdf": [
         {
-            "chunk": "Is Finance?\n1.2 The Role of Finance in an Organization\n1.3 Importance of Data and Technology\n1.4 Careers in Finance\n1.5 Markets and Participants\n1.6 Microeconomic and Macroeconomic Matters\n1.7 Financial Instruments\n1.8 Concepts of Time and Value\nWhy It Mat",
+            "chunk": "rates. The family business had successfully struggled through the ebb and flow of the regional and national\neconomy by providing quality products and service to its regional clients.\nIn the early 1980s, the company’s fortunes changed permanently for the better. The owner recognized that\nthe custom signs built by his firm were superior in quality to the signs it installed for national franchises. The\nowner worked with the company’s banker and vice president of finance and operations to develop a\nproduction, sales, and financing plan that could be offered to the larger national sign companies. The larger\ncompanies agreed to subcontract manufacturing of midsize orders to Bacon Signs. The firm then made a\ncommitment to build and deliver these signs on time and under budget. As Bacon Signs’ reputation for quality\ngrew, so did demand for its products. The original financing plan anticipated this potential growth and was\nIntroduction to Finance\n1\n1 • Why It Matters\n7\ndesigned to meet anticipated capital requirements so that the firm could expand how and when it needed to.\nBacon Signs’ ability to manufacture and deliver a high-quality product at a good price was the true value of the",
+            "qa_pairs": [
+                {
+                    "question": "What is the value of Bacon Signs?",
+                    "answer": "The value of Bacon Signs is its ability to manufacture and deliver a high-quality product at a good price."
+                },
+                {
+                    "question": "What was the original financing plan for Bacon Signs?",
+                    "answer": "The original financing plan for Bacon Signs was designed to meet anticipated capital requirements so that the firm could expand how and when it needed to."
+                }
+            ]
+        },
+        {
+            "chunk": "Bacon Signs’ ability to manufacture and deliver a high-quality product at a good price was the true value of the\nfirm. However, without the planning and ability to raise capital facilitated by the financing plan, the firm would\nnot have been able to act on its strengths at the critical moment. Financing was the key to expansion and\nfinancial stability for the firm.1\nIn this book, we demonstrate that business finance is about developing and understanding the tools that help\npeople make consistently good and repeatable decisions.\n1.1\nWhat Is Finance?\nLearning Outcomes\nBy the end of this section, you will be able to:\n•\nDescribe the main areas in finance.\n•\nExplain the importance of studying finance.\n•\nDiscuss the concepts of risk and return.\nDefinition of Finance\nFinance is the study of the management, movement, and raising of money. The word finance can be used as a\nverb, such as when the First National Bank agrees to finance your home mortgage loan. It can also be used as\na noun referring to an entire industry. At its essence, the study of finance is about understanding the uses and\nsources of cash, as well as the concept of risk-reward trade-off. Finance is also a tool that can help us be better\ndecision makers.\nBasic Areas in Finance",
             "qa_pairs": [
                 {
                     "question": "What is finance?",
-                    "answer": "Finance is the management of money and other assets. It involves the management of financial risks, such as credit risk and liquidity risk, as well as the management of financial assets, such as stocks and bonds. Finance also includes the management of financial institutions, such as banks and insurance companies. Finance is a broad field that covers a wide range of topics, including financial markets, financial institutions, financial instruments, and financial regulations."
+                    "answer": "Finance is the study of the management, movement, and raising of money. The word finance can be used as a verb, such as when the First National Bank agrees to finance your home mortgage loan. It can also be used as a noun referring to an entire industry. At its essence, the study of finance is about understanding the uses and sources of cash, as well as the concept of risk-reward trade-off. Finance is also a tool that can help us be better decision makers."
                 },
                 {
-                    "question": "What is the role of finance in an organization?",
-                    "answer": "The role of finance in an organization is to manage the financial resources of the organization. This includes managing the cash flow, managing the financial assets, and managing the financial risks. Finance is also responsible for the financial reporting and financial analysis of the organization. Finance is a critical function in any organization, as it is responsible for ensuring that the organization has the financial resources it needs to operate effectively."
-                },
-                {
-                    "question": "What is the importance of data and technology in finance?",
-                    "answer": "Data and technology are critical to the success of finance. Finance relies on data to make informed decisions and to manage financial risks. Technology is used to automate financial processes and to provide real-time financial information. Data and technology are also used to develop new financial products and services. Finance is a rapidly changing field, and data and technology are key to keeping up with the pace of change."
-                },
-                {
-                    "question": "What are the careers in finance?",
-                    "answer": "The careers in finance include financial analyst, financial advisor, financial manager, investment banker, and risk manager. Financial analysts analyze financial data and provide financial advice to clients. Financial advisors provide financial advice to individuals and businesses. Financial managers manage the financial resources of an organization. Investment bankers provide financial advice to businesses and help them raise capital. Risk managers manage the financial risks of an organization."
-                },
-                {
-                    "question": "What are the markets and participants in finance?",
-                    "answer": "The markets in finance include the stock market, bond market, and foreign exchange market. The participants in finance include individuals, businesses, governments, and financial institutions. Individuals invest their money in the stock market and bond market. Businesses raise capital by issuing stocks and bonds. Governments issue bonds to finance their spending. Financial institutions provide financial services to individuals and businesses."
-                },
-                {
-                    "question": "What are the microeconomic and macroeconomic matters in finance?",
-                    "answer": "Microeconomic matters in finance include the supply and demand for financial assets, the pricing of financial assets, and the allocation of financial resources. Macroeconomic matters in finance include the overall health of the economy, the level of inflation, and the level of unemployment. Microeconomic matters are important for understanding the behavior of financial markets, while macroeconomic matters are important for understanding the overall health of the economy."
-                },
-                {
-                    "question": "What are the financial instruments in finance?",
-                    "answer": "The financial instruments in finance include stocks, bonds, derivatives, and currencies. Stocks are shares of ownership in a company. Bonds are loans that are issued by a company or government. Derivatives are financial instruments that are based on the value of another financial instrument. Currencies are used to exchange goods and services. Financial instruments are important for managing financial risks and for providing liquidity to the financial markets."
-                },
-                {
-                    "question": "What are the concepts of time and value in finance?",
-                    "answer": "The concepts of time and value in finance are critical for understanding the behavior of financial markets. Time is important for understanding the interest rate, which is the price of borrowing money. Value is important for understanding the price of financial assets, which is determined by the supply and demand for those assets. The concepts of time and value are also important for understanding the relationship between risk and return in finance."
+                    "question": "What are the basic areas in finance?",
+                    "answer": "The basic areas in finance are investment, corporate finance, and financial institutions."
                 }
             ]
         },
         {
-            "chunk": "Concepts of Time and Value\nWhy It Matters\nFinance is essential to the management of a business or organization. Without good financial protocol,\nsafeguards, and tools, running a successful business is more difficult. In 1978, Bacon Signs was a family-\nown",
+            "chunk": "profiles.bacon_signs_inc.90df737e33956dd7c76717a20e9d56ad.html#financials-anchor\n8\n1 • Introduction to Finance\nAccess for free at openstax.org\n1.\nWorking capital management (WCM) is the study and management of short-term assets and liabilities.\nThe chief financial officer (CFO) and the finance team are responsible for establishing company policy for\nhow to manage WCM. The finance department determines credit policy, establishes minimum criteria for\nthe extension of credit to clients, terms of lending, when to extend, and when to take advantage of short-\nterm creditor financing. The accounting department basically implements the finance department’s\npolicies. In many firms, the accounting and finance functions operate in the same department; in others,\nthey are separate.\n2.\nCapital budgeting is the process of determining which long-term or fixed assets to acquire in an effort to\nmaximize shareholder value. Capital budgeting decisions add the greatest value to a firm. As such, capital\nbudgeting is thought to be one of the most important financial functions within a firm. The capital\nbudgeting process consists of estimating the value of potential investments by forecasting the size,",
             "qa_pairs": [
                 {
-                    "question": "What is...?",
-                    "answer": "The answer is..."
+                    "question": "What is Working capital management (WCM)?",
+                    "answer": "Working capital management (WCM) is the study and management of short-term assets and liabilities. The chief financial officer (CFO) and the finance team are responsible for establishing company policy for how to manage WCM. The finance department determines credit policy, establishes minimum criteria for the extension of credit to clients, terms of lending, when to extend, and when to take advantage of short-term creditor financing. The accounting department basically implements the finance department's policies. In many firms, the accounting and finance functions operate in the same department; in others, they are separate."
                 },
                 {
-                    "question": "How does... work?",
-                    "answer": "It works by..."
+                    "question": "What is Capital budgeting?",
+                    "answer": "Capital budgeting is the process of determining which long-term or fixed assets to acquire in an effort to maximize shareholder value. Capital budgeting decisions add the greatest value to a firm. As such, capital budgeting is thought to be one of the most important financial functions within a firm. The capital budgeting process consists of estimating the value of potential investments by forecasting the size, growth, and profitability of the business. The CFO, finance, and accounting departments are responsible for capital budgeting. Capital budgeting decisions are made at the corporate level and not at the divisional level. The finance department forecasts the return on investments and determines the riskiness of the investment. The accounting department forecasts the cash flows and the cost of the investment. The CFO makes the final decision."
                 }
             ]
         },
         {
-            "chunk": "In 1978, Bacon Signs was a family-\nowned, regional Midwestern sign company engaged in the manufacture, sale, installation, and maintenance of\ncommercial signage. The company was about to transition from the second to third generation of family\nownership. B",
+            "chunk": "budgeting process consists of estimating the value of potential investments by forecasting the size,\ntiming, and risk of cash flows associated with the investments. The finance department develops and\ncompiles cash flow estimates with input from the marketing, operations, accounting, human resources,\nand economics departments to develop a portfolio of investment projects that collectively maximize the\nvalue of the firm.\n3.\nCapital structure is the process by which managers focus more specifically on long-term debt and\nincreasing shareholder wealth. Capital structure questions require financial managers to work with\neconomists, lenders, underwriters, investment bankers, and other sources of external financial\ninformation and financial capital. When Bacon Signs developed its financial plan, the executives included\neach of these three aspects of business finance into the plan.\nFigure 1.3 How Corporate Finance Decision-Making Activities Relate to the Balance Sheet\nFigure 1.3 demonstrates how the three essential decision-making activities of the financial manager are\nrelated to a balance sheet. Working capital management focuses on short-term assets and liabilities, capital",
             "qa_pairs": [
                 {
-                    "question": "What is the name of the company?",
-                    "answer": "Bacon Signs"
+                    "question": "What is the budgeting process?",
+                    "answer": "The budgeting process consists of estimating the value of potential investments by forecasting the size, timing, and risk of cash flows associated with the investments. The finance department develops and compiles cash flow estimates with input from the marketing, operations, accounting, human resources, and economics departments to develop a portfolio of investment projects that collectively maximize the value of the firm."
                 },
                 {
-                    "question": "What is the name of the family that owns the company?",
-                    "answer": "Bacon Family"
-                },
-                {
-                    "question": "What year did the company start?",
-                    "answer": "1978"
-                },
-                {
-                    "question": "What is the company's main product?",
-                    "answer": "Commercial Signage"
-                },
-                {
-                    "question": "What are the company's main services?",
-                    "answer": "Manufacture, Sale, Installation, and Maintenance of Commercial Signage"
-                },
-                {
-                    "question": "What is the company's main market?",
-                    "answer": "Midwestern United States"
-                },
-                {
-                    "question": "What is the company's main focus?",
-                    "answer": "Commercial Signage"
-                },
-                {
-                    "question": "What is the company's main goal?",
-                    "answer": "To provide high-quality, reliable, and affordable commercial signage to its customers"
-                },
-                {
-                    "question": "What is the company's main mission?",
-                    "answer": "To provide high-quality, reliable, and affordable commercial signage to its customers, while also providing a safe and healthy work environment for its employees"
-                },
-                {
-                    "question": "What is the company's main objective?",
-                    "answer": "To provide high-quality, reliable, and affordable commercial signage to its customers, while also providing a safe and healthy work environment for its employees, and to be a good corporate citizen in the communities where it operates"
-                },
-                {
-                    "question": "What is the company's main purpose?",
-                    "answer": "To provide high-quality, reliable, and affordable commercial signage to its customers, while also providing a safe and healthy work environment for its employees, and to be a good corporate citizen in the communities where it operates, and to be a leader in the commercial signage industry"
+                    "question": "What is capital structure?",
+                    "answer": "Capital structure is the process by which managers focus more specifically on long-term debt and increasing shareholder wealth. Capital structure questions require financial managers to work with economists, lenders, underwriters, investment bankers, and other sources of external financial information and financial capital. When Bacon Signs developed its financial plan, the executives included each of these three aspects of business finance into the plan."
                 }
             ]
         }
     ],
     "Documents/Stock market - Wikipedia.pdf": [
         {
-            "chunk": "New York Stock Exchange\nLondon Stock Exchange\nNational Stock Exchange of India\nStock market\nA stock market, equity market, or share market is the\naggregation of buyers and sellers of stocks (also called shares),\nwhich represent ownership claims on business",
+            "chunk": "New York Stock Exchange\nLondon Stock Exchange\nNational Stock Exchange of India\nStock market\nA stock market, equity market, or share market is the\naggregation of buyers and sellers of stocks (also called shares),\nwhich represent ownership claims on businesses; these may\ninclude securities listed on a public stock exchange as well as\nstock that is only traded privately, such as shares of private\ncompanies  that  are  sold  to  investors  through  equity\ncrowdfunding platforms. Investments are usually made with an\ninvestment strategy in mind.\nThe total market capitalization of all publicly traded stocks\nworldwide rose from US$2.5 trillion in 1980 to US$111 trillion\nby the end of 2023.[1]\nAs of 2016, there are 60 stock exchanges in the world. Of these,\nthere  are  16  exchanges  with  a  market  capitalization  of  $1\ntrillion or more, and they account for 87% of global market\ncapitalization. Apart from the Australian Securities Exchange,\nthese 16 exchanges are all in North America, Europe, or Asia.[2]\nBy country, the largest stock markets as of January 2022 are in\nthe United States of America (about 59.9%), followed by Japan\n(about 6.2%) and United Kingdom (about 3.9%).[3]\nA  stock  exchange  is  an  exchange  (or  bourse)  where",
+            "qa_pairs": [
+                {
+                    "question": "What is a stock exchange?",
+                    "answer": "A stock exchange is a place where stocks are traded. Stocks are shares of ownership in a company. When you buy a stock, you become a part owner of the company. The price of a stock is determined by supply and demand. If more people want to buy a stock than sell it, the price goes up. If more people want to sell a stock than buy it, the price goes down."
+                },
+                {
+                    "question": "How does a stock exchange work?",
+                    "answer": "A stock exchange is a place where stocks are traded. Stocks are shares of ownership in a company. When you buy a stock, you become a part owner of the company. The price of a stock is determined by supply and demand. If more people want to buy a stock than sell it, the price goes up. If more people want to sell a stock than buy it, the price goes down."
+                }
+            ]
+        },
+        {
+            "chunk": "Kuala Lumpur Stock Exchange)\nInterior hall of the Helsinki Stock\nExchange in Helsinki, Finland, 1965\nTrade in stock markets means the transfer (in exchange for\nmoney) of a stock or security from a seller to a buyer. This\nrequires these two parties to agree on a price. Equities (stocks\nor  shares)  confer  an  ownership  interest  in  a  particular\ncompany.\nParticipants in the stock market range from small individual\nstock investors to larger investors, who can be based anywhere\nin the world, and may include banks, insurance companies,\npension funds and hedge funds. Their buy or sell orders may be\nexecuted on their behalf by a stock exchange trader.\nSome exchanges are physical locations where transactions are\ncarried out on a trading floor, by a method known as open\noutcry.  This  method  is  used  in  some  stock  exchanges  and\ncommodities exchanges, and involves traders shouting bid and\noffer prices. The other type of stock exchange has a network of\ncomputers where trades are made electronically. An example of\nsuch an exchange is the NASDAQ.\nA  potential  buyer  bids  a  specific  price  for  a  stock,  and  a\npotential seller asks a specific price for the same stock. Buying\nor selling at the Market means you will accept any ask price or",
+            "qa_pairs": [
+                {
+                    "question": "What is a stock exchange?",
+                    "answer": "A stock exchange is a place where stocks and other securities are bought and sold. It is a market where people come together to trade shares in companies. It is a place where buyers and sellers come together to buy and sell shares in companies. It is a place where people come together to trade shares in companies."
+                },
+                {
+                    "question": "How does a stock exchange work?",
+                    "answer": "A stock exchange is a place where people come together to trade shares in companies. It is a market where buyers and sellers come together to buy and sell shares in companies. It is a place where people come together to trade shares in companies. It is a place where people come together to trade shares in companies."
+                }
+            ]
+        },
+        {
+            "chunk": "was introduced, and the order matching system was fully automated.\nPeople trading stock will prefer to trade on the most popular exchange since this gives the largest\nnumber of potential counter parties (buyers for a seller, sellers for a buyer) and probably the best\nprice. However, there have always been alternatives such as brokers trying to bring parties together\nto trade outside the exchange. Some third markets that were popular are Instinet, and later Island\nand Archipelago (the latter two have since been acquired by Nasdaq and NYSE, respectively). One\nadvantage is that this avoids the commissions of the exchange. However, it also has problems such\nas adverse selection.[5] Financial regulators have probed dark pools.[6][7]\nMarket participants include individual retail investors, institutional investors (e.g., pension funds,\ninsurance companies, mutual funds, index funds, exchange-traded funds, hedge funds, investor\ngroups, banks and various other financial institutions), and also publicly traded corporations\ntrading in their own shares. Robo-advisors, which automate investment for individuals are also\nmajor participants.\nIn 2021, the value of world stock markets experienced an increase of 26.5%, amounting to US$22.3",
             "qa_pairs": [
                 {
                     "question": "What is...?",
@@ -184,58 +411,6 @@
                 {
                     "question": "How does... work?",
                     "answer": "It works by..."
-                }
-            ]
-        },
-        {
-            "chunk": "represent ownership claims on businesses; these may\ninclude securities listed on a public stock exchange as well as\nstock that is only traded privately, such as shares of private\ncompanies  that  are  sold  to  investors  through  equity\ncrowdfunding platf",
-            "qa_pairs": [
-                {
-                    "question": "What is ownership claims on businesses?",
-                    "answer": "Ownership claims on businesses may include securities listed on a public stock exchange as well as stock that is only traded privately, such as shares of private companies that are sold to investors through equity crowdfunding platforms."
-                },
-                {
-                    "question": "How does ownership claims on businesses work?",
-                    "answer": "Ownership claims on businesses may include securities listed on a public stock exchange as well as stock that is only traded privately, such as shares of private companies that are sold to investors through equity crowdfunding platforms."
-                }
-            ]
-        },
-        {
-            "chunk": "rs  through  equity\ncrowdfunding platforms. Investments are usually made with an\ninvestment strategy in mind.\nThe total market capitalization of all publicly traded stocks\nworldwide rose from US$2.5 trillion in 1980 to US$111 trillion\nby the end of 2023.[1",
-            "qa_pairs": [
-                {
-                    "question": "What is rs  through  equity crowdfunding platforms?",
-                    "answer": "rs  through  equity crowdfunding platforms. Investments are usually made with an investment strategy in mind."
-                },
-                {
-                    "question": "How does equity crowdfunding platforms work?",
-                    "answer": "The total market capitalization of all publicly traded stocks worldwide rose from US$2.5 trillion in 1980 to US$111 trillion by the end of 2023."
-                }
-            ]
-        },
-        {
-            "chunk": "US$111 trillion\nby the end of 2023.[1]\nAs of 2016, there are 60 stock exchanges in the world. Of these,\nthere  are  16  exchanges  with  a  market  capitalization  of  $1\ntrillion or more, and they account for 87% of global market\ncapitalization. Apart fr",
-            "qa_pairs": [
-                {
-                    "question": "What is stock exchange?",
-                    "answer": "A stock exchange is a platform for the buying and selling of stocks, which are also known as equities. It is a place where buyers and sellers meet to trade stocks, and it is typically a physical location, such as a building or an online platform."
-                },
-                {
-                    "question": "How does stock exchange work?",
-                    "answer": "A stock exchange works by bringing together buyers and sellers of stocks in a centralized location. Buyers and sellers can place orders to buy or sell stocks, and the exchange matches these orders based on price and other factors. The exchange also sets rules and regulations for the trading of stocks, such as the minimum price at which a stock can be traded, and the maximum amount that can be traded in a single transaction."
-                }
-            ]
-        },
-        {
-            "chunk": "global market\ncapitalization. Apart from the Australian Securities Exchange,\nthese 16 exchanges are all in North America, Europe, or Asia.[2]\nBy country, the largest stock markets as of January 2022 are in\nthe United States of America (about 59.9%), follow",
-            "qa_pairs": [
-                {
-                    "question": "What is stock market?",
-                    "answer": "The stock market is a place where people can buy and sell stocks. Stocks are pieces of a company that you can buy and sell. When you buy a stock, you are buying a piece of the company. When you sell a stock, you are selling a piece of the company. The stock market is a place where people can buy and sell stocks."
-                },
-                {
-                    "question": "How does stock market work?",
-                    "answer": "The stock market works by allowing people to buy and sell stocks. People can buy stocks when they think the stock will go up in value. People can sell stocks when they think the stock will go down in value. The stock market is a place where people can buy and sell stocks. Stocks are pieces of a company that you can buy and sell. When you buy a stock, you are buying a piece of the company. When you sell a stock, you are selling a piece of the company. The stock market is a place where people can buy and sell stocks."
                 }
             ]
         }

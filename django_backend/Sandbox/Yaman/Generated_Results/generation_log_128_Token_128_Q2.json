@@ -1,0 +1,75 @@
+{
+    "Documents/Finance - Wikipedia.pdf": [
+        {
+            "chunk": "from economics.[1] The earliest doctoral programs in finance were established in the 1960s and\n1970s.[2] Today, finance is also widely studied through career-focused undergraduate and master's\nlevel programs.[3][4]\nAs outlined, the financial system consists of the flows of capital that take place between individuals\nand  households  (personal  finance),  governments  (public  finance),  and  businesses  (corporate\nfinance). \"Finance\" thus studies the process of channeling money from savers and investors to\nentities that need it. [d] Savers and investors have money available which could earn interest or",
+            "qa_pairs": [
+                {
+                    "question": "What are the earliest doctoral programs in finance?",
+                    "answer": "The earliest doctoral programs in finance were established in the 1960s and 1970s."
+                },
+                {
+                    "question": "What are the earliest doctoral programs in finance?",
+                    "answer": "The earliest doctoral programs in finance were established in the 1960s and 1970s."
+                }
+            ]
+        }
+    ],
+    "Documents/Legal Aspects of Corporate Management and Finance_UPDATED.pdf": [
+        {
+            "chunk": "the fifty states, judges are often appointed by governors or elected by the people. The process of electing \nstate judges has become more and more politicized in the past fifteen years, with growing campaign \ncontributions from those who would seek to seat judges with similar political leanings. \n \nIn the federal system, judges are appointed by an elected official (the president) and confirmed by other \nelected officials (the Senate). If the president is from one party and the other party holds a majority of \nSenate seats, political conflicts may come up during the judges’ confirmation processes. Such a division",
+            "qa_pairs": [
+                {
+                    "question": "What is the process of electing state judges?",
+                    "answer": "the process of electing state judges has become more and more politicized in the past fifteen years, with growing campaign contributions from those who would seek to seat judges with similar political leanings."
+                },
+                {
+                    "question": "Why is the process of electing state judges more politicized?",
+                    "answer": "the process of electing state judges has become more and more politicized in the past fifteen years, with growing campaign contributions from those who would seek to seat judges with similar political leanings."
+                }
+            ]
+        }
+    ],
+    "Documents/PrinciplesofFinance-WEB_UPDATED.pdf": [
+        {
+            "chunk": "economy by providing quality products and service to its regional clients.\nIn the early 1980s, the company’s fortunes changed permanently for the better. The owner recognized that\nthe custom signs built by his firm were superior in quality to the signs it installed for national franchises. The\nowner worked with the company’s banker and vice president of finance and operations to develop a\nproduction, sales, and financing plan that could be offered to the larger national sign companies. The larger\ncompanies agreed to subcontract manufacturing of midsize orders to Bacon Signs. The firm then made a",
+            "qa_pairs": [
+                {
+                    "question": "What is the name of the company?",
+                    "answer": "Bacon Signs"
+                },
+                {
+                    "question": "When did the company's fortunes change permanently for the better?",
+                    "answer": "The early 1980s"
+                }
+            ]
+        },
+        {
+            "chunk": "commitment to build and deliver these signs on time and under budget. As Bacon Signs’ reputation for quality\ngrew, so did demand for its products. The original financing plan anticipated this potential growth and was\nIntroduction to Finance\n1\n1 • Why It Matters\n7\ndesigned to meet anticipated capital requirements so that the firm could expand how and when it needed to.\nBacon Signs’ ability to manufacture and deliver a high-quality product at a good price was the true value of the\nfirm. However, without the planning and ability to raise capital facilitated by the financing plan, the firm would",
+            "qa_pairs": [
+                {
+                    "question": "Why was Bacon Signs able to grow?",
+                    "answer": "Bacon Signs was able to grow because of the quality of its product and the ability to raise capital."
+                },
+                {
+                    "question": "What was the true value of Bacon Signs?",
+                    "answer": "The true value of Bacon Signs was its ability to manufacture and deliver a high-quality product at a good price."
+                }
+            ]
+        }
+    ],
+    "Documents/Stock market - Wikipedia.pdf": [
+        {
+            "chunk": "executed on their behalf by a stock exchange trader.\nSome exchanges are physical locations where transactions are\ncarried out on a trading floor, by a method known as open\noutcry.  This  method  is  used  in  some  stock  exchanges  and\ncommodities exchanges, and involves traders shouting bid and\noffer prices. The other type of stock exchange has a network of\ncomputers where trades are made electronically. An example of\nsuch an exchange is the NASDAQ.\nA  potential  buyer  bids  a  specific  price  for  a  stock,  and  a\npotential seller asks a specific price for the same stock. Buying",
+            "qa_pairs": [
+                {
+                    "question": "What is the difference between a stock exchange and a commodities exchange?",
+                    "answer": "A stock exchange is a place where stocks are traded. A commodities exchange is a place where commodities are traded."
+                },
+                {
+                    "question": "What is the difference between a buyer and a seller on a stock exchange?",
+                    "answer": "A buyer is someone who wants to buy a stock, and a seller is someone who wants to sell a stock."
+                }
+            ]
+        }
+    ]
+}
