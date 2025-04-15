@@ -18,12 +18,19 @@ contextBridge.exposeInMainWorld('fs', {
 });
 
 contextBridge.exposeInMainWorld('api', {
-    fetch: async (url) => {
+    fetch: async (url, params={}) => {
         try {
-            const response = await fetch(`http://localhost:3001/proxy?url=${encodeURIComponent(url)}`);
+            var urlString = `http://localhost:3001/proxy?url=${encodeURIComponent(url)}`;
+            if(params["User-Agent"]) {
+                urlString += `&userAgent=${encodeURIComponent(params["User-Agent"])}`
+            }    
+            
+            const response = await fetch(urlString);
+            
             if (!response.ok) {
               throw new Error(`The request failed with status: ${response.status}`);
             }
+
             const data = await response.json();
             return data;
           } catch (error) {

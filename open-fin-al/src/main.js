@@ -59,25 +59,22 @@ async function startAPIFetcher() {
 
   expressApp.all('/proxy', async (req, res) => {
     const targetUrl = req.query.url || req.body.url;
+    const userAgent = req.query?.userAgent || req.body?.userAgent;
     
-    console.log('THE TARGET URL IS: ', targetUrl);
     if (!targetUrl) {
-      console.log("A url was not provided with the request.");
       return res.status(400).send('Target URL is required');
     }
     
     try {
       const urlObject = new URL(targetUrl);
       const hostname = urlObject.hostname;
-      const companyName = 'OpenFinAL'; // Replace with your actual company name
-      const companyEmail = 'jeffrey.d.wall@gmail.com'; // Replace with your actual email
 
       var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
 
       if (!storedFingerprint) {
         // Retrieve and store the certificate if it's not in Keytar
         try {
-          storedFingerprint = await getCertificateFingerprint(hostname, companyName, companyEmail);
+          storedFingerprint = await getCertificateFingerprint(hostname, userAgent);
 
           if (storedFingerprint) {
             await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
@@ -89,11 +86,17 @@ async function startAPIFetcher() {
         }
       }
 
-      var response = await axios.get(`${targetUrl}`, {
-        headers: {
-          'User-Agent': `${companyName} ${companyEmail}`,
-        },
-      });
+      var response;
+
+      if(userAgent) {
+        response = await axios.get(`${targetUrl}`, {
+          headers: {
+            'User-Agent': userAgent,
+          },
+        });
+      } else {
+        response = await axios.get(`${targetUrl}`);
+      }
 
       var cert = response.request.socket?.getPeerCertificate();
       if (!cert) {
@@ -129,13 +132,18 @@ async function startAPIFetcher() {
   });
 }
 
-async function getCertificateFingerprint(hostname, companyName, companyEmail) {
+async function getCertificateFingerprint(hostname, userAgent) {
   try {
-    var response = await axios.get(`https://${hostname}`, {
-      headers: {
-        'User-Agent': `${companyName} ${companyEmail}`,
-      },
-    });
+    var response = null;
+    if(userAgent) {
+      response = await axios.get(`https://${hostname}`, {
+        headers: {
+          'User-Agent': userAgent,
+        },
+      });
+    } else {
+      response = await axios.get(`https://${hostname}`);
+    }
 
     var cert = response.request.socket?.getPeerCertificate();
     if (!cert) {
@@ -361,7 +369,7 @@ app.on('window-all-closed', () => {
 //////////////////////////// Database Section ////////////////////////////
 const userDataPath = app.getPath('userData');
 console.log(userDataPath);
-const dbFileName = 'OpenFinal.sqlite';
+const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(userDataPath, dbFileName);
 
 let db;
