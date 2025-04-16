@@ -6,7 +6,6 @@ import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSecti
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
 import ConfigUpdater from "../Utility/ConfigManager";
-import { valid } from "node-html-parser";
 
 export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -76,7 +75,8 @@ export class SettingsInteractor implements IInputBoundary {
 
         const configUpdater = new ConfigUpdater();
         const config:any = await configUpdater.getConfig();
-
+        console.log("THE CONFIG IS: ");
+        console.log(config);
         //create StockGateway Configurations
         var currentStockGateway = null;
 

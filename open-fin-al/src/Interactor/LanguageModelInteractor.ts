@@ -6,10 +6,7 @@ import {IModelGateway} from "../Gateway/AI/Model/IModelGateway";
 import {LanguageModelRequest} from "../Entity/LanguageModelRequest";
 import {ChatbotModelGatewayFactory} from "../Gateway/AI/Model/ChatbotModelGatewayFactory";
 import { NewsSummaryModelGatewayFactory } from "../Gateway/AI/Model/NewsSummaryModelGatewayFactory";
-
-declare global {
-    interface Window { fs: any; }
-}
+import ConfigUpdater from "../Utility/ConfigManager";
 
 export class LanguageModelInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -21,21 +18,21 @@ export class LanguageModelInteractor implements IInputBoundary {
 
     async post(requestModel: IRequestModel): Promise<IResponseModel> {
         results = {};
+        const configUpdater = new ConfigUpdater();
+        const config = await configUpdater.getConfig();
 
         //create stock request object and fill with request model
         var request = new LanguageModelRequest();
         request.fillWithRequest(requestModel);
 
-        const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
-
         var gateway: IModelGateway;
 
         if(requestModel.request.request.action && requestModel.request.request.action === "getNewsSummary") {
             const NewsSummaryGatewayFactory = new NewsSummaryModelGatewayFactory();
-            gateway = await NewsSummaryGatewayFactory.createGateway(JSON.parse(config));
+            gateway = await NewsSummaryGatewayFactory.createGateway(config);
         } else {
             const ChatbotGatewayFactory = new ChatbotModelGatewayFactory();
-            gateway = await ChatbotGatewayFactory.createGateway(JSON.parse(config));    
+            gateway = await ChatbotGatewayFactory.createGateway(config);    
         }
 
         //add the API key to the request object

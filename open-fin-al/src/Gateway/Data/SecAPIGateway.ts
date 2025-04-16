@@ -4,6 +4,13 @@ import {IKeylessDataGateway} from "./IKeylessDataGateway";
 export class SecAPIGateway implements IKeylessDataGateway {
     baseURL: string = "https://data.sec.gov/";
     sourceName: string = "SEC's API";
+    userAgent: string = "";
+
+    constructor(params:any={userAgent:null}) {
+        if(params.userAgent) {
+            this.userAgent = params.userAgent;
+        }
+    }
 
     connect(): void {
         //no connection needed for this data gateway
@@ -30,8 +37,18 @@ export class SecAPIGateway implements IKeylessDataGateway {
         } else {
             throw Error("Either no action was sent in the request or an incorrect action was used.");
         }   
-          
-        const data = await window.api.fetch(url);
+        
+        var data;
+        if(this.userAgent) {
+            data = await window.exApi.fetch(url, {
+                headers: {
+                    "User-Agent": this.userAgent
+                }
+            });
+        } else {
+            data = await window.exApi.fetch(url);
+        }
+        
 
         entity.setFieldValue("data", data);
 

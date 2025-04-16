@@ -18,7 +18,7 @@ const cors = require('cors');
 const https = require("https");
 const crypto = require("crypto");
 
-//////////////////////////// Core Electron Section ////////////////////////////
+//////////////////////////// Main Electron Window Section ////////////////////////////
 
 let win;           // main window
 let urlWindow;     // url window
@@ -40,6 +40,7 @@ const createWindow = () => {
       webSecurity: true
     } 
   });
+
   //win.setMenu(null); // this doesn't allow opening developer tools
   win.maximize();
   win.show();
@@ -48,216 +49,7 @@ const createWindow = () => {
   win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
 
   win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY); 
-  //win.loadURL(path.join(app.getAppPath(), 'src/index.html'));
 };
-
-//utilize express to create a server for API communication so that the main window can maintain CORS security
-async function startAPIFetcher() {
-  const expressApp = express();
-  expressApp.use(cors());
-  expressApp.use(express.json());
-
-  expressApp.all('/proxy', async (req, res) => {
-    const targetUrl = req.query.url || req.body.url;
-    const userAgent = req.query?.userAgent || req.body?.userAgent;
-    
-    if (!targetUrl) {
-      return res.status(400).send('Target URL is required');
-    }
-    
-    try {
-      const urlObject = new URL(targetUrl);
-      const hostname = urlObject.hostname;
-
-      var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
-
-      if (!storedFingerprint) {
-        // Retrieve and store the certificate if it's not in Keytar
-        try {
-          storedFingerprint = await getCertificateFingerprint(hostname, userAgent);
-
-          if (storedFingerprint) {
-            await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
-          } else {
-            return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
-          }
-        } catch (fingerprintError) {
-          return res.status(500).send(`Error retrieving certificate fingerprint: ${fingerprintError}` ); // Or handle this differently
-        }
-      }
-
-      var response;
-
-      if(userAgent) {
-        response = await axios.get(`${targetUrl}`, {
-          headers: {
-            'User-Agent': userAgent,
-          },
-        });
-      } else {
-        response = await axios.get(`${targetUrl}`);
-      }
-
-      var cert = response.request.socket?.getPeerCertificate();
-      if (!cert) {
-        res.status(403).json({
-            error: {
-              code: "FORBIDDEN",
-              message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
-            }
-        });
-        return;
-      }
-
-      var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-      if (storedFingerprint !== fingerprint) {
-        res.status(403).json({
-            error: {
-              code: "FORBIDDEN",
-              message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
-            }
-        });
-        return;
-      }
-
-      res.json(response.data);
-    } catch (error) {
-      console.error('Proxy error:', error);
-      res.status(500).json({message: 'Proxy error'});
-    }
-  });
-
-  expressApp.listen(3001, () => {
-    console.log('Proxy server listening on port 3001');
-  });
-}
-
-async function getCertificateFingerprint(hostname, userAgent) {
-  try {
-    var response = null;
-    if(userAgent) {
-      response = await axios.get(`https://${hostname}`, {
-        headers: {
-          'User-Agent': userAgent,
-        },
-      });
-    } else {
-      response = await axios.get(`https://${hostname}`);
-    }
-
-    var cert = response.request.socket?.getPeerCertificate();
-    if (!cert) {
-      console.error(`No certificate found for ${hostname}`);
-      return null;
-    }
-
-    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-    return fingerprint;
-  } catch (error) {
-    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
-    return null;
-  }
-}
-
-//keytar allows for the secure storage of API keys and other secrets
-async function getSecret(key) {
-  try {
-    return await keytar.getPassword('OpenFinAL', key);
-  } catch(error) {
-    window.console.error(error);
-    return null;
-  }
-}
-
-async function setSecret(key, secret) {
-  try {
-    await keytar.setPassword('OpenFinAL', key, secret);
-    return true;
-  } catch(error) {
-    window.console.error(error);
-    return false;
-  }
-}
-
-ipcMain.handle('get-secret', async (event, key) => {
-  return await getSecret(key);
-});
-
-ipcMain.handle('set-secret', async (event, key, value) => {
-  return await setSecret(key, value);
-});
-
-//use fs to save config files user userData folder
-const configFileName = 'default.config.json';
-const configPath = path.join(app.getPath('userData'), configFileName);
-
-function saveConfig(config) {
-  try {
-    fs.openSync(configPath, 'w');
-    fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
-    return true; // Indicate success
-  } catch (err) {
-    console.error('Error saving config:', err);
-    return false; // Indicate failure
-  }
-}
-
-function hasConfig() {
-  try {
-    if(fs.existsSync(configPath)) {
-      return true;
-    } else {
-      throw new Error("The config file does not exist");
-    }
-  } catch(error) { 
-    console.error(error);
-    return false;
-  }
-}
-
-function loadConfig() {
-  try {
-    const data = fs.readFileSync(configPath, 'utf8');
-    return JSON.parse(data);
-  } catch (err) {
-    console.error('Error loading config:', err);
-    return false; // Return default config
-  }
-}
-
-ipcMain.handle('has-config', (event) => {
-  return hasConfig();
-});
-
-ipcMain.handle('save-config', (event, config) => {
-  return saveConfig(config);
-});
-
-ipcMain.handle('load-config', (event) => {
-  return loadConfig();
-});
-
-//puppeteer allows for automated visiting of websites to extract text
-ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
-
-  try {
-    await page.goto(url, { waitUntil: 'networkidle2' });
-    
-    if(url.includes("zacks.com")) {
-      await page.waitForSelector('.show_article');
-      await page.click('.show_article');
-    }
-    
-    const text = await page.evaluate(() => document.body.innerText);
-    await browser.close();
-    return text;
-  } catch (err) {
-    await browser.close();
-    console.log(err);
-  }
-});
 
 app.whenReady().then(() => {
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
@@ -284,6 +76,8 @@ app.whenReady().then(() => {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
   })
 });
+
+//////////////////////////// External URL Electron Window Section ////////////////////////////
 
 // securely open a new Electron window with a URL
 // 🔒 Prevents access to Node.js
@@ -366,7 +160,262 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit()
 });
 
+//////////////////////////// Express Server for API Access Section ////////////////////////////
+
+//utilize express to create a server for API communication so that the main window can maintain CORS security
+async function startAPIFetcher() {
+  const expressApp = express();
+  expressApp.use(cors());
+  expressApp.use(express.json());
+
+  expressApp.all('/proxy', async (req, res) => {
+    const targetUrl = req.query.url;
+    const urlObject = new URL(targetUrl);
+    const method = req.method ? req.method : "GET";
+    const headers = req.headers ? req.headers : null;
+    const body = req.body ? req.body : null;
+    const userAgent = urlObject.searchParams && urlObject.searchParams["userAgent"] ? urlObject.searchParams["userAgent"] : null
+    console.log("THE USER AGENT IS: ");
+    console.log(urlObject);
+    console.log(userAgent);
+    const requestDetails = {};
+
+    //control which headers pass through to the express server.
+    if(headers) {
+      requestDetails.headers = {};
+
+      if(userAgent) {
+        //User-Agent is automatically changed when entering express server to browser agent. Allow for custom agent header.
+        requestDetails.headers["User-Agent"] = userAgent;
+      }
+      else if(headers["user-agent"]) {
+        requestDetails.headers["User-Agent"] = headers["user-agent"];
+      }
+
+      if(headers["authorization"]) {
+        requestDetails.headers["Authorization"] = headers["authorization"];
+      }
+
+      if(headers["content-type"]) {
+        requestDetails.headers["Content-Type"] = headers["content-type"];
+      }
+      
+    }
+
+    if(body) {
+      requestDetails.body = body;
+    }
+    console.log("REQUEST DETAILS: ");
+    console.log(targetUrl);
+    console.log(requestDetails);
+    if (!targetUrl) {
+      return res.status(400).send('A valid URL is required');
+    }
+    
+    try {
+      const hostname = urlObject.hostname;
+
+      var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
+
+      if (!storedFingerprint) {
+        // Retrieve and store the certificate if it's not in Keytar
+        try {
+          storedFingerprint = await getCertificateFingerprint(hostname, userAgent);
+
+          if (storedFingerprint) {
+            await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
+          } else {
+            return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
+          }
+        } catch (fingerprintError) {
+          return res.status(500).send(`Error retrieving certificate fingerprint: ${fingerprintError}` ); // Or handle this differently
+        }
+      }
+
+      var response;
+
+      if(method === "POST") {
+        if(requestDetails == {}) {
+          response = await axios.post(`${targetUrl}`);
+        } else {
+          response = await axios.post(`${targetUrl}`, requestDetails);
+        }
+      } else {
+        if(requestDetails == {}) {
+          response = await axios.get(`${targetUrl}`);
+        } else {
+          response = await axios.get(`${targetUrl}`, requestDetails);
+        }
+      }
+
+      var cert = response.request.socket?.getPeerCertificate();
+      if (!cert) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
+            }
+        });
+        return;
+      }
+
+      var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+      if (storedFingerprint !== fingerprint) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
+            }
+        });
+        return;
+      }
+
+      res.json(response.data);
+    } catch (error) {
+      //console.error('Proxy error:', error);
+      res.status(500).json({message: 'Proxy error'});
+    }
+  });
+
+  expressApp.listen(3001, () => {
+    console.log('Proxy server listening on port 3001');
+  });
+}
+
+//get certificate fingerprint to ensure secure access
+async function getCertificateFingerprint(hostname, userAgent) {
+  try {
+    var response = null;
+    if(userAgent) {
+      response = await axios.get(`https://${hostname}`, {        
+          'User-Agent': userAgent,        
+      });
+    } else {
+      response = await axios.get(`https://${hostname}`);
+    }
+
+    var cert = response.request.socket?.getPeerCertificate();
+    if (!cert) {
+      console.error(`No certificate found for ${hostname}`);
+      return null;
+    }
+
+    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+    return fingerprint;
+  } catch (error) {
+    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
+    return null;
+  }
+}
+
+//////////////////////////// Keytar Secret Storage Section ////////////////////////////
+
+//keytar allows for the secure storage of API keys and other secrets
+async function getSecret(key) {
+  try {
+    return await keytar.getPassword('OpenFinAL', key);
+  } catch(error) {
+    window.console.error(error);
+    return null;
+  }
+}
+
+async function setSecret(key, secret) {
+  try {
+    await keytar.setPassword('OpenFinAL', key, secret);
+    return true;
+  } catch(error) {
+    window.console.error(error);
+    return false;
+  }
+}
+
+ipcMain.handle('get-secret', async (event, key) => {
+  return await getSecret(key);
+});
+
+ipcMain.handle('set-secret', async (event, key, value) => {
+  return await setSecret(key, value);
+});
+
+//////////////////////////// Software Configuration Section ////////////////////////////
+
+//use fs to save config files user userData folder
+const configFileName = 'default.config.json';
+const configPath = path.join(app.getPath('userData'), configFileName);
+
+function saveConfig(config) {
+  try {
+    fs.openSync(configPath, 'w');
+    fs.writeFileSync(configPath, JSON.stringify(config, null, 4));
+    return true; // Indicate success
+  } catch (err) {
+    console.error('Error saving config:', err);
+    return false; // Indicate failure
+  }
+}
+
+function hasConfig() {
+  try {
+    if(fs.existsSync(configPath)) {
+      return true;
+    } else {
+      throw new Error("The config file does not exist");
+    }
+  } catch(error) { 
+    //console.error(error);
+    return false;
+  }
+}
+
+function loadConfig() {
+  try {
+    const data = fs.readFileSync(configPath, 'utf8');
+    return JSON.parse(data);
+  } catch (err) {
+    console.error('Error loading config:', err);
+    return false; 
+  }
+}
+
+ipcMain.handle('has-config', (event) => {
+  return hasConfig();
+});
+
+ipcMain.handle('save-config', (event, config) => {
+  return saveConfig(config);
+});
+
+ipcMain.handle('load-config', (event) => {
+  return loadConfig();
+});
+
+//////////////////////////// Puppeteer for Scraping/Automatin Section ////////////////////////////
+
+//puppeteer allows for automated visiting of websites to extract text
+ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
+  const browser = await puppeteer.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto(url, { waitUntil: 'networkidle2' });
+    
+    if(url.includes("zacks.com")) {
+      await page.waitForSelector('.show_article');
+      await page.click('.show_article');
+    }
+    
+    const text = await page.evaluate(() => document.body.innerText);
+    await browser.close();
+    return text;
+  } catch (err) {
+    await browser.close();
+    console.log(err);
+  }
+});
+
 //////////////////////////// Database Section ////////////////////////////
+
 const userDataPath = app.getPath('userData');
 console.log(userDataPath);
 const dbFileName = 'OpenFinAL.sqlite';

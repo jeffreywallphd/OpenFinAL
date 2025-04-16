@@ -17,16 +17,37 @@ contextBridge.exposeInMainWorld('fs', {
     fs: require('fs')
 });
 
-contextBridge.exposeInMainWorld('api', {
+contextBridge.exposeInMainWorld('exApi', {
     fetch: async (url, params={}) => {
         try {
             var urlString = `http://localhost:3001/proxy?url=${encodeURIComponent(url)}`;
-            if(params["User-Agent"]) {
-                urlString += `&userAgent=${encodeURIComponent(params["User-Agent"])}`
-            }    
             
-            const response = await fetch(urlString);
+            /*if(params["User-Agent"]) {
+                urlString += `&userAgent=${encodeURIComponent(params["User-Agent"])}`;
+            }
             
+            if(params["method"]) {
+                urlString += `&method=${encodeURIComponent(params["method"])}`;
+            }
+
+            if(params["headers"]) {
+                urlString += `&headers=${encodeURIComponent(params["headers"])}`;
+            }
+
+            if(params["body"]) {
+                urlString += `&body=${encodeURIComponent(params["body"])}`;
+            }*/
+            console.log("HELLLO1");
+            var response;
+            if(!params || Object.keys(params).length === 0) {
+                response = await fetch(urlString);
+            } else {
+                console.log("THE PARAMS IN PRELOAD: ");
+                console.log(params);
+                response = await fetch(urlString, params);
+            }
+            console.log(response);
+            console.log("HELLLO2");
             if (!response.ok) {
               throw new Error(`The request failed with status: ${response.status}`);
             }

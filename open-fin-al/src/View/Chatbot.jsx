@@ -20,7 +20,7 @@ class Chatbot extends Component {
 
     handleSendMessage = async () => {
         const configManager = new ConfigUpdater();
-        const config = configManager.getConfig();
+        const config = await configManager.getConfig();
 
         const { userInput, messages } = this.state;
         if (userInput.trim() === "") return; // Prevent sending empty messages
@@ -46,7 +46,7 @@ class Chatbot extends Component {
         }`);
         
         let response = await interactor.post(requestObj);
-
+        window.console.log(response);
         updatedMessages = [...this.state.messages, response];
 
         this.setState({

@@ -18,7 +18,6 @@ class ConfigUpdater {
     keys = ["ALPHAVANTAGE_API_KEY","FMP_API_KEY","OPENAI_API_KEY","HUGGINGFACE_API_KEY"];
     
     constructor() {
-        console.log(window.vault);
         this.vault = window.vault;
     }
 
@@ -52,10 +51,7 @@ class ConfigUpdater {
     }
 
     async createConfigIfNotExists() {
-        //const fs = window.fs.fs;
-
         try {
-            window.console.log("DOES THE CONFIG EXIST: ", await window.config.exists());
             if(!await window.config.exists()) {
                 const defaultConfig = {
                     StockGateway: "AlphaVantageStockGateway",
@@ -119,11 +115,11 @@ class ConfigUpdater {
     }
 
     async getSecret(key:string) {
-        return await this.vault.getSecret("OpenFinAL", key);
+        return await this.vault.getSecret(key);
     }
 
     async setSecret(key:string, value:string) {
-        await this.vault.setSecret("OpenFinAL", key, value);
+        await this.vault.setSecret(key, value);
     }
 
     async getEnv() {

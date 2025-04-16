@@ -7,7 +7,7 @@ import { parse } from 'node-html-parser';
 declare global {
     interface Window { 
         database: any,
-        api: any
+        exApi: any
     }
 }
 
@@ -223,7 +223,9 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async refreshTableCache(entity: IEntity) {
         await this.delete(entity, "");
 
-        const secData = await window.api.fetch('https://www.sec.gov/files/company_tickers.json',{"User-Agent": "OpenFinAl jeffrey.d.wall@gmail.com"});
+        //pass custom user-agent header through url query to avoid it being overriden
+        const customUserAgent = "OpenFinAL jeffrey.d.wall@gmail.com";
+        const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json?userAgent=${encodeURIComponent(customUserAgent)}`);
 
         // Parse the SEC JSON file to extract ticker, CIK, and companyName
         for(var key in secData) {
@@ -253,26 +255,26 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         } 
 
         // get the S&P 500 companies and store those in a database
-        const SP500Response = await window.api.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
+        const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
         window.console.log(SP500Response);
         const SP500Object = parse(SP500Response);
 
         // get all of the rows from the consituents table that stores the S&P500 companies
-        const rows = SP500Object.querySelector("#constituents").querySelectorAll("tr");
+        const rows = SP500Object.querySelector("#constituents")?.querySelectorAll("tr");
 
         // loop over all rows in the constituents table to extract S&P500 tickers
-        for(var row of rows) {
-            var tds = Array.from(row.querySelectorAll("td"));
-
-            // for valid rows in the table, get the ticker from the first cell and update the database
-            if(tds.length > 0) {
-                var SP500ticker = tds[0].querySelector("a").innerText;
-                const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
-                const updateArgs = [SP500ticker];
-                await window.database.SQLiteUpdate({ query: updateQuery, parameters: updateArgs });
+        if (rows) {
+            for(var row of rows) {
+                var tds = Array.from(row.querySelectorAll("td"));
+    
+                // for valid rows in the table, get the ticker from the first cell and update the database
+                if(tds.length > 0) {
+                    var SP500ticker = tds[0].querySelector("a").innerText;
+                    const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
+                    const updateArgs = [SP500ticker];
+                    await window.database.SQLiteUpdate({ query: updateQuery, parameters: updateArgs });
+                }
             }
         }
-
-        
     }
 }

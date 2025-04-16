@@ -26,7 +26,7 @@ export function AppPreparing(props) {
         await interactor.get(requestObj);
 
         const updater = new ConfigUpdater();
-        updater.createEnvIfNotExists();
+        await updater.createEnvIfNotExists();
 
         props.handleLoading();
     };

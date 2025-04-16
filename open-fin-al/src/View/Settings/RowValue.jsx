@@ -11,8 +11,6 @@ function SettingsRowValue(props) {
         }));
     };
 
-    window.console.log(props.configuration.name);
-
     return (            
         <div className="key-cell">
             <input 
@@ -33,6 +31,7 @@ function SettingsRowValue(props) {
                     <span className="configDescription">To obtain a key to retrieve data, please visit: <span className="spanLink" onClick={() => window.urlWindow.openUrlWindow(props.settings[props.configuration.name].valueSite)}>{props.settings[props.configuration.name].valueSite}</span></span>
                 </>
             ) : (
+                
                 !props.settings[props.configuration.name].hasValue  && (
                     <>
                         <br/>

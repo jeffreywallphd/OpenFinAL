@@ -13,7 +13,7 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
     async create(model: string, messages: any[]): Promise<any> {
         try {
             const configManager = new ConfigUpdater();
-            const config:any = configManager.getConfig();
+            const config:any = await configManager.getConfig();
 
             var maxTokens = config.ChatbotModelSettings.maxOutputTokens;
             var temperature = config.ChatbotModelSettings.temperature;
@@ -25,21 +25,35 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                 topP = config.NewsSummaryModelSettings.topP;
             }
 
-            const response = await fetch("https://api.openai.com/v1/chat/completions", {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${this.key}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    model: model,
-                    messages: messages,
-                    max_tokens: maxTokens,
-                    temperature: temperature,
-                    top_p: topP
-                }),
-            });
+            var response;
+
+            var message = {
+                role: "assistant",
+                content: ""
+            };
+
+            try {
+                response = await window.exApi.fetch("https://api.openai.com/v1/chat/completions", {
+                    method: "POST",
+                    headers: {
+                        "Authorization": `Bearer ${this.key}`,
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        model: model,
+                        messages: messages,
+                        max_tokens: maxTokens,
+                        temperature: temperature,
+                        top_p: topP
+                    }),
+                });
+            } catch(error) {
+                window.console.log(error);
+                message.content = "Unable to connect to the OpenAI API";
+                return message;
+            }
             
+            window.console.log(response);
             const data = await response.json();
             window.console.log(data);
 
@@ -47,10 +61,7 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                 return data.choices[0].message;
             }
 
-            var message = {
-                role: "assistant",
-                content: ""
-            };
+            
 
             if(response.status === 403) {
                 if(data.error.code === "model_not_found") {

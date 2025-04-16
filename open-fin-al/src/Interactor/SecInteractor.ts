@@ -32,6 +32,7 @@ export class SecInteractor implements IInputBoundary {
 
             //instantiate the correct API gateway
             const config = await window.config.load();
+            window.console.log(config);
             const secGatewayFactory = new SecReportGatewayFactory();
             var secGateway: IDataGateway = await secGatewayFactory.createGateway(config);
 
@@ -39,7 +40,7 @@ export class SecInteractor implements IInputBoundary {
             
             //search for the requested information via the API gateway
             var results = await secGateway.read(sec, requestModel.request.request.sec.action);
-            
+            window.console.log(results);
             //convert the API gateway response to a JSON reponse object
             var response = new JSONResponse();
             
