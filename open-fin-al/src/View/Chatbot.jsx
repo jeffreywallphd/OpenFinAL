@@ -46,7 +46,7 @@ class Chatbot extends Component {
         }`);
         
         let response = await interactor.post(requestObj);
-        window.console.log(response);
+        
         updatedMessages = [...this.state.messages, response];
 
         this.setState({

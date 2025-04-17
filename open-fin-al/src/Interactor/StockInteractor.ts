@@ -62,7 +62,7 @@ export class StockInteractor implements IInputBoundary {
         } else {
             //instantiate the correct API gateway
             const config = await window.config.load();
-            window.console.log(config);
+            
             const stockGatewayFactory = new StockGatewayFactory();
             stockGateway = await stockGatewayFactory.createGateway(config);
             

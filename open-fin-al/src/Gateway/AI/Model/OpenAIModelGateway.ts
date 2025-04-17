@@ -40,6 +40,7 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                         "Content-Type": "application/json",
                     },
                     body: JSON.stringify({
+                        endpointMethod: "POST",
                         model: model,
                         messages: messages,
                         max_tokens: maxTokens,
@@ -48,23 +49,16 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                     }),
                 });
             } catch(error) {
-                window.console.log(error);
                 message.content = "Unable to connect to the OpenAI API";
                 return message;
             }
             
-            window.console.log(response);
-            const data = await response.json();
-            window.console.log(data);
-
-            if(response.ok && data.choices) {
-                return data.choices[0].message;
+            if(response.choices) {
+                return response.choices[0].message;
             }
 
-            
-
             if(response.status === 403) {
-                if(data.error.code === "model_not_found") {
+                if(response.error.code === "model_not_found") {
                     message.content = `The OpenAI key you provided does not grant you access to the ${model} model. Please update the OpenFinAL chatbot settings to utilize an appropriate model or change the settings of your OpenAI account to support the ${model} model.`;
                     return message;
                 } else {
@@ -74,7 +68,7 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
             } 
             
             if(response.status === 401) {
-                if(data.error.code === "invalid_api_key") {
+                if(response.error.code === "invalid_api_key") {
                     message.content = `The OpenAI key you provided is not a valid key for the configured account. Please retrieve a valid key from your OpenAI account and add it to the OpenFinAL chatbot settings.`;
                     return message;
                 } else {

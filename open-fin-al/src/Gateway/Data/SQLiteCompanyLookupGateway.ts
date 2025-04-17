@@ -256,7 +256,6 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
 
         // get the S&P 500 companies and store those in a database
         const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
-        window.console.log(SP500Response);
         const SP500Object = parse(SP500Response);
 
         // get all of the rows from the consituents table that stores the S&P500 companies

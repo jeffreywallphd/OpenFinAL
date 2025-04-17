@@ -75,8 +75,7 @@ export class SettingsInteractor implements IInputBoundary {
 
         const configUpdater = new ConfigUpdater();
         const config:any = await configUpdater.getConfig();
-        console.log("THE CONFIG IS: ");
-        console.log(config);
+        
         //create StockGateway Configurations
         var currentStockGateway = null;
 

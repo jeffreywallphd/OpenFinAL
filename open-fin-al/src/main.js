@@ -57,8 +57,8 @@ app.whenReady().then(() => {
       responseHeaders: {
         ...details.responseHeaders,
         'Content-Security-Policy': [
-          `default-src 'self'; 
-          script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net; 
+          `default-src 'self';
+          script-src 'self' 'unsafe-eval'; 
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
           img-src 'self' data: https://*.gstatic.com; 
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
@@ -170,15 +170,22 @@ async function startAPIFetcher() {
 
   expressApp.all('/proxy', async (req, res) => {
     const targetUrl = req.query.url;
+
+    if (!targetUrl) {
+      return res.status(400).send('A valid URL is required');
+    }
+
     const urlObject = new URL(targetUrl);
-    const method = req.method ? req.method : "GET";
+    
     const headers = req.headers ? req.headers : null;
     const body = req.body ? req.body : null;
-    const userAgent = urlObject.searchParams && urlObject.searchParams["userAgent"] ? urlObject.searchParams["userAgent"] : null
-    console.log("THE USER AGENT IS: ");
-    console.log(urlObject);
-    console.log(userAgent);
+
+    //to override default method and user-agent selected by browser, pass method and agent as url query params
+    const method = req.body ? req.body.endpointMethod : "GET";
+    const userAgent = urlObject.searchParams ? urlObject.searchParams.get("userAgent") : null
+
     const requestDetails = {};
+    const certificateRequestDetails = {};
 
     //control which headers pass through to the express server.
     if(headers) {
@@ -187,48 +194,48 @@ async function startAPIFetcher() {
       if(userAgent) {
         //User-Agent is automatically changed when entering express server to browser agent. Allow for custom agent header.
         requestDetails.headers["User-Agent"] = userAgent;
+        certificateRequestDetails["User-Agent"] = userAgent;
       }
       else if(headers["user-agent"]) {
         requestDetails.headers["User-Agent"] = headers["user-agent"];
+        certificateRequestDetails["User-Agent"] = headers["user-agent"];
       }
 
       if(headers["authorization"]) {
         requestDetails.headers["Authorization"] = headers["authorization"];
+        certificateRequestDetails["Authorization"] = headers["authorization"];
       }
 
       if(headers["content-type"]) {
         requestDetails.headers["Content-Type"] = headers["content-type"];
+        certificateRequestDetails["Content-Type"] = headers["content-type"];
       }
-      
     }
 
     if(body) {
+      delete body.endpointMethod;
       requestDetails.body = body;
-    }
-    console.log("REQUEST DETAILS: ");
-    console.log(targetUrl);
-    console.log(requestDetails);
-    if (!targetUrl) {
-      return res.status(400).send('A valid URL is required');
     }
     
     try {
       const hostname = urlObject.hostname;
 
-      var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
+      if(method === "GET") {
+        var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
 
-      if (!storedFingerprint) {
-        // Retrieve and store the certificate if it's not in Keytar
-        try {
-          storedFingerprint = await getCertificateFingerprint(hostname, userAgent);
+        if (!storedFingerprint) {
+          // Retrieve and store the certificate if it's not in Keytar
+          try {
+            storedFingerprint = await getCertificateFingerprint(hostname, method, certificateRequestDetails);
 
-          if (storedFingerprint) {
-            await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
-          } else {
-            return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
+            if (storedFingerprint) {
+              await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
+            } else {
+              return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
+            }
+          } catch (fingerprintError) {
+            return res.status(500).send(`Error retrieving certificate fingerprint: ${fingerprintError}` ); // Or handle this differently
           }
-        } catch (fingerprintError) {
-          return res.status(500).send(`Error retrieving certificate fingerprint: ${fingerprintError}` ); // Or handle this differently
         }
       }
 
@@ -238,7 +245,13 @@ async function startAPIFetcher() {
         if(requestDetails == {}) {
           response = await axios.post(`${targetUrl}`);
         } else {
-          response = await axios.post(`${targetUrl}`, requestDetails);
+          const postHeaders = {headers: requestDetails.headers};
+
+          response = await axios.post(
+            targetUrl, 
+            requestDetails.body, 
+            postHeaders 
+          );
         }
       } else {
         if(requestDetails == {}) {
@@ -248,31 +261,32 @@ async function startAPIFetcher() {
         }
       }
 
-      var cert = response.request.socket?.getPeerCertificate();
-      if (!cert) {
-        res.status(403).json({
-            error: {
-              code: "FORBIDDEN",
-              message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
-            }
-        });
-        return;
+      if(method === "GET") {
+        var cert = response.request.socket?.getPeerCertificate();
+        if (!cert) {
+          res.status(403).json({
+              error: {
+                code: "FORBIDDEN",
+                message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
+              }
+          });
+          return;
+        }
+
+        var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+        if (storedFingerprint !== fingerprint) {
+          res.status(403).json({
+              error: {
+                code: "FORBIDDEN",
+                message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
+              }
+          });
+          return;
+        }
       }
 
-      var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-      if (storedFingerprint !== fingerprint) {
-        res.status(403).json({
-            error: {
-              code: "FORBIDDEN",
-              message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
-            }
-        });
-        return;
-      }
-
-      res.json(response.data);
+      return res.json(response.data);
     } catch (error) {
-      //console.error('Proxy error:', error);
       res.status(500).json({message: 'Proxy error'});
     }
   });
@@ -283,15 +297,27 @@ async function startAPIFetcher() {
 }
 
 //get certificate fingerprint to ensure secure access
-async function getCertificateFingerprint(hostname, userAgent) {
+async function getCertificateFingerprint(hostname, method, certificateRequestDetails) {
   try {
     var response = null;
-    if(userAgent) {
-      response = await axios.get(`https://${hostname}`, {        
-          'User-Agent': userAgent,        
-      });
-    } else {
-      response = await axios.get(`https://${hostname}`);
+    
+    try {
+      if(method === "POST") {
+        if(Object.keys(certificateRequestDetails).length > 0) {
+          const postHeaders = {headers: certificateRequestDetails};
+          response = await axios.post(`https://${hostname}`, null, postHeaders);
+        } else {
+          response = await axios.post(`https://${hostname}`);
+        }
+      } else {
+        if(Object.keys(certificateRequestDetails).length > 0) {
+            response = await axios.get(`https://${hostname}`, certificateRequestDetails);
+        } else {
+            response = await axios.get(`https://${hostname}`);
+        }
+      }
+    } catch(e) {
+      console.log(e);
     }
 
     var cert = response.request.socket?.getPeerCertificate();
@@ -417,7 +443,6 @@ ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
 //////////////////////////// Database Section ////////////////////////////
 
 const userDataPath = app.getPath('userData');
-console.log(userDataPath);
 const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(userDataPath, dbFileName);
 
