@@ -156,9 +156,6 @@ class ConfigUpdater {
             if(config = window.config.load()) {
                 return config;
             } else {
-
-
-
                 throw new Error("");
             }
         } catch(e) {

@@ -4,11 +4,12 @@ import { IKeylessDataGateway } from "./IKeylessDataGateway";
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
-    interface Window { yahoo: any; }
+    interface Window { 
+      yahooFinance: any 
+    }
 }
 
 export class YFinanceStockGateway implements IKeylessDataGateway {
-  yahooFinance = window.yahoo.finance;
   sourceName: string = "Yahoo Finance (unofficial) Community API";
      
   connect(): void {
@@ -106,7 +107,7 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
         const searchOptions = {
             quotesCount: 10
         };
-        const searchResult = await this.yahooFinance.search(keyword, searchOptions);
+        const searchResult = await window.yahooFinance.search(keyword, searchOptions);
 
         // the filter ensures only results with a symbol are mapped
         const symbols = searchResult.quotes.filter((result:any) => result.symbol).map((result:any) => ({
@@ -171,7 +172,8 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
         interval: "1m"
       };
 
-      const data = await this.yahooFinance.chart(entity.getFieldValue("ticker"), queryOptions);
+      const data = await window.yahooFinance.chart(entity.getFieldValue("ticker"), queryOptions);
+      console.log(data);
       return data;
     } catch (error) {
       throw new Error("Error occurred while fetching intraday data: " + error.message);
@@ -202,7 +204,7 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
     period1 = period1Map[entity.getFieldValue("interval")];
 
     try {
-        const data = await this.yahooFinance.historical(entity.getFieldValue("ticker"), {
+        const data = await window.yahooFinance.historical(entity.getFieldValue("ticker"), {
             period1: period1,
             period2: new Date()
         });

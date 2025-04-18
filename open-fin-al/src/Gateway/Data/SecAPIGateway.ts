@@ -49,7 +49,6 @@ export class SecAPIGateway implements IKeylessDataGateway {
             data = await window.exApi.fetch(url);
         }
         
-
         entity.setFieldValue("data", data);
 
         const entities = [entity];

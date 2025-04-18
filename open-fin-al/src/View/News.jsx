@@ -7,6 +7,7 @@
 import React, { Component } from "react";
 import { NewsSearchBar } from "./News/NewsSearchBar";
 import { NewsListing } from "./News/NewsListing";
+import ConfigUpdater from "../Utility/ConfigManager";
 
 class NewsPage extends Component {
     constructor(props) {
@@ -17,7 +18,8 @@ class NewsPage extends Component {
         initializing: true,
         data: null,
         error: null,
-        isLoading: false
+        isLoading: false,
+        config: null
     };
 
     //Used to pass data from the search bar to the chart
@@ -25,7 +27,15 @@ class NewsPage extends Component {
         this.setState(state);
     }
 
-    render() {        
+    async getConfig() {
+        const configManager = new ConfigUpdater();
+        const newState = this.state;
+        newState.config = await configManager.getConfig();
+        this.handleDataChange(newState);
+    }
+
+    render() {   
+        this.getConfig();     
         return (
                 <div className="page">
                     <h2><span className="material-icons">article</span> Investment News </h2>

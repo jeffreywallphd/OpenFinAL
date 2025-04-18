@@ -6,6 +6,7 @@ const { contextBridge, ipcRenderer } = require('electron');
 const { promises: fsPromises } = require('fs');
 const fs = require('fs');
 const { get } = require('http');
+const yf = require('yahoo-finance2').default;
   
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
@@ -72,6 +73,12 @@ contextBridge.exposeInMainWorld('database', {
 
 contextBridge.exposeInMainWorld('yahoo', {
     finance: require('yahoo-finance2').default
+});
+
+contextBridge.exposeInMainWorld('yahooFinance', {
+    chart: (ticker, options) => ipcRenderer.invoke('yahoo-chart', ticker, options),
+    search: async (keyword, options) => ipcRenderer.invoke('yahoo-search', keyword, options),
+    historical: async (ticker, options) => ipcRenderer.invoke('yahoo-historical', ticker, options)
 });
 
 contextBridge.exposeInMainWorld('urlWindow', {

@@ -24,9 +24,9 @@ export class NewsInteractor implements IInputBoundary {
         news.fillWithRequest(requestModel);
 
         //instantiate the correct API gateway
-        const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
+        const config = window.config.load();
         const newsGatewayFactory = new NewsGatewayFactory();
-        var newsGateway: IDataGateway = await newsGatewayFactory.createGateway(JSON.parse(config));
+        var newsGateway: IDataGateway = await newsGatewayFactory.createGateway(config);
 
         //add the API key to the news request object
         news.setFieldValue("key", newsGateway.key);

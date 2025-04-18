@@ -10,7 +10,7 @@ import { LanguageModelInteractor } from "../../Interactor/LanguageModelInteracto
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 import ConfigUpdater from "../../Utility/ConfigManager";
 
-function NewsListing({ listingData }) {
+function NewsListing({ listingData, state }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -31,10 +31,9 @@ function NewsListing({ listingData }) {
   const formatTime = (timeString) => {
     return `${timeString.substring(0,2)}:${timeString.substring(2,4)}:${timeString.substring(4,6)}`;
   };
-
-  const configManager = new ConfigUpdater();
-  const config = configManager.getConfig();
-
+  
+  const config = state.config;
+  window.console.log(config);
   return (
     <div className="news-item">
       <div className="news-item-image" style={{ marginRight: '10px' }}>

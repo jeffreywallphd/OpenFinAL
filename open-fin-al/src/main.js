@@ -17,6 +17,7 @@ const axios = require('axios');
 const cors = require('cors');
 const https = require("https");
 const crypto = require("crypto");
+const yf = require("yahoo-finance2").default;
 
 //////////////////////////// Main Electron Window Section ////////////////////////////
 
@@ -60,7 +61,7 @@ app.whenReady().then(() => {
           `default-src 'self';
           script-src 'self' 'unsafe-eval'; 
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
-          img-src 'self' data: https://*.gstatic.com; 
+          img-src 'self' data: https://*.gstatic.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com; 
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
           connect-src 'self' http://localhost:3001;`
         ],
@@ -362,6 +363,31 @@ ipcMain.handle('get-secret', async (event, key) => {
 
 ipcMain.handle('set-secret', async (event, key, value) => {
   return await setSecret(key, value);
+});
+
+//////////////////////////// Yahoo Finance Section ////////////////////////////
+async function yahooChart(ticker, options) {
+ return await yf.chart(ticker, options);
+}
+
+async function yahooSearch(keyword, options) {
+  return await yf.search(keyword, options);
+}
+
+async function yahooHistorical(ticker, options) {
+  return await yf.historical(ticker, options);
+}
+
+ipcMain.handle('yahoo-chart', async (event, ticker, options) => {
+  return await yahooChart(ticker, options);
+});
+
+ipcMain.handle('yahoo-search', async (event, keyword, options) => {
+  return await yahooSearch(keyword, options);
+});
+
+ipcMain.handle('yahoo-historical', async (event, ticker, options) => {
+  return await yahooHistorical(ticker, options);
 });
 
 //////////////////////////// Software Configuration Section ////////////////////////////

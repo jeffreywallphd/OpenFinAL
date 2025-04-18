@@ -48,8 +48,8 @@ export class AlphaVantageNewsGateway implements IKeyedDataGateway {
             url = url + "&sort=" + entity.getFieldValue("sort");
         }
 
-        const response = await fetch(url);
-        const data = await response.json();
+        const response = await window.exApi.fetch(url);
+        const data = response;
 
         if("Information" in data) {
             throw Error("The API key used for Alpha Vantage has reached its daily limit");
