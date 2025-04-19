@@ -72,11 +72,16 @@ export class StockInteractor implements IInputBoundary {
 
         //search for the requested information via the API gateway
         var results = await stockGateway.read(stock, requestModel.request.request.stock.action);
+        var response;
 
-        //convert the API gateway response to a JSON reponse object
-        var response = new JSONResponse();
-        response.convertFromEntity(results, false);
-        response.response["source"] = stockGateway.sourceName;
+        if(results) {
+            //convert the API gateway response to a JSON reponse object
+            response = new JSONResponse();
+            response.convertFromEntity(results, false);
+            response.response["source"] = stockGateway.sourceName;
+        } else {
+            response = new JSONResponse(JSON.stringify({status: 400, data: {error: "No data is available for this stock."}}));
+        }
 
         return response.response;
     }

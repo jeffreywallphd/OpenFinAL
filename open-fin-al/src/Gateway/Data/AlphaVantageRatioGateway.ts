@@ -36,7 +36,7 @@ export class AlphaVantageRatioGateway implements IDataGateway {
 
         const response = await window.exApi.fetch(url);
         const data = response;
-        window.console.log(data);
+
         if("Information" in data) {
             throw Error("The API key used for Alpha Vantage has reached its daily limit");
         }

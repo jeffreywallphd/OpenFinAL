@@ -40,11 +40,8 @@ export class SecAPIGateway implements IKeylessDataGateway {
         
         var data;
         if(this.userAgent) {
-            data = await window.exApi.fetch(url, {
-                headers: {
-                    "User-Agent": this.userAgent
-                }
-            });
+            const customUserAgent = "OpenFinAL jeffrey.d.wall@gmail.com";
+            data = await window.exApi.fetch(url + `?userAgent=${encodeURIComponent(customUserAgent)}`);
         } else {
             data = await window.exApi.fetch(url);
         }

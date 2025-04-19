@@ -26,31 +26,35 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> {
-        var url;
-        if (action === "lookup") {
-            url = this.getSymbolLookupUrl(entity);    
-        } else if (action === "intraday") {
-            url = this.getIntradayUrl(entity);
-        } else if (action === "interday") {
-            url = this.getInterdayUrl(entity);
-        } else {
-            throw Error("Either no action was sent in the request or an incorrect action was used.");
-        }     
+        try {
+            var url;
+            if (action === "lookup") {
+                url = this.getSymbolLookupUrl(entity);    
+            } else if (action === "intraday") {
+                url = this.getIntradayUrl(entity);
+            } else if (action === "interday") {
+                url = this.getInterdayUrl(entity);
+            } else {
+                throw Error("Either no action was sent in the request or an incorrect action was used.");
+            }     
 
-        const data = await window.exApi.fetch(url);
-        
-        if("Information" in data) {
-            throw Error("The API key used for Alpha Vantage has reached its daily limit");
+            const data = await window.exApi.fetch(url);
+            
+            if("Information" in data) {
+                throw Error("The API key used for Alpha Vantage has reached its daily limit");
+            }
+
+            var entities;
+            if (action === "lookup") {
+                entities = this.formatLookupResponse(data);
+            } else {
+                entities = this.formatDataResponse(data, entity, action);
+            }
+
+            return entities;
+        } catch(error) {
+            return null;
         }
-
-        var entities;
-        if (action === "lookup") {
-            entities = this.formatLookupResponse(data);
-        } else {
-            entities = this.formatDataResponse(data, entity, action);
-        }
-
-        return entities;
     }
 
     private getSymbolLookupUrl(entity: IEntity) {
@@ -73,6 +77,10 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             timeSeries = data["Time Series (Daily)"];
         } else {
             timeSeries = data["Time Series (1min)"];    
+        }
+
+        if(!timeSeries) {
+            throw Error("No time series data is available for this stock.");
         }
 
         const mostRecentDate = new Date(Object.keys(timeSeries)[0]);

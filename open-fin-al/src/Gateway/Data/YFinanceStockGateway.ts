@@ -173,7 +173,6 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
       };
 
       const data = await window.yahooFinance.chart(entity.getFieldValue("ticker"), queryOptions);
-      console.log(data);
       return data;
     } catch (error) {
       throw new Error("Error occurred while fetching intraday data: " + error.message);

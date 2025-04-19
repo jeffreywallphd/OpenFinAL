@@ -1,9 +1,5 @@
 // allow the transformers contextBridge to be used in TypeScript
 declare global {
-    interface Window { fs: any }
-}
-
-declare global {
     interface Window { vault: any }
 }
 
@@ -12,8 +8,6 @@ declare global {
 }
 
 class ConfigUpdater {
-    configFile:string = '../config/default.json';
-    envFile:string = '../.env';
     vault:any;
     keys = ["ALPHAVANTAGE_API_KEY","FMP_API_KEY","OPENAI_API_KEY","HUGGINGFACE_API_KEY"];
     
@@ -27,27 +21,6 @@ class ConfigUpdater {
                 this.vault.setSecret("OpenFinAL", key, "");
             }
         }
-        
-        /*const fs = window.fs.fs;
-
-        try {
-            const envExists = await fs.stat(this.envFile);     
-        } catch(error) {
-            // .env file didn't exist throws error. Try to create .env
-            try {
-                await fs.open(this.envFile, "w");
-                
-                var envJson = {
-                    ALPHAVANTAGE_API_KEY: "",
-                    FMP_API_KEY: "",
-                    OPENAI_API_KEY: ""
-                }
-
-                await fs.writeFile(this.envFile, JSON.stringify(envJson, null, 4));
-            } catch(error2) {
-                console.error(error2);
-            }
-        }*/
     }
 
     async createConfigIfNotExists() {
@@ -81,19 +54,6 @@ class ConfigUpdater {
         }
     }
 
-    async saveEnv(env:object) {
-        /*try {
-            const fs = window.fs.fs;
-            await fs.open(this.envFile, "w");
-            await fs.writeFile(this.envFile, JSON.stringify(env, null, 4));
-
-            return true;
-        } catch(error) {
-            console.error(error);
-            return false;
-        }*/
-    }
-
     async saveConfig(config:object) {
         try {
             window.config.save(config);
@@ -102,16 +62,6 @@ class ConfigUpdater {
             console.error("Unable to save the configuration file: ", error);
             return false;
         }
-        /*try {
-            const fs = window.fs.fs;
-            await fs.open(this.configFile, "w");
-            await fs.writeFile(this.configFile, JSON.stringify(config, null, 4));
-
-            return true;
-        } catch(error) {
-            console.error(error);
-            return false;
-        }*/
     }
 
     async getSecret(key:string) {
@@ -120,34 +70,6 @@ class ConfigUpdater {
 
     async setSecret(key:string, value:string) {
         await this.vault.setSecret(key, value);
-    }
-
-    async getEnv() {
-
-        /*const fs = window.fs.fs;
-    
-        try {
-            try {
-                let envData = await fs.readFile(this.envFile, 'utf8');
-
-                envData = fs.readFile(this.envFile, 'utf8', (err:any, data:any) => {
-                    if (err) {
-                      console.log('An error occurred:', err);
-                      return;
-                    }
-                    console.log('File content:', data);
-                  });
-
-                let envConfig = JSON.parse(envData.toString());
-                return envConfig;
-            } catch(error) {
-                console.log("Error reading .env file:",error);
-                return null;
-            }    
-        } catch (err) {
-            console.error('Error updating .env file:', err);
-            return null;
-        }*/
     }
 
     async getConfig() {
@@ -162,17 +84,6 @@ class ConfigUpdater {
             console.error("Unable to load the configuration file: ", e);
             return null;
         }
-        /*const fs = window.fs.fs;
-
-        try {
-            let configData = await fs.readFile(this.configFile, 'utf8');
-            let config = JSON.parse(configData.toString());
-            
-            return config;
-        } catch (err) {
-            console.error('Error updating configuration:', err);
-            return null;
-        }*/
     }
 }
 

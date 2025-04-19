@@ -1224,6 +1224,10 @@ nav ul li a:hover {
   display: none;
 }
 
+.error {
+  color: red;
+}
+
 .error-message {
   color: red;
   margin-left: 20px;

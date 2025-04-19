@@ -45,7 +45,6 @@ export class SecInteractor implements IInputBoundary {
             var response = new JSONResponse();
             
             response.convertFromEntity(results, false);
-
             return response.response;
         }
         
@@ -89,6 +88,10 @@ export class SecInteractor implements IInputBoundary {
         const submissionsResponse = await this.get(secRequestObj);
 
         const mostRecentSubmissionIndex:number = this.findMostRecentFilingIndex(submissionsResponse, type);
+
+        if(!mostRecentSubmissionIndex) {
+            return null;
+        }
 
         // set up response object to fill with data
         const response: {[key: string]: any } = {response: {

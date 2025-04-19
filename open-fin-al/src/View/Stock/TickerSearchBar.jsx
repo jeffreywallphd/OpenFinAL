@@ -22,7 +22,7 @@ function  TickerSearchBar(props) {
         newState = await fetchPriceVolumeData(newState);
 
         //Get SEC Data
-        if(fetchSec) {
+        if(fetchSec && newState.error === false) {
             newState = await fetchRatioData(newState);
         }
         
@@ -57,9 +57,21 @@ function  TickerSearchBar(props) {
         }`);
 
         const results = await interactor.get(requestObj);
+
+        //if the results come back with a status of 400, set error.
+        if(results.status && results.status === 400) {
+            newState.error = true;
+            newState.initializing = true;
+            newState.ticker = newState.searchRef;
+            newState.cik = cik;
+            newState.isLoading = false;
+            return newState;
+        }
+
         var priceData = results;
 
         //Update the state
+        newState.error = false;
         newState.initializing = true;
         newState.data = priceData;
         newState.dataSource = results.source;

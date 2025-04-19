@@ -33,7 +33,7 @@ function NewsListing({ listingData, state }) {
   };
   
   const config = state.config;
-  window.console.log(config);
+
   return (
     <div className="news-item">
       <div className="news-item-image" style={{ marginRight: '10px' }}>
@@ -70,8 +70,6 @@ function NewsListing({ listingData, state }) {
                   }
               }`);
 
-              window.console.log(requestObj);
-
               var response = await interactor.post(requestObj);
 
               if(response.content) {
@@ -84,9 +82,7 @@ function NewsListing({ listingData, state }) {
             } else {
               setIsLoading(false);
               setMessage("Unable to extract article text");
-              window.console.log("No text was provided");
             }
-            window.console.log(response);
           }}>
             Create AI Summary of Article
           </button> 

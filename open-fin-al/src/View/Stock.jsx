@@ -61,15 +61,17 @@ function Stock(props) {
 
             const reportResults10K = await secInteractor.get(req10K);
             const reportResults10Q = await secInteractor.get(req10Q);
-
-            // Update the DataContext state to include reportLinks
-            setState((prevState) => ({
-                ...prevState,
-                reportLinks: {
-                    tenK: reportResults10K.response.link,
-                    tenQ: reportResults10Q.response.link
-                }
-            }));
+            
+            if(reportResults10K && reportResults10Q) {
+                // Update the DataContext state to include reportLinks if they exist
+                setState((prevState) => ({
+                    ...prevState,
+                    reportLinks: {
+                        tenK: reportResults10K.response.link,
+                        tenQ: reportResults10Q.response.link
+                    }
+                }));
+            }
         };
 
         if (state?.data) {
@@ -92,7 +94,7 @@ function Stock(props) {
                                         <p>Loading...</p>
                                     </>
                                 ) : state.error ? (
-                                    <p>The ticker you entered is not valid. Please choose a valid ticker.</p>
+                                    <p className="error">The ticker you entered is not valid or no data is available for this stock.</p>
                                 ) : (
                                     <p>Data Source: {state.dataSource}</p>   
                                 )}
