@@ -27,6 +27,7 @@ class ConfigUpdater {
         try {
             if(!await window.config.exists()) {
                 const defaultConfig = {
+                    DarkMode: false,
                     StockGateway: "AlphaVantageStockGateway",
                     NewsGateway: "AlphaVantageNewsGateway",
                     ReportGateway: "SecAPIGateway",

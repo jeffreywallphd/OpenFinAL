@@ -44,37 +44,23 @@ function ScrollToTop({ onRouteChange }) {
     if (onRouteChange) onRouteChange();
   }, [pathname]);
 
-  useEffect(() => {
-          const clearDarkMode = () => {
-              //localStorage.removeItem("darkMode");
-              localStorage.setItem("darkMode", "false");
-          };
-  
-          window.addEventListener("beforeunload", clearDarkMode);
-          return () => {
-              window.removeEventListener("beforeunload", clearDarkMode);
-          };
-      }, []); 
-
   return null;
 }
 
 class AppLoaded extends Component {
   constructor(props) {
     super(props);
-
-    const darkMode = localStorage.getItem("darkMode") === "true";
-
+  
     this.state = {
       menuCollapsed: false,
-      darkMode,
-      logo: darkMode ? logoDark : logo,
-      logoNoText: darkMode ? logoNoTextDark : logoNoText
     };
 
     this.toggleMenu = this.toggleMenu.bind(this);
     this.checkDarkMode = this.checkDarkMode.bind(this);
-    this.checkDarkMode();
+  }
+
+  componentDidMount() {
+    this.checkDarkMode(); 
   }
 
   toggleMenu() {
@@ -90,8 +76,9 @@ class AppLoaded extends Component {
     var img = document.getElementById("logo");
   };
 
-  checkDarkMode() {
-    const darkMode = localStorage.getItem("darkMode") === "true";
+  async checkDarkMode() {
+    const config = await window.config.load();
+    const darkMode = config.DarkMode;
 
     if (darkMode !== this.state.darkMode) {
       this.setState({

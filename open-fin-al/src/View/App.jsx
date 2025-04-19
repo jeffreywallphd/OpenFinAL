@@ -46,17 +46,17 @@ function App(props) {
 
     const value = { state, setState };
 
-    // Clear localStorage when the app is closed or refreshed
-    useEffect(() => {
-        const clearDarkMode = () => {
-            //localStorage.removeItem("darkMode");
-            localStorage.setItem("darkMode", "false");
-        };
-
-        window.addEventListener("beforeunload", clearDarkMode);
-        return () => {
-            window.removeEventListener("beforeunload", clearDarkMode);
-        };
+    // Establish dark mode settings when loaded or refreshed
+    useEffect( () => {
+        async function getDarkMode() {
+            const config = await window.config.load();
+            if(config && config.DarkMode) {
+                document.body.classList.add("dark-mode");
+            } else {
+                document.body.classList.remove("dark-mode");
+            }
+        }
+        getDarkMode();
     }, []);
 
     const handleLoading = () => {

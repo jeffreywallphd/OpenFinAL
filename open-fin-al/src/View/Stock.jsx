@@ -4,7 +4,7 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { TimeSeriesChart } from "./Stock/TimeSeriesChart";
 import { TickerSearchBar } from "./Stock/TickerSearchBar";
@@ -17,10 +17,10 @@ import { JSONRequest } from "../Gateway/Request/JSONRequest";
 function Stock(props) {
     const location = useLocation();
     const { state, setState } = useContext(DataContext);
+    const { fundamentalAnalysis, setFundamentalAnalysis } = useState(null);
     
     //ensure that the state changes
     useEffect(() => {
-
         state.reportLinks = null;
 
         setState({
@@ -30,6 +30,11 @@ function Stock(props) {
 
     const handleDataChange = (newState) => {
         setState(newState);
+    };
+
+    const handleAIFundamentalAnalysis = () => {
+        const analysis = "This is a hard coded test";
+        setFundamentalAnalysis(analysis);
     };
 
     // Fetch report links from the SEC API
@@ -98,8 +103,8 @@ function Stock(props) {
                                 ) : (
                                     <p>Data Source: {state.dataSource}</p>   
                                 )}
-                            
-                                <TimeSeriesChart state={state} handleDataChange={handleDataChange} />
+
+                                <TimeSeriesChart state={state} fundamentalAnalysis={fundamentalAnalysis} handleDataChange={handleDataChange} />
                             </>
                         ) :   
                         (<p>Loading Context...</p>)
@@ -108,7 +113,7 @@ function Stock(props) {
                 <div className="sidePanel">
                     { state && state.secData ? (
                         <>
-                            <TickerSidePanel state={state} />
+                            <TickerSidePanel state={state} handleAIFundamentalAnalysis={handleAIFundamentalAnalysis} />
                         </>
                     ) : (null)}
                 </div>

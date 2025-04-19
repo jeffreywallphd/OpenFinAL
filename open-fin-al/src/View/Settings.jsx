@@ -9,6 +9,13 @@ function Settings(props) {
     const [sections, setSections] = useState([]);
     const [settings, setSettings] = useState({});
     const [message, setMessage] = useState(null);
+    const [darkMode, setDarkMode] = useState(() => {
+        async function getInitialDarkMode() {
+            const config = await window.config.load();
+            return config.DarkMode;
+        }
+        getInitialDarkMode();
+    });
     
     const interactor = new SettingsInteractor();
 
@@ -72,38 +79,40 @@ function Settings(props) {
                 navigate('/refresh', { replace: true }); // dummy path
                 setTimeout(() => {
                     navigate(location.pathname, { replace: true }); // go back
-                }, 10);
-            }, 50); // slight delay to allow localStorage update
+                }, 100);
+            }, 500); // slight delay to allow config update
         } else {
             setMessage("Failed to save the configuration");
         }
     };
 
-    const [darkMode, setDarkMode] = useState(() => {
-        return localStorage.getItem("darkMode") === "true"; // Retrieve from localStorage
-    });
+    const toggleDarkMode = async () => {
+        const config = await window.config.load();
+        config.DarkMode = !config.DarkMode;
+        await window.config.save(config);
+
+        setDarkMode(config.DarkMode);
     
-    // Dynamically apply dark mode class to the body and store preference
-    useEffect(() => {
-        if (darkMode) {
+        if (config.DarkMode) {
             document.body.classList.add("dark-mode");
         } else {
             document.body.classList.remove("dark-mode");
         }
-        localStorage.setItem("darkMode", darkMode); // Store preference
-    }, [darkMode]);
-    
+    };
+
     useEffect(() => {
-        const clearDarkMode = () => {
-            //localStorage.removeItem("darkMode");
-            localStorage.setItem("darkMode","false");
-        };
-    
-        window.addEventListener("beforeunload", clearDarkMode);
-        
-        return () => {
-            window.removeEventListener("beforeunload", clearDarkMode);
-        };
+        async function getDarkMode() {
+            const config = await window.config.load();
+            if(config && config.DarkMode) {
+                setDarkMode(true);
+                document.body.classList.add("dark-mode");
+            } else {
+                setDarkMode(false);
+                document.body.classList.remove("dark-mode");
+            }
+        }
+
+        getDarkMode();
     }, []);    
 
     const navigate = useNavigate();
@@ -119,8 +128,7 @@ function Settings(props) {
                         <button
                             id="dark-mode-toggle"
                             onClick={() => {
-                                const newDarkMode = !darkMode;
-                                setDarkMode(newDarkMode);
+                                toggleDarkMode();
                         
                                 // Force refresh of the route after state change
                                 setTimeout(() => {
@@ -128,10 +136,10 @@ function Settings(props) {
                                     setTimeout(() => {
                                         navigate(location.pathname, { replace: true }); // go back
                                     }, 10);
-                                }, 50); // slight delay to allow localStorage update
+                                }, 50); // slight delay to allow config update
                             }}
                             >
-                                {darkMode ? "Light Mode" : "Dark Mode"}
+                                {darkMode ? "Dark Mode" : "Light Mode"}
                         </button>
                     </div>
                 </div>

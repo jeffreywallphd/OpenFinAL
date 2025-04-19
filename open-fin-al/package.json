@@ -1,8 +1,8 @@
 {
-  "name": "my-new-app",
-  "productName": "my-new-app",
-  "version": "1.0.0",
-  "description": "My Electron application description",
+  "name": "open-final",
+  "productName": "OpenFinAL",
+  "version": "0.1.0",
+  "description": "An AI-enabled software to learn financial investing",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
@@ -16,7 +16,7 @@
     "name": "Jeff Wall",
     "email": "jeffrey.d.wall@gmail.com"
   },
-  "license": "MIT",
+  "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "@babel/core": "^7.26.10",
     "@babel/preset-react": "^7.26.3",

@@ -5,10 +5,39 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 function TimeSeriesChart(props) {
+    const [chartColor, setChartColor] = useState("#62C0C2");
+    const [toolTipStyle, setToolTipStyle] = useState({
+        contentStyle: {backgroundColor: '#FFFFFF'},
+        labelStyle: {color: '#000000'},
+        itemStyle: {color: "#62C0C2"}
+    });
+
+    useEffect( () => {
+        async function getDarkMode() {
+            const config = await window.config.load();
+            if(config && config.DarkMode) {
+                setChartColor("#92F0F2");
+                setToolTipStyle({
+                    contentStyle: {backgroundColor: '#333333'},
+                    labelStyle: {color: '#F0F0F0'},
+                    itemStyle: {color: "#92F0F2"}
+                });
+            } else {
+                setChartColor("#62C0C2");
+                setToolTipStyle({
+                    contentStyle: {backgroundColor: '#FFFFFF'},
+                    labelStyle: {color: '#000000'},
+                    itemStyle: {color: "#62C0C2"}
+                });
+            }
+        }
+        getDarkMode();
+    }, []);
+
     setInterval = (selectedInterval) => {
         var type;
         if(selectedInterval === "1D") {
@@ -97,26 +126,42 @@ function TimeSeriesChart(props) {
                 <AreaChart width={700} height={300} key="timeSeries" data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#62C0C2" stopOpacity={0.8}/>
-                            <stop offset="95%" stopColor="#62C0C2" stopOpacity={0}/>
+                            <stop offset="5%" stopColor={chartColor} stopOpacity={0.8}/>
+                            <stop offset="95%" stopColor={chartColor} stopOpacity={0}/>
                         </linearGradient>
                     </defs>
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
                     <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks}/>
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-                    <Tooltip />
-                    <Area type="monotone" dataKey="price" stroke="#62C0C2" fillOpacity={1} fill="url(#colorArea)" dot={false}/>
+                    <Tooltip 
+                        contentStyle={toolTipStyle.contentStyle}
+                        labelStyle={toolTipStyle.labelStyle}
+                        itemStyle={toolTipStyle.itemStyle}
+                    />
+                    <Area type="monotone" dataKey="price" stroke={chartColor} fillOpacity={1} fill="url(#colorArea)" dot={false}/>
                 </AreaChart>
                 <BarChart width={700} height={100} data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
                     <YAxis domain={[0, props.state.maxVolume]} angle={-45} />
                     <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip />
-                    <Bar type="monotone" dataKey="volume" fill="#62C0C2"/>
+                    <Tooltip 
+                        contentStyle={toolTipStyle.contentStyle}
+                        labelStyle={toolTipStyle.labelStyle}
+                        itemStyle={toolTipStyle.itemStyle}
+                    />
+                    <Bar type="monotone" dataKey="volume" fill={chartColor}/>
                 </BarChart>
 
                 {props.state.secData ? 
                     <>
+                        { props.fundamentalAnalysis ? 
+                                <>
+                                    <h3>AI Fundamental Analysis</h3>
+                                    <p>{props.fundamentalAnalysis}</p>
+                                </>
+                            :
+                                (null)
+                        }
                         <h3>Stock Details</h3>
                         <div className="stockDetails">
                             <div><span>Description:</span> {props.state.secData.response.results[0].data.Description}</div>
