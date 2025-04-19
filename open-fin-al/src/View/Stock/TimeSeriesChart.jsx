@@ -157,7 +157,7 @@ function TimeSeriesChart(props) {
                         { props.fundamentalAnalysis ? 
                                 <>
                                     <h3>AI Fundamental Analysis</h3>
-                                    <p>{props.fundamentalAnalysis}</p>
+                                    <div className="stockDetails">{props.fundamentalAnalysis}</div>
                                 </>
                             :
                                 (null)

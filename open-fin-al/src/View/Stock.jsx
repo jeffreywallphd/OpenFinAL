@@ -12,12 +12,15 @@ import { TickerSidePanel } from "./Stock/TickerSidePanel";
 import { DataContext } from "./App";
 
 import { SecInteractor } from "../Interactor/SecInteractor";
+import { LanguageModelInteractor } from "../Interactor/LanguageModelInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 
 function Stock(props) {
     const location = useLocation();
     const { state, setState } = useContext(DataContext);
-    const { fundamentalAnalysis, setFundamentalAnalysis } = useState(null);
+    const [ fundamentalAnalysis, setFundamentalAnalysis ] = useState(null);
+    const [ fundamentalAnalysisDisabled, setFundamentalAnalysisDisabled ] = useState(false);
+    const [ analysisLoading, setAnalysisLoading ] = useState(false);
     
     //ensure that the state changes
     useEffect(() => {
@@ -32,10 +35,64 @@ function Stock(props) {
         setState(newState);
     };
 
-    const handleAIFundamentalAnalysis = () => {
-        const analysis = "This is a hard coded test";
-        setFundamentalAnalysis(analysis);
+    const handleAIFundamentalAnalysis = async () => {
+        setFundamentalAnalysisDisabled(true);
+        setAnalysisLoading(true);
+
+        const config = await window.config.load();
+
+        const instructions = "Provide a financial analysis for the following company using the accompanied data. The evaluation should have the following sections, each in an individual paragraph (use these exact section headers): Performance Analysis, Cashflow and Debt Analysis, Management Efficiency, Stock Price Evaluation, Investment Recommendation. Return the results in a JSON format with a property for each section.";
+        const data = JSON.stringify(state.secData.response.results[0].data).replace(/[^a-zA-Z0-9 .:]/g, "");
+        const message = instructions + data;
+       
+        var requestObj = new JSONRequest(`{
+            "request": {
+                "action": "getNewsSummary",
+                "model": {
+                    "name":"${config.NewsSummaryModelSettings.NewsSummaryModelName}",
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": "${message}"
+                        }
+                    ]
+                }
+            }
+        }`);
+
+        var interactor = new LanguageModelInteractor();
+        var response = await interactor.post(requestObj);
+        var analysis="";
+        
+        if(response.content) {
+            try{
+                const analysisSections = JSON.parse(response.content);
+                var contents = [];
+                for(const [sectionTitle, sectionText] of Object.entries(analysisSections)) {
+                    contents.push(<p><strong>{sectionTitle}</strong>: {sectionText}</p>);
+                }
+
+                analysis = <>{contents}</>
+
+                setFundamentalAnalysis(analysis);
+            } catch(error) {
+                analysis = <p>The AI model returned information that was not properly formmated. This may result in difficulty reading the output.</p>;
+                analysis += response.content;
+                setFundamentalAnalysis(analysis);
+            }
+        } else {
+            analysis = "The AI model failed to generate a response.";
+            setFundamentalAnalysis(analysis);
+            setFundamentalAnalysisDisabled(false);
+        }  
+        setAnalysisLoading(false);
     };
+
+    useEffect(() => {
+        setFundamentalAnalysis(null);
+        setFundamentalAnalysisDisabled(false);
+        setAnalysisLoading(false);
+    }, [state?.searchRef])
 
     // Fetch report links from the SEC API
     useEffect(() => {
@@ -113,7 +170,7 @@ function Stock(props) {
                 <div className="sidePanel">
                     { state && state.secData ? (
                         <>
-                            <TickerSidePanel state={state} handleAIFundamentalAnalysis={handleAIFundamentalAnalysis} />
+                            <TickerSidePanel state={state} analysisLoading={analysisLoading} handleAIFundamentalAnalysis={handleAIFundamentalAnalysis} fundamentalAnalysisDisabled={fundamentalAnalysisDisabled} />
                         </>
                     ) : (null)}
                 </div>

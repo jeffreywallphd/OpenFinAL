@@ -39,9 +39,11 @@ function TickerSidePanel(props) {
             { props.state.secData ?  
                 <div>
                     <h3>AI Fundamental Analysis</h3>
-                    <button onClick={() => props.handleAIFundamentalAnalysis()}>
+                    <button disabled={props.fundamentalAnalysisDisabled} onClick={() => props.handleAIFundamentalAnalysis()}>
                         Analyze Financial Ratios
                     </button>
+                    <br/>
+                    <div className={`small-loader ${props.analysisLoading ? '' : 'hidden'}`}></div>
                 </div>
             :
                 (null)

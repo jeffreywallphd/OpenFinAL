@@ -1,5 +1,4 @@
 import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
-import ConfigUpdater from "../Utility/ConfigManager";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";

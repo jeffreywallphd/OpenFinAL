@@ -8,7 +8,6 @@ import React, {useState} from "react";
 import {NewsListingSummary} from "./Listing/Summary";
 import { LanguageModelInteractor } from "../../Interactor/LanguageModelInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
-import ConfigUpdater from "../../Utility/ConfigManager";
 
 function NewsListing({ listingData, state }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
