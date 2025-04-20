@@ -6,9 +6,26 @@
 
 import React, { useEffect, useState, useRef } from "react";
 
-async function Slide(props) {
+function Slide(props) {
+    const [contents, setContents] = useState(null);
     const [state, setState] = useState({ disable: false });
     const soundRef = useRef(null);
+
+    useEffect(() => {
+        let isMounted = true;
+        const loadContent = async () => {
+            if (props.page.pageContentUrl) {
+                const html = await window.file.read(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`);
+                if (isMounted) {
+                    setContents(html);
+                }
+            }
+        };
+        loadContent();
+        return () => {
+            isMounted = false;
+        };
+    }, [props.page.pageContentUrl]);
 
     const parseHtmlToComponents = (htmlString) => {
         const parser = new DOMParser(); // Parse the HTML string
@@ -47,7 +64,9 @@ async function Slide(props) {
         return React.createElement(tagName, attributes, children);
     };
 
-    const contents = props.page.pageContentUrl !== null ? await window.fs.fs.readFile(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`, 'utf-8') : null;
+    /*const contents = async () => {
+        props.page.pageContentUrl !== null ? await window.file.read(`src/View/LearningModule/Slideshow/${props.page.pageContentUrl}`) : null
+    };*/
 
     // stop playing sound after leaving page
     useEffect(() => {
@@ -63,7 +82,7 @@ async function Slide(props) {
         if (props.page.voiceoverUrl) {
             console.log("Voiceover URL:", props.page.voiceoverUrl); // Log the voiceover URL
             soundRef.current = new Howl({
-                src: [`../src/Asset/LearningModulesVoiceovers/${props.page.voiceoverUrl}`],
+                src: [`Asset/LearningModulesVoiceovers/${props.page.voiceoverUrl}`],
                 onend: () => setState({ disable: false }),
             });
         } else {

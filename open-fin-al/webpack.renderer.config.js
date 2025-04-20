@@ -37,8 +37,11 @@ module.exports = {
               type: 'asset/resource',
           },
           {
-            test: /\.node$/,
-            loader: 'node-loader',
+            test: /\.(mp3|wav)$/i, // Add a rule for audio files
+            type: 'asset/resource', // This handles audio files
+            generator: {
+              filename: 'assets/audio/[name][ext][query]' 
+            },
           },
       ],
   },
@@ -55,6 +58,7 @@ module.exports = {
         'node:os': 'os-browserify/browser',
     },
     fallback: {
+        "better-sqlite3": false,
         "sqlite3": false,
         "assert": require.resolve("assert"),
         "crypto": require.resolve("crypto-browserify"),

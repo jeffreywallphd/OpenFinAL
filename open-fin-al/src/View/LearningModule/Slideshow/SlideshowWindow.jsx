@@ -26,6 +26,12 @@ function SlideshowWindow(props) {
         if (slide.soundRef) {
             slide.soundRef.unload();
             slide.slideState && slide.slideState();
+            setIsDisabled(false);
+        }
+
+        if (soundRef.current) {
+            soundRef.current.unload();
+            setIsDisabled(false);
         }
     };
 
@@ -49,7 +55,7 @@ function SlideshowWindow(props) {
         const currentPage = props.pages[props.currentPageIndex];
         console.log("Current Page:", currentPage); // Log the current page
         if (currentPage.voiceoverUrl) {
-            var audioSrc = `../src/Asset/LearningModulesVoiceovers/${currentPage.voiceoverUrl}`;
+            var audioSrc = `Asset/LearningModulesVoiceovers/${currentPage.voiceoverUrl}`;
             console.log("Audio Source:", audioSrc); // Log the audio source
             
             soundRef.current = new Howl({

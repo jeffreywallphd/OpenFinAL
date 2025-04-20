@@ -1,14 +1,18 @@
 {
-  "name": "open-final",
+  "name": "OpenFinAL",
+  "displayName": "OpenFinAL",
   "productName": "OpenFinAL",
   "version": "0.1.0",
   "description": "An AI-enabled software to learn financial investing",
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
+    "clean": "rm -rf .webpack out node_modules package-lock.json && npm install && npm run postinstall",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
+    "postinstall": "electron-rebuild --version 35.1.5",
+    "build": "electron-builder --win --x64",
     "lint": "echo \"No linting configured\""
   },
   "keywords": [],
@@ -32,8 +36,11 @@
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "babel-loader": "^10.0.0",
     "browserify-fs": "^1.0.0",
+    "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^6.11.0",
     "electron": "35.1.5",
+    "electron-builder": "^26.0.12",
+    "electron-rebuild": "^3.2.9",
     "node-loader": "^2.1.0",
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
@@ -44,6 +51,7 @@
     "@xenova/transformers": "^2.17.2",
     "assert": "^2.1.0",
     "axios": "^1.8.4",
+    "better-sqlite3": "^11.9.1",
     "cors": "^2.8.5",
     "crypto": "^1.0.1",
     "crypto-browserify": "^3.12.1",
@@ -72,5 +80,38 @@
     "uuid": "^11.1.0",
     "xml2js": "^0.6.2",
     "yahoo-finance2": "^2.13.3"
+  },
+  "build": {
+    "appId": "com.openfinal.app",
+    "productName": "OpenFinAL",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "asar": true,
+    "asarUnpack": [
+      "**/*.node"
+    ],
+    "extraResources": [
+      {
+        "from": "node_modules/better-sqlite3/build/Release/better_sqlite3.node",
+        "to": "better_sqlite3.node"
+      },
+      {
+        "from": "node_modules/better-sqlite3",
+        "to": "node_modules/better-sqlite3",
+        "filter": [
+          "**/*.js",
+          "**/package.json"
+        ]
+      }
+    ],
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "!node_modules/better-sqlite3/build/Release/obj/**/*",
+      "!node_modules/better-sqlite3/build/Release/*.pdb"
+    ]
   }
 }

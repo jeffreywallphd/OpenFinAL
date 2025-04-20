@@ -1,19 +1,18 @@
 // See the Electron documentation for details on how to use preload scripts:
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
-const path = require('path');
 const { contextBridge, ipcRenderer } = require('electron');
-const { promises: fsPromises } = require('fs');
-const fs = require('fs');
-const { get } = require('http');
-const yf = require('yahoo-finance2').default;
   
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
 });
 
-contextBridge.exposeInMainWorld('fs', {
+/*contextBridge.exposeInMainWorld('fs', {
     fs: require('fs')
+});*/
+
+contextBridge.exposeInMainWorld('file', {
+    read: (file) => ipcRenderer.invoke('read-file', file),
 });
 
 contextBridge.exposeInMainWorld('exApi', {
@@ -59,16 +58,7 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteSelect: (object) => ipcRenderer.invoke('sqlite-get', object),
     SQLiteDelete: (object) => ipcRenderer.invoke('sqlite-delete', object),
     SQLiteUpdate: (object) => ipcRenderer.invoke('sqlite-update', object),
-    SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object),
-    sqlite: (database) => {
-        try{
-            const sqlite3 = require('sqlite3').verbose();
-            const db = new sqlite3.Database(database);
-            return db;
-        } catch(error) {
-            window.console.error(error);
-        }
-    }
+    SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)
 });
 
 contextBridge.exposeInMainWorld('yahoo', {

@@ -3,9 +3,17 @@ const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
 module.exports = {
   packagerConfig: {
+    name: 'OpenFinAL',
+    executableName: 'OpenFinAL',
     asar: true,
   },
-  rebuildConfig: {},
+  rebuildConfig: {
+    buildPath: './',
+    electronRebuildConfig: {
+      force: true,
+      onlyModules: ['better-sqlite3'],
+    },
+  },
   makers: [
     {
       name: '@electron-forge/maker-squirrel',
@@ -27,7 +35,7 @@ module.exports = {
   plugins: [
     {
       name: '@electron-forge/plugin-auto-unpack-natives',
-      config: {},
+      config: {}
     },
     {
       name: '@electron-forge/plugin-webpack',
@@ -60,4 +68,5 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
+  mainConfig: './.webpack/main/index.js'
 };

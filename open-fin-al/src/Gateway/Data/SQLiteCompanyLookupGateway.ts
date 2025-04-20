@@ -130,7 +130,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         return entities;
     }
     
-    formatRandomData(data: any): any {
+    private formatRandomData(data: any): any {
         var array: Array<IEntity> = [];
 
         for (const match of data) {           
