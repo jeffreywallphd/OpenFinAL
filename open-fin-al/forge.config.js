@@ -1,6 +1,8 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
 
+const CopyDependenciesPlugin = require('./forge-plugins');
+
 module.exports = {
   packagerConfig: {
     name: 'OpenFinAL',
@@ -11,7 +13,6 @@ module.exports = {
     buildPath: './',
     electronRebuildConfig: {
       force: true,
-      onlyModules: ['better-sqlite3'],
     },
   },
   makers: [
@@ -56,6 +57,7 @@ module.exports = {
         },
       },
     },
+    new CopyDependenciesPlugin(),
     // Fuses are used to enable/disable various Electron functionality
     // at package time, before code signing the application
     new FusesPlugin({
@@ -64,7 +66,7 @@ module.exports = {
       [FuseV1Options.EnableCookieEncryption]: true,
       [FuseV1Options.EnableNodeOptionsEnvironmentVariable]: false,
       [FuseV1Options.EnableNodeCliInspectArguments]: false,
-      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: true,
+      [FuseV1Options.EnableEmbeddedAsarIntegrityValidation]: false, //temporarily set to false, change to true later
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],

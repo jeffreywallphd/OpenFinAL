@@ -7,18 +7,48 @@
 const { app, BrowserWindow, shell, session } = require('electron');
 const path = require('path');
 const fs = require("fs");
+
+const handleSquirrelEvent = () => {
+  if (process.argv.length === 1) return false;
+
+  const squirrelEvent = process.argv[1];
+
+  switch (squirrelEvent) {
+    case '--squirrel-install':
+    case '--squirrel-updated':
+      // Create shortcuts, etc., if needed
+      app.quit();
+      return true;
+
+    case '--squirrel-uninstall':
+      // 💥 Custom cleanup logic
+      const appDataPath = path.join(app.getPath('appData'), 'OpenFinAL');
+      fs.removeSync(appDataPath);
+
+      app.quit();
+      return true;
+
+    case '--squirrel-obsolete':
+      app.quit();
+      return true;
+  }
+
+  return false;
+};
+
+handleSquirrelEvent();
+//if () {
+  // 🛑 Exit early during squirrel events
+//  return;
+//}
+
 const ipcMain = require('electron').ipcMain;
-
-//console.log(require.resolve('sqlite3').verbose());
-
 const sqlite3 = require('sqlite3').verbose();
-//const sqlite3 = require('better-sqlite3')
 const puppeteer = require('puppeteer');
 const keytar = require('keytar');
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
-const https = require("https");
 const crypto = require("crypto");
 const yf = require("yahoo-finance2").default;
 
@@ -45,7 +75,11 @@ const createWindow = () => {
     } 
   });
 
-  //win.setMenu(null); // this doesn't allow opening developer tools
+  if (process.env.NODE_ENV === 'production') {
+    //temporarily commented this out. Add back eventually.
+    //win.setMenu(null); //remove default electron menu in production
+  }
+
   win.maximize();
   win.show();
 
@@ -491,9 +525,24 @@ ipcMain.handle('read-file', async (event, file) => {
 
 //////////////////////////// Database Section ////////////////////////////
 
-const userDataPath = app.getPath('userData');
 const dbFileName = 'OpenFinAL.sqlite';
-const dbPath = path.join(userDataPath, dbFileName);
+const dbPath = path.join(app.getPath('userData'), dbFileName);
+
+const targetPath = path.join(app.getPath('userData'), 'schema.sql');
+const sourcePath = path.join(app.getAppPath(), 'Asset', 'DB', 'schema.sql');
+
+async function copySchema() {
+  if (!fs.existsSync(targetPath)) {
+    try {
+      await fs.promises.copyFile(sourcePath, targetPath);
+      console.log('schema.sql copied to userData');
+    } catch (err) {
+      console.error('Failed to copy file:', err);
+    }
+  }
+}
+
+copySchema();
 
 let db;
 
@@ -507,8 +556,8 @@ const initDatabase = async () => {
         console.log('Connected to database');
       }
     });
-    
-    const schema = await fs.promises.readFile(path.join(app.getAppPath(), 'src/Asset/DB/schema.sql'), 'utf-8');
+
+    const schema = await fs.promises.readFile(path.join(app.getAppPath(), 'Asset/DB/schema.sql'), 'utf-8');
     db.exec(schema);
   } catch (error) {
     console.error('Error initializing database:', error);

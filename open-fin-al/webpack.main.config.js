@@ -20,17 +20,14 @@ module.exports = {
           to: path.resolve(__dirname, '.webpack/renderer/Asset/LearningModulesVoiceovers'),
         },
         {
-          from: path.resolve(__dirname, 'node_modules/sqlite3'),
-          to: path.resolve(__dirname, '.webpack/main/sqlite3'),
+          from: path.resolve(__dirname, 'src/Asset/DB/schema.sql'),
+          to: path.resolve(__dirname, '.webpack/Asset/DB/schema.sql'),
         },
       ],
     }),
   ],
   externals: [
     nodeExternals(),
-    {
-      'better-sqlite3': 'commonjs2 better-sqlite3',
-    },
   ],
   externalsPresets: {
     node: true,
