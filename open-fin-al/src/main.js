@@ -528,27 +528,19 @@ ipcMain.handle('read-file', async (event, file) => {
 const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(app.getPath('userData'), dbFileName);
 
-const targetPath = path.join(app.getPath('userData'), 'schema.sql');
-const sourcePath = path.join(app.getAppPath(), 'Asset', 'DB', 'schema.sql');
-
-async function copySchema() {
-  if (!fs.existsSync(targetPath)) {
-    try {
-      await fs.promises.copyFile(sourcePath, targetPath);
-      console.log('schema.sql copied to userData');
-    } catch (err) {
-      console.error('Failed to copy file:', err);
-    }
-  }
-}
-
-copySchema();
-
 let db;
 
-const initDatabase = async () => {
+const sqliteExists = async () => {
   try {
-    //db = new sqlite3(dbPath); //better-sqlite3 version
+    await fs.access(dbPath);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+const getDB = async () => {
+  try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
         console.error('Could not connect to database', err);
@@ -557,20 +549,33 @@ const initDatabase = async () => {
       }
     });
 
-    const schema = await fs.promises.readFile(path.join(app.getAppPath(), 'Asset/DB/schema.sql'), 'utf-8');
-    db.exec(schema);
+    return true;
   } catch (error) {
     console.error('Error initializing database:', error);
+    return false;
+  }
+}
+
+const initDatabase = async (schema) => {
+  try {
+    if(!db) {
+      getDB();
+    }
+
+    //const schema = await fs.promises.readFile(path.join(app.getAppPath(), 'Asset/DB/schema.sql'), 'utf-8');
+    db.exec(schema);
+    return true;
+  } catch (error) {
+    console.error('Error initializing database:', error);
+    return false;
   }
 };
 
-initDatabase();
-
 const selectFromDatabase = (query, dataArray) => {
-  //better-sqlite3 version
-  //return sqliteQuery(query, dataArray);
+  if(!db) {
+    getDB();
+  }
 
-  //sqlite3 version
   return new Promise((resolve, reject) => {
     const data = [];
 
@@ -593,17 +598,10 @@ const selectFromDatabase = (query, dataArray) => {
 };
 
 const sqliteQuery = async (query, dataArray) => {
-  //better-sqlite3 version
-  /*try {
-    const stmt = db.prepare(query);
-    const data = stmt.all(dataArray); // Returns array of rows
-    return data;
-  } catch (err) {
-    console.error('Select query error:', err);
-    return [];
-  }*/
-  
-  //sqlite3 version
+  if(!db) {
+    getDB();
+  }
+
   return new Promise((resolve, reject) => {
     const data = [];
 
@@ -625,19 +623,11 @@ const sqliteQuery = async (query, dataArray) => {
   });
 };
 
-
 const sqliteGet = async (query, dataArray) => {
-  //better-sqlite3 version
-  /*try {
-    const stmt = db.prepare(query);
-    const data = stmt.get(dataArray); // Returns single row or undefined
-    return data;
-  } catch (err) {
-    console.error('Get query error:', err);
-    return [];
-  }*/
+  if(!db) {
+    getDB();
+  }
 
-  //sqlite3 version
   return new Promise((resolve, reject) => {
     try {
       //execute the query
@@ -655,16 +645,10 @@ const sqliteGet = async (query, dataArray) => {
 };
 
 const sqliteRun = async (query, dataArray) => {
-  //better-sqlite3 version
-  /*try {
-    const stmt = db.prepare(query);
-    const result = stmt.run(dataArray); // Returns result with changes, lastID, etc.
-    return result; // { changes: number, lastInsertRowid: number }
-  } catch (err) {
-    console.error('Run query error:', err);
-  }*/
+  if(!db) {
+    getDB();
+  }
 
-  //sqlite3 version
   return new Promise((resolve, reject) => {
     try {
       //execute the query
@@ -681,6 +665,16 @@ const sqliteRun = async (query, dataArray) => {
     } 
   });
 };
+
+ipcMain.handle('sqlite-exists', async (event) => {
+  const exists = await sqliteExists();
+  return exists;
+});
+
+ipcMain.handle('sqlite-init', async (event, schema) => {
+  const result = await initDatabase(schema);
+  return result;
+});
 
 ipcMain.handle('select-data', async (event, args) => {
   const data = await selectFromDatabase(args["query"], args["inputData"]);

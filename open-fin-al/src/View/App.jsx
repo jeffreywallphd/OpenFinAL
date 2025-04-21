@@ -67,13 +67,13 @@ function App(props) {
         setConfigured(true);
     };
 
-    useEffect(() => {
+    /*useEffect(() => {
         checkIfConfigured();
     }, []);
 
     useEffect(() => {
         checkIfConfigured();
-    }, [configured]);
+    }, [configured]);*/
 
     const checkIfConfigured = async () => { 
         const interactor = new SettingsInteractor();
@@ -92,12 +92,11 @@ function App(props) {
 
         return configured;
     };
-    
 
     const configurator = new ConfigUpdater();
     var config = null;
 
-    useEffect(() => {
+    /*useEffect(() => {
         try {
             configurator.createEnvIfNotExists();
             configurator.createConfigIfNotExists()
@@ -105,7 +104,7 @@ function App(props) {
         } catch(error) {
             console.log(error);
         } 
-    }, []);
+    }, []);*/
 
     return (
         loading ? 

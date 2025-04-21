@@ -10,10 +10,22 @@ import React, { useEffect } from "react";
 import { StockInteractor } from "../../Interactor/StockInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 import logo from "../../Asset/Image/logo-dark.png";
-import ConfigUpdater from "../../Utility/ConfigManager";
+import {InitializationInteractor} from "../../Interactor/InitializationInteractor";
 
 export function AppPreparing(props) {
-    const checkContent = async () => {
+    const initializeIfNot = async () => {
+        var interactor = new InitializationInteractor();
+        var requestObj = new JSONRequest(`{}`);
+        const response = await interactor.get(requestObj);
+        
+        if(!response || response.response.status === 404) {
+           await interactor.post(requestObj);
+        } 
+
+        return;
+    }
+
+    const loadContentIfNot = async () => {
         var interactor = new StockInteractor();
         var requestObj = new JSONRequest(`{ 
             "request": { 
@@ -25,14 +37,19 @@ export function AppPreparing(props) {
 
         await interactor.get(requestObj);
 
-        const updater = new ConfigUpdater();
-        await updater.createEnvIfNotExists();
-
         props.handleLoading();
     };
 
     useEffect(() => {
-        checkContent();
+        async function manageInitialization() {
+            console.log("Initializing...");
+            await initializeIfNot();
+            console.log("Initialized");
+            console.log("Loading content...");
+            await loadContentIfNot();
+            console.log("Content loaded");
+        }
+        manageInitialization();
     }, []);
 
     return (

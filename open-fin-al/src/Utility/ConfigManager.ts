@@ -16,11 +16,19 @@ class ConfigUpdater {
     }
 
     async createEnvIfNotExists() {
+        var created = true;
         for (let key of this.keys) {
             if(!await this.vault.getSecret("OpenFinAL", key)) {   
-                this.vault.setSecret("OpenFinAL", key, "");
+                try {
+                    await this.vault.setSecret("OpenFinAL", key, "");
+                } catch(error) {
+                    created = false;
+                    continue;
+                }
             }
         }
+
+        return created;
     }
 
     async createConfigIfNotExists() {
@@ -48,10 +56,12 @@ class ConfigUpdater {
                     }
                 }
 
-                await window.config.save(defaultConfig);
+                const result = await window.config.save(defaultConfig);
+                return result;
             }
         } catch(e) {
             console.error("Unable to save the configuration file: ", e);
+            return false;
         }
     }
 

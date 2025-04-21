@@ -52,6 +52,8 @@ contextBridge.exposeInMainWorld('config', {
 });
 
 contextBridge.exposeInMainWorld('database', {
+    SQLiteExists: () => ipcRenderer.invoke('sqlite-exists'),
+    SQLiteInit: (schema) => ipcRenderer.invoke('sqlite-init', schema),
     SQLiteGet: (object) => ipcRenderer.invoke('sqlite-get', object),
     SQLiteQuery: (object) => ipcRenderer.invoke('sqlite-query', object),
     SQLiteSelectData: (object) => ipcRenderer.invoke('select-data', object),
