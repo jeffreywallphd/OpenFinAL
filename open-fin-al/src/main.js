@@ -37,11 +37,8 @@ const handleSquirrelEvent = () => {
 };
 
 handleSquirrelEvent();
-//if () {
-  // 🛑 Exit early during squirrel events
-//  return;
-//}
 
+const os = require('os');
 const ipcMain = require('electron').ipcMain;
 const sqlite3 = require('sqlite3').verbose();
 const puppeteer = require('puppeteer');
@@ -62,6 +59,23 @@ app.setPath('userData', path.join(app.getPath('appData'), 'OpenFinAL'));
 if (!fs.existsSync(app.getPath('userData'))) {
   fs.mkdirSync(app.getPath('userData'), { recursive: true });
 }
+
+//get the username of the current user
+const getUsername = () => {
+  try {
+    const userInfo = os.userInfo();
+    const username = userInfo.username;
+    return username;
+  } catch(error) {
+    return "Guest";
+  }
+}
+
+getUsername();
+
+ipcMain.handle('get-username', (event) => {
+  return getUsername();
+});
 
 // TODO: try to remove nodeIntegration, as it may create security vulnerabilities
 const createWindow = () => {
@@ -213,14 +227,19 @@ async function startAPIFetcher() {
       return res.status(400).send('A valid URL is required');
     }
 
-    const urlObject = new URL(targetUrl);
+    if (!req.body) {
+      return res.status(400).send('Internal express requests must include an APIEndpoint object in the request body.');
+    }
+
+    //const urlObject = new URL(targetUrl);
     
-    const headers = req.headers ? req.headers : null;
-    const body = req.body ? req.body : null;
+    //const headers = req.headers ? req.headers : null;
+    //const body = req.body ? req.body : null;
 
     //to override default method and user-agent selected by browser, pass method and agent as url query params
-    const method = req.body ? req.body.endpointMethod : "GET";
-    const userAgent = urlObject.searchParams ? urlObject.searchParams.get("userAgent") : null
+    /*const method = req.body ? req.body.method : "GET";
+    const userAgent = req.body ? req.body.headers["User-Agent"] : null
+    const headers = req.body ? req.body.headers : null;
 
     const requestDetails = {};
     const certificateRequestDetails = {};
@@ -230,7 +249,6 @@ async function startAPIFetcher() {
       requestDetails.headers = {};
 
       if(userAgent) {
-        //User-Agent is automatically changed when entering express server to browser agent. Allow for custom agent header.
         requestDetails.headers["User-Agent"] = userAgent;
         certificateRequestDetails["User-Agent"] = userAgent;
       }
@@ -239,35 +257,37 @@ async function startAPIFetcher() {
         certificateRequestDetails["User-Agent"] = headers["user-agent"];
       }
 
-      if(headers["authorization"]) {
-        requestDetails.headers["Authorization"] = headers["authorization"];
-        certificateRequestDetails["Authorization"] = headers["authorization"];
+      if(headers && headers["authorization"]) {
+        requestDetails.headers["Authorization"] = headers["Authorization"];
+        certificateRequestDetails["Authorization"] = headers["Authorization"];
       }
 
-      if(headers["content-type"]) {
+      if(headers && headers["content-type"]) {
         requestDetails.headers["Content-Type"] = headers["content-type"];
         certificateRequestDetails["Content-Type"] = headers["content-type"];
       }
     }
-
+    
     if(body) {
       delete body.endpointMethod;
       requestDetails.body = body;
     }
-    
-    try {
-      const hostname = urlObject.hostname;
+    */ 
 
-      if(method === "GET") {
-        var storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
+    try {
+      //const hostname = urlObject.hostname;
+      const certAuthHostname = req.body ? req.body.certAuthHostname : null
+      if(certAuthHostname) {
+        //check OS key vault for the stored certificate hash
+        var storedFingerprint = await keytar.getPassword('OpenFinALCert', certAuthHostname);
 
         if (!storedFingerprint) {
-          // Retrieve and store the certificate if it's not in Keytar
+          // Retrieve and store the certificate if not retrieved by keytar
           try {
-            storedFingerprint = await getCertificateFingerprint(hostname, method, certificateRequestDetails);
+            storedFingerprint = await getCertificateFingerprint(req.body);
 
             if (storedFingerprint) {
-              await keytar.setPassword('OpenFinALCert', hostname, storedFingerprint);
+              await keytar.setPassword('OpenFinALCert', certAuthHostname, storedFingerprint);
             } else {
               return res.status(500).send('Could not retrieve certificate fingerprint'); // Or handle this differently
             }
@@ -279,27 +299,29 @@ async function startAPIFetcher() {
 
       var response;
 
-      if(method === "POST") {
-        if(requestDetails == {}) {
-          response = await axios.post(`${targetUrl}`);
+      if(req.body.method === "POST") {
+        if(!req.body.headers && !req.body.body) {
+          response = await axios.post(targetUrl);
+        } 
+        else if(req.body.headers && !req.body.body) {
+          const postHeaders = {headers: req.body.headers};
+          response = await axios.post(targetUrl, null, postHeaders);
+        }
+        else if(req.body.body && !req.body.headers) {
+          response = await axios.post(targetUrl, request.body.body)
         } else {
-          const postHeaders = {headers: requestDetails.headers};
-
-          response = await axios.post(
-            targetUrl, 
-            requestDetails.body, 
-            postHeaders 
-          );
+          response = await axios.post(targetUrl, request.body.body, request.body.headers);
         }
       } else {
-        if(requestDetails == {}) {
-          response = await axios.get(`${targetUrl}`);
+        if(!req.body.headers) {
+          response = await axios.get(targetUrl);
         } else {
-          response = await axios.get(`${targetUrl}`, requestDetails);
+          const otherHeaders = {headers: req.body.headers};
+          response = await axios.get(targetUrl, otherHeaders);
         }
       }
 
-      if(method === "GET") {
+      //if(req.body.method === "GET") {
         var cert = response.request.socket?.getPeerCertificate();
         if (!cert) {
           res.status(403).json({
@@ -321,7 +343,7 @@ async function startAPIFetcher() {
           });
           return;
         }
-      }
+      //}
 
       return res.json(response.data);
     } catch (error) {
@@ -335,7 +357,34 @@ async function startAPIFetcher() {
 }
 
 //get certificate fingerprint to ensure secure access
-async function getCertificateFingerprint(hostname, method, certificateRequestDetails) {
+async function getCertificateFingerprint(request) {
+  try {
+    var response = null;
+    
+    try {
+      if(request.headers) {
+          response = await axios.get(`https://${request.certAuthHostname}`, {headers: request.headers});
+      } else {
+          response = await axios.get(`https://${certAuthHostname}`);
+      }
+    } catch(e) {
+      console.log(e);
+    }
+
+    var cert = response.request.socket?.getPeerCertificate();
+    if (!cert) {
+      console.error(`No certificate found for ${hostname}`);
+      return null;
+    }
+
+    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+    return fingerprint;
+  } catch (error) {
+    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
+    return null;
+  }
+}
+/*async function getCertificateFingerprint(hostname, method, certificateRequestDetails) {
   try {
     var response = null;
     
@@ -370,7 +419,7 @@ async function getCertificateFingerprint(hostname, method, certificateRequestDet
     console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
     return null;
   }
-}
+}*/
 
 //////////////////////////// Keytar Secret Storage Section ////////////////////////////
 

@@ -7,10 +7,6 @@ contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
 });
 
-/*contextBridge.exposeInMainWorld('fs', {
-    fs: require('fs')
-});*/
-
 contextBridge.exposeInMainWorld('file', {
     read: (file) => ipcRenderer.invoke('read-file', file),
 });
@@ -24,7 +20,13 @@ contextBridge.exposeInMainWorld('exApi', {
             if(!params || Object.keys(params).length === 0) {
                 response = await fetch(urlString);
             } else {
-                response = await fetch(urlString, params);
+                response = await fetch(urlString, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                });
             }
 
             if (!response.ok) {
@@ -49,6 +51,7 @@ contextBridge.exposeInMainWorld('config', {
     exists: () => ipcRenderer.invoke('has-config'),
     save: (config) => ipcRenderer.invoke('save-config', config),
     load: () => ipcRenderer.invoke('load-config'),
+    getUsername: () => ipcRenderer.invoke('get-username')
 });
 
 contextBridge.exposeInMainWorld('database', {

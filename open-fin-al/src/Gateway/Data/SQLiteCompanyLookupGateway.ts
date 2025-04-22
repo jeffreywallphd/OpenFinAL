@@ -2,8 +2,9 @@ import { StockRequest } from "../../Entity/StockRequest";
 import {IEntity} from "../../Entity/IEntity";
 import {ISqlDataGateway} from "../Data/ISqlDataGateway";
 import { parse } from 'node-html-parser';
+import { APIEndpoint } from "../../Entity/APIEndpoint";
+import { JSONRequest } from "../Request/JSONRequest";
 
-// allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
     interface Window { 
         database: any,
@@ -12,7 +13,6 @@ declare global {
 }
 
 export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
-    databasePath = "./src/Asset/DB/OpenFinAL.db";
     connection: any = null;
     sourceName: string = "SQLite Database";
 
@@ -29,7 +29,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         try {
             const query = "INSERT INTO PublicCompany (ticker, cik) VALUES (?, ?)";
             const args  = [entity.getFieldValue("ticker"), entity.getFieldValue("cik")];
-            const result = await window.database.SQLiteGet({ database: this.databasePath, query: query, parameters: args });
+            const result = await window.database.SQLiteGet({ query: query, parameters: args });
             return true;
         } catch(error) {
             return false;
@@ -223,10 +223,26 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async refreshTableCache(entity: IEntity) {
         await this.delete(entity, "");
 
+        var endpointRequest = new JSONRequest(JSON.stringify({
+            request: {
+                endpoint: {
+                    method: "GET",
+                    protocol: "https",
+                    hostname: "www.sec.gov",
+                    pathname: "files/company_tickers.json",
+                    headers: {
+                        "User-Agent": "Investor jeffrey.d.wall@gmail.com"
+                    },               
+                }
+            }
+        }));
+        
+        var endpoint = new APIEndpoint();
+        endpoint.fillWithRequest(endpointRequest);
+        window.console.log(endpoint.toObject());
         //pass custom user-agent header through url query to avoid it being overriden
-        const customUserAgent = "OpenFinAL jeffrey.d.wall@gmail.com";
-        const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json?userAgent=${encodeURIComponent(customUserAgent)}`);
-
+        const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json`, endpoint.toObject());
+        
         // Parse the SEC JSON file to extract ticker, CIK, and companyName
         for(var key in secData) {
             var ticker = secData[key]["ticker"];
@@ -249,13 +265,29 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
                 const args  = [companyName, ticker, cik];
                 await window.database.SQLiteInsert({ query: query, parameters: args });
             } catch(error) {
-                console.log(error);
                 continue;
             }
         } 
 
+        endpointRequest = new JSONRequest(JSON.stringify({
+            request: {
+                endpoint: {
+                    method: "GET",
+                    protocol: "https",
+                    hostname: "en.wikipedia.org",
+                    pathname: "wiki/List_of_S%26P_500_companies",
+                    headers: {
+                        "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36`
+                    },               
+                }
+            }
+        }));
+        
+        endpoint = new APIEndpoint();
+        endpoint.fillWithRequest(endpointRequest);
+
         // get the S&P 500 companies and store those in a database
-        const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
+        const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", endpoint.toObject());
         const SP500Object = parse(SP500Response);
 
         // get all of the rows from the consituents table that stores the S&P500 companies

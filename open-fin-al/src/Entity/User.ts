@@ -16,6 +16,9 @@ export class User implements IEntity {
         var lastName = new Field("lastName", "string", null);
         this.fields.set("lastName", lastName);
 
+        var email = new Field("email", "string", null);
+        this.fields.set("email", email);
+
         var username = new Field("username", "string", null);
         this.fields.set("username", username);
     }
@@ -34,6 +37,10 @@ export class User implements IEntity {
 
         if(json.request.user.hasOwnProperty("lastName")) {
             this.setFieldValue("lastName", json.request.user.lastName);
+        }
+
+        if(json.request.user.hasOwnProperty("email")) {
+            this.setFieldValue("email", json.request.user.email);
         }
 
         if(json.request.stock.hasOwnProperty("username")) {

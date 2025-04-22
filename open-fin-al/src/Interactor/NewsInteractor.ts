@@ -6,10 +6,6 @@ import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {NewsRequest} from "../Entity/NewsRequest";
 import { NewsGatewayFactory } from "../Gateway/Data/NewsGatewayFactory";
 
-declare global {
-    interface Window { fs: any; }
-}
-
 export class NewsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;

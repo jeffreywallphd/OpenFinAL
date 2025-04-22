@@ -47,15 +47,16 @@ function App(props) {
     const value = { state, setState };
 
     // Establish dark mode settings when loaded or refreshed
-    useEffect( () => {
-        async function getDarkMode() {
-            const config = await window.config.load();
-            if(config && config.DarkMode) {
-                document.body.classList.add("dark-mode");
-            } else {
-                document.body.classList.remove("dark-mode");
-            }
+    const getDarkMode = async () => {
+        const config = await window.config.load();
+        if(config && config.DarkMode) {
+            document.body.classList.add("dark-mode");
+        } else {
+            document.body.classList.remove("dark-mode");
         }
+    };
+
+    useEffect( () => {
         getDarkMode();
     }, []);
 
@@ -67,14 +68,6 @@ function App(props) {
         setConfigured(true);
     };
 
-    /*useEffect(() => {
-        checkIfConfigured();
-    }, []);
-
-    useEffect(() => {
-        checkIfConfigured();
-    }, [configured]);*/
-
     const checkIfConfigured = async () => { 
         const interactor = new SettingsInteractor();
 
@@ -83,9 +76,10 @@ function App(props) {
         }));
 
         const response = await interactor.get(request);
-
+        window.console.log(response);
         if(response.response.status === 200) {
             setConfigured(true);
+            getDarkMode();
         } else {
             setConfigured(false);
         }
@@ -93,7 +87,10 @@ function App(props) {
         return configured;
     };
 
-    const configurator = new ConfigUpdater();
+    /*useEffect( () => {
+        checkIfConfigured();
+    }, [setLoading]);*/
+
     var config = null;
 
     /*useEffect(() => {
@@ -107,17 +104,20 @@ function App(props) {
     }, []);*/
 
     return (
-        loading ? 
-            <AppPreparing handleLoading={handleLoading}/> 
-        : 
+        configured ?
             (
-                configured ? 
+                loading ?
+                    <AppPreparing handleLoading={handleLoading}/>
+                    
+                    :
+
                     <DataContext.Provider value={value}>
                         <AppLoaded />
-                    </DataContext.Provider>
-                :
-                    <AppConfiguring config={config} handleConfigured={handleConfigured}/>
-            )   
+                    </DataContext.Provider>            
+            )        
+        : 
+            <AppConfiguring checkIfConfigured={checkIfConfigured} config={config} handleConfigured={handleConfigured}/>
+             
     );
 }
 

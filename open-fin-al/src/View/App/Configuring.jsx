@@ -20,7 +20,7 @@ export function AppConfiguring(props) {
     };
 
     useEffect(() => {
-        checkConfig();
+        props.checkIfConfigured();
     }, []);
 
     return (

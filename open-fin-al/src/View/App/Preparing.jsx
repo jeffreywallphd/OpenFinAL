@@ -25,7 +25,7 @@ export function AppPreparing(props) {
         return;
     }
 
-    const loadContentIfNot = async () => {
+    /*const loadContentIfNot = async () => {
         var interactor = new StockInteractor();
         var requestObj = new JSONRequest(`{ 
             "request": { 
@@ -38,16 +38,14 @@ export function AppPreparing(props) {
         await interactor.get(requestObj);
 
         props.handleLoading();
-    };
+    };*/
 
     useEffect(() => {
         async function manageInitialization() {
             console.log("Initializing...");
             await initializeIfNot();
             console.log("Initialized");
-            console.log("Loading content...");
-            await loadContentIfNot();
-            console.log("Content loaded");
+            /*await loadContentIfNot();*/
         }
         manageInitialization();
     }, []);

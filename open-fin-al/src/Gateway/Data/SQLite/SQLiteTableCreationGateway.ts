@@ -20,11 +20,27 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             DROP TABLE IF EXISTS LearningModulePage;
 
             CREATE TABLE IF NOT EXISTS User (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            firstName TEXT,
-            lastName TEXT,
-            username TEXT UNIQUE NOT NULL
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                firstName TEXT,
+                lastName TEXT,
+                email TEXT,
+                username TEXT UNIQUE NOT NULL
             );
+
+            CREATE TABLE IF NOT EXISTS CertAuthMetaData (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                domain TEXT UNIQUE NOT NULL,
+                dateLastModified TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            );
+
+            CREATE TRIGGER IF NOT EXISTS UpdateCertAuthMetaDataTimestamp
+            AFTER UPDATE ON CertAuthMetaData
+            FOR EACH ROW
+            BEGIN
+                UPDATE CertAuthMetaData
+                SET dateLastModified = CURRENT_TIMESTAMP
+                WHERE id = NEW.id;
+            END;
 
             CREATE TABLE IF NOT EXISTS Portfolio (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

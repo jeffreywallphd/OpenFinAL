@@ -41,6 +41,10 @@ class ConfigUpdater {
                     ReportGateway: "SecAPIGateway",
                     RatioGateway: "AlphaVantageRatioGateway",
                     ChatbotModel: "OpenAIModel",
+                    UserSettings: {
+                        FirstName: "",
+                        LastName: ""
+                    },
                     ChatbotModelSettings: {
                         ChatbotModelName: "gpt-4",
                         ChatbotModelMaxOutputTokens: 100,

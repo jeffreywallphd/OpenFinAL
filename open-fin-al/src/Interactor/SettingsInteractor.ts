@@ -76,6 +76,72 @@ export class SettingsInteractor implements IInputBoundary {
         const configUpdater = new ConfigUpdater();
         const config:any = await configUpdater.getConfig();
         
+        //create User Configurations
+        var userFirstName = new ConfigurationOption();
+        userFirstName.setFieldValue("id", this.generateId());
+        userFirstName.setFieldValue("setting", "UserSettings");
+        userFirstName.setFieldValue("label", "First Name");
+        userFirstName.setFieldValue("name", "FirstName");
+        userFirstName.setFieldValue("hasValue", true);
+        userFirstName.setFieldValue("valueName", "FirstName");
+        userFirstName.setFieldValue("value", config.UserSettings.FirstName);
+
+        var userFirstNameConfiguration = new Configuration();
+        userFirstNameConfiguration.setFieldValue("id", this.generateId());
+        userFirstNameConfiguration.setFieldValue("name", "FirstName");
+        userFirstNameConfiguration.setFieldValue("type", "text");
+        userFirstNameConfiguration.setFieldValue("purpose", "");
+        userFirstNameConfiguration.setFieldValue("options", [userFirstName]);
+
+        var userLastName = new ConfigurationOption();
+        userLastName.setFieldValue("id", this.generateId());
+        userLastName.setFieldValue("setting", "UserSettings");
+        userLastName.setFieldValue("label", "Last Name");
+        userLastName.setFieldValue("name", "LastName");
+        userLastName.setFieldValue("hasValue", true);
+        userLastName.setFieldValue("valueName", "LastName");
+        userLastName.setFieldValue("value", config.UserSettings.LastName);
+
+        var userLastNameConfiguration = new Configuration();
+        userLastNameConfiguration.setFieldValue("id", this.generateId());
+        userLastNameConfiguration.setFieldValue("name", "LastName");
+        userLastNameConfiguration.setFieldValue("type", "text");
+        userLastNameConfiguration.setFieldValue("purpose", "");
+        userLastNameConfiguration.setFieldValue("options", [userLastName]);
+
+        var username = new ConfigurationOption();
+        username.setFieldValue("id", this.generateId());
+        username.setFieldValue("setting", "UserSettings");
+        username.setFieldValue("label", "Username");
+        username.setFieldValue("name", "Username");
+        username.setFieldValue("hasValue", false);
+        username.setFieldValue("valueName", "Username");
+        username.setFieldValue("value", await window.config.getUsername());
+        window.console.log(username);
+        var usernameConfiguration = new Configuration();
+        usernameConfiguration.setFieldValue("id", this.generateId());
+        usernameConfiguration.setFieldValue("name", "Username");
+        usernameConfiguration.setFieldValue("type", "text");
+        usernameConfiguration.setFieldValue("purpose", "");
+        usernameConfiguration.setFieldValue("options", [username]);
+
+        var userEmail = new ConfigurationOption();
+        userEmail.setFieldValue("id", this.generateId());
+        userEmail.setFieldValue("setting", "UserSettings");
+        userEmail.setFieldValue("label", "Email");
+        userEmail.setFieldValue("name", "Email");
+        userEmail.setFieldValue("hasValue", true);
+        userEmail.setFieldValue("valueName", "Email");
+        userEmail.setFieldValue("valueIsKey", true);
+        userEmail.setFieldValue("value", await this.configUpdater.getSecret("Email"));
+
+        var userEmailConfiguration = new Configuration();
+        userEmailConfiguration.setFieldValue("id", this.generateId());
+        userEmailConfiguration.setFieldValue("name", "LastName");
+        userEmailConfiguration.setFieldValue("type", "text");
+        userEmailConfiguration.setFieldValue("purpose", "");
+        userEmailConfiguration.setFieldValue("options", [userLastName]);
+
         //create StockGateway Configurations
         var currentStockGateway = null;
 
@@ -207,6 +273,11 @@ export class SettingsInteractor implements IInputBoundary {
         const newsSummaryModelSettings = await this.createNewsSummaryModelSettings(config);
         
         //Configuration Sections
+        const userConfigSection = new ConfigurationSection();
+        userConfigSection.setFieldValue("id", this.generateId());
+        userConfigSection.setFieldValue("label", "User Profile");
+        userConfigSection.setFieldValue("configurations", [userFirstNameConfiguration, userLastNameConfiguration, usernameConfiguration, userEmailConfiguration]);
+
         const dataConfigSection = new ConfigurationSection();
         dataConfigSection.setFieldValue("id", this.generateId());
         dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
@@ -267,17 +338,14 @@ export class SettingsInteractor implements IInputBoundary {
             }
 
             if(validCount == currentConfigurations.length) {    
-                data = {
-                    response: {
-                        status: 200
-                    }
-                };
+                data = { response: {status: 200, ok: true} };
             } else {
                 data = {
                     response: {
-                        status: 400
-                    }
-                };
+                        status: 400,
+                        data:{
+                            error: "The applications are not yet set"
+                }}};
             }
         } else {
             data = {
@@ -286,8 +354,7 @@ export class SettingsInteractor implements IInputBoundary {
                         dataConfigSection.toObject(),
                         chatbotModelConfigSection.toObject(),
                         newsSummaryModelConfigSection.toObject()
-                    ]
-            }};
+            ]}};
         }
 
         const response = new JSONResponse(JSON.stringify(data));
