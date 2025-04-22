@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { SettingsRow } from "./Settings/Row";
+import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
 function Settings(props) {
     const [sections, setSections] = useState([]);
@@ -40,13 +41,38 @@ function Settings(props) {
         }
     };
 
+    const prepareConfiguration = async () => {
+        var configured = await props.checkIfConfigured();
+
+        if(!configured) {
+            const interactor = new InitializationInteractor();
+            const requestObj = new JSONRequest(`{}`);
+            const response = await interactor.post(requestObj,"createConfig");
+            window.console.log(response);
+            if(response.response.ok) {
+                configured = true;
+            }
+        }
+
+        if(configured) {
+            await fetchCurrentSettings();
+            await fetchSettingSections();
+        } else {
+            window.console.log("The application is not yet configured.");
+        }
+    };
+
     useEffect(() => {
+        prepareConfiguration();
+    }, []);
+
+    /*useEffect(() => {
         fetchSettingSections();
     }, []);
 
     useEffect(() => {
         fetchCurrentSettings();
-    }, []);
+    }, []);*/
 
     const setSharedValues = (valueName, value) => {
         for(var setting of Object.values(settings)) {

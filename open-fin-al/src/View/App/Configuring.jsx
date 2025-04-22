@@ -19,15 +19,15 @@ export function AppConfiguring(props) {
         props.handleConfigured();
     };
 
-    useEffect(() => {
+    /*useEffect(() => {
         props.checkIfConfigured();
-    }, []);
+    }, []);*/
 
     return (
         <HashRouter>
             <Routes>
-                <Route path="/" element={<Settings initialConfiguration={true} handleConfigured={props.handleConfigured} />} />
-                <Route path="/settings" element={<Settings initialConfiguration={true} handleConfigured={props.handleConfigured} />} />
+                <Route path="/" element={<Settings initialConfiguration={true} checkIfConfigured={props.checkIfConfigured} handleConfigured={props.handleConfigured} />} />
+                <Route path="/settings" element={<Settings initialConfiguration={true} checkIfConfigured={props.checkIfConfigured} handleConfigured={props.handleConfigured} />} />
             </Routes>
         </HashRouter>        
     );

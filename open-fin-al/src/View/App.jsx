@@ -68,23 +68,28 @@ function App(props) {
         setConfigured(true);
     };
 
-    const checkIfConfigured = async () => { 
-        const interactor = new SettingsInteractor();
+    const checkIfConfigured = async () => {
+        try {
+            const interactor = new SettingsInteractor();
 
-        const request = new JSONRequest(JSON.stringify({
-            action: "isConfigured"
-        }));
+            const request = new JSONRequest(JSON.stringify({
+                action: "isConfigured"
+            }));
 
-        const response = await interactor.get(request);
-        window.console.log(response);
-        if(response.response.status === 200) {
-            setConfigured(true);
-            getDarkMode();
-        } else {
+            const response = await interactor.get(request);
+            window.console.log(response);
+            if(response.response.status === 200) {
+                setConfigured(true);
+                getDarkMode();
+            } else {
+                setConfigured(false);
+            }
+
+            return configured;
+        } catch(error) {
             setConfigured(false);
+            return false;
         }
-
-        return configured;
     };
 
     /*useEffect( () => {

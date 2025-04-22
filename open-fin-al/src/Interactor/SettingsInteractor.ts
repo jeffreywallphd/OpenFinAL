@@ -351,6 +351,7 @@ export class SettingsInteractor implements IInputBoundary {
             data = {
                 response: {   
                     results: [
+                        userConfigSection.toObject(),
                         dataConfigSection.toObject(),
                         chatbotModelConfigSection.toObject(),
                         newsSummaryModelConfigSection.toObject()
