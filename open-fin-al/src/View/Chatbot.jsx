@@ -38,7 +38,7 @@ class Chatbot extends Component {
                     "messages": [
                         {
                             "role": "user",
-                            "content": "${userInput.replace(/[^a-zA-Z0-9 ]/g, "")}"
+                            "content": "${userInput.replace(/[^a-zA-Z0-9 :]/g, "")}"
                         }
                     ]
                 }

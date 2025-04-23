@@ -50,7 +50,9 @@ function ScrollToTop({ onRouteChange }) {
 class AppLoaded extends Component {
   constructor(props) {
     super(props);
-  
+
+    this.props = props;
+    
     this.state = {
       menuCollapsed: false,
     };
@@ -131,7 +133,7 @@ class AppLoaded extends Component {
                 <Route path="/learn" element={<Learn />} />
                 <Route path="/learningModule" element={<LearningModuleDetails />} />
                 <Route path="/learningModulePage" element={<LearningModulePage />} />
-                <Route path="/settings" element={<Settings />} />
+                <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />

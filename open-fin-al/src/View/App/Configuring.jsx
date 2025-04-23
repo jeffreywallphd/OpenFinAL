@@ -17,7 +17,7 @@ import {Settings} from "../Settings";
 export function AppConfiguring(props) {
     useEffect(() => {
         //allow time for checking of initialization
-        setTimeout(isConfigured, 1000);
+        setTimeout(isConfigured, 100);
     }, []);
 
     const isConfigured = async () => {

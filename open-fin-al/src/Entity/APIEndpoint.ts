@@ -46,6 +46,9 @@ export class APIEndpoint implements IEntity {
 
         var certAuthHostname = new Field("certAuthHostname", "string", null);
         this.fields.set("certAuthHostname", certAuthHostname);
+
+        var certAuthHeaders = new Field("certAuthHeaders", "object:json", null);
+        this.fields.set("certAuthHeaders", certAuthHeaders);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -117,6 +120,10 @@ export class APIEndpoint implements IEntity {
 
         if(json.request.endpoint.hasOwnProperty("certAuthHostname")) {
             this.setFieldValue("certAuthHostname", json.request.endpoint.certAuthHostname);
+        }
+
+        if(json.request.endpoint.hasOwnProperty("certAuthHeaders")) {
+            this.setFieldValue("certAuthHeaders", json.request.endpoint.certAuthHeaders);
         }
     }
 

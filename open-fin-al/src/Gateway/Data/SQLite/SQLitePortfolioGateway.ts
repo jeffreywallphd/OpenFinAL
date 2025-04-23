@@ -30,7 +30,6 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
             return true;
         } catch(error) {
             return false;
-            window.console.error(error);
         }
     }
     
@@ -109,10 +108,8 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
                 }
                 
                 data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query, parameters: parameterArray });
-                
-                
             } catch(error) {
-                window.console.error(error);
+                return entities;
             }
         } else if(action === "selectRandomSP500") {
             query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
@@ -188,7 +185,6 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
             
             return result;
         } catch(error) {
-            window.console.error(error);
             return 0;
         }
     }

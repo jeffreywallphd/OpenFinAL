@@ -1,5 +1,7 @@
+import { JSONRequest } from "../Request/JSONRequest";
 import {IEntity} from "../../Entity/IEntity";
 import {IKeyedDataGateway} from "../Data/IKeyedDataGateway";
+import { APIEndpoint } from "../../Entity/APIEndpoint";
 
 export class AlphaVantageNewsGateway implements IKeyedDataGateway {
     baseURL: string = "https://www.alphavantage.co/query";
@@ -48,8 +50,25 @@ export class AlphaVantageNewsGateway implements IKeyedDataGateway {
             url = url + "&sort=" + entity.getFieldValue("sort");
         }
 
-        const response = await window.exApi.fetch(url);
-        const data = response;
+        const urlObject = new URL(url);
+        
+        var endpointRequest = new JSONRequest(JSON.stringify({
+            request: {
+                endpoint: {
+                    method: "GET",
+                    protocol: "https",
+                    hostname: urlObject.hostname ? urlObject.hostname : null,
+                    pathname: urlObject.pathname ? urlObject.pathname : null,
+                    search: urlObject.search ? urlObject.search : null,
+                    searchParams: urlObject.searchParams ? urlObject.searchParams : null,           
+                }
+            }
+        }));
+        
+        var endpoint = new APIEndpoint();
+        endpoint.fillWithRequest(endpointRequest);
+
+        const data = await window.exApi.fetch(this.baseURL, endpoint.toObject());
 
         if("Information" in data) {
             throw Error("The API key used for Alpha Vantage has reached its daily limit");

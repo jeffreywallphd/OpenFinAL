@@ -22,12 +22,12 @@ export class InitializationInteractor implements IInputBoundary {
 
         if(action === "createConfig") {
             try {
-                //secretsCreated = await configManager.createEnvIfNotExists();
-                configCreated = await configManager.createConfigIfNotExists();
-
                 //create the SQLite database    
                 const gateway = new SQLiteTableCreationGateway();
                 const tablesCreated = await gateway.create();
+
+                //secretsCreated = await configManager.createEnvIfNotExists();
+                configCreated = await configManager.createConfigIfNotExists();
 
                 if(configCreated && tablesCreated) {
                     response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
@@ -50,7 +50,6 @@ export class InitializationInteractor implements IInputBoundary {
                 return response;
             }
         } else if (action === "initializeData") {
-            window.console.log("Initializing the system data");
             var publicCompaniesResponse;
             var userResponse;
             var response;
@@ -100,7 +99,6 @@ export class InitializationInteractor implements IInputBoundary {
                     }
                 }));
                 userResponse = await userInteractor.post(userRequestObj);
-                window.console.log(userResponse);
             } catch(error) {
                 response = new JSONResponse(JSON.stringify({
                     status: 500, 
@@ -158,7 +156,6 @@ export class InitializationInteractor implements IInputBoundary {
                 //check if PublicCompany table has data
                 const companyGateway = new SQLiteCompanyLookupGateway();
                 const companyCount = await companyGateway.count();
-                window.console.log(companyCount);
 
                 if(companyCount.count < 8000) {
                     response = new JSONResponse(JSON.stringify({
@@ -225,9 +222,7 @@ export class InitializationInteractor implements IInputBoundary {
 
                 const settingsInteractor = new SettingsInteractor();
                 var settingsRequestObj = new JSONRequest(JSON.stringify({
-                    request: {
                         action: "isConfigured"
-                    }
                 })); 
 
                 const settingsResponse = await settingsInteractor.get(settingsRequestObj);

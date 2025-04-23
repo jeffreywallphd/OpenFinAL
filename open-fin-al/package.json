@@ -36,6 +36,7 @@
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "babel-loader": "^10.0.0",
     "browserify-fs": "^1.0.0",
+    "copy-dependencies": "file:./forge-plugins",
     "copy-webpack-plugin": "^13.0.0",
     "css-loader": "^6.11.0",
     "electron": "35.1.5",
@@ -45,8 +46,7 @@
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.4",
-    "webpack-node-externals": "^3.0.0",
-    "copy-dependencies": "file:./forge-plugins"
+    "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
     "@xenova/transformers": "^2.17.2",
@@ -75,6 +75,7 @@
     "recharts": "^2.15.2",
     "sqlite3": "^5.1.7",
     "stream-http": "^3.2.0",
+    "tls": "^0.0.1",
     "ts-loader": "^9.5.2",
     "typescript": "^5.8.3",
     "util": "^0.12.5",

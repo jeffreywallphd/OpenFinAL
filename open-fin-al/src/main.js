@@ -47,6 +47,7 @@ const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
+const tls = require("tls");
 const yf = require("yahoo-finance2").default;
 
 //////////////////////////// Main Electron Window Section ////////////////////////////
@@ -222,7 +223,7 @@ async function startAPIFetcher() {
 
   expressApp.all('/proxy', async (req, res) => {
     const targetUrl = req.query.url;
-
+    
     if (!targetUrl) {
       return res.status(400).send('A valid URL is required');
     }
@@ -231,55 +232,14 @@ async function startAPIFetcher() {
       return res.status(400).send('Internal express requests must include an APIEndpoint object in the request body.');
     }
 
-    //const urlObject = new URL(targetUrl);
-    
-    //const headers = req.headers ? req.headers : null;
-    //const body = req.body ? req.body : null;
-
-    //to override default method and user-agent selected by browser, pass method and agent as url query params
-    /*const method = req.body ? req.body.method : "GET";
-    const userAgent = req.body ? req.body.headers["User-Agent"] : null
-    const headers = req.body ? req.body.headers : null;
-
-    const requestDetails = {};
-    const certificateRequestDetails = {};
-
-    //control which headers pass through to the express server.
-    if(headers) {
-      requestDetails.headers = {};
-
-      if(userAgent) {
-        requestDetails.headers["User-Agent"] = userAgent;
-        certificateRequestDetails["User-Agent"] = userAgent;
-      }
-      else if(headers["user-agent"]) {
-        requestDetails.headers["User-Agent"] = headers["user-agent"];
-        certificateRequestDetails["User-Agent"] = headers["user-agent"];
-      }
-
-      if(headers && headers["authorization"]) {
-        requestDetails.headers["Authorization"] = headers["Authorization"];
-        certificateRequestDetails["Authorization"] = headers["Authorization"];
-      }
-
-      if(headers && headers["content-type"]) {
-        requestDetails.headers["Content-Type"] = headers["content-type"];
-        certificateRequestDetails["Content-Type"] = headers["content-type"];
-      }
-    }
-    
-    if(body) {
-      delete body.endpointMethod;
-      requestDetails.body = body;
-    }
-    */ 
-
     try {
-      //const hostname = urlObject.hostname;
-      const certAuthHostname = req.body ? req.body.certAuthHostname : null
+      var storedFingerprint;
+
+      //get the pinned certificate hash for the domain
+      const certAuthHostname = req.body.certAuthHostname
       if(certAuthHostname) {
         //check OS key vault for the stored certificate hash
-        var storedFingerprint = await keytar.getPassword('OpenFinALCert', certAuthHostname);
+        storedFingerprint = await keytar.getPassword('OpenFinALCert', certAuthHostname);
 
         if (!storedFingerprint) {
           // Retrieve and store the certificate if not retrieved by keytar
@@ -296,58 +256,70 @@ async function startAPIFetcher() {
           }
         }
       }
-
+      
       var response;
 
       if(req.body.method === "POST") {
+        const postHeaders = {headers: req.body.headers};
+
         if(!req.body.headers && !req.body.body) {
           response = await axios.post(targetUrl);
         } 
         else if(req.body.headers && !req.body.body) {
-          const postHeaders = {headers: req.body.headers};
           response = await axios.post(targetUrl, null, postHeaders);
         }
         else if(req.body.body && !req.body.headers) {
-          response = await axios.post(targetUrl, request.body.body)
+          response = await axios.post(targetUrl, req.body.body)
         } else {
-          response = await axios.post(targetUrl, request.body.body, request.body.headers);
+          const postHeaders = {headers: req.body.headers};
+          response = await axios.post(targetUrl, req.body.body, postHeaders);
         }
       } else {
+        const baseURL = req.body.protocol + "://" + req.body.hostname;
+        var url = new URL(baseURL);
+        url.protocol = req.body.protocol;
+        url.hostname = req.body.hostname;
+        url.port = req.body.port ? req.body.port : 443;
+        url.pathname = req.body.pathname;
+        url.search = req.body.search ? req.body.search : "";
+        
         if(!req.body.headers) {
-          response = await axios.get(targetUrl);
+          response = await axios.get(url.href);
         } else {
           const otherHeaders = {headers: req.body.headers};
-          response = await axios.get(targetUrl, otherHeaders);
+          response = await axios.get(url.href, otherHeaders);
         }
       }
+      
+      var cert = response.request.socket?.getPeerCertificate();
+      if (!cert) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
+            }
+        });
+        return;
+      }
 
-      //if(req.body.method === "GET") {
-        var cert = response.request.socket?.getPeerCertificate();
-        if (!cert) {
-          res.status(403).json({
-              error: {
-                code: "FORBIDDEN",
-                message: "Access to the requested resource is forbidden. Unable to retrieve the SSL/TLS certificate for validation.",
-              }
-          });
-          return;
-        }
-
-        var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-        if (storedFingerprint !== fingerprint) {
-          res.status(403).json({
-              error: {
-                code: "FORBIDDEN",
-                message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
-              }
-          });
-          return;
-        }
-      //}
+      var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+      if (storedFingerprint !== fingerprint) {
+        res.status(403).json({
+            error: {
+              code: "FORBIDDEN",
+              message: "Access to the requested resource is forbidden. The retrieve SSL/TLS certificate does not appear to be valid.",
+            }
+        });
+        return;
+      }
 
       return res.json(response.data);
     } catch (error) {
-      res.status(500).json({message: 'Proxy error'});
+      if (error.isAxiosError && error.response) {
+        return res.status(error.response.status).json(error.response.data);
+      } else {
+        res.status(500).json({message: 'Unknown internal proxy server error'});
+      }
     }
   });
 
@@ -359,67 +331,39 @@ async function startAPIFetcher() {
 //get certificate fingerprint to ensure secure access
 async function getCertificateFingerprint(request) {
   try {
-    var response = null;
-    
-    try {
-      if(request.headers) {
-          response = await axios.get(`https://${request.certAuthHostname}`, {headers: request.headers});
-      } else {
-          response = await axios.get(`https://${certAuthHostname}`);
-      }
-    } catch(e) {
-      console.log(e);
-    }
+    const options = {
+      host: request.certAuthHostname,
+      port: 443,
+      servername: request.certAuthHostname
+    };
 
-    var cert = response.request.socket?.getPeerCertificate();
-    if (!cert) {
-      console.error(`No certificate found for ${hostname}`);
-      return null;
-    }
+    return new Promise((resolve, reject) => {
+      const socket = tls.connect(options, () => {});
 
-    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-    return fingerprint;
+      socket.on('secureConnect', () => {
+        const cert = socket.getPeerCertificate(true);
+
+        if (!cert) {
+          console.error(`No certificate found for ${request.hostname}`);
+          resolve(null);
+          return;
+        }
+
+        var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
+        socket.destroy();
+        resolve(fingerprint);
+      });
+
+      socket.on('error', (err) => {
+        console.error(`Error connecting to ${request.hostname}:`, err);
+        reject(err);
+      });
+    });    
   } catch (error) {
-    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
+    console.error(`Error getting certificate fingerprint for ${request.hostname}:`, error);
     return null;
   }
 }
-/*async function getCertificateFingerprint(hostname, method, certificateRequestDetails) {
-  try {
-    var response = null;
-    
-    try {
-      if(method === "POST") {
-        if(Object.keys(certificateRequestDetails).length > 0) {
-          const postHeaders = {headers: certificateRequestDetails};
-          response = await axios.post(`https://${hostname}`, null, postHeaders);
-        } else {
-          response = await axios.post(`https://${hostname}`);
-        }
-      } else {
-        if(Object.keys(certificateRequestDetails).length > 0) {
-            response = await axios.get(`https://${hostname}`, certificateRequestDetails);
-        } else {
-            response = await axios.get(`https://${hostname}`);
-        }
-      }
-    } catch(e) {
-      console.log(e);
-    }
-
-    var cert = response.request.socket?.getPeerCertificate();
-    if (!cert) {
-      console.error(`No certificate found for ${hostname}`);
-      return null;
-    }
-
-    var fingerprint = crypto.createHash('sha256').update(cert.raw).digest('hex');
-    return fingerprint;
-  } catch (error) {
-    console.error(`Error getting certificate fingerprint for ${hostname}:`, error);
-    return null;
-  }
-}*/
 
 //////////////////////////// Keytar Secret Storage Section ////////////////////////////
 

@@ -1,6 +1,8 @@
 import {StockRequest} from "../../Entity/StockRequest";
 import {IEntity} from "../../Entity/IEntity";
 import {IKeyedDataGateway} from "../Data/IKeyedDataGateway";
+import { APIEndpoint } from "../../Entity/APIEndpoint";
+import { JSONRequest } from "../Request/JSONRequest";
 
 export class AlphaVantageStockGateway implements IKeyedDataGateway {
     baseURL: string = "https://www.alphavantage.co/query";
@@ -38,7 +40,26 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
                 throw Error("Either no action was sent in the request or an incorrect action was used.");
             }     
 
-            const data = await window.exApi.fetch(url);
+            const urlObject = new URL(url);
+
+            var endpointRequest = new JSONRequest(JSON.stringify({
+                request: {
+                    endpoint: {
+                        key: entity.getFieldValue("key"),
+                        method: "GET",
+                        protocol: "https",
+                        hostname: urlObject.hostname ? urlObject.hostname : null,
+                        pathname: urlObject.pathname ? urlObject.pathname : null,
+                        search: urlObject.search ? urlObject.search : null,
+                        searchParams: urlObject.searchParams ? urlObject.searchParams : null,           
+                    }
+                }
+            }));
+            
+            var endpoint = new APIEndpoint();
+            endpoint.fillWithRequest(endpointRequest);
+
+            const data = await window.exApi.fetch(this.baseURL, endpoint.toObject());
             
             if("Information" in data) {
                 throw Error("The API key used for Alpha Vantage has reached its daily limit");

@@ -5,9 +5,17 @@ import { App } from './View/App';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
-React.StrictMode //can cause weird side effects, such as stock data running twice on page load
+// for development
+/*React.StrictMode //can cause weird side effects, such as stock data running twice on page load
 root.render(
   <React.StrictMode>
     <App />
   </React.StrictMode>
+);*/
+
+// for production
+root.render(
+  <App />
 );
+
+

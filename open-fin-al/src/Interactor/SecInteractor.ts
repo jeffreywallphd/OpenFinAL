@@ -23,29 +23,51 @@ export class SecInteractor implements IInputBoundary {
     }
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
+        var response;
         if(requestModel.request.request.sec.action === "10-K" || requestModel.request.request.sec.action === "10-Q") {
-            return this.getReportLink(requestModel);    
+            try {
+                return this.getReportLink(requestModel);
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500,
+                    data: {
+                        error: "An unknown error occured while retrieving the SEC report links."
+                    }
+                }));
+                return response;
+            }
         } else {
-            //create sec request object and fill with request model
-            var sec = new SecRequest();
-            sec.fillWithRequest(requestModel);
+            try {
+                //create sec request object and fill with request model
+                var sec = new SecRequest();
+                sec.fillWithRequest(requestModel);
 
-            //instantiate the correct API gateway
-            const config = await window.config.load();
-            
-            const secGatewayFactory = new SecReportGatewayFactory();
-            var secGateway: IDataGateway = await secGatewayFactory.createGateway(config);
+                //instantiate the correct API gateway
+                const config = await window.config.load();
+                
+                const secGatewayFactory = new SecReportGatewayFactory();
+                var secGateway: IDataGateway = await secGatewayFactory.createGateway(config);
 
-            sec.setFieldValue("key", secGateway.key);
+                sec.setFieldValue("key", secGateway.key);
+                
+                //search for the requested information via the API gateway
+                var results = await secGateway.read(sec, requestModel.request.request.sec.action);
+                
+                //convert the API gateway response to a JSON reponse object
+                response = new JSONResponse();
+                
+                response.convertFromEntity(results, false);
+                return response.response;
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500,
+                    data: {
+                        error: "An unknown error occured while processing your SEC data request."
+                    }
+                }));
+                return response;
+            }
             
-            //search for the requested information via the API gateway
-            var results = await secGateway.read(sec, requestModel.request.request.sec.action);
-            
-            //convert the API gateway response to a JSON reponse object
-            var response = new JSONResponse();
-            
-            response.convertFromEntity(results, false);
-            return response.response;
         }
         
     }
@@ -267,7 +289,6 @@ export class SecInteractor implements IInputBoundary {
             //TODO: for consistency, consider wrapping object in {response: {}}
             schemaResponse = new JSONResponse(JSON.stringify(response));
         } catch(error) {
-            window.console.error(error);
             return undefined;
         }
        
@@ -461,9 +482,9 @@ export class SecInteractor implements IInputBoundary {
 
     private findMostRecentFilingIndex(submissionsResponse: IResponseModel, type:string): number {
         var index = undefined;
-        
+
         // loop assumes that SEC maintains API standard of presenting most recent submissions first
-        for(var i in submissionsResponse.response.results[0].data.filings.recent.form) {
+        for(var i in submissionsResponse.response.results[0].data?.filings?.recent.form) {
             const reportType = submissionsResponse.response.results[0].data.filings.recent.form[i];
             
             if(reportType === type) {

@@ -39,7 +39,6 @@ export class SettingsInteractor implements IInputBoundary {
             }
             
             if(configuration.name === configuration.valueName) {
-                window.console.log(`configuration setting: ${configuration.setting} and config name ${configuration.name} and object ${config[configuration.setting][configuration.name]}`)
                 config[configuration.setting][configuration.name] = configuration.valueType==="number" ? Number(String(configuration.value).trim()) : configuration.value;
             } else {
                 config[configuration.setting] = configuration.name;
@@ -300,8 +299,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModelConfigSection.setFieldValue("configurations", [newsSummaryModelSettings.newsSummaryModelGatewayConfiguration, newsSummaryModelSettings.newsSummaryModelNameConfiguration, newsSummaryModelSettings.newsSummaryModelMaxTokensConfiguration, newsSummaryModelSettings.newsSummaryModelTemperatureConfiguration, newsSummaryModelSettings.newsSummaryModelTopPConfiguration]);
 
         var data = {};
-
-        if(json.action && json.action == "getCurrent") {  
+        if(json.action && json.action === "getCurrent") {  
             data = {
                 response: {   
                     results: [

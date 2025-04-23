@@ -33,7 +33,6 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
             return true;
         } catch(error) {
             return false;
-            window.console.error(error);
         }
     }
     
@@ -113,7 +112,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
                 
                 data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });
             } catch(error) {
-                window.console.error(error);
+                return [];
             }
         } else if(action === "selectRandomSP500") {
             query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
@@ -189,22 +188,25 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
             
             return result;
         } catch(error) {
-            window.console.error(error);
             return 0;
         }
     }
 
     //check to see if the database table exists
     async checkTableExists() {
-        const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PublicCompany';"
-        const args:any[]  = [];
-        const rows = await window.database.SQLiteQuery({ query: query, parameters: args });
-        
-        if(rows !== null && rows[0].name) {
-            return true;
-        }
+        try {
+            const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PublicCompany';"
+            const args:any[]  = [];
+            const rows = await window.database.SQLiteQuery({ query: query, parameters: args });
+            
+            if(rows !== null && rows[0].name) {
+                return true;
+            }
 
-        return false;
+            return false;
+        } catch(error) {
+            return false;
+        }
     }
 
     //for database tables that act as cache, check for the last time a table was updated
@@ -212,7 +214,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
         const data = await window.database.SQLiteSelect({ query: query, parameters: args });
-        window.console.log(data);
+
         if(data && data.changedAt) {
             return new Date(data.changedAt);
         } else {
@@ -242,7 +244,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
             
             var endpoint = new APIEndpoint();
             endpoint.fillWithRequest(endpointRequest);
-            window.console.log(endpoint.toObject());
+
             //pass custom user-agent header through url query to avoid it being overriden
             const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json`, endpoint.toObject());
             

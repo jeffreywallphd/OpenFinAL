@@ -65,11 +65,8 @@ function App(props) {
     };
 
     const handleConfigured = async () => {
-        window.console.log("handling configured");
         setConfigured(true);
-        window.console.log("updated configured state");
         await checkIfFullyInitialized(); 
-        window.console.log("executed data initialization");
     };
 
     const executeDataInitialization = async() => {
@@ -77,7 +74,7 @@ function App(props) {
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.post(requestObj,"initializeData");
-            window.console.log(response);
+
             if(response.response.ok) {
                 setLoading(false);
                 return true;
@@ -97,7 +94,6 @@ function App(props) {
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.get(requestObj,"isInitialized");
-            window.console.log(response);
             
             if(response.response.ok) {
                 setConfigured(true);
@@ -106,10 +102,12 @@ function App(props) {
             } else {
                 //check if the site is uninitialized but configured
                 const configurationResponse = await interactor.get(requestObj,"isConfigured");
+
                 if(configurationResponse.response.ok) {
                     setConfigured(true);
                     getDarkMode();
 
+                    //app is not initialized, so start data initialization
                     const initialized = await executeDataInitialization();
 
                     if(initialized) {
@@ -131,30 +129,6 @@ function App(props) {
         }
     };
 
-    /*const checkIfConfigured = async () => {
-        try {
-            const interactor = new InitializationInteractor();
-            const request = new JSONRequest(JSON.stringify({
-                action: "isConfigured"
-            }));
-            const response = await interactor.get(request);
-            window.console.log(response);
-            
-            if(response.response.ok) {
-                setConfigured(true);
-                getDarkMode();
-                await executeDataInitialization();
-                return true;
-            } else {
-                setConfigured(false);
-                return false;
-            }
-        } catch(error) {
-            setConfigured(false);
-            return false;
-        }
-    };*/
-
     useEffect( () => {
         checkIfFullyInitialized();
     }, []);
@@ -166,7 +140,7 @@ function App(props) {
                         <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
                     :
                         <DataContext.Provider value={value}>
-                            <AppLoaded />
+                            <AppLoaded checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured} />
                         </DataContext.Provider>            
             )        
         : 

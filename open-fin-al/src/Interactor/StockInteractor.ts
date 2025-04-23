@@ -44,8 +44,6 @@ export class StockInteractor implements IInputBoundary {
                     const timeDiff = Math.abs(date.getTime() - lastUpdated.getTime());
                     dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
                 }
-                window.console.log(dayDiff);
-                //var response = new JSONResponse();
 
                 // Re-cache ticker:cik mapping if more than 30 days old. Also cache if undefined.
                 // Re-caching is done to capture new IPOs and changes to org reporting data

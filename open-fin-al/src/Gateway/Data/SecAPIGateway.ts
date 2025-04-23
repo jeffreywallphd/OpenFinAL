@@ -1,5 +1,7 @@
+import { JSONRequest } from "../Request/JSONRequest";
 import {IEntity} from "../../Entity/IEntity";
 import {IKeylessDataGateway} from "./IKeylessDataGateway";
+import { APIEndpoint } from "../../Entity/APIEndpoint";
 
 export class SecAPIGateway implements IKeylessDataGateway {
     baseURL: string = "https://data.sec.gov/";
@@ -37,15 +39,32 @@ export class SecAPIGateway implements IKeylessDataGateway {
         } else {
             throw Error("Either no action was sent in the request or an incorrect action was used.");
         }   
+
+        //request data from API
+        const userEmail = await window.vault.getSecret("Email");
         
-        var data;
-        if(this.userAgent) {
-            const customUserAgent = "OpenFinAL jeffrey.d.wall@gmail.com";
-            data = await window.exApi.fetch(url + `?userAgent=${encodeURIComponent(customUserAgent)}`);
-        } else {
-            data = await window.exApi.fetch(url);
-        }
-        
+        const urlObject = new URL(url);
+
+        var endpointRequest = new JSONRequest(JSON.stringify({
+            request: {
+                endpoint: {
+                    method: "GET",
+                    protocol: "https",
+                    hostname: "data.sec.gov",
+                    pathname: urlObject.pathname ? urlObject.pathname : null,
+                    search: urlObject.search ? urlObject.search : null,
+                    searchParams: urlObject.searchParams ? urlObject.searchParams : null,
+                    headers: {
+                        "User-Agent": `Investor ${userEmail}`
+                    },               
+                }
+            }
+        }));
+
+        var endpoint = new APIEndpoint();
+        endpoint.fillWithRequest(endpointRequest);
+
+        const data = await window.exApi.fetch(url, endpoint.toObject());   
         entity.setFieldValue("data", data);
 
         const entities = [entity];

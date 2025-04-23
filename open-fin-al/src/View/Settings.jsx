@@ -42,15 +42,20 @@ function Settings(props) {
     };
 
     const prepareConfiguration = async () => {
-        var configured = await props.checkIfConfigured();
+        var configured = props.checkIfConfigured();
 
         if(!configured) {
-            const interactor = new InitializationInteractor();
+            const initInteractor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj,"createConfig");
-            window.console.log(response);
+            const response = await initInteractor.post(requestObj,"createConfig");
+
             if(response.response.ok) {
-                configured = true;
+                const settingsRequestObj = new JSONRequest(JSON.stringify({action: "isConfigured"}));
+                const settingsResponse = await interactor.get(settingsRequestObj);
+
+                if(settingsResponse.response.ok) {
+                    props.handleConfigured();
+                }
             }
         } else if(props.initialConfiguration && configured) {
             props.handleConfigured();
@@ -63,14 +68,6 @@ function Settings(props) {
     useEffect(() => {
         prepareConfiguration();
     }, []);
-
-    /*useEffect(() => {
-        fetchSettingSections();
-    }, []);
-
-    useEffect(() => {
-        fetchCurrentSettings();
-    }, []);*/
 
     const setSharedValues = (valueName, value) => {
         for(var setting of Object.values(settings)) {
@@ -94,8 +91,7 @@ function Settings(props) {
             await sleep(1000);
             setMessage(null);
             
-            const isConfigured = await props.checkIfConfigured();
-            window.console.log(`Is the site configured? ${isConfigured}`);
+            const isConfigured = props.checkIfConfigured();
 
             setTimeout(() => {
                 navigate('/refresh', { replace: true }); // dummy path

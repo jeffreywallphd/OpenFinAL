@@ -19,7 +19,6 @@ class ConfigUpdater {
     async createEnvIfNotExists() {
         var created = true;
         for (let key of this.keys) {
-            window.console.log(`Setting up the secret for ${key}`);
             if(!await window.vault.getSecret("OpenFinAL", key)) {   
                 try {
                     await window.vault.setSecret(key, "");
@@ -35,7 +34,6 @@ class ConfigUpdater {
 
     async createConfigIfNotExists() {
         try {
-            window.console.log(`Does config exist? ${await window.config.exists()}`);
             if(!await window.config.exists()) {
                 const defaultConfig = {
                     DarkMode: false,
@@ -64,7 +62,6 @@ class ConfigUpdater {
                 }
 
                 const result = await window.config.save(defaultConfig);
-                window.console.log(`The configuration result is ${result}`);
                 return result;
             }
         } catch(e) {

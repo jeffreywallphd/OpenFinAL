@@ -1,5 +1,7 @@
 import {IKeyedModelGateway} from "./IKeyedModelGateway";
 import ConfigUpdater from "../../../Utility/ConfigManager";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
+import { JSONRequest } from "../../Request/JSONRequest";
 
 export class OpenAIModelGateway implements IKeyedModelGateway{
     key: any;
@@ -11,6 +13,11 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
     }
 
     async create(model: string, messages: any[]): Promise<any> {
+        var message = {
+            role: "assistant",
+            content: ""
+        };
+
         try {
             const configManager = new ConfigUpdater();
             const config:any = await configManager.getConfig();
@@ -27,27 +34,38 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
 
             var response;
 
-            var message = {
-                role: "assistant",
-                content: ""
-            };
-
             try {
-                response = await window.exApi.fetch("https://api.openai.com/v1/chat/completions", {
-                    method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${this.key}`,
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        endpointMethod: "POST",
-                        model: model,
-                        messages: messages,
-                        max_tokens: maxTokens,
-                        temperature: temperature,
-                        top_p: topP
-                    }),
-                });
+                var url = "https://api.openai.com/v1/chat/completions";
+                const urlObject = new URL(url);
+                
+                var endpointRequest = new JSONRequest(JSON.stringify({
+                    request: {
+                        endpoint: {
+                            method: "POST",
+                            protocol: "https",
+                            hostname: urlObject.hostname ? urlObject.hostname : null,
+                            pathname: urlObject.pathname ? urlObject.pathname : null,
+                            search: urlObject.search ? urlObject.search : null,
+                            searchParams: urlObject.searchParams ? urlObject.searchParams : null,
+                            headers: {
+                                "Authorization": `Bearer ${this.key}`,
+                                "Content-Type": "application/json",
+                            },
+                            body: {
+                                model: model,
+                                messages: messages,
+                                max_tokens: maxTokens,
+                                temperature: temperature,
+                                top_p: topP
+                            },           
+                        }
+                    }
+                }));
+                
+                var endpoint = new APIEndpoint();
+                endpoint.fillWithRequest(endpointRequest);
+    
+                response = await window.exApi.fetch(url, endpoint.toObject());
             } catch(error) {
                 message.content = "Unable to connect to the OpenAI API";
                 return message;
@@ -80,7 +98,8 @@ export class OpenAIModelGateway implements IKeyedModelGateway{
                 return message;
             }            
         } catch (e) {
-            window.console.error(e);
+            message.content = "An error occurred while processing your prompt. Contact the system administrator if the issue persists.";
+            return message;
         }
     }
     

@@ -58,6 +58,7 @@ module.exports = {
         'node:os': 'os-browserify/browser',
     },
     fallback: {
+        "tls": false,
         "better-sqlite3": false,
         "sqlite3": false,
         "assert": require.resolve("assert"),

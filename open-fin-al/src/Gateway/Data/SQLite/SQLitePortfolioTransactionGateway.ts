@@ -30,7 +30,6 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
             return true;
         } catch(error) {
             return false;
-            window.console.error(error);
         }
     }
     
@@ -112,7 +111,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                 
                 
             } catch(error) {
-                window.console.error(error);
+                return entities;
             }
         } else if(action === "selectRandomSP500") {
             query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
@@ -188,7 +187,6 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
             
             return result;
         } catch(error) {
-            window.console.error(error);
             return 0;
         }
     }
