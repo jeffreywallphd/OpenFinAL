@@ -583,7 +583,8 @@ const sqliteExists = async () => {
   try {
     await fs.access(dbPath);
     return true;
-  } catch {
+  } catch(error) {
+    console.log(error);
     return false;
   }
 };

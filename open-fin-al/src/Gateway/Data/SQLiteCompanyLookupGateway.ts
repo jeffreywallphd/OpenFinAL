@@ -316,4 +316,13 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
             return false;
         }
     }
+
+    async count() {
+        const query = "SELECT COUNT(*) AS count FROM PublicCompany;";
+        const data = await window.database.SQLiteQuery({ query: query });
+        if(data) {
+            return data[0];
+        } 
+        return data;
+    }
 }

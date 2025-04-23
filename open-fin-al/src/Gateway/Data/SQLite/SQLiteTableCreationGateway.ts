@@ -1,4 +1,5 @@
-import { ISqlDataGateway } from "@DataGateway/ISqlDataGateway";
+import { ISqlDataGateway } from "../ISqlDataGateway";
+import { SQLiteCompanyLookupGateway } from "../SQLiteCompanyLookupGateway";
 import { IEntity } from "@Entity/IEntity";
 
 export class SQLiteTableCreationGateway implements ISqlDataGateway {
@@ -228,8 +229,16 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
 
     //check to see if the database exists
     async checkTableExists() {
-        var result = await window.database.SQLiteExists();
-        return result;
+        try {
+            var interactor = new SQLiteCompanyLookupGateway();
+            if(interactor.checkTableExists()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch(error) {
+            return false;
+        }
     }
 
     //for database tables that act as cache, check for the last time a table was updated

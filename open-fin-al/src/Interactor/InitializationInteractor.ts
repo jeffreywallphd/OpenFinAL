@@ -7,6 +7,9 @@ import ConfigUpdater from "../Utility/ConfigManager";
 import { StockInteractor } from "./StockInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { UserInteractor } from "./UserInteractor";
+import { SQLiteUserGateway } from "../Gateway/Data/SQLite/SQLiteUserGateway";
+import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLiteCompanyLookupGateway";
+import { SettingsInteractor } from "./SettingsInteractor";
 
 export class InitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -122,27 +125,140 @@ export class InitializationInteractor implements IInputBoundary {
         }
     }
     
-    async get(requestModel: IRequestModel): Promise<IResponseModel> {
-        //check if SQLite database has been created
-        const gateway = new SQLiteTableCreationGateway();
-        const tablesExist = await gateway.checkTableExists();
-
-        //check if the configuration file has been created
-        const configManager = new ConfigUpdater();
-        const configExists = await configManager.getConfig();
-
-        //return the response based on the initialization checks
+    async get(requestModel: IRequestModel, action:string=null): Promise<IResponseModel> {
         var response;
-        if(tablesExist && configExists) {
-            response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
-        } else {
+        try {
+            if(action==="isInitialized") {
+                //check if SQLite database has been created
+                const gateway = new SQLiteTableCreationGateway();
+                const databaseExist = await gateway.checkTableExists();
+
+                if(!databaseExist) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not initilized. The database was not created.`
+                    }}));
+                    return response;
+                }
+
+                //check if User table has data
+                const userGateway = new SQLiteUserGateway();
+                const userTableExists = await userGateway.checkTableExists();
+
+                if(!userTableExists) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not initilized. The user was not created.`
+                    }}));
+                    return response;
+                }
+
+                //check if PublicCompany table has data
+                const companyGateway = new SQLiteCompanyLookupGateway();
+                const companyCount = await companyGateway.count();
+                window.console.log(companyCount);
+
+                if(companyCount.count < 8000) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not initilized. The company lookup data is missing or incomplete.`
+                    }}));
+                    return response;
+                }
+
+                //check if the configuration file has been created
+                const configManager = new ConfigUpdater();
+                const configExists = await configManager.getConfig();
+
+                if(!configExists) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not configured. The system configuration was not set up correctly.`
+                    }}));
+                    return response;
+                }
+
+                //return success if other tests passed
+                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                return response;
+            }
+        } catch(error) {
             response = new JSONResponse(JSON.stringify({
-                status: 404, 
+                status: 500, 
                 data: {
-                    error: `The app is not initilized. Database existance returned ${tablesExist} and configuration exists returned ${configExists}.`
+                    error: `An unkonwn error occured while checking the system initialization.`
             }}));
+            return response;
+        }
+        
+        try {
+            if(action==="isConfigured") {
+                //check if SQLite database has been created
+                const gateway = new SQLiteTableCreationGateway();
+                const databaseExist = await gateway.checkTableExists();
+
+                if(!databaseExist) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not configured. The database was not created.`
+                    }}));
+                    return response;
+                }
+
+                //check if the configuration file has been created
+                const configManager = new ConfigUpdater();
+                const configExists = await configManager.getConfig();
+
+                if(!configExists) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not configured. The system configuration was not set up correctly.`
+                    }}));
+                    return response;
+                }
+
+                const settingsInteractor = new SettingsInteractor();
+                var settingsRequestObj = new JSONRequest(JSON.stringify({
+                    request: {
+                        action: "isConfigured"
+                    }
+                })); 
+
+                const settingsResponse = await settingsInteractor.get(settingsRequestObj);
+
+                if(!settingsResponse.response.ok) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The app is not configured. Required settings are not yet configured.`
+                    }}));
+                    return response;
+                }
+
+                //return success if other tests passed
+                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                return response;
+            }
+        } catch(error) {
+            response = new JSONResponse(JSON.stringify({
+                status: 500, 
+                data: {
+                    error: `An unkonwn error occured while checking the system configurations.`
+            }}));
+            return response;
         }
 
+        response = new JSONResponse(JSON.stringify({
+            status: 400, 
+            data: {
+                error: `The requested action doe not exist.`
+        }}));
         return response;
     }
     

@@ -15,12 +15,9 @@ import {
 import {Settings} from "../Settings";
 
 export function AppConfiguring(props) {
-    /*const checkConfig = async () => {
-        props.handleConfigured();
-    };*/
-
     useEffect(() => {
-        isConfigured();
+        //allow time for checking of initialization
+        setTimeout(isConfigured, 1000);
     }, []);
 
     const isConfigured = async () => {

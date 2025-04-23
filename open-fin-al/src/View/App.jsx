@@ -10,7 +10,6 @@ import React, { useState, createContext, useEffect } from "react";
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
 import { AppConfiguring } from "./App/Configuring";
-import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
@@ -69,7 +68,7 @@ function App(props) {
         window.console.log("handling configured");
         setConfigured(true);
         window.console.log("updated configured state");
-        await executeDataInitialization(); 
+        await checkIfFullyInitialized(); 
         window.console.log("executed data initialization");
     };
 
@@ -81,25 +80,66 @@ function App(props) {
             window.console.log(response);
             if(response.response.ok) {
                 setLoading(false);
+                return true;
             } else {
                 throw new Error();
             }
         } catch(error) {
-
             setPreparationError("Failed to initilize the software. Please contact the software administrator.");
+            setLoading(true);
+            return false;
         }
     };
 
-    const checkIfConfigured = async () => {
+    const checkIfFullyInitialized = async () => {
         try {
-            const interactor = new SettingsInteractor();
+            //determine if site is fully configured and data initialized
+            const interactor = new InitializationInteractor();
+            const requestObj = new JSONRequest(`{}`);
+            const response = await interactor.get(requestObj,"isInitialized");
+            window.console.log(response);
+            
+            if(response.response.ok) {
+                setConfigured(true);
+                setLoading(false);
+                return true;
+            } else {
+                //check if the site is uninitialized but configured
+                const configurationResponse = await interactor.get(requestObj,"isConfigured");
+                if(configurationResponse.response.ok) {
+                    setConfigured(true);
+                    getDarkMode();
 
+                    const initialized = await executeDataInitialization();
+
+                    if(initialized) {
+                        setLoading(false);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    setConfigured(false);
+                    setLoading(true);
+                    return false;
+                }
+            }
+        } catch(error) {
+            setConfigured(false);
+            setLoading(true);
+            return false;
+        }
+    };
+
+    /*const checkIfConfigured = async () => {
+        try {
+            const interactor = new InitializationInteractor();
             const request = new JSONRequest(JSON.stringify({
                 action: "isConfigured"
             }));
-
             const response = await interactor.get(request);
             window.console.log(response);
+            
             if(response.response.ok) {
                 setConfigured(true);
                 getDarkMode();
@@ -113,21 +153,11 @@ function App(props) {
             setConfigured(false);
             return false;
         }
-    };
+    };*/
 
-    /*useEffect( () => {
-        checkIfConfigured();
-    }, [setLoading]);*/
-
-    /*useEffect(() => {
-        try {
-            configurator.createEnvIfNotExists();
-            configurator.createConfigIfNotExists()
-            config = configurator.getConfig();
-        } catch(error) {
-            console.log(error);
-        } 
-    }, []);*/
+    useEffect( () => {
+        checkIfFullyInitialized();
+    }, []);
 
     return (
         configured ?
@@ -140,8 +170,7 @@ function App(props) {
                         </DataContext.Provider>            
             )        
         : 
-            <AppConfiguring checkIfConfigured={checkIfConfigured} handleConfigured={handleConfigured}/>
-             
+            <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>
     );
 }
 
