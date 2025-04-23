@@ -90,7 +90,7 @@ function App(props) {
 
     const checkIfFullyInitialized = async () => {
         try {
-            //determine if site is fully configured and data initialized
+            //determine if application is fully configured and data initialized
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.get(requestObj,"isInitialized");
@@ -117,6 +117,7 @@ function App(props) {
                         return false;
                     }
                 } else {
+                    await interactor.post(requestObj,"createConfig");
                     setConfigured(false);
                     setLoading(true);
                     return false;
