@@ -20,8 +20,10 @@ export class SQLiteUserGateway implements ISqlDataGateway {
             const query = "INSERT INTO User (firstName, lastName, email, username) VALUES (?, ?, ?, ?)";
             const args  = [entity.getFieldValue("firstName"), entity.getFieldValue("lastName"), entity.getFieldValue("email"), entity.getFieldValue("username")];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
+            window.console.log(`SQLiteInsert resulted in ${result}`);
             return result;
         } catch(error) {
+            window.console.log(error);
             return false;
         }
     }
@@ -108,7 +110,8 @@ export class SQLiteUserGateway implements ISqlDataGateway {
         throw new Error("This gateway does not have the ability to check last table update.");
     }
 
-    async refreshTableCache(entity: IEntity) {
+    async refreshTableCache(entity: IEntity):Promise<Boolean> {
         throw new Error("This gateway does not have the ability to refresh table cache.");
+        return false;
     }
 }

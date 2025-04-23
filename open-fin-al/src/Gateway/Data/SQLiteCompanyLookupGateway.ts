@@ -212,7 +212,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
         const data = await window.database.SQLiteSelect({ query: query, parameters: args });
-        
+        window.console.log(data);
         if(data && data.changedAt) {
             return new Date(data.changedAt);
         } else {
@@ -220,92 +220,100 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
         }
     }
 
-    async refreshTableCache(entity: IEntity) {
-        await this.delete(entity, "");
+    async refreshTableCache(entity: IEntity):Promise<Boolean> {
+        try {
+            await this.delete(entity, "");
 
-        var endpointRequest = new JSONRequest(JSON.stringify({
-            request: {
-                endpoint: {
-                    method: "GET",
-                    protocol: "https",
-                    hostname: "www.sec.gov",
-                    pathname: "files/company_tickers.json",
-                    headers: {
-                        "User-Agent": "Investor jeffrey.d.wall@gmail.com"
-                    },               
+            const userEmail = await window.vault.getSecret("Email");
+
+            var endpointRequest = new JSONRequest(JSON.stringify({
+                request: {
+                    endpoint: {
+                        method: "GET",
+                        protocol: "https",
+                        hostname: "www.sec.gov",
+                        pathname: "files/company_tickers.json",
+                        headers: {
+                            "User-Agent": `Investor ${userEmail}`
+                        },               
+                    }
                 }
-            }
-        }));
-        
-        var endpoint = new APIEndpoint();
-        endpoint.fillWithRequest(endpointRequest);
-        window.console.log(endpoint.toObject());
-        //pass custom user-agent header through url query to avoid it being overriden
-        const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json`, endpoint.toObject());
-        
-        // Parse the SEC JSON file to extract ticker, CIK, and companyName
-        for(var key in secData) {
-            var ticker = secData[key]["ticker"];
-            var cik = secData[key]["cik_str"];
-            var companyName = secData[key]["title"].toUpperCase();
-
-            if(cik.toString().length < 10) {
-                const diff = 10 - cik.toString().length;
-                var newCik = "";
-
-                for(var i=0; i < diff; i++) {
-                    newCik += "0";
-                }
-
-                cik = newCik + cik;
-            }
+            }));
             
-            try {
-                const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
-                const args  = [companyName, ticker, cik];
-                await window.database.SQLiteInsert({ query: query, parameters: args });
-            } catch(error) {
-                continue;
-            }
-        } 
+            var endpoint = new APIEndpoint();
+            endpoint.fillWithRequest(endpointRequest);
+            window.console.log(endpoint.toObject());
+            //pass custom user-agent header through url query to avoid it being overriden
+            const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json`, endpoint.toObject());
+            
+            // Parse the SEC JSON file to extract ticker, CIK, and companyName
+            for(var key in secData) {
+                var ticker = secData[key]["ticker"];
+                var cik = secData[key]["cik_str"];
+                var companyName = secData[key]["title"].toUpperCase();
 
-        endpointRequest = new JSONRequest(JSON.stringify({
-            request: {
-                endpoint: {
-                    method: "GET",
-                    protocol: "https",
-                    hostname: "en.wikipedia.org",
-                    pathname: "wiki/List_of_S%26P_500_companies",
-                    headers: {
-                        "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36`
-                    },               
+                if(cik.toString().length < 10) {
+                    const diff = 10 - cik.toString().length;
+                    var newCik = "";
+
+                    for(var i=0; i < diff; i++) {
+                        newCik += "0";
+                    }
+
+                    cik = newCik + cik;
                 }
-            }
-        }));
+                
+                try {
+                    const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
+                    const args  = [companyName, ticker, cik];
+                    await window.database.SQLiteInsert({ query: query, parameters: args });
+                } catch(error) {
+                    continue;
+                }
+            } 
+
+            endpointRequest = new JSONRequest(JSON.stringify({
+                request: {
+                    endpoint: {
+                        method: "GET",
+                        protocol: "https",
+                        hostname: "en.wikipedia.org",
+                        pathname: "wiki/List_of_S%26P_500_companies",
+                        headers: {
+                            "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36`
+                        },               
+                    }
+                }
+            }));
+            
+            endpoint = new APIEndpoint();
+            endpoint.fillWithRequest(endpointRequest);
+
+            // get the S&P 500 companies and store those in a database
+            const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", endpoint.toObject());
+            const SP500Object = parse(SP500Response);
+
+            // get all of the rows from the consituents table that stores the S&P500 companies
+            const rows = SP500Object.querySelector("#constituents")?.querySelectorAll("tr");
+
+            // loop over all rows in the constituents table to extract S&P500 tickers
+            if (rows) {
+                for(var row of rows) {
+                    var tds = Array.from(row.querySelectorAll("td"));
         
-        endpoint = new APIEndpoint();
-        endpoint.fillWithRequest(endpointRequest);
-
-        // get the S&P 500 companies and store those in a database
-        const SP500Response = await window.exApi.fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies", endpoint.toObject());
-        const SP500Object = parse(SP500Response);
-
-        // get all of the rows from the consituents table that stores the S&P500 companies
-        const rows = SP500Object.querySelector("#constituents")?.querySelectorAll("tr");
-
-        // loop over all rows in the constituents table to extract S&P500 tickers
-        if (rows) {
-            for(var row of rows) {
-                var tds = Array.from(row.querySelectorAll("td"));
-    
-                // for valid rows in the table, get the ticker from the first cell and update the database
-                if(tds.length > 0) {
-                    var SP500ticker = tds[0].querySelector("a").innerText;
-                    const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
-                    const updateArgs = [SP500ticker];
-                    await window.database.SQLiteUpdate({ query: updateQuery, parameters: updateArgs });
+                    // for valid rows in the table, get the ticker from the first cell and update the database
+                    if(tds.length > 0) {
+                        var SP500ticker = tds[0].querySelector("a").innerText;
+                        const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
+                        const updateArgs = [SP500ticker];
+                        await window.database.SQLiteUpdate({ query: updateQuery, parameters: updateArgs });
+                    }
                 }
             }
+
+            return true;
+        } catch(error) {
+            return false;
         }
     }
 }

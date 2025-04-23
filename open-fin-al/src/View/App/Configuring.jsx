@@ -15,13 +15,20 @@ import {
 import {Settings} from "../Settings";
 
 export function AppConfiguring(props) {
-    const checkConfig = async () => {
+    /*const checkConfig = async () => {
         props.handleConfigured();
-    };
+    };*/
 
-    /*useEffect(() => {
-        props.checkIfConfigured();
-    }, []);*/
+    useEffect(() => {
+        isConfigured();
+    }, []);
+
+    const isConfigured = async () => {
+        const configured = await props.checkIfConfigured();
+        if(configured) {
+            props.handleConfigured();
+        }
+    };
 
     return (
         <HashRouter>

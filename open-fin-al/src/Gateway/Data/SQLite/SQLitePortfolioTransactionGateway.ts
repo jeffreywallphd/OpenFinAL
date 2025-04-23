@@ -219,54 +219,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
         }
     }
 
-    async refreshTableCache(entity: IEntity) {
-        await this.delete(entity, "");
-
-        const response = await fetch('https://www.sec.gov/files/company_tickers.json');
-        const secData = await response.json();
-
-        // Parse the SEC JSON file to extract ticker, CIK, and companyName
-        for(var key in secData) {
-            var ticker = secData[key]["ticker"];
-            var cik = secData[key]["cik_str"];
-            var companyName = secData[key]["title"].toUpperCase();
-
-            if(cik.toString().length < 10) {
-                const diff = 10 - cik.toString().length;
-                var newCik = "";
-
-                for(var i=0; i < diff; i++) {
-                    newCik += "0";
-                }
-
-                cik = newCik + cik;
-            }
-            
-            const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
-            const args  = [companyName, ticker, cik];
-            await window.electron.ipcRenderer.invoke('sqlite-insert', { query: query, parameters: args });
-        } 
-
-        // get the S&P 500 companies and store those in a database
-        const SP500Response = await fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
-        const SP500Object = parse(await SP500Response.text());
-
-        // get all of the rows from the consituents table that stores the S&P500 companies
-        const rows = SP500Object.querySelector("#constituents").querySelectorAll("tr");
-
-        // loop over all rows in the constituents table to extract S&P500 tickers
-        for(var row of rows) {
-            var tds = Array.from(row.querySelectorAll("td"));
-
-            // for valid rows in the table, get the ticker from the first cell and update the database
-            if(tds.length > 0) {
-                var SP500ticker = tds[0].querySelector("a").innerText;
-                const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
-                const updateArgs = [SP500ticker];
-                await window.electron.ipcRenderer.invoke('sqlite-update', { query: updateQuery, parameters: updateArgs });
-            }
-        }
-
-        
+    async refreshTableCache(entity: IEntity):Promise<Boolean> {
+        return false;
     }
 }

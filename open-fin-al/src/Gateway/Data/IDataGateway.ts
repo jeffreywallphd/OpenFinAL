@@ -11,5 +11,5 @@ export interface IDataGateway {
     delete(entity: IEntity, action: string): Promise<number>;
     checkTableExists?(): Promise<Boolean>;
     checkLastTableUpdate?(): Promise<Date>;
-    refreshTableCache?(entity: IEntity): void;
+    refreshTableCache?(entity: IEntity): Promise<Boolean>;
 }

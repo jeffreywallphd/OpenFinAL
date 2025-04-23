@@ -52,14 +52,12 @@ function Settings(props) {
             if(response.response.ok) {
                 configured = true;
             }
+        } else if(props.initialConfiguration && configured) {
+            props.handleConfigured();
         }
 
-        if(configured) {
-            await fetchCurrentSettings();
-            await fetchSettingSections();
-        } else {
-            window.console.log("The application is not yet configured.");
-        }
+        await fetchCurrentSettings();
+        await fetchSettingSections();
     };
 
     useEffect(() => {
@@ -96,9 +94,8 @@ function Settings(props) {
             await sleep(1000);
             setMessage(null);
             
-            if(props.initialConfiguration) {
-                props.handleConfigured();
-            }
+            const isConfigured = await props.checkIfConfigured();
+            window.console.log(`Is the site configured? ${isConfigured}`);
 
             setTimeout(() => {
                 navigate('/refresh', { replace: true }); // dummy path

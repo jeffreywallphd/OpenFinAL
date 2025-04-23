@@ -11,6 +11,22 @@ function SettingsRowValue(props) {
         }));
     };
 
+    const isDisabled = (setting) => {
+        if(!setting) {
+            return true;
+        }
+
+        if(setting.isLocked) {
+            return true;
+        }
+
+        if(!setting.hasValue) {
+            return true;
+        }
+
+        return false;
+    }
+
     return (            
         <div className="key-cell">
             <input 
@@ -23,7 +39,7 @@ function SettingsRowValue(props) {
                     setOptionValue(props.configuration.name, e.target.value);
                     props.setSharedValues(props.settings[props.configuration.name].valueName, e.target.value);
                 }}
-                disabled={!props.settings[props.configuration.name]?.hasValue}
+                disabled={isDisabled(props.settings[props.configuration.name])}
             />
             { props.settings[props.configuration.name]?.hasValue && props.settings[props.configuration.name].valueSite ? (
                 <>

@@ -10,9 +10,9 @@ import React, { useState, createContext, useEffect } from "react";
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
 import { AppConfiguring } from "./App/Configuring";
-import  ConfigUpdater  from "../Utility/ConfigManager";
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
 const DataContext = createContext();
 
@@ -20,6 +20,7 @@ function App(props) {
     const currentDate = new Date();
     const [loading, setLoading] = useState(true);
     const [configured, setConfigured] = useState(false);
+    const [preparationError, setPreparationError] = useState(null);
     const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
@@ -64,8 +65,29 @@ function App(props) {
         setLoading(false);
     };
 
-    const handleConfigured = () => {
+    const handleConfigured = async () => {
+        window.console.log("handling configured");
         setConfigured(true);
+        window.console.log("updated configured state");
+        await executeDataInitialization(); 
+        window.console.log("executed data initialization");
+    };
+
+    const executeDataInitialization = async() => {
+        try {
+            const interactor = new InitializationInteractor();
+            const requestObj = new JSONRequest(`{}`);
+            const response = await interactor.post(requestObj,"initializeData");
+            window.console.log(response);
+            if(response.response.ok) {
+                setLoading(false);
+            } else {
+                throw new Error();
+            }
+        } catch(error) {
+
+            setPreparationError("Failed to initilize the software. Please contact the software administrator.");
+        }
     };
 
     const checkIfConfigured = async () => {
@@ -78,14 +100,15 @@ function App(props) {
 
             const response = await interactor.get(request);
             window.console.log(response);
-            if(response.response.status === 200) {
+            if(response.response.ok) {
                 setConfigured(true);
                 getDarkMode();
+                await executeDataInitialization();
+                return true;
             } else {
                 setConfigured(false);
+                return false;
             }
-
-            return configured;
         } catch(error) {
             setConfigured(false);
             return false;
@@ -95,8 +118,6 @@ function App(props) {
     /*useEffect( () => {
         checkIfConfigured();
     }, [setLoading]);*/
-
-    var config = null;
 
     /*useEffect(() => {
         try {
@@ -112,16 +133,14 @@ function App(props) {
         configured ?
             (
                 loading ?
-                    <AppPreparing handleLoading={handleLoading}/>
-                    
+                        <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
                     :
-
-                    <DataContext.Provider value={value}>
-                        <AppLoaded />
-                    </DataContext.Provider>            
+                        <DataContext.Provider value={value}>
+                            <AppLoaded />
+                        </DataContext.Provider>            
             )        
         : 
-            <AppConfiguring checkIfConfigured={checkIfConfigured} config={config} handleConfigured={handleConfigured}/>
+            <AppConfiguring checkIfConfigured={checkIfConfigured} handleConfigured={handleConfigured}/>
              
     );
 }

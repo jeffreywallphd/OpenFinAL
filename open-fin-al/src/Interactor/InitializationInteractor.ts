@@ -15,29 +15,45 @@ export class InitializationInteractor implements IInputBoundary {
     async post(requestModel: IRequestModel, action:string=null): Promise<IResponseModel> {
         var response;
         const configManager = new ConfigUpdater();
-        var secretsCreated;
         var configCreated;
 
         if(action === "createConfig") {
-            secretsCreated = await configManager.createEnvIfNotExists();
-            configCreated = await configManager.createConfigIfNotExists();
+            try {
+                //secretsCreated = await configManager.createEnvIfNotExists();
+                configCreated = await configManager.createConfigIfNotExists();
 
-            if(secretsCreated && configCreated) {
-                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
-            } else {
+                //create the SQLite database    
+                const gateway = new SQLiteTableCreationGateway();
+                const tablesCreated = await gateway.create();
+
+                if(configCreated && tablesCreated) {
+                    response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                } else {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 400, 
+                        data: {
+                            error: `The application configuration failed. Configurations created: ${configCreated}. Data tables created: ${tablesCreated}.}`
+                    }}));
+                }
+
+                return response;
+            } catch(error) {
                 response = new JSONResponse(JSON.stringify({
-                    status: 400, 
+                    status: 500, 
                     data: {
-                        error: `All or part of the app initialization failed. Key initializations returned ${secretsCreated}, and configurations returned ${configCreated}.`
+                        error: `An unknown erorr occurred while setting up the system configurations.}`
                 }}));
+                
+                return response;
             }
-        } else {
-            //create the SQLite database    
-            const gateway = new SQLiteTableCreationGateway();
-            const tableCreated = await gateway.create();
+        } else if (action === "initializeData") {
+            window.console.log("Initializing the system data");
+            var publicCompaniesResponse;
+            var userResponse;
+            var response;
 
-            if(tableCreated) {
-                //load the table with company data after database init
+            //load the table with company data after database init
+            try {
                 var interactor = new StockInteractor();
                 var requestObj = new JSONRequest(`{ 
                     "request": { 
@@ -46,45 +62,64 @@ export class InitializationInteractor implements IInputBoundary {
                         }
                     }
                 }`);
-                await interactor.get(requestObj);
+                publicCompaniesResponse = await interactor.get(requestObj);
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500, 
+                    data: {
+                        error: `An unkown error occured while insert company lookup data.`
+                }}));
+                return response;
+            }
+            
+            //load the user table with the OS username
+            try {
+                const username = await window.config.getUsername();
+                var firstName;
+                var lastName;
+                var email = window.vault.getSecret("Email") || null;
 
-                //load the user table with the OS username
-                try {
-                    window.console.log(`User: ${await window.config.getUsername()}`);
-                    var userInteractor = new UserInteractor();
-                    var userRequestObj = new JSONRequest(JSON.stringify({ 
-                        request: { 
-                            user: {
-                                username: await window.config.getUsername(),
-                                firstName: null,
-                                lastName: null,
-                                email: null 
-                            }
-                        }
-                    }));
-                    await userInteractor.post(userRequestObj);
-                } catch(error) {
-                    console.log(error);
+                if(window.config.exists()) {
+                    const config = await window.config.load();
+                    firstName = config.UserSettings.FirstName;
+                    lastName = config.UserSettings.LastName;
                 }
+
+                var userInteractor = new UserInteractor();
+                var userRequestObj = new JSONRequest(JSON.stringify({ 
+                    request: { 
+                        user: {
+                            username: username,
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email 
+                        }
+                    }
+                }));
+                userResponse = await userInteractor.post(userRequestObj);
+                window.console.log(userResponse);
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500, 
+                    data: {
+                        error: `An unkown error occured while created the application user.`
+                }}));
+                return response;
             }
 
-            //set up api key storage and configuration file
-            secretsCreated = await configManager.createEnvIfNotExists();
-            configCreated = await configManager.createConfigIfNotExists();
-
             //return the response based on the outcomes of initialization
-            if(tableCreated && secretsCreated && configCreated) {
+            if(publicCompaniesResponse.response.ok && userResponse.response.ok) {
                 response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
             } else {
                 response = new JSONResponse(JSON.stringify({
                     status: 400, 
                     data: {
-                        error: `All or part of the app initialization failed. Database creation returned ${tableCreated}, key initializations returned ${secretsCreated}, and configurations returned ${configCreated}.`
+                        error: `The app data table initialization failed. Company lookup data loaded: ${publicCompaniesResponse.response.ok}. User data loaded: ${userResponse.response.ok}.`
                 }}));
             }
+
+            return response;
         }
-            
-        return response;
     }
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {

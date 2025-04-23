@@ -238,7 +238,8 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
         return null;
     }
 
-    async refreshTableCache(entity: IEntity) {
+    async refreshTableCache(entity: IEntity):Promise<Boolean> {
         throw new Error("This gatweay does not allow for rereshing tables. This gateway is designed for posting only.");
+        return false;
     }
 }

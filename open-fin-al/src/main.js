@@ -428,7 +428,7 @@ async function getSecret(key) {
   try {
     return await keytar.getPassword('OpenFinAL', key);
   } catch(error) {
-    window.console.error(error);
+    console.error(error);
     return null;
   }
 }
@@ -438,7 +438,7 @@ async function setSecret(key, secret) {
     await keytar.setPassword('OpenFinAL', key, secret);
     return true;
   } catch(error) {
-    window.console.error(error);
+    console.error(error);
     return false;
   }
 }
@@ -704,10 +704,10 @@ const sqliteRun = async (query, dataArray) => {
       db.run(query, dataArray, (err, data) => {
         if (err) {
           reject(err);
-          return;
+          return false;
         }
 
-        resolve(data);
+        resolve(true);
       });
     } catch (err) {
       reject(err);

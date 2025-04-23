@@ -20,6 +20,7 @@ export class StockInteractor implements IInputBoundary {
     }
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
+        var response;
         const date = new Date();
 
         //create stock request object and fill with request model
@@ -30,29 +31,45 @@ export class StockInteractor implements IInputBoundary {
         // use internal database for company/ticker/cik lookups
 
         if(requestModel.request.request.stock.action === "downloadPublicCompanies") {
-            stockGateway = new SQLiteCompanyLookupGateway();
+            try {
+                stockGateway = new SQLiteCompanyLookupGateway();
 
-            //check to see if the PublicCompany table is filled and has been updated recently
-            const lastUpdated = await stockGateway.checkLastTableUpdate();
+                //check to see if the PublicCompany table is filled and has been updated recently
+                const lastUpdated = await stockGateway.checkLastTableUpdate();
 
-            var dayDiff=0; 
+                var dayDiff=0; 
 
-            if(lastUpdated !== undefined) {
-                // Calculate last time cache was updated in milliseconds; convert to days
-                const timeDiff = Math.abs(date.getTime() - lastUpdated.getTime());
-                dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                if(lastUpdated !== undefined) {
+                    // Calculate last time cache was updated in milliseconds; convert to days
+                    const timeDiff = Math.abs(date.getTime() - lastUpdated.getTime());
+                    dayDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+                }
+                window.console.log(dayDiff);
+                //var response = new JSONResponse();
+
+                // Re-cache ticker:cik mapping if more than 30 days old. Also cache if undefined.
+                // Re-caching is done to capture new IPOs and changes to org reporting data
+                if(lastUpdated === undefined || dayDiff > 30) {
+                    const refreshed = await stockGateway.refreshTableCache(stock);
+                    if(refreshed) {
+                        response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                    } else {
+                        response = new JSONResponse(JSON.stringify({
+                            status: 500, 
+                            data: {
+                                error: "The cache failed to update."
+                        }}));
+                    }
+
+                    return response;     
+                } 
+
+                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                return response;
+            } catch(downloadError) {
+                response = new JSONResponse(JSON.stringify({status: 500, data: {error: "An unknown error occured while updated the system cache."}}));
+                return response;
             }
-
-            //var response = new JSONResponse();
-
-            // Re-cache ticker:cik mapping if more than 30 days old. Also cache if undefined.
-            // Re-caching is done to capture new IPOs and changes to org reporting data
-            if(lastUpdated === undefined || dayDiff > 30) {
-                await stockGateway.refreshTableCache(stock);
-                return;     
-            } 
-
-            return;
         } 
 
         // use internal SQLite database for lookup and random selection of an S&P500 company
@@ -72,7 +89,6 @@ export class StockInteractor implements IInputBoundary {
 
         //search for the requested information via the API gateway
         var results = await stockGateway.read(stock, requestModel.request.request.stock.action);
-        var response;
 
         if(results) {
             //convert the API gateway response to a JSON reponse object

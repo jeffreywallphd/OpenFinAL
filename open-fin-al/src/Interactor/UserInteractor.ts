@@ -9,26 +9,36 @@ export class UserInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
 
-    async post(requestModel: IRequestModel): Promise<IResponseModel> {    
-        var user = new User();
-        user.fillWithRequest(requestModel);
-
-        var userGateway = new SQLiteUserGateway();
-        var results = await userGateway.read(user);
-
+    async post(requestModel: IRequestModel): Promise<IResponseModel> {
         var response;
-        if(results) {
-            response = new JSONResponse(JSON.stringify({response: {status: 200, ok: true}}));
-        } else {
+        try {
+            var user = new User();
+            user.fillWithRequest(requestModel);
+
+            var userGateway = new SQLiteUserGateway();
+            var results = await userGateway.create(user);
+
+            if(results) {
+                response = new JSONResponse(JSON.stringify({response: {status: 200, ok: true}}));
+            } else {
+                response = new JSONResponse(JSON.stringify({
+                    response: {
+                        status: 400, 
+                        data: {
+                            error: "Unable to insert the user into the database"
+                }}}));
+            }
+
+            return response.response;
+        } catch(error) {
             response = new JSONResponse(JSON.stringify({
                 response: {
-                    status: 400, 
+                    status: 500, 
                     data: {
-                        error: "Unable to insert the user into the database"
+                        error: "An unknown error occurred while creating the user"
             }}}));
-        }
-
-        return response;
+            return response.response;
+        }    
     }
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {

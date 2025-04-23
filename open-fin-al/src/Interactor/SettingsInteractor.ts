@@ -39,7 +39,8 @@ export class SettingsInteractor implements IInputBoundary {
             }
             
             if(configuration.name === configuration.valueName) {
-                config[configuration.setting][configuration.name] = isNaN(Number(String(configuration.value).trim())) ? configuration.value : Number(String(configuration.value).trim());;
+                window.console.log(`configuration setting: ${configuration.setting} and config name ${configuration.name} and object ${config[configuration.setting][configuration.name]}`)
+                config[configuration.setting][configuration.name] = configuration.valueType==="number" ? Number(String(configuration.value).trim()) : configuration.value;
             } else {
                 config[configuration.setting] = configuration.name;
             }
@@ -84,6 +85,7 @@ export class SettingsInteractor implements IInputBoundary {
         userFirstName.setFieldValue("name", "FirstName");
         userFirstName.setFieldValue("hasValue", true);
         userFirstName.setFieldValue("valueName", "FirstName");
+        userFirstName.setFieldValue("valueType", "text");
         userFirstName.setFieldValue("value", config.UserSettings.FirstName);
 
         var userFirstNameConfiguration = new Configuration();
@@ -100,6 +102,7 @@ export class SettingsInteractor implements IInputBoundary {
         userLastName.setFieldValue("name", "LastName");
         userLastName.setFieldValue("hasValue", true);
         userLastName.setFieldValue("valueName", "LastName");
+        userLastName.setFieldValue("valueType", "text");
         userLastName.setFieldValue("value", config.UserSettings.LastName);
 
         var userLastNameConfiguration = new Configuration();
@@ -114,10 +117,12 @@ export class SettingsInteractor implements IInputBoundary {
         username.setFieldValue("setting", "UserSettings");
         username.setFieldValue("label", "Username");
         username.setFieldValue("name", "Username");
-        username.setFieldValue("hasValue", false);
+        username.setFieldValue("hasValue", true);
+        username.setFieldValue("isLocked", true);
         username.setFieldValue("valueName", "Username");
+        username.setFieldValue("valueType", "text");
         username.setFieldValue("value", await window.config.getUsername());
-        window.console.log(username);
+
         var usernameConfiguration = new Configuration();
         usernameConfiguration.setFieldValue("id", this.generateId());
         usernameConfiguration.setFieldValue("name", "Username");
@@ -132,15 +137,16 @@ export class SettingsInteractor implements IInputBoundary {
         userEmail.setFieldValue("name", "Email");
         userEmail.setFieldValue("hasValue", true);
         userEmail.setFieldValue("valueName", "Email");
+        userEmail.setFieldValue("valueType", "text");
         userEmail.setFieldValue("valueIsKey", true);
-        userEmail.setFieldValue("value", await this.configUpdater.getSecret("Email"));
+        userEmail.setFieldValue("value", await this.configUpdater.getSecret("Email") || "");
 
         var userEmailConfiguration = new Configuration();
         userEmailConfiguration.setFieldValue("id", this.generateId());
-        userEmailConfiguration.setFieldValue("name", "LastName");
+        userEmailConfiguration.setFieldValue("name", "Email");
         userEmailConfiguration.setFieldValue("type", "text");
         userEmailConfiguration.setFieldValue("purpose", "");
-        userEmailConfiguration.setFieldValue("options", [userLastName]);
+        userEmailConfiguration.setFieldValue("options", [userEmail]);
 
         //create StockGateway Configurations
         var currentStockGateway = null;
@@ -153,7 +159,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageStockGateway.setFieldValue("hasValue", true);
         AlphaVantageStockGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         AlphaVantageStockGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageStockGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
+        AlphaVantageStockGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
         AlphaVantageStockGateway.setFieldValue("isActive", config.StockGateway === "AlphaVantageStockGateway" ? true : false);
         AlphaVantageStockGateway.setFieldValue("valueIsKey", true);
 
@@ -167,7 +173,7 @@ export class SettingsInteractor implements IInputBoundary {
         FMPStockGateway.setFieldValue("hasValue", true);
         FMPStockGateway.setFieldValue("valueName", "FMP_API_KEY");
         FMPStockGateway.setFieldValue("valueSite", "https://site.financialmodelingprep.com/pricing-plans");
-        FMPStockGateway.setFieldValue("value", await this.configUpdater.getSecret("FMP_API_KEY"));
+        FMPStockGateway.setFieldValue("value", await this.configUpdater.getSecret("FMP_API_KEY") || "");
         FMPStockGateway.setFieldValue("isActive", config.StockGateway === "FinancialModelingPrepGateway" ? true : false);
         FMPStockGateway.setFieldValue("valueIsKey", true);
 
@@ -203,7 +209,7 @@ export class SettingsInteractor implements IInputBoundary {
         AlphaVantageNewsGateway.setFieldValue("hasValue", true);
         AlphaVantageNewsGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         AlphaVantageNewsGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        AlphaVantageNewsGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
+        AlphaVantageNewsGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
         AlphaVantageNewsGateway.setFieldValue("isActive", config.NewsGateway === "AlphaVantageNewsGateway" ? true : false);
         AlphaVantageNewsGateway.setFieldValue("valueIsKey", true);
 
@@ -251,7 +257,7 @@ export class SettingsInteractor implements IInputBoundary {
         RatioGateway.setFieldValue("hasValue", true);
         RatioGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
         RatioGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
-        RatioGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY"));
+        RatioGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
         RatioGateway.setFieldValue("isActive", config.RatioGateway === "AlphaVantageRatioGateway" ? true : false);
         RatioGateway.setFieldValue("valueIsKey", true);
 
@@ -300,6 +306,10 @@ export class SettingsInteractor implements IInputBoundary {
                 response: {   
                     results: [
                         {
+                            FirstName: userFirstName.toObject(),
+                            LastName: userLastName.toObject(),
+                            Username: username.toObject(),
+                            Email: userEmail.toObject(),
                             StockGateway: currentStockGateway.toObject(),
                             NewsGateway: currentNewsGateway.toObject(),
                             ReportGateway: currentReportGateway.toObject(),
@@ -317,7 +327,7 @@ export class SettingsInteractor implements IInputBoundary {
                         }
                     ]
             }};
-        } else if(json.action && json.action == "isConfigured") {
+        } else if(json.action && json.action === "isConfigured") {
             var validCount = 0;
 
             const currentConfigurations = [
@@ -326,7 +336,8 @@ export class SettingsInteractor implements IInputBoundary {
                 currentReportGateway.toObject(), 
                 currentRatioGateway.toObject(), 
                 chatbotModelSettings.currentAIModel.toObject(),
-                newsSummaryModelSettings.currentAIModel.toObject()
+                newsSummaryModelSettings.currentAIModel.toObject(),
+                userEmail.toObject()
             ];
 
             for(var configuration of currentConfigurations as any) {
@@ -344,7 +355,7 @@ export class SettingsInteractor implements IInputBoundary {
                     response: {
                         status: 400,
                         data:{
-                            error: "The applications are not yet set"
+                            error: "All required configurations are not yet set."
                 }}};
             }
         } else {
@@ -386,7 +397,7 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("hasValue", true);
         OpenAIModelGateway.setFieldValue("valueName", "OPENAI_API_KEY");
         OpenAIModelGateway.setFieldValue("valueSite", "https://platform.openai.com/api-keys");
-        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY"));
+        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY") || "");
         OpenAIModelGateway.setFieldValue("isActive", config.ChatbotModel === "OpenAIModel" ? true : false);
         OpenAIModelGateway.setFieldValue("valueIsKey", true);
 
@@ -400,7 +411,7 @@ export class SettingsInteractor implements IInputBoundary {
         HuggingFaceModelGateway.setFieldValue("hasValue", true);
         HuggingFaceModelGateway.setFieldValue("valueName", "HUGGINGFACE_API_KEY");
         HuggingFaceModelGateway.setFieldValue("valueSite", "https://huggingface.co/settings/tokens");
-        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY"));
+        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY") || "");
         HuggingFaceModelGateway.setFieldValue("isActive", config.ChatbotModel === "HuggingFaceModel" ? true : false);
         HuggingFaceModelGateway.setFieldValue("valueIsKey", true);
 
@@ -423,6 +434,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotModelName.setFieldValue("name", "ChatbotModelName");
         chatbotModelName.setFieldValue("hasValue", true);
         chatbotModelName.setFieldValue("valueName", "ChatbotModelName");
+        chatbotModelName.setFieldValue("valueType", "text");
         chatbotModelName.setFieldValue("value", config.ChatbotModelSettings.ChatbotModelName);
 
         var chatbotModelNameConfiguration = new Configuration();
@@ -440,6 +452,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotMaxTokens.setFieldValue("name", "ChatbotModelMaxOutputTokens");
         chatbotMaxTokens.setFieldValue("hasValue", true);
         chatbotMaxTokens.setFieldValue("valueName", "ChatbotModelMaxOutputTokens");
+        chatbotMaxTokens.setFieldValue("valueType", "number");
         chatbotMaxTokens.setFieldValue("value", config.ChatbotModelSettings.ChatbotModelMaxOutputTokens);
 
         var chatbotMaxTokensConfiguration = new Configuration();
@@ -457,6 +470,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotTemperature.setFieldValue("name", "ChatbotModelTemperature");
         chatbotTemperature.setFieldValue("hasValue", true);
         chatbotTemperature.setFieldValue("valueName", "ChatbotModelTemperature");
+        chatbotTemperature.setFieldValue("valueType", "number");
         chatbotTemperature.setFieldValue("value", config.ChatbotModelSettings.ChatbotModelTemperature);
 
         var chatbotTemperatureConfiguration = new Configuration();
@@ -474,6 +488,7 @@ export class SettingsInteractor implements IInputBoundary {
         chatbotTopP.setFieldValue("name", "ChatbotModelTopP");
         chatbotTopP.setFieldValue("hasValue", true);
         chatbotTopP.setFieldValue("valueName", "ChatbotModelTopP");
+        chatbotTopP.setFieldValue("valueType", "number");
         chatbotTopP.setFieldValue("value", config.ChatbotModelSettings.ChatbotModelTopP);
 
         var chatbotTopPConfiguration = new Configuration();
@@ -510,7 +525,7 @@ export class SettingsInteractor implements IInputBoundary {
         OpenAIModelGateway.setFieldValue("hasValue", true);
         OpenAIModelGateway.setFieldValue("valueName", "OPENAI_API_KEY");
         OpenAIModelGateway.setFieldValue("valueSite", "https://platform.openai.com/api-keys");
-        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY"));
+        OpenAIModelGateway.setFieldValue("value", await this.configUpdater.getSecret("OPENAI_API_KEY") || "");
         OpenAIModelGateway.setFieldValue("isActive", config.NewsSummaryModel === "OpenAIModel" ? true : false);
         OpenAIModelGateway.setFieldValue("valueIsKey", true);
 
@@ -524,7 +539,7 @@ export class SettingsInteractor implements IInputBoundary {
         HuggingFaceModelGateway.setFieldValue("hasValue", true);
         HuggingFaceModelGateway.setFieldValue("valueName", "HUGGINGFACE_API_KEY");
         HuggingFaceModelGateway.setFieldValue("valueSite", "https://huggingface.co/settings/tokens");
-        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY"));
+        HuggingFaceModelGateway.setFieldValue("value", await this.configUpdater.getSecret("HUGGINGFACE_API_KEY") || "");
         HuggingFaceModelGateway.setFieldValue("isActive", config.NewsSummaryModel === "HuggingFaceModel" ? true : false);
         HuggingFaceModelGateway.setFieldValue("valueIsKey", true);
 
@@ -547,6 +562,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModelName.setFieldValue("name", "NewsSummaryModelName");
         newsSummaryModelName.setFieldValue("hasValue", true);
         newsSummaryModelName.setFieldValue("valueName", "NewsSummaryModelName");
+        newsSummaryModelName.setFieldValue("valueType", "text");
         newsSummaryModelName.setFieldValue("value", config.NewsSummaryModelSettings.NewsSummaryModelName);
 
         var newsSummaryModelNameConfiguration = new Configuration();
@@ -564,6 +580,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModeMaxTokens.setFieldValue("name", "NewsSummaryModelMaxOutputTokens");
         newsSummaryModeMaxTokens.setFieldValue("hasValue", true);
         newsSummaryModeMaxTokens.setFieldValue("valueName", "NewsSummaryModelMaxOutputTokens");
+        newsSummaryModeMaxTokens.setFieldValue("valueType", "number");
         newsSummaryModeMaxTokens.setFieldValue("value", config.NewsSummaryModelSettings.NewsSummaryModelMaxOutputTokens);
 
         var newsSummaryModeMaxTokensConfiguration = new Configuration();
@@ -581,6 +598,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModeTemperature.setFieldValue("name", "NewsSummaryModelTemperature");
         newsSummaryModeTemperature.setFieldValue("hasValue", true);
         newsSummaryModeTemperature.setFieldValue("valueName", "NewsSummaryModelTemperature");
+        newsSummaryModeTemperature.setFieldValue("valueType", "number");
         newsSummaryModeTemperature.setFieldValue("value", config.NewsSummaryModelSettings.NewsSummaryModelTemperature);
 
         var newsSummaryModeTemperatureConfiguration = new Configuration();
@@ -598,6 +616,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModeTopP.setFieldValue("name", "NewsSummaryModelTopP");
         newsSummaryModeTopP.setFieldValue("hasValue", true);
         newsSummaryModeTopP.setFieldValue("valueName", "NewsSummaryModelTopP");
+        newsSummaryModeTopP.setFieldValue("valueType", "number");
         newsSummaryModeTopP.setFieldValue("value", config.NewsSummaryModelSettings.NewsSummaryModelTopP);
 
         var newsSummaryModeTopPConfiguration = new Configuration();
@@ -607,7 +626,7 @@ export class SettingsInteractor implements IInputBoundary {
         newsSummaryModeTopPConfiguration.setFieldValue("purpose", 'Top-p values range from 0 and 1 with smaller values decreasing randomness in responses');
         newsSummaryModeTopPConfiguration.setFieldValue("options", [newsSummaryModeTopP]);
 
-        const newsSummaryModeObject = {
+        const newsSummaryModelObject = {
             currentAIModel: currentAIModel,
             newsSummaryModelName: newsSummaryModelName,
             newsSummaryModelMaxTokens: newsSummaryModeMaxTokens, 
@@ -620,6 +639,6 @@ export class SettingsInteractor implements IInputBoundary {
             newsSummaryModelTopPConfiguration: newsSummaryModeTopPConfiguration
         }; 
 
-        return newsSummaryModeObject;
+        return newsSummaryModelObject;
     }
 }

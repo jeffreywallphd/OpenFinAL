@@ -26,7 +26,7 @@ export class User implements IEntity {
     fillWithRequest(requestModel: IRequestModel) {
         var json = requestModel.request;
 
-        if(!json.request.hasOwnProperty("username")) {
+        if(!json.request.user.hasOwnProperty("username")) {
             throw new Error("A username must be provided to create a new user");
         }
 
@@ -43,7 +43,7 @@ export class User implements IEntity {
             this.setFieldValue("email", json.request.user.email);
         }
 
-        if(json.request.stock.hasOwnProperty("username")) {
+        if(json.request.user.hasOwnProperty("username")) {
             this.setFieldValue("username", json.request.user.username);
         }
     }

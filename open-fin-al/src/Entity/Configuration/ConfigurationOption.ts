@@ -25,6 +25,9 @@ export class ConfigurationOption implements IEntity {
         var valueName = new Field("valueName", "string", null);
         this.fields.set("valueName", valueName);
 
+        var valueType = new Field("valueType", "string", null);
+        this.fields.set("valueType", valueType);
+
         var valueSite = new Field("valueSite", "string", null);
         this.fields.set("valueSite", valueSite);
 
@@ -36,6 +39,9 @@ export class ConfigurationOption implements IEntity {
 
         var valueIsKey = new Field("valueIsKey", "boolean", false);
         this.fields.set("valueIsKey", valueIsKey);
+
+        var isLocked = new Field("isLocked", "boolean", false);
+        this.fields.set("isLocked", isLocked);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -74,10 +80,12 @@ export class ConfigurationOption implements IEntity {
             label: this.getFieldValue("label"),
             hasValue: this.getFieldValue("hasValue"),
             valueName: this.getFieldValue("valueName"),
+            valueType: this.getFieldValue("valueType"),
             valueSite: this.getFieldValue("valueSite"),
             value: this.getFieldValue("value"),
             isActive: this.getFieldValue("isActive"),
-            valueIsKey: this.getFieldValue("valueIsKey")
+            valueIsKey: this.getFieldValue("valueIsKey"),
+            isLocked: this.getFieldValue("isLocked")
         };
         
         return obj;

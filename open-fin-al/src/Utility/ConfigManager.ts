@@ -1,26 +1,28 @@
 // allow the transformers contextBridge to be used in TypeScript
 declare global {
-    interface Window { vault: any }
+    interface Window { 
+        vault: any,
+        config: any
+     }
 }
 
-declare global {
+/*declare global {
     interface Window { config: any }
-}
+}*/
 
 class ConfigUpdater {
     vault:any;
     keys = ["ALPHAVANTAGE_API_KEY","FMP_API_KEY","OPENAI_API_KEY","HUGGINGFACE_API_KEY"];
     
-    constructor() {
-        this.vault = window.vault;
-    }
+    constructor() {}
 
     async createEnvIfNotExists() {
         var created = true;
         for (let key of this.keys) {
-            if(!await this.vault.getSecret("OpenFinAL", key)) {   
+            window.console.log(`Setting up the secret for ${key}`);
+            if(!await window.vault.getSecret("OpenFinAL", key)) {   
                 try {
-                    await this.vault.setSecret("OpenFinAL", key, "");
+                    await window.vault.setSecret(key, "");
                 } catch(error) {
                     created = false;
                     continue;
@@ -33,6 +35,7 @@ class ConfigUpdater {
 
     async createConfigIfNotExists() {
         try {
+            window.console.log(`Does config exist? ${await window.config.exists()}`);
             if(!await window.config.exists()) {
                 const defaultConfig = {
                     DarkMode: false,
@@ -61,6 +64,7 @@ class ConfigUpdater {
                 }
 
                 const result = await window.config.save(defaultConfig);
+                window.console.log(`The configuration result is ${result}`);
                 return result;
             }
         } catch(e) {
@@ -80,11 +84,11 @@ class ConfigUpdater {
     }
 
     async getSecret(key:string) {
-        return await this.vault.getSecret(key);
+        return await window.vault.getSecret(key);
     }
 
     async setSecret(key:string, value:string) {
-        await this.vault.setSecret(key, value);
+        await window.vault.setSecret(key, value);
     }
 
     async getConfig() {
