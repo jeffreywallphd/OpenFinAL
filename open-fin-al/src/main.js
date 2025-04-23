@@ -5,6 +5,12 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 const { app, BrowserWindow, shell, session } = require('electron');
+
+//Handle squirrel events for install/update and quit immediately
+if (require('electron-squirrel-startup')) {
+  app.quit();
+}
+
 const path = require('path');
 const fs = require("fs");
 
@@ -16,15 +22,13 @@ const handleSquirrelEvent = () => {
   switch (squirrelEvent) {
     case '--squirrel-install':
     case '--squirrel-updated':
-      // Create shortcuts, etc., if needed
       app.quit();
       return true;
 
     case '--squirrel-uninstall':
       // 💥 Custom cleanup logic
       const appDataPath = path.join(app.getPath('appData'), 'OpenFinAL');
-      fs.removeSync(appDataPath);
-
+      deleteFolderRecursiveSync(appDataPath); // Use the recursive delete function
       app.quit();
       return true;
 
@@ -34,6 +38,23 @@ const handleSquirrelEvent = () => {
   }
 
   return false;
+};
+
+const deleteFolderRecursiveSync = (folderPath) => {
+  if (fs.existsSync(folderPath)) {
+    fs.readdirSync(folderPath).forEach((file) => {
+      const currentPath = path.join(folderPath, file);
+      if (fs.lstatSync(currentPath).isDirectory()) {
+        // Recursive call for subdirectories
+        deleteFolderRecursiveSync(currentPath);
+      } else {
+        // Delete file
+        fs.unlinkSync(currentPath);
+      }
+    });
+    // Delete the empty directory
+    fs.rmdirSync(folderPath);
+  }
 };
 
 handleSquirrelEvent();
