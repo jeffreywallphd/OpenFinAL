@@ -39,7 +39,7 @@ function NewsPage(props) {
                             (
                                 <>
                                     <p>Data Source: {state.newsDataSource}</p>
-                                    {state.newsData ?
+                                    {state.newsData && state.newsData.response.results[0]?
                                         state.newsData.response.results[0]["data"].map((listing, index) => (
                                             <NewsListing key={index} state={state} listingData={listing}/>
                                         )) :

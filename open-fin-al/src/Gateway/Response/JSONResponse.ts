@@ -15,19 +15,21 @@ export class JSONResponse implements IResponseModel {
         var responseData:any = {};
         var resultsArray:Array<any> = [];
 
-        for (var entity of entities) {
-            var result:any = {};
+        if(entities) {
+            for (var entity of entities) {
+                var result:any = {};
 
-            var fields: Map<string, Field> = entity.getFields();
-            for (var [name, obj] of fields) {
-                if(allowNullValues === false && obj.value === null) {
-                    continue;
-                } 
+                var fields: Map<string, Field> = entity.getFields();
+                for (var [name, obj] of fields) {
+                    if(allowNullValues === false && obj.value === null) {
+                        continue;
+                    } 
 
-                result[obj.name] = obj.value;
+                    result[obj.name] = obj.value;
+                }
+
+                resultsArray.push(result);
             }
-
-            resultsArray.push(result);
         }
   
         this.response.response["results"] = resultsArray;

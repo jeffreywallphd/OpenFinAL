@@ -69,9 +69,15 @@ export class AlphaVantageNewsGateway implements IKeyedDataGateway {
         endpoint.fillWithRequest(endpointRequest);
 
         const data = await window.exApi.fetch(this.baseURL, endpoint.toObject());
+        
+        if("Invalid inputs" in data) {
+            window.console.log("There is no news data for the company you requested.");
+            return entities;
+        }
 
         if("Information" in data) {
-            throw Error("The API key used for Alpha Vantage has reached its daily limit");
+            window.console.log("Your AlphaVantage key has reached its daily limit");
+            return entities;
         }
 
         var entities = this.formatDataResponse(data, entity, action);
