@@ -31,7 +31,12 @@ function NewsListing({ listingData, state }) {
     return `${timeString.substring(0,2)}:${timeString.substring(2,4)}:${timeString.substring(4,6)}`;
   };
   
-  const config = state.config;
+  const getConfig = async () => {
+    const config = await window.config.load();
+    return config;
+  };
+
+  const config = getConfig();
 
   return (
     <div className="news-item">
@@ -39,7 +44,11 @@ function NewsListing({ listingData, state }) {
         <img src={listingData.thumbnail} alt="Thumbnail" style={{ width: '200px', height: 'auto', borderRadius: '4px' }} />
       </div>
       <div style={{ flex: 1 }}>
-        <h4 className="news-item-link" style={{ margin: '0' }} onClick={() => window.urlWindow.openUrlWindow(listingData.url)}>{listingData.title}</h4>
+        <h4 className="news-item-link" style={{ margin: '0' }} onClick={
+            () => window.urlWindow.openUrlWindow(listingData.url)
+          }>
+          {listingData.title}
+        </h4>
         <p style={{ margin: '5px 0' }}>{listingData.summary}</p>
         <p style={{ fontSize: '0.8rem', color: '#555' }}>
           {formatDate(listingData.date)} {formatTime(listingData.time)} - Src: {listingData.source}
@@ -48,12 +57,11 @@ function NewsListing({ listingData, state }) {
           <button onClick={async () => {
             setIsLoading(true);
             const text = await window.puppetApi.getPageText(listingData.url);
-            //const text = await window.urlWindow.getUrlBodyTextHidden(listingData.url);
             
             if(text) {
               var interactor = new LanguageModelInteractor();
 
-              var message = `Please provide a summary of the following investment news article: ${text.replace(/[^a-zA-Z0-9 ]/g, "")}`;
+              var message = `Please provide a summary of the following investment news article: ${text.replace(/[^a-zA-Z0-9 :]/g, "")}`;
               var requestObj = new JSONRequest(`{
                   "request": {
                       "action": "getNewsSummary",

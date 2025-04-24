@@ -11,26 +11,18 @@ import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
 
 function NewsSearchBar(props) {
     //TODO: implement error handling
-    //Gets ticker data
-    const fetchNews = async (state) => {
-        //Take away previous data
-        props.onDataChange({
-            initializing: false,
-            data: null,
-            error: state.error,
-            isLoading: true,
-            securitiesList: state.securitiesList,
-            searchRef: state.searchRef,
-        });
+    const fetchNews = async (newState) => {
+        newState.isLoading = true;
+        props.handleDataChange(newState);
 
         var companyName = "";
-
-        // //get company name from securities list data
-        // state.securitiesList.find((element) => {
-        //     if(element.ticker === (state.searchRef).toUpperCase()) {
-        //         companyName = element.companyName;
-        //     }
-        // });
+        var cik = "";
+        newState.securitiesList.find((element) => {
+            if(element.ticker === newState.searchRef) {
+                companyName = element.companyName;
+                cik = element.cik;
+            }
+        });
 
         //get data through stock interactor
         var interactor = new NewsInteractor();
@@ -38,7 +30,7 @@ function NewsSearchBar(props) {
             "request": { 
                 "news": {
                     "action": "searchByTicker",
-                    "ticker": "${state.searchRef}",
+                    "ticker": "${newState.searchRef}",
                     "companyName": "${companyName}"
                 }
             }
@@ -46,18 +38,32 @@ function NewsSearchBar(props) {
 
         const results = await interactor.get(requestObj);
 
-        props.onDataChange({
-            initializing: false,
-            data: results,
-            error: state.error,
-            isLoading: false,
-            securitiesList: state.securitiesList,
-            searchRef: state.searchRef,
-        });
+        if(results.status && results.status === 400) {
+            newState.error = true;
+            newState.initializing = true;
+            newState.ticker = newState.searchRef;
+            newState.cik = cik;
+            newState.isLoading = false;
+            newState.isFirstLoad = false;
+            props.handleDataChange(newState);
+            return;
+        }
+
+        //Update the state
+        newState.error = false;
+        newState.initializing = true;
+        newState.newsData = results;
+        newState.newsDataSource = results.source;
+        newState.ticker = newState.searchRef;
+        newState.cik = cik;
+        newState.isLoading = false;
+        newState.isFirstLoad = false;
+
+        props.handleDataChange(newState);
     }
 
-    const handleSymbolChange = (state) => {
-        props.onDataChange(state);
+    const handleSymbolChange = (newState) => {
+        props.handleDataChange(newState);
     };
 
     return (

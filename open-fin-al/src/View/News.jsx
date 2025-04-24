@@ -4,57 +4,61 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { Component } from "react";
-import { NewsSearchBar } from "./News/NewsSearchBar";
-import { NewsListing } from "./News/NewsListing";
-import ConfigUpdater from "../Utility/ConfigManager";
+import React, { useContext, useEffect } from "react";
+import { NewsSearchBar } from "./News/SearchBar";
+import { NewsListing } from "./News/Listing";
+import { DataContext } from "./App";
 
-class NewsPage extends Component {
-    constructor(props) {
-        super(props);
-    }
+function NewsPage(props) {
+    const { state, setState } = useContext(DataContext);
+    
+    //ensure that the state changes
+    useEffect(() => {
+        setState({
+            ...state
+        })
+    }, [state.newsData, state.data, state.searchRef, state.secData]);
 
-    state = {
-        initializing: true,
-        data: null,
-        error: null,
-        isLoading: false,
-        config: null
+    const handleDataChange = (newState) => {
+        setState(newState);
     };
 
-    //Used to pass data from the search bar to the chart
-    handleDataChange = (state) => {
-        this.setState(state);
-    }
+    return (
+        <div className="page">
+            <h2><span className="material-icons">article</span> Investment News </h2>
+            
+            {state ?
+            (
+                <>
+                    <NewsSearchBar state={state} handleDataChange={handleDataChange}/>
 
-    async getConfig() {
-        const configManager = new ConfigUpdater();
-        const newState = this.state;
-        newState.config = await configManager.getConfig();
-        this.handleDataChange(newState);
-    }
-
-    render() {   
-        this.getConfig();     
-        return (
-                <div className="page">
-                    <h2><span className="material-icons">article</span> Investment News </h2>
-                    <NewsSearchBar state={this.state} onDataChange={this.handleDataChange}/>
-                   <br></br>
-                    {
-                        (this.state.data !== null ? 
-                            this.state.data.response.results[0]["data"].map((listing, index) => (
-                                <NewsListing key={index} state={this.state} listingData={listing}/>
-                            ))
-                        : 
-                            <div>Please enter a ticker symbol to search for news about a company</div>
-                    )} 
-                </div>
-        );
-    }
+                    {state.isLoading ?
+                        (<p>Loading...</p>) :
+                        state.error ?
+                            (<p className="error">The ticker you entered is not valid or news data is available for this stock.</p>) :
+                            (
+                                <>
+                                    <p>Data Source: {state.newsDataSource}</p>
+                                    {state.newsData ?
+                                        state.newsData.response.results[0]["data"].map((listing, index) => (
+                                            <NewsListing key={index} state={state} listingData={listing}/>
+                                        )) :
+                                        null
+                                    }
+                                </>
+                            )
+                        }
+                    </>
+                ) :
+                (
+                    <div>Please enter a ticker symbol to search for news about a company</div>
+                )
+            }
+        </div>
+    );
 }
 
 // In case hooks are needed for this class. Can remove later if not necessary
-export function News() {
+export function News(props) {
     return <NewsPage />
 };

@@ -27,6 +27,8 @@ function App(props) {
         dataSource: null,
         secData: null,
         secSource: null,
+        newsData: null,
+        newsSource: null,
         comparisonData: {},
         chartData: null,
         error: null,
