@@ -760,6 +760,36 @@ code {
 
 /* Styling for Portfolio Page */
 
+.portfolio-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.portfolio-chart {
+  margin-top: 20px;
+}
+
+.portfolio-overview {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.portfolio-card {
+  background-color: var(--background-color);
+  padding: 20px;
+  border-radius: 5px;
+  width: 45%;
+  text-align: center;
+}
+
+.portfolio-value, .buying-power {
+  font-size: 24px;
+  font-weight: bold;
+}
+
 .portfolioTableContainer {
   height: 135px;
   border: 0;
@@ -1493,25 +1523,6 @@ nav ul li a:hover {
   font-family: Arial, sans-serif;
 }
 
-.portfolio-overview {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.portfolio-card {
-  background-color: var(--background-color);
-  padding: 20px;
-  border-radius: 5px;
-  width: 45%;
-  text-align: center;
-}
-
-.portfolio-value, .buying-power {
-  font-size: 24px;
-  font-weight: bold;
-}
-
 .stock-list {
   display: flex;
   flex-wrap: wrap;
@@ -1539,9 +1550,6 @@ nav ul li a:hover {
   color: red;
 }
 
-.portfolio-chart {
-  margin-top: 20px;
-}
 
 .faq-page {
   font-family: Arial, sans-serif;
@@ -2466,6 +2474,12 @@ nav ul li a:hover {
   color: var(--text-color-medium-dark);
   font-weight: bold;
   border-radius: 4px 4px 0 0;
+  padding: 10px;
+}
+
+.table-header h3 {
+  padding: 0;
+  margin: 0;
 }
 
 .header-cell {
@@ -2480,6 +2494,23 @@ nav ul li a:hover {
   background-color: var(--background-color-highlight-light);
   color: var(--text-color-dark);
   padding: 10px;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 5px 10px;
+}
+
+.table-cell input {
+  width: 90%;
+}
+
+.table-cell textarea {
+  width: 90%;
+  height: 100px;
+  background-color: var(--background-color-highlight-light);
+  font-size: 14px;
+  color: var(--text-color-dark);
 }
 
 .api-cell, .key-cell {

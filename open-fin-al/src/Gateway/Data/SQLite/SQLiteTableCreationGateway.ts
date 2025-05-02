@@ -46,6 +46,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             CREATE TABLE IF NOT EXISTS Portfolio (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 name TEXT UNIQUE NOT NULL,
+                description TEXT,
                 userId INTEGER NOT NULL,
                 isDefault INTEGER DEFAULT 0,
                 FOREIGN KEY (userId) REFERENCES User(id)
