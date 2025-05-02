@@ -44,7 +44,8 @@ contextBridge.exposeInMainWorld('exApi', {
 
 contextBridge.exposeInMainWorld('vault', {
     getSecret: (key) => ipcRenderer.invoke('get-secret', key),
-    setSecret: (key, value) => ipcRenderer.invoke('set-secret', key, value)
+    setSecret: (key, value) => ipcRenderer.invoke('set-secret', key, value),
+    refreshCert: (hostname) => ipcRenderer.invoke('refresh-cert', hostname)
 });
 
 contextBridge.exposeInMainWorld('config', {

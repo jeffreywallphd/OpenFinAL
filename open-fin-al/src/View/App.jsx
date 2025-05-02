@@ -18,6 +18,7 @@ const DataContext = createContext();
 function App(props) {
     const currentDate = new Date();
     const [loading, setLoading] = useState(true);
+    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
     const [configured, setConfigured] = useState(false);
     const [preparationError, setPreparationError] = useState(null);
     const [state, setState] = useState({ 
@@ -99,7 +100,17 @@ function App(props) {
             
             if(response.response.ok) {
                 setConfigured(true);
-                setLoading(false);
+
+                if(secureConnectionsValidated) {
+                    setLoading(false);
+                } else {
+                    const interactor = new InitializationInteractor();
+                    const requestObj = new JSONRequest(`{}`);
+                    const response = await interactor.post(requestObj,"refreshPinnedCertificates");
+                    setSecureConnectionsValidated(true);
+                    setLoading(false);
+                }
+
                 return true;
             } else {
                 //check if the site is uninitialized but configured

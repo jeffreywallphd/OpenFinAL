@@ -186,6 +186,9 @@ function  TickerSearchBar(props) {
         }
         if(props.state.isFirstLoad) {
             fetchRandomSP500();
+        } else if(props.state.data.response.results[0]["ticker"] !== props.state.searchRef) {
+            const staleState = props.state;
+            fetchAllData(staleState);
         }
     }, []);
 

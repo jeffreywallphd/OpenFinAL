@@ -19,6 +19,12 @@ function NewsPage(props) {
         })
     }, [state.newsData, state.data, state.searchRef, state.secData]);
 
+    useEffect(() => {
+        setState({
+            ...state
+        })
+    }, []);
+
     const handleDataChange = (newState) => {
         setState(newState);
     };
@@ -38,8 +44,8 @@ function NewsPage(props) {
                             (<p className="error">The ticker you entered is not valid or news data is available for this stock.</p>) :
                             (
                                 <>
-                                    <p>Data Source: {state.newsDataSource}</p>
-                                    {state.newsData && state.newsData.response.results[0]?
+                                    <p>Data Source: {state.newsSource}</p>
+                                    {state.newsData && state.newsData.response.results[0] ?
                                         state.newsData.response.results[0]["data"].map((listing, index) => (
                                             <NewsListing key={index} state={state} listingData={listing}/>
                                         )) :

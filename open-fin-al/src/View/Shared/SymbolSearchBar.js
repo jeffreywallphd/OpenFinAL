@@ -16,8 +16,16 @@ function SymbolSearchBar(props) {
     
     //Checks the keyUp event to determine if a key was hit or a datalist option was selected
     const checkInput = async (e) => {
-        //Unidentified means datalist option was selected, otherwise a key was hit
-        if (e.key == "Unidentified"){
+        if(e.key === "Enter") {
+            //hide the securities list after completion of search
+            setSecuritiesList(null);
+
+            //fetch symbol and then fetch related data
+            const newState = await fetchSymbol();
+            await props.fetchData(newState);
+            return;
+        } else if (e.key === "Unidentified") {
+            //Unidentified means datalist option was selected, otherwise a key was hit
             //fetch symbol and then fetch related data
             const newState = await fetchSymbol();
             await props.fetchData(newState);
@@ -55,6 +63,8 @@ function SymbolSearchBar(props) {
                     ...props.state,
                     initializing: false,
                     data: props.state.data,
+                    newsData: props.state.newsData,
+                    secData: props.state.secData,
                     ticker: props.state.ticker,
                     cik: props.state.cik,
                     error: props.state.error,

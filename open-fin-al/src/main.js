@@ -386,6 +386,31 @@ async function getCertificateFingerprint(request) {
   }
 }
 
+async function refreshCertificateFingerprint(hostname) {
+  var request = {
+    certAuthHostname: hostname,
+    hostname: hostname
+  };
+
+  try { 
+    const fingerprint = await getCertificateFingerprint(request);
+    const storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
+
+    if(storedFingerprint !== fingerprint) {
+      await keytar.setPassword('OpenFinALCert', hostname, fingerprint);
+    }
+
+    return true;
+  } catch(error) {
+    console.error(error);
+    return false;
+  }
+}
+
+ipcMain.handle('refresh-cert', async (event, hostname) => {
+  return await refreshCertificateFingerprint(hostname);
+});
+
 //////////////////////////// Keytar Secret Storage Section ////////////////////////////
 
 //keytar allows for the secure storage of API keys and other secrets

@@ -14,6 +14,7 @@ import { SettingsInteractor } from "./SettingsInteractor";
 export class InitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
+    trustedHosts: string[] = ["api.openai.com", "data.sec.gov", "en.wikipedia.org", "www.alphavantage.co", "www.sec.gov"];
 
     async post(requestModel: IRequestModel, action:string=null): Promise<IResponseModel> {
         var response;
@@ -120,6 +121,13 @@ export class InitializationInteractor implements IInputBoundary {
             }
 
             return response;
+        } else if(action==="refreshPinnedCertificates") {
+            for(var host of this.trustedHosts) {
+                await window.vault.refreshCert(host);
+            }
+
+            response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+            return response;
         }
     }
     
@@ -157,7 +165,8 @@ export class InitializationInteractor implements IInputBoundary {
                 const companyGateway = new SQLiteCompanyLookupGateway();
                 const companyCount = await companyGateway.count();
 
-                if(companyCount.count < 8000) {
+                const acceptableCompanyThreshold = 8000; // the list of publicly traded companies based on SEC
+                if(companyCount.count < acceptableCompanyThreshold) {
                     response = new JSONResponse(JSON.stringify({
                         status: 404, 
                         data: {

@@ -4,7 +4,7 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React from "react";
+import React, { useEffect } from "react";
 import {NewsInteractor} from "../../Interactor/NewsInteractor";
 import {JSONRequest} from "../../Gateway/Request/JSONRequest";
 import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
@@ -53,7 +53,7 @@ function NewsSearchBar(props) {
         newState.error = false;
         newState.initializing = true;
         newState.newsData = results;
-        newState.newsDataSource = results.source;
+        newState.newsSource = results.source;
         newState.ticker = newState.searchRef;
         newState.cik = cik;
         newState.isLoading = false;
@@ -61,6 +61,17 @@ function NewsSearchBar(props) {
 
         props.handleDataChange(newState);
     }
+
+    useEffect(() => {
+        var newState = props.state;
+
+        props.handleDataChange(newState);
+        
+        if(props.state.searchRef) {
+            newState.isLoading = true;
+            fetchNews(props.state);
+        }
+    }, []);
 
     const handleSymbolChange = (newState) => {
         props.handleDataChange(newState);

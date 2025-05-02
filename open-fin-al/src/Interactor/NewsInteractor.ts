@@ -15,6 +15,8 @@ export class NewsInteractor implements IInputBoundary {
     }
     
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
+        var response;
+        
         //create news request object and fill with request model
         var news = new NewsRequest();
         news.fillWithRequest(requestModel);
@@ -30,9 +32,14 @@ export class NewsInteractor implements IInputBoundary {
         //search for the requested information via the API gateway
         var results = await newsGateway.read(news, requestModel.request.request.news.action);
 
-        //convert the API gateway response to a JSON reponse object
-        var response = new JSONResponse();
-        response.convertFromEntity(results, false);
+        if(results) {
+            //convert the API gateway response to a JSON reponse object
+            response = new JSONResponse();
+            response.convertFromEntity(results, false);
+            response.response["source"] = newsGateway.sourceName;
+        } else {
+            response = new JSONResponse(JSON.stringify({status: 400, data: {error: "No data is available for this stock."}}));
+        }
 
         return response.response;
     }
