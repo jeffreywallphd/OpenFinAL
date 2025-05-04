@@ -1,42 +1,90 @@
-    import React, { useState } from "react";
+    import React, { useState, useEffect } from "react";
     import {PortfolioInteractor} from "../../Interactor/PortfolioInteractor";
     import {UserInteractor} from "../../Interactor/UserInteractor";
     import {JSONRequest} from "../../Gateway/Request/JSONRequest";
+    import { useNavigate, useLocation } from 'react-router-dom';
 
     function PortfolioCreation(props) {   
         const [name, setName] = useState("");
         const [description, setDescription] = useState("");
         const [defaultPortfolio, setDefaultPortfolio] = useState(false);
+        const [portfolios, setPortfolios] = useState([]);
 
-        const handleSubmit = async (event) => {      
-            event.preventDefault(); // prevent page reload
-
+        const getPortfolios = async () => {
             const userInteractor = new UserInteractor();
-            const userResponseObj = new JSONRequest(JSON.stringify({
+            const userRequestObj = new JSONRequest(JSON.stringify({
                 request: {
                     user:{
                         username: await window.config.getUsername()
                     }
                 }
             }));
-            const user = await userInteractor.get(userResponseObj);
+            const user = await userInteractor.get(userRequestObj);
+
+            const interactor = new PortfolioInteractor();
+            const requestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    portfolio: {
+                        userId: user.response?.results[0]?.id
+                    }
+                }
+            }));
+
+            const response = await interactor.get(requestObj);
+            setPortfolios(response?.response?.results || []);
+        };
+
+        const handleSubmit = async (event) => {      
+            event.preventDefault(); // prevent page reload
+
+            const userInteractor = new UserInteractor();
+            const userRequestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    user:{
+                        username: await window.config.getUsername()
+                    }
+                }
+            }));
+            const user = await userInteractor.get(userRequestObj);
             window.console.log(user);
+            window.console.log(user.response?.results[0]?.id);
             
             const interactor = new PortfolioInteractor();
-            const responseObj = new JSONRequest(JSON.stringify({
+            const requestObj = new JSONRequest(JSON.stringify({
                 request: {
                     portfolio: {
                         name: name,
                         description: description,
-                        userId: user.response.response.results[0].userId,
+                        userId: user.response?.results[0]?.id,
                         isDefault: defaultPortfolio ? 1 : 0
                     }
                 }
             }));
-            window.console.log(responseObj);
+            window.console.log(requestObj);
 
-            const response = await interactor.post(responseObj);
+            const response = await interactor.post(requestObj);
+            props.state.setState({createPortfolio: false});
+
+            // Force refresh of the route after state change
+            setTimeout(() => {
+                navigate('/refresh', { replace: true }); // dummy path
+                setTimeout(() => {
+                    navigate(location.pathname, { replace: true }); // go back
+                }, 10);
+            }, 50); // slight delay to allow config update
         };
+
+        const handleCancel = async (event) => {      
+            event.preventDefault(); // prevent page reload
+            props.state.setState({createPortfolio: false});
+        };
+
+        useEffect(() => {
+            getPortfolios();
+        }, []);
+
+        const navigate = useNavigate();
+        const location = useLocation();
 
         return (
             <>
@@ -70,7 +118,7 @@
                             onChange={(e) => setDefaultPortfolio(e.target.checked)} />
                     </div>
                 </div>
-                <button onClick={handleSubmit}>Create Portfolio</button>
+                <button onClick={handleSubmit}>Create Portfolio</button> <button onClick={handleCancel}>Cancel</button>
             </>
         );
     }

@@ -6,6 +6,10 @@
 
 import React, { Component } from "react";
 import { PortfolioCreation } from "./Portfolio/Creation";
+import {UserInteractor} from "../Interactor/UserInteractor";
+import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
+import {JSONRequest} from "../Gateway/Request/JSONRequest";
+
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
 
 class Portfolio extends Component {
@@ -25,8 +29,66 @@ class Portfolio extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            currentPortfolio: null
+            createPortfolio: true,
+            currentPortfolio: null,
+            portfolios: []
         };
+    }
+
+    async fetchPortfolios() {    
+        const userInteractor = new UserInteractor();
+        const userRequestObj = new JSONRequest(JSON.stringify({
+            request: {
+                user: {
+                    username: await window.config.getUsername()
+                }
+            }
+        }));
+    
+        const user = await userInteractor.get(userRequestObj);
+        window.console.log(user);
+        const interactor = new PortfolioInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                portfolio: {
+                    userId: user.response?.results[0]?.id
+                }
+            }
+        }));
+    
+        const response = await interactor.get(requestObj);
+
+        var defaultPortfolio = null;
+        for(var portfolio of response.response?.results) {
+            if(portfolio.isDefault) {
+                defaultPortfolio = portfolio.id;
+                this.setState({createPortfolio: false});
+                break;
+            }
+        }
+
+        this.setState({
+            currentPortfolio: defaultPortfolio, 
+            portfolios: response.response?.results || [] 
+        });
+    }
+
+    async changeCurrentPortfolio(portfolioId) {
+        const interactor = new PortfolioInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getPortfolioAssetGroups",
+                portfolio: {
+                    id: portfolioId
+                }
+            }
+        }));
+    
+        const response = await interactor.get(requestObj);
+    }
+
+    async componentDidMount() {
+        await this.fetchPortfolios();
     }
 
     render() {
@@ -34,16 +96,31 @@ class Portfolio extends Component {
             <div className="page portfolioPage">
                 <h2><span className="material-icons">pie_chart</span> Portfolio</h2>
                 <div className="portfolio-controls">
-                    <select>
-                        <option>Select a Portfolio...</option>
+                    <select value={this.state.currentPortfolio || ""}
+                        onChange={(e) => this.setState({
+                            createPortfolio: false, 
+                            currentPortfolio: e.target.value 
+                        })
+                    }>
+                        {this.state.portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
+                        {this.state.portfolios.map((portfolio) => (
+                            <option key={portfolio.id} value={portfolio.id}>
+                                {portfolio.name}
+                            </option>
+                        ))}
                     </select>
 
-                    <button className="add-button">New Portfolio +</button>
+                    <button className="add-button" onClick={() => this.setState({ createPortfolio: true })}>
+                        New Portfolio +
+                    </button>
                 </div>
 
-                {this.state.currentPortfolio ?
+                {!this.state.createPortfolio && this.state.currentPortfolio ?
                     <div>
                         {/* Portfolio Value and Buying Power Section */}
+                        <div>
+                            <h3></h3>
+                        </div>
                         <div className="portfolio-overview">
                             <div className="portfolio-card">
                                 <h3>Portfolio Value</h3>
@@ -80,7 +157,7 @@ class Portfolio extends Component {
                     </div>
                 :
                     <> 
-                        {<PortfolioCreation currentPortfolio={this.state.currentPortfolio}/>}
+                        {<PortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio}/>    }
                     </>
                 }
             </div>

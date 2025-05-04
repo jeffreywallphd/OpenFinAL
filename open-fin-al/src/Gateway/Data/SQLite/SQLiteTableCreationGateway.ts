@@ -49,8 +49,21 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 description TEXT,
                 userId INTEGER NOT NULL,
                 isDefault INTEGER DEFAULT 0,
+                createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (userId) REFERENCES User(id)
             );
+
+            CREATE TRIGGER IF NOT EXISTS AutoSetFirstPortfolioDefault
+            AFTER INSERT ON Portfolio
+            WHEN (
+                SELECT COUNT(*) FROM Portfolio
+                WHERE userId = NEW.userId
+            ) = 1
+            BEGIN
+                UPDATE Portfolio
+                SET isDefault = 1
+                WHERE id = NEW.id;
+            END;
 
             CREATE TRIGGER IF NOT EXISTS SetDefaultPortfolio
             AFTER UPDATE OF isDefault ON Portfolio
@@ -72,16 +85,41 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 AND id != NEW.id;
             END;
 
+            CREATE TABLE IF NOT EXISTS Asset (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                symbol TEXT NOT NULL,
+                name TEXT,
+                type TEXT CHECK(type IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash')) NOT NULL,
+                UNIQUE(symbol, type)
+            );
+
+            INSERT OR IGNORE INTO ASSET (symbol, name, type) VALUES ('Cash','Cash','Cash');
+
             CREATE TABLE IF NOT EXISTS PortfolioTransaction (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 portfolioId INTEGER NOT NULL,
-                assetType TEXT CHECK( assetType IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash') ) NOT NULL DEFAULT 'Stock',
-                transactionType TEXT CHECK(transactionType IN ('Buy','Sell')),
-                quantity INTEGER NOT NULL,
-                amount DECIMAL(10,2) NOT NULL,
                 transactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                type TEXT CHECK(type IN ('Deposit','Withdraw','Buy','Sell','Dividend')) NOT NULL,
+                note TEXT,
+                isCanceled INTEGER DEFAULT 0,
                 FOREIGN KEY (portfolioId) REFERENCES Portfolio(id)
             );
+
+            CREATE TABLE IF NOT EXISTS PortfolioTransactionEntry (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                transactionId INTEGER NOT NULL,
+                assetId INTEGER NOT NULL,
+                side TEXT CHECK(side IN ('debit', 'credit')) NOT NULL,
+                quantity DECIMAL(12, 6) NOT NULL,
+                price DECIMAL(10,2) NOT NULL,
+                amount AS (quantity * price) STORED,
+                FOREIGN KEY (transactionId) REFERENCES PortfolioTransaction(id),
+                FOREIGN KEY (assetId) REFERENCES Asset(id)
+            );
+
+            CREATE INDEX idx_transaction_portfolio ON PortfolioTransaction(portfolioId);
+            CREATE INDEX idx_entry_transaction ON PortfolioTransactionEntry(transactionId);
+            CREATE INDEX idx_entry_asset ON PortfolioTransactionEntry(assetId);
 
             CREATE TABLE IF NOT EXISTS PublicCompany (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

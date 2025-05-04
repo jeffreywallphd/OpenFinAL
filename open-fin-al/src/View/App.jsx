@@ -77,14 +77,22 @@ function App(props) {
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.post(requestObj,"initializeData");
-
+            window.console.log(response);
             if(response.response.ok) {
                 setLoading(false);
                 return true;
             } else {
-                throw new Error();
+                //tables may have been deleted and need to be recreated
+                const configurationResponse = await interactor.post(requestObj,"createConfig");
+                
+                if(configurationResponse.response.ok) {
+                    return await executeDataInitialization();
+                } else {
+                    throw new Error();
+                }
             }
         } catch(error) {
+            window.console.log(error);
             setPreparationError("Failed to initilize the software. Please contact the software administrator.");
             setLoading(true);
             return false;

@@ -52,7 +52,7 @@ export class SQLiteUserGateway implements ISqlDataGateway {
 
             query = this.appendWhere(query, " username=?", hasWhereCondition, "AND");
             parameterArray.push(username);
-            
+
             data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });      
         } catch(error) {
             return entities;
@@ -60,10 +60,12 @@ export class SQLiteUserGateway implements ISqlDataGateway {
 
         for(var user of data) {
             var entity = new User();
+            entity.setFieldValue("id", user.id);
             entity.setFieldValue("firstName", user.firstName);
             entity.setFieldValue("lastName", user.lastName);
             entity.setFieldValue("email", user.email);
             entity.setFieldValue("username", user.username);
+            entities.push(entity);
         }
 
         return entities;

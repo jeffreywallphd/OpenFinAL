@@ -21,6 +21,12 @@ export class Portfolio implements IEntity {
 
         var isDefault = new Field("isDefault", "boolean", 0);
         this.fields.set("isDefault", isDefault);
+
+        var createdAt = new Field("createdAt", "datetime", null);
+        this.fields.set("createdAt", createdAt);
+
+        var assetGroupDetails = new Field("assetGroupDetails", "array", null);
+        this.fields.set("assetGroupDetails", assetGroupDetails);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -49,6 +55,14 @@ export class Portfolio implements IEntity {
 
         if(json.request.portfolio.hasOwnProperty("isDefault")) {
             this.setFieldValue("isDefault", json.request.portfolio.isDefault);
+        }
+
+        if(json.request.portfolio.hasOwnProperty("createdAt")) {
+            this.setFieldValue("createdAt", json.request.portfolio.createdAt);
+        }
+
+        if(json.request.portfolio.hasOwnProperty("assetGroupDetails")) {
+            this.setFieldValue("assetGroupDetails", json.request.portfolio.assetGroupDetails);
         }
     }
 

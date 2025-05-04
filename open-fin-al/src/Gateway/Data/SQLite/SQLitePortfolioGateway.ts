@@ -26,44 +26,83 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
         }
     }
     
-    async read(entity: IEntity): Promise<IEntity[]> {
+    async read(entity: IEntity, action:string = "selectByUserId"): Promise<IEntity[]> {
         var query:string = "";
+        var transactionQuery:string = "";
         var data;
+        var transactionData;
         var entities: Array<IEntity> = [];
 
         try {
+            const id = entity.getFieldValue("id");
             const name = entity.getFieldValue("name");
             const description = entity.getFieldValue("description");
             const userId = entity.getFieldValue("userId");
             const isDefault = entity.getFieldValue("isDefault");
 
-            if(name === null || userId === null) {
-                return entities;
-            }
-            
-            query = "SELECT *";
-
             // an array to contain the parameters for the parameterized query
             const parameterArray:any[] = [];
-
-            query += " FROM Portfolio WHERE";
-
             var hasWhereCondition:boolean = false;
 
-            query = this.appendWhere(query, " userId=?", hasWhereCondition, "AND");
-            parameterArray.push(userId);
-            
-            data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });      
+            const transactionParameterArray:any[] = [];
+
+            if(action==="selectByUserId") {
+                query = "SELECT *";
+                query += " FROM Portfolio WHERE";
+                hasWhereCondition = false;
+                query = this.appendWhere(query, " userId=?", hasWhereCondition, "AND");
+                parameterArray.push(userId);
+            } else if(action==="getPortfolioAssetGroups") {
+                query = "SELECT *";
+                query += " FROM Portfolio WHERE";
+                hasWhereCondition = false;
+                query = this.appendWhere(query, " id=?", hasWhereCondition, "AND");
+                parameterArray.push(id);
+
+                transactionQuery = `
+                    SELECT
+                        a.type AS assetType,
+                        ROUND(SUM(
+                            CASE e.side
+                                WHEN 'debit' THEN e.amount
+                                WHEN 'credit' THEN -e.amount
+                                ELSE 0
+                            END
+                        ), 2) AS totalAmount
+                    FROM
+                        PortfolioTransactionEntry e
+                    JOIN
+                        Asset a ON e.assetId = a.id
+                    JOIN
+                        PortfolioTransaction t ON e.transactionId = t.id
+                    WHERE
+                        t.isCanceled = 0 AND
+                        t.portfolioId = ?
+                    GROUP BY
+                        a.type;`
+                transactionParameterArray.push(id);
+
+                transactionData = await window.database.SQLiteQuery({query: transactionQuery, parameters: transactionParameterArray});
+            }
+
+            data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });
         } catch(error) {
             return entities;
         }
 
         for(var portfolio of data) {
             var entity = new Portfolio();
+            entity.setFieldValue("id", portfolio.id);
             entity.setFieldValue("name", portfolio.name);
             entity.setFieldValue("description", portfolio.description);
             entity.setFieldValue("userId", portfolio.userId);
             entity.setFieldValue("isDefault", portfolio.isDefault);
+
+            if(transactionData !== null && action==="getPortfolioAssetGroups") {
+                entity.setFieldValue("assetGroupDetails", transactionData)
+            }
+            
+            entities.push(entity);
         }
 
         return entities;

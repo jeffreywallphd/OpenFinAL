@@ -44,7 +44,13 @@ export class PortfolioInteractor implements IInputBoundary {
     async get(requestModel: IRequestModel): Promise<IResponseModel> {
         //create news request object and fill with request model
         var portfolio = new Portfolio();
-        portfolio.fillWithRequest(requestModel);
+
+        if(requestModel.request.request.action === "getPortfolioAssetGroups") {
+            portfolio.setFieldValue("id", requestModel.request.request.portfolio.id);
+        } else {
+            //default to selecting by userId
+            portfolio.setFieldValue("userId", requestModel.request.request.portfolio.userId); 
+        }
 
         //TODO: instantiate the correct user API gateway when other save methods are implemented
         var gateway = new SQLitePortfolioGateway();
@@ -53,7 +59,8 @@ export class PortfolioInteractor implements IInputBoundary {
         //portfolio.setFieldValue("key", gateway.key);
         
         //search for the user via the API gateway
-        var results = await gateway.read(portfolio);
+        var action = requestModel.request?.request?.action ? requestModel.request.request.action : "selectByUserId";
+        var results = await gateway.read(portfolio, action);
 
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
