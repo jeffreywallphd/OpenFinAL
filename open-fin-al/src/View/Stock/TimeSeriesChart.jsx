@@ -155,10 +155,7 @@ function TimeSeriesChart(props) {
                 {props.state.secData ? 
                     <>
                         <div className="stockOrder">
-                            <h3>Make a Trade</h3>
-                            <p>Price: </p>
-                            <p>Quantity: <input type="text"/></p>
-                            <p><button>Submit Order</button></p>
+                            <p><button>Make a Trade</button></p>
                          </div>
                         { props.fundamentalAnalysis ? 
                                 <>
