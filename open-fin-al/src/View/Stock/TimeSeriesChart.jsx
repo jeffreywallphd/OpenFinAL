@@ -16,6 +16,17 @@ function TimeSeriesChart(props) {
         itemStyle: {color: "#62C0C2"}
     });
 
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+
+    const openModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);
+    };
+
     useEffect( () => {
         async function getDarkMode() {
             const config = await window.config.load();
@@ -155,7 +166,25 @@ function TimeSeriesChart(props) {
                 {props.state.secData ? 
                     <>
                         <div className="stockOrder">
-                            <p><button>Make a Trade</button></p>
+                            <p><button onClick={openModal}>Make a Trade</button></p>
+                            {isModalOpen && (
+                                <>
+                                    <div className="modal-backdrop" onClick={closeModal}></div>
+                                    <div className="news-summary-modal">    
+                                        <div className="news-summary-content">
+                                            <div className="news-summary-header">
+                                                <h2>{header}</h2>
+                                                <button onClick={closeModal}>Close</button>
+                                            </div>
+                                            <h3>Order Details</h3>
+                                            <p>Price: </p>
+                                            <p>Quantity: <input type="text" /></p>
+                                            <p>Total: {4.5 * 10}</p>
+                                            <button>Place Order</button>  
+                                        </div>
+                                    </div>
+                                </>
+                            )}
                          </div>
                         { props.fundamentalAnalysis ? 
                                 <>
