@@ -34,6 +34,9 @@ export class StockRequest implements IEntity {
         var endDate = new Field("endDate", "date", null);
         this.fields.set("endDate", endDate);
 
+        var quotePrice = new Field("quotePrice", "float", null);
+        this.fields.set("quotePrice", quotePrice);
+
         var data = new Field("data", "array", null);
         this.fields.set("data", data);
 
@@ -75,6 +78,10 @@ export class StockRequest implements IEntity {
 
         if(json.request.stock.hasOwnProperty("interval")) {
             this.setFieldValue("interval", json.request.stock.interval);
+        }
+
+        if(json.request.stock.hasOwnProperty("quotePrice")) {
+            this.setFieldValue("quotePrice", json.request.stock.quotePrice);
         }
 
         if(json.request.stock.hasOwnProperty("startDate")) {

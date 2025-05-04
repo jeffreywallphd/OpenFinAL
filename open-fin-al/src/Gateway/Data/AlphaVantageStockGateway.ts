@@ -36,10 +36,12 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
                 url = this.getIntradayUrl(entity);
             } else if (action === "interday") {
                 url = this.getInterdayUrl(entity);
+            } else if (action === "quote") {
+                url = this.getQuoteUrl(entity);
             } else {
                 throw Error("Either no action was sent in the request or an incorrect action was used.");
             }     
-
+            window.console.log(url);
             const urlObject = new URL(url);
 
             var endpointRequest = new JSONRequest(JSON.stringify({
@@ -68,6 +70,8 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             var entities;
             if (action === "lookup") {
                 entities = this.formatLookupResponse(data);
+            } else if(action === "quote") {
+                entities = this.formatQuoteResponse(data);
             } else {
                 entities = this.formatDataResponse(data, entity, action);
             }
@@ -88,6 +92,44 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
 
     private getInterdayUrl(entity: IEntity) {
         return `${this.baseURL}?function=TIME_SERIES_DAILY&symbol=${entity.getFieldValue("ticker")}&apikey=${entity.getFieldValue("key")}&outputsize=full&datatype=json`;
+    }
+
+    private getQuoteUrl(entity: IEntity) {
+        return `${this.baseURL}?function=GLOBAL_QUOTE&symbol=${entity.getFieldValue("ticker")}&apikey=${entity.getFieldValue("key")}&datatype=json`;
+    }
+
+    private formatLookupResponse(data: { [key: string]: any }) {
+        var array: Array<IEntity> = [];
+        
+        const bestMatches = data["bestMatches"];
+
+        for (const match of bestMatches) {           
+            var entity = new StockRequest();
+            
+            entity.setFieldValue("ticker", match["1. symbol"]);
+            entity.setFieldValue("companyName", match["2. name"]);
+            
+            array.push(entity);
+        }
+
+        return array;
+    }
+
+    private formatQuoteResponse(data: { [key: string]: any }) {
+        var array: Array<IEntity> = [];
+
+        const quote = data["Global Quote"];
+         
+        var entity = new StockRequest();
+        
+        entity.setFieldValue("ticker", quote["01. symbol"]);
+        entity.setFieldValue("quotePrice", quote["05. price"]);
+        entity.setFieldValue("startDate", quote["07. latest trading day"]);
+        entity.setFieldValue("endDate", quote["07. latest trading day"]);
+        
+        array.push(entity);
+
+        return array;
     }
 
     private formatDataResponse(data: { [key: string]: any }, entity:IEntity, action:string) {
@@ -165,23 +207,6 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
         };
 
         return item;
-    }
-
-    private formatLookupResponse(data: { [key: string]: any }) {
-        var array: Array<IEntity> = [];
-        
-        const bestMatches = data["bestMatches"];
-
-        for (const match of bestMatches) {           
-            var entity = new StockRequest();
-            
-            entity.setFieldValue("ticker", match["1. symbol"]);
-            entity.setFieldValue("companyName", match["2. name"]);
-            
-            array.push(entity);
-        }
-
-        return array
     }
 
     update(entity: IEntity, action: string): Promise<number> {

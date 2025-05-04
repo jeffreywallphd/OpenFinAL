@@ -7,8 +7,11 @@
 
 import React, { useState, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
+import { StockInteractor } from "../../Interactor/StockInteractor";
+import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 
 function TimeSeriesChart(props) {
+    const [currentQuote, setCurrentQuote] = useState({});
     const [chartColor, setChartColor] = useState("#62C0C2");
     const [toolTipStyle, setToolTipStyle] = useState({
         contentStyle: {backgroundColor: '#FFFFFF'},
@@ -17,7 +20,7 @@ function TimeSeriesChart(props) {
     });
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
+    const [orderQuantity, setOrderQuantity] = useState(0);
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -25,6 +28,21 @@ function TimeSeriesChart(props) {
 
     const closeModal = () => {
         setIsModalOpen(false);
+    };
+
+    const getCurrentPrice = async () => {
+        const interactor = new StockInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                stock: {
+                    action: "quote",
+                    ticker: props.state?.data?.response?.results[0]["ticker"]
+                }
+            }
+        }));
+      
+        const response = await interactor.get(requestObj);
+        window.console.log(response);
     };
 
     useEffect( () => {
@@ -47,6 +65,8 @@ function TimeSeriesChart(props) {
             }
         }
         getDarkMode();
+
+        getCurrentPrice();
     }, []);
 
     setInterval = (selectedInterval) => {
@@ -72,7 +92,14 @@ function TimeSeriesChart(props) {
         currency: 'USD',
         minimumFractionDigits: 0,
         maximumFractionDigits: 0,
-      });
+    });
+
+    const formatterCent = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
 
     var priceMinPadded;
     var priceMaxPadded;
@@ -177,9 +204,9 @@ function TimeSeriesChart(props) {
                                                 <button onClick={closeModal}>Close</button>
                                             </div>
                                             <h3>Order Details</h3>
-                                            <p>Price: </p>
-                                            <p>Quantity: <input type="text" /></p>
-                                            <p>Total: {4.5 * 10}</p>
+                                            <p>Price: {}</p>
+                                            <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
+                                            <p>Total: {formatterCent.format(4.5 * orderQuantity)}</p>
                                             <button>Place Order</button>  
                                         </div>
                                     </div>

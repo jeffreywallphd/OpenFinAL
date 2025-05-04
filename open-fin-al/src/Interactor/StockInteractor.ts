@@ -6,6 +6,7 @@ import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {StockRequest} from "../Entity/StockRequest";
 import { StockGatewayFactory } from "../Gateway/Data/StockGatewayFactory";
 import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLiteCompanyLookupGateway";
+import { StockQuoteGatewayFactory } from "../Gateway/Data/StockQuoteGatewayFactory";
 
 declare global {
     interface Window { fs: any; }
@@ -23,12 +24,23 @@ export class StockInteractor implements IInputBoundary {
         var response;
         const date = new Date();
 
+        //config to instantiate the correct API gateway
+        const config = await window.config.load();
+
         //create stock request object and fill with request model
         var stock = new StockRequest();
         stock.fillWithRequest(requestModel);
         
         var stockGateway: IDataGateway;
         // use internal database for company/ticker/cik lookups
+
+        if(requestModel.request.request.stock.action === "quote") {
+            const stockQuoteGatewayFactory = new StockQuoteGatewayFactory();
+            stockGateway = await stockQuoteGatewayFactory.createGateway(config);
+
+            //add the API key to the stock request object
+            stock.setFieldValue("key", stockGateway.key); 
+        }
 
         if(requestModel.request.request.stock.action === "downloadPublicCompanies") {
             try {
@@ -74,10 +86,7 @@ export class StockInteractor implements IInputBoundary {
         // otherwise, use the gateway configured in the default config file
         if(requestModel.request.request.stock.action === "lookup" || requestModel.request.request.stock.action === "selectRandomSP500") {
             stockGateway = new SQLiteCompanyLookupGateway();
-        } else {
-            //instantiate the correct API gateway
-            const config = await window.config.load();
-            
+        } else {    
             const stockGatewayFactory = new StockGatewayFactory();
             stockGateway = await stockGatewayFactory.createGateway(config);
             
@@ -85,6 +94,7 @@ export class StockInteractor implements IInputBoundary {
             stock.setFieldValue("key", stockGateway.key);
         } 
 
+        window.console.log(requestModel.request.request.stock.action);
         //search for the requested information via the API gateway
         var results = await stockGateway.read(stock, requestModel.request.request.stock.action);
 

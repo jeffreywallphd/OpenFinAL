@@ -38,6 +38,7 @@ class ConfigUpdater {
                 const defaultConfig = {
                     DarkMode: false,
                     StockGateway: "AlphaVantageStockGateway",
+                    StockQuoteGateway: "AlphaVantageStockQuoteGateway",
                     NewsGateway: "AlphaVantageNewsGateway",
                     ReportGateway: "SecAPIGateway",
                     RatioGateway: "AlphaVantageRatioGateway",

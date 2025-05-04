@@ -196,6 +196,32 @@ export class SettingsInteractor implements IInputBoundary {
         stockGatewayConfiguration.setFieldValue("type", "select");
         stockGatewayConfiguration.setFieldValue("purpose", "A stock API will allow you to view price and volume data for stocks");
         stockGatewayConfiguration.setFieldValue("options", stockGateways);
+
+        //create StockQuoteGateway Configurations
+        var currentStockQuoteGateway = null;
+
+        var AlphaVantageStockQuoteGateway = new ConfigurationOption();
+        AlphaVantageStockQuoteGateway.setFieldValue("id", this.generateId());
+        AlphaVantageStockQuoteGateway.setFieldValue("setting", "StockQuoteGateway");
+        AlphaVantageStockQuoteGateway.setFieldValue("label", "Alpha Vantage Stock Quote API");
+        AlphaVantageStockQuoteGateway.setFieldValue("name", "AlphaVantageStockQuoteGateway");
+        AlphaVantageStockQuoteGateway.setFieldValue("hasValue", true);
+        AlphaVantageStockQuoteGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageStockQuoteGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        AlphaVantageStockQuoteGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
+        AlphaVantageStockQuoteGateway.setFieldValue("isActive", config.StockQuoteGateway === "AlphaVantageStockQuoteGateway" ? true : false);
+        AlphaVantageStockQuoteGateway.setFieldValue("valueIsKey", true);
+
+        currentStockQuoteGateway = config.StockQuoteGateway === "AlphaVantageStockQuoteGateway" ? AlphaVantageStockQuoteGateway : currentStockQuoteGateway;
+
+        const stockQuoteGateways = [AlphaVantageStockQuoteGateway];
+        
+        var stockQuoteGatewayConfiguration = new Configuration();
+        stockQuoteGatewayConfiguration.setFieldValue("id", this.generateId());
+        stockQuoteGatewayConfiguration.setFieldValue("name", "StockQuoteGateway");
+        stockQuoteGatewayConfiguration.setFieldValue("type", "select");
+        stockQuoteGatewayConfiguration.setFieldValue("purpose", "A stock quote API will allow you to view the latest price of a stock");
+        stockQuoteGatewayConfiguration.setFieldValue("options", stockQuoteGateways);
         
         //create NewsGateway Configurations
         var currentNewsGateway = null;
@@ -286,7 +312,7 @@ export class SettingsInteractor implements IInputBoundary {
         const dataConfigSection = new ConfigurationSection();
         dataConfigSection.setFieldValue("id", this.generateId());
         dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
-        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration]);
+        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, stockQuoteGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration]);
 
         const chatbotModelConfigSection = new ConfigurationSection();
         chatbotModelConfigSection.setFieldValue("id", this.generateId());
@@ -309,6 +335,7 @@ export class SettingsInteractor implements IInputBoundary {
                             Username: username.toObject(),
                             Email: userEmail.toObject(),
                             StockGateway: currentStockGateway.toObject(),
+                            StockQuoteGateway: currentStockQuoteGateway.toObject(),
                             NewsGateway: currentNewsGateway.toObject(),
                             ReportGateway: currentReportGateway.toObject(),
                             RatioGateway: currentRatioGateway.toObject(),
@@ -329,7 +356,8 @@ export class SettingsInteractor implements IInputBoundary {
             var validCount = 0;
 
             const currentConfigurations = [
-                currentStockGateway.toObject(), 
+                currentStockGateway.toObject(),
+                currentStockQuoteGateway.toObject(), 
                 currentNewsGateway.toObject(), 
                 currentReportGateway.toObject(), 
                 currentRatioGateway.toObject(), 
