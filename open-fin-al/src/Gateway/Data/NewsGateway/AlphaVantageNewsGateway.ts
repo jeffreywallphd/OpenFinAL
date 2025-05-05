@@ -1,7 +1,7 @@
-import { JSONRequest } from "../Request/JSONRequest";
-import {IEntity} from "../../Entity/IEntity";
-import {IKeyedDataGateway} from "../Data/IKeyedDataGateway";
-import { APIEndpoint } from "../../Entity/APIEndpoint";
+import { JSONRequest } from "../../Request/JSONRequest";
+import {IEntity} from "../../../Entity/IEntity";
+import {IKeyedDataGateway} from "../IKeyedDataGateway";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
 
 export class AlphaVantageNewsGateway implements IKeyedDataGateway {
     baseURL: string = "https://www.alphavantage.co/query";

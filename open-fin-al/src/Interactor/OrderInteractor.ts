@@ -12,7 +12,7 @@ declare global {
     interface Window { fs: any; }
 }
 
-export class StockInteractor implements IInputBoundary {
+export class OrderInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
 

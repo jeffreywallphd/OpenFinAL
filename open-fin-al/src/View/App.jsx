@@ -77,7 +77,7 @@ function App(props) {
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.post(requestObj,"initializeData");
-            window.console.log(response);
+
             if(response.response.ok) {
                 setLoading(false);
                 return true;

@@ -1,7 +1,7 @@
-import {LearningModule} from "../../Entity/LearningModule";
-import {LearningPage} from "../../Entity/LearningPage";
-import {IEntity} from "../../Entity/IEntity";
-import {IKeylessDataGateway} from "./IKeylessDataGateway";
+import {LearningModule} from "../../../Entity/LearningModule";
+import {LearningPage} from "../../../Entity/LearningPage";
+import {IEntity} from "../../../Entity/IEntity";
+import {IKeylessDataGateway} from "../IKeylessDataGateway";
 
 export class LearningModuleSQLiteDBGateway implements IKeylessDataGateway {
     sourceName: string = "SQLite Database";

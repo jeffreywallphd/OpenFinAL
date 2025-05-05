@@ -1,4 +1,4 @@
-import { AlphaVantageNewsGateway } from "./AlphaVantageNewsGateway";
+import { AlphaVantageNewsGateway } from "./NewsGateway/AlphaVantageNewsGateway";
 import { IDataGateway } from "./IDataGateway";
 
 export class NewsGatewayFactory {

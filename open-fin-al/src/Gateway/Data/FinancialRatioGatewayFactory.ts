@@ -1,6 +1,5 @@
-import { AlphaVantageRatioGateway } from "./AlphaVantageRatioGateway";
+import { AlphaVantageRatioGateway } from "./RatioGateway/AlphaVantageRatioGateway";
 import { IDataGateway } from "./IDataGateway";
-import { EnvVariableExtractor } from "../../Utility/EnvVariableExtractor";
 
 export class FinancialRatioGatewayFactory {
     async createGateway(config: any): Promise<IDataGateway> {

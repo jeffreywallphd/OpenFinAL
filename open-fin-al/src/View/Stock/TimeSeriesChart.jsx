@@ -42,8 +42,6 @@ function TimeSeriesChart(props) {
         }
     }, [isModalOpen]);
 
-    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
     const getCurrentPrice = async () => {
         if(props.state.data) {
             const interactor = new StockInteractor();
@@ -66,6 +64,10 @@ function TimeSeriesChart(props) {
                 setTimeoutId(id);
             }
         }
+    };
+
+    const placeOrder = async () => {
+        const interactor = new StockInteractor();
     };
 
     useEffect( () => {
@@ -228,7 +230,7 @@ function TimeSeriesChart(props) {
                                             <p>Price: {formatterCent.format(currentQuote.quotePrice)}</p>
                                             <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
                                             <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
-                                            <button>Place Order</button>  
+                                            <button onClick={placeOrder}>Place Order</button>  
                                         </div>
                                     </div>
                                 </>

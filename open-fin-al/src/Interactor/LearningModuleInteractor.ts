@@ -4,7 +4,7 @@ import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {LearningModule} from "../Entity/LearningModule";
-import { LearningModuleSQLiteDBGateway } from "../Gateway/Data/LearningModuleSQLiteDBGateway";
+import { LearningModuleSQLiteDBGateway } from "../Gateway/Data/SQLite/LearningModuleSQLiteDBGateway";
 
 export class LearningModuleInteractor implements IInputBoundary {
     requestModel: IRequestModel;

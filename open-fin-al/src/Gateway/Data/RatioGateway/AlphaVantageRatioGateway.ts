@@ -1,7 +1,7 @@
-import { APIEndpoint } from "../../Entity/APIEndpoint";
-import {IEntity} from "../../Entity/IEntity";
-import {IDataGateway} from "../Data/IDataGateway";
-import { JSONRequest } from "../Request/JSONRequest";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
+import {IEntity} from "../../../Entity/IEntity";
+import {IDataGateway} from "../IDataGateway";
+import { JSONRequest } from "../../Request/JSONRequest";
 
 export class AlphaVantageRatioGateway implements IDataGateway {
     baseURL: string = "https://www.alphavantage.co/query";

@@ -1,7 +1,7 @@
-import { JSONRequest } from "../Request/JSONRequest";
-import {IEntity} from "../../Entity/IEntity";
-import {IKeylessDataGateway} from "./IKeylessDataGateway";
-import { APIEndpoint } from "../../Entity/APIEndpoint";
+import { JSONRequest } from "../../Request/JSONRequest";
+import {IEntity} from "../../../Entity/IEntity";
+import {IKeylessDataGateway} from "../IKeylessDataGateway";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
 
 export class SecAPIGateway implements IKeylessDataGateway {
     baseURL: string = "https://data.sec.gov/";

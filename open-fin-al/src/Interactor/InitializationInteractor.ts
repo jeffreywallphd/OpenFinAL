@@ -8,7 +8,7 @@ import { StockInteractor } from "./StockInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { UserInteractor } from "./UserInteractor";
 import { SQLiteUserGateway } from "../Gateway/Data/SQLite/SQLiteUserGateway";
-import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLiteCompanyLookupGateway";
+import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompanyLookupGateway";
 import { SettingsInteractor } from "./SettingsInteractor";
 
 export class InitializationInteractor implements IInputBoundary {

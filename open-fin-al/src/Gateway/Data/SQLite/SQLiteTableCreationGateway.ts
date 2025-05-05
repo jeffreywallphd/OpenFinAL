@@ -1,5 +1,5 @@
 import { ISqlDataGateway } from "../ISqlDataGateway";
-import { SQLiteCompanyLookupGateway } from "../SQLiteCompanyLookupGateway";
+import { SQLiteCompanyLookupGateway } from "./SQLiteCompanyLookupGateway";
 import { IEntity } from "@Entity/IEntity";
 
 export class SQLiteTableCreationGateway implements ISqlDataGateway {
@@ -95,6 +95,27 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
 
             INSERT OR IGNORE INTO ASSET (symbol, name, type) VALUES ('Cash','Cash','Cash');
 
+            CREATE TABLE IF NOT EXISTS AssetOrder(
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                assetId INTEGER NOT NULL,
+                portfolioId INTEGER NOT NULL,
+                orderType TEXT CHECK(orderType IN ('Buy','Sell')) DEFAULT Buy NOT NULL,
+                orderMethod TEXT CHECK(orderMethod IN ('Market','Limit','Stop','StopLimit')) DEFAULT Market NOT NULL,
+                orderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                quantity DECIMAL(12, 6) NOT NULL,
+                lastPrice DECIMAL(10,2) NOT NULL,
+                lastPriceDate DATE DEFAULT CURRENT_DATE,
+                limitPrice DECIMAL(10,2),
+                stopPrice DECIMAL(10,2),
+                fulfilled INTEGER DEFAULT 0,
+                fulfilledDate TIMESTAMP,
+                FOREIGN KEY (assetId) REFERENCES Asset(id),
+                FOREIGN KEY (portfolioId) REFERENCES Portfolio(id)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_assetorder_asset ON AssetOrder(assetId);
+            CREATE INDEX IF NOT EXISTS idx_assetorder_portfolio ON AssetOrder(portfolioId);
+            
             CREATE TABLE IF NOT EXISTS PortfolioTransaction (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 portfolioId INTEGER NOT NULL,
@@ -117,9 +138,9 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 FOREIGN KEY (assetId) REFERENCES Asset(id)
             );
 
-            CREATE INDEX idx_transaction_portfolio ON PortfolioTransaction(portfolioId);
-            CREATE INDEX idx_entry_transaction ON PortfolioTransactionEntry(transactionId);
-            CREATE INDEX idx_entry_asset ON PortfolioTransactionEntry(assetId);
+            CREATE INDEX IF NOT EXISTS idx_transaction_portfolio ON PortfolioTransaction(portfolioId);
+            CREATE INDEX IF NOT EXISTS idx_entry_transaction ON PortfolioTransactionEntry(transactionId);
+            CREATE INDEX IF NOT EXISTS idx_entry_asset ON PortfolioTransactionEntry(assetId);
 
             CREATE TABLE IF NOT EXISTS PublicCompany (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

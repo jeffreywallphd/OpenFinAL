@@ -1,9 +1,9 @@
-import { StockRequest } from "../../Entity/StockRequest";
-import {IEntity} from "../../Entity/IEntity";
-import {ISqlDataGateway} from "../Data/ISqlDataGateway";
+import { StockRequest } from "../../../Entity/StockRequest";
+import {IEntity} from "../../../Entity/IEntity";
+import {ISqlDataGateway} from "../ISqlDataGateway";
 import { parse } from 'node-html-parser';
-import { APIEndpoint } from "../../Entity/APIEndpoint";
-import { JSONRequest } from "../Request/JSONRequest";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
+import { JSONRequest } from "../../Request/JSONRequest";
 
 declare global {
     interface Window { 

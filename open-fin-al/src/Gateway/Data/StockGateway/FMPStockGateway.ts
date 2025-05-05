@@ -1,6 +1,6 @@
-import { StockRequest } from "../../Entity/StockRequest";
-import { IEntity } from "../../Entity/IEntity";
-import { IKeyedDataGateway } from "../Data/IKeyedDataGateway";
+import { StockRequest } from "../../../Entity/StockRequest";
+import { IEntity } from "../../../Entity/IEntity";
+import { IKeyedDataGateway } from "../IKeyedDataGateway";
 
 export class FinancialModelingPrepGateway implements IKeyedDataGateway {
   baseURL: string = "https://financialmodelingprep.com/api/v3/";

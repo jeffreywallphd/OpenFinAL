@@ -1,6 +1,6 @@
-import {IEntity} from "../../Entity/IEntity";
-import { StockRequest } from "../../Entity/StockRequest";
-import { IKeylessDataGateway } from "./IKeylessDataGateway";
+import {IEntity} from "../../../Entity/IEntity";
+import { StockRequest } from "../../../Entity/StockRequest";
+import { IKeylessDataGateway } from "../IKeylessDataGateway";
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {

@@ -1,8 +1,8 @@
-import { AlphaVantageStockGateway } from "./AlphaVantageStockGateway";
+import { AlphaVantageStockGateway } from "./StockGateway/AlphaVantageStockGateway";
 import { IDataGateway } from "./IDataGateway";
 import { EnvVariableExtractor } from "../../Utility/EnvVariableExtractor";
-import { FinancialModelingPrepGateway } from "./FMPStockGateway";
-import { YFinanceStockGateway } from "./YFinanceStockGateway";
+import { FinancialModelingPrepGateway } from "./StockGateway/FMPStockGateway";
+import { YFinanceStockGateway } from "./StockGateway/YFinanceStockGateway";
 
 export class StockGatewayFactory {
     async createGateway(config: any): Promise<IDataGateway> {        

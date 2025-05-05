@@ -1,8 +1,8 @@
-import {StockRequest} from "../../Entity/StockRequest";
-import {IEntity} from "../../Entity/IEntity";
-import {IKeyedDataGateway} from "../Data/IKeyedDataGateway";
-import { APIEndpoint } from "../../Entity/APIEndpoint";
-import { JSONRequest } from "../Request/JSONRequest";
+import {StockRequest} from "../../../Entity/StockRequest";
+import {IEntity} from "../../../Entity/IEntity";
+import {IKeyedDataGateway} from "../IKeyedDataGateway";
+import { APIEndpoint } from "../../../Entity/APIEndpoint";
+import { JSONRequest } from "../../Request/JSONRequest";
 
 export class AlphaVantageStockGateway implements IKeyedDataGateway {
     baseURL: string = "https://www.alphavantage.co/query";

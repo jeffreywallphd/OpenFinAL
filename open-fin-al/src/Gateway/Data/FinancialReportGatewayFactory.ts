@@ -1,4 +1,4 @@
-import { SecAPIGateway } from "./SecAPIGateway";
+import { SecAPIGateway } from "./ReportGateway/SecAPIGateway";
 import { IDataGateway } from "./IDataGateway";
 
 export class SecReportGatewayFactory {
