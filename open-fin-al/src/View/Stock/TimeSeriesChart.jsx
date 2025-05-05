@@ -21,28 +21,51 @@ function TimeSeriesChart(props) {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [orderQuantity, setOrderQuantity] = useState(0);
+    const [timeoutId, setTimeoutId] = useState(null);
 
-    const openModal = () => {
+    const openModal = async () => {
         setIsModalOpen(true);
     };
 
     const closeModal = () => {
         setIsModalOpen(false);
+        clearTimeout(timeoutId);
+        setTimeoutId(null);
     };
 
+    useEffect(() => {
+        if(isModalOpen) {
+            getCurrentPrice();
+        } else {
+            clearTimeout(timeoutId);
+            setTimeoutId(null);
+        }
+    }, [isModalOpen]);
+
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const getCurrentPrice = async () => {
-        const interactor = new StockInteractor();
-        const requestObj = new JSONRequest(JSON.stringify({
-            request: {
-                stock: {
-                    action: "quote",
-                    ticker: props.state?.data?.response?.results[0]["ticker"]
+        if(props.state.data) {
+            const interactor = new StockInteractor();
+            const requestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    stock: {
+                        action: "quote",
+                        ticker: props.state.data.response.results[0]["ticker"]
+                    }
                 }
+            }));
+        
+            const response = await interactor.get(requestObj);
+            window.console.log(response);
+
+            setCurrentQuote(response.response.results[0]);
+
+            if(isModalOpen) {
+                const id = setTimeout(getCurrentPrice, 3000);
+                setTimeoutId(id);
             }
-        }));
-      
-        const response = await interactor.get(requestObj);
-        window.console.log(response);
+        }
     };
 
     useEffect( () => {
@@ -65,8 +88,6 @@ function TimeSeriesChart(props) {
             }
         }
         getDarkMode();
-
-        getCurrentPrice();
     }, []);
 
     setInterval = (selectedInterval) => {
@@ -204,9 +225,9 @@ function TimeSeriesChart(props) {
                                                 <button onClick={closeModal}>Close</button>
                                             </div>
                                             <h3>Order Details</h3>
-                                            <p>Price: {}</p>
+                                            <p>Price: {formatterCent.format(currentQuote.quotePrice)}</p>
                                             <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
-                                            <p>Total: {formatterCent.format(4.5 * orderQuantity)}</p>
+                                            <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
                                             <button>Place Order</button>  
                                         </div>
                                     </div>
