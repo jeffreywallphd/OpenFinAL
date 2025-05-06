@@ -31,8 +31,19 @@ class Portfolio extends Component {
         this.state = {
             createPortfolio: true,
             currentPortfolio: null,
-            portfolios: []
+            portfolios: [],
+            isModalOpen: false,
+            depositAmount: 0,
+            cashId: null
         };
+
+        //Bind methods for element events
+        this.openModal = this.openModal.bind(this);
+        this.makeDeposit = this.makeDeposit.bind(this);
+    }
+
+    async openModal() {
+        this.setState({isModalOpen: true});
     }
 
     async fetchPortfolios() {    
@@ -87,8 +98,29 @@ class Portfolio extends Component {
         const response = await interactor.get(requestObj);
     }
 
+    async getCashId() {
+        const interactor = new PortfolioInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getCashId"
+            }
+        }));
+    
+        const response = await interactor.get(requestObj);
+        
+        window.console.log(response);
+        if(response.response.ok) {
+            this.setState({cashId: response.response.results[0].id});
+        }
+    }
+
+    async makeDeposit() {
+        
+    }
+
     async componentDidMount() {
         await this.fetchPortfolios();
+        await this.getCashId();
     }
 
     render() {
@@ -118,9 +150,29 @@ class Portfolio extends Component {
                 {!this.state.createPortfolio && this.state.currentPortfolio ?
                     <div>
                         {/* Portfolio Value and Buying Power Section */}
-                        <div>
-                            <h3></h3>
-                        </div>
+                        <div className="portfolioDeposit">
+                            <p><button onClick={this.openModal}>Deposit Funds</button></p>
+                            {this.state.isModalOpen && (
+                                <>
+                                    <div className="modal-backdrop" onClick={() => {
+                                        this.setState({isModalOpen: false});
+                                        }}></div>
+                                    <div className="news-summary-modal">    
+                                        <div className="news-summary-content">
+                                            <div className="news-summary-header">
+                                                <h2>Deposit Funds</h2>
+                                                <button onClick={() => {
+                                                    this.setState({isModalOpen: false});
+                                                    }}>Close</button>
+                                            </div>
+                                            <p>Amount: <input type="text" value={this.state.depositAmount} onChange={(e) => this.setState({depositAmount: e.target.value})} /></p>
+                                            <button onClick={this.makeDeposit}>Make Deposit</button>  
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                         </div>
+
                         <div className="portfolio-overview">
                             <div className="portfolio-card">
                                 <h3>Portfolio Value</h3>

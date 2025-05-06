@@ -10,6 +10,7 @@ import { UserInteractor } from "./UserInteractor";
 import { SQLiteUserGateway } from "../Gateway/Data/SQLite/SQLiteUserGateway";
 import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompanyLookupGateway";
 import { SettingsInteractor } from "./SettingsInteractor";
+import { SQLiteAssetGateway } from "../Gateway/Data/SQLite/SQLiteAssetGateway";
 
 export class InitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -162,7 +163,8 @@ export class InitializationInteractor implements IInputBoundary {
                 }
 
                 //check if PublicCompany table has data
-                const companyGateway = new SQLiteCompanyLookupGateway();
+                //const companyGateway = new SQLiteCompanyLookupGateway();
+                const companyGateway = new SQLiteAssetGateway();
                 const companyCount = await companyGateway.count();
 
                 const acceptableCompanyThreshold = 8000; // the list of publicly traded companies based on SEC

@@ -7,6 +7,7 @@ import {StockRequest} from "../Entity/StockRequest";
 import { StockGatewayFactory } from "../Gateway/Data/StockGatewayFactory";
 import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompanyLookupGateway";
 import { StockQuoteGatewayFactory } from "../Gateway/Data/StockQuoteGatewayFactory";
+import { SQLiteAssetGateway } from "../Gateway/Data/SQLite/SQLiteAssetGateway";
 
 declare global {
     interface Window { fs: any; }
@@ -44,7 +45,8 @@ export class StockInteractor implements IInputBoundary {
 
         if(requestModel.request.request.stock.action === "downloadPublicCompanies") {
             try {
-                stockGateway = new SQLiteCompanyLookupGateway();
+                //stockGateway = new SQLiteCompanyLookupGateway();
+                stockGateway = new SQLiteAssetGateway();
 
                 //check to see if the PublicCompany table is filled and has been updated recently
                 const lastUpdated = await stockGateway.checkLastTableUpdate();
@@ -85,7 +87,8 @@ export class StockInteractor implements IInputBoundary {
         // use internal SQLite database for lookup and random selection of an S&P500 company
         // otherwise, use the gateway configured in the default config file
         if(requestModel.request.request.stock.action === "lookup" || requestModel.request.request.stock.action === "selectRandomSP500") {
-            stockGateway = new SQLiteCompanyLookupGateway();
+            //stockGateway = new SQLiteCompanyLookupGateway();
+            stockGateway = new SQLiteAssetGateway();
         } else {    
             const stockGatewayFactory = new StockGatewayFactory();
             stockGateway = await stockGatewayFactory.createGateway(config);

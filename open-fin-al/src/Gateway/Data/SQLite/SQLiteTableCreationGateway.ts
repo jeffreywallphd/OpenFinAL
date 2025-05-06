@@ -90,7 +90,17 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 symbol TEXT NOT NULL,
                 name TEXT,
                 type TEXT CHECK(type IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash')) NOT NULL,
+                cik TEXT,
+                isSP500 INTEGER DEFAULT 0,
                 UNIQUE(symbol, type)
+            );
+
+            CREATE TABLE IF NOT EXISTS PublicCompany (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                companyName TEXT,
+                ticker TEXT NOT NULL UNIQUE,
+                cik TEXT NOT NULL,
+                isSP500 INTEGER DEFAULT 0
             );
 
             INSERT OR IGNORE INTO ASSET (symbol, name, type) VALUES ('Cash','Cash','Cash');
@@ -103,7 +113,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 orderMethod TEXT CHECK(orderMethod IN ('Market','Limit','Stop','StopLimit')) DEFAULT Market NOT NULL,
                 orderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 quantity DECIMAL(12, 6) NOT NULL,
-                lastPrice DECIMAL(10,2) NOT NULL,
+                lastPrice DECIMAL(10,2),
                 lastPriceDate DATE DEFAULT CURRENT_DATE,
                 limitPrice DECIMAL(10,2),
                 stopPrice DECIMAL(10,2),

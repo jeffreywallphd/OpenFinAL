@@ -9,6 +9,9 @@ import React, { useState, useEffect } from "react";
 import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 import { StockInteractor } from "../../Interactor/StockInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
+import { UserInteractor } from "../../Interactor/UserInteractor";
+import { PortfolioInteractor } from "../../Interactor/PortfolioInteractor";
+import { OrderInteractor } from "../../Interactor/OrderInteractor"; 
 
 function TimeSeriesChart(props) {
     const [currentQuote, setCurrentQuote] = useState({});
@@ -29,18 +32,67 @@ function TimeSeriesChart(props) {
 
     const closeModal = () => {
         setIsModalOpen(false);
-        clearTimeout(timeoutId);
-        setTimeoutId(null);
+    };
+
+    const clearPriceTimeout = () => {
+        if(timeoutId) {
+            try {
+                clearTimeout(timeoutId);
+                setTimeoutId(null);
+            } catch(e) {
+                //ignore errors
+            }
+        }
     };
 
     useEffect(() => {
         if(isModalOpen) {
             getCurrentPrice();
         } else {
-            clearTimeout(timeoutId);
-            setTimeoutId(null);
+            clearPriceTimeout();
         }
     }, [isModalOpen]);
+
+    const [createPortfolio, setCreatePortfolio] = useState(true);
+    const [currentPortfolio, setCurrentPortfolio] = useState(null);
+    const [portfolios, setPortfolios] = useState([]);
+    const [orderMessage, setOrderMessage] = useState("");
+
+    const getPortfolios = async () => {
+        const userInteractor = new UserInteractor();
+        const userRequestObj = new JSONRequest(JSON.stringify({
+            request: {
+                user: {
+                    username: await window.config.getUsername()
+                }
+            }
+        }));
+    
+        const user = await userInteractor.get(userRequestObj);
+        
+        const interactor = new PortfolioInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                portfolio: {
+                    userId: user.response?.results[0]?.id
+                }
+            }
+        }));
+    
+        const response = await interactor.get(requestObj);
+
+        var defaultPortfolio = null;
+        for(var portfolio of response.response?.results) {
+            if(portfolio.isDefault) {
+                defaultPortfolio = portfolio.id;
+                setCreatePortfolio(false);
+                break;
+            }
+        }
+
+        setCurrentPortfolio(defaultPortfolio); 
+        setPortfolios(response.response?.results || []); 
+    };
 
     const getCurrentPrice = async () => {
         if(props.state.data) {
@@ -66,8 +118,34 @@ function TimeSeriesChart(props) {
         }
     };
 
+    const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+
     const placeOrder = async () => {
-        const interactor = new StockInteractor();
+        const interactor = new OrderInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                order: {
+                    assetId: null,
+                    portfolioId: currentPortfolio,
+                    orderType: "Buy",
+                    orderMethod: "Market",
+                    quantity: orderQuantity,
+                    lastPrice: currentQuote.quotePrice,
+                    lastPriceDate: currentQuote.date
+                }
+            }
+        }));
+
+        const response = await interactor.post(requestObj);
+
+        if(response.response.ok) {
+            clearPriceTimeout();
+            setOrderMessage("The order was successfully placed!");
+            sleep(2000);
+            closeModal();
+        } else {
+            setOrderMessage("Due to an error, the order was not placed. If the problem persists, please notify the software provider.");
+        }
     };
 
     useEffect( () => {
@@ -90,6 +168,7 @@ function TimeSeriesChart(props) {
             }
         }
         getDarkMode();
+        getPortfolios();
     }, []);
 
     setInterval = (selectedInterval) => {
@@ -219,18 +298,46 @@ function TimeSeriesChart(props) {
                             <p><button onClick={openModal}>Make a Trade</button></p>
                             {isModalOpen && (
                                 <>
-                                    <div className="modal-backdrop" onClick={closeModal}></div>
+                                    <div className="modal-backdrop" onClick={() => {
+                                        closeModal();
+                                        clearPriceTimeout();
+                                        }}></div>
                                     <div className="news-summary-modal">    
                                         <div className="news-summary-content">
                                             <div className="news-summary-header">
                                                 <h2>{header}</h2>
-                                                <button onClick={closeModal}>Close</button>
+                                                <button onClick={() => {
+                                                    closeModal();
+                                                    clearPriceTimeout();
+                                                    }}>Close</button>
                                             </div>
                                             <h3>Order Details</h3>
+                                            {createPortfolio ? 
+                                                <p>You must create at least one portfolio to place an order.</p> 
+                                                : 
+                                                null
+                                            }
+                                            <p>
+                                                Portfolio: 
+                                                <select value={currentPortfolio || ""}
+                                                    onChange={(e) => {
+                                                        setCreatePortfolio(false); 
+                                                        setCurrentPortfolio(e.target.value);
+                                                    } 
+                                                }>
+                                                    {portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
+                                                    {portfolios.map((portfolio) => (
+                                                        <option key={portfolio.id} value={portfolio.id}>
+                                                            {portfolio.name}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </p>
                                             <p>Price: {formatterCent.format(currentQuote.quotePrice)}</p>
                                             <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
                                             <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
-                                            <button onClick={placeOrder}>Place Order</button>  
+                                            {orderMessage ? <p>{orderMessage}</p> : null}
+                                            <button onClick={placeOrder} disabled={createPortfolio}>Place Order</button>  
                                         </div>
                                     </div>
                                 </>

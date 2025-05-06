@@ -6,8 +6,8 @@ export interface IKeyedDataGateway extends IDataGateway {
     sourceName: string;
     connect(): void;
     disconnect(): void;
-    create(entity: IEntity, action: string): Promise<Boolean>;
-    read(entity: IEntity, action: string): Promise<Array<IEntity>>;
-    update(entity: IEntity, action: string): Promise<number>;
-    delete(entity: IEntity, action: string): Promise<number>;
+    create(entity: IEntity, action?: string): Promise<Boolean>;
+    read(entity: IEntity, action?: string): Promise<Array<IEntity>>;
+    update(entity: IEntity, action?: string): Promise<number>;
+    delete(entity: IEntity, action?: string): Promise<number>;
 }

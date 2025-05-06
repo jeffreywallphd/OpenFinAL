@@ -1,7 +1,6 @@
 import { StockRequest } from "../../../Entity/StockRequest";
 import {IEntity} from "../../../Entity/IEntity";
 import {ISqlDataGateway} from "../ISqlDataGateway";
-import { parse } from 'node-html-parser';
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
@@ -9,7 +8,6 @@ declare global {
 }
 
 export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
-    databasePath = "./src/Asset/DB/OpenFinAL.db";
     connection: any = null;
     sourceName: string = "SQLite Database";
 
@@ -23,102 +21,38 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
 
     // used to create and periodically refresh the cache
     async create(entity: IEntity, action: string): Promise<Boolean> {
-        try {
-            const query = "INSERT INTO PublicCompany (ticker, cik) VALUES (?, ?)";
-            const args  = [entity.getFieldValue("ticker"), entity.getFieldValue("cik")];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-insert', { database: this.databasePath, query: query, parameters: args });
-            return true;
-        } catch(error) {
-            return false;
+        if(action==="deposit") {
+            
         }
+
+        throw Error("This gateway does not have the ability to create content.");
     }
     
     async read(entity: IEntity, action: string): Promise<IEntity[]> {
+        var entities: Array<IEntity> = [];
         var query:string = "";
         var data;
 
-        if(action === "lookup") {
+        if(action === "getBuyingPower") {
             try {
-                const keyword = entity.getFieldValue("keyword");
-                const companyName = entity.getFieldValue("companyName");
-                const ticker = entity.getFieldValue("ticker");
-                const cik = entity.getFieldValue("cik");
-                const isSP500 = entity.getFieldValue("isSP500");
+                const portfolioId = entity.getFieldValue("portfolioId");
 
-                if(keyword === null && companyName === null && ticker === null && cik === null) {
-                    return [];
+                if(portfolioId === null) {
+                    return entities;
                 }
                 
-                query = "SELECT *";
+                query = `SELECT * FROM PortfolioTransactionEntry AS pte 
+                    INNER JOIN PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                    INNER JOIN Asset AS a ON (pte.assetId = a.id)
+                    WHERE pt.portfolioId=?`;
 
-                // an array to contain the parameters for the parameterized query
-                const parameterArray:any[] = [];
+                data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
 
-                // create a preference for ticker matches over companyName matches
-                if(keyword !== null) {
-                    query += ", CASE WHEN ticker LIKE ? || '%' THEN 1 WHEN companyName LIKE ? || '%' THEN 2 ELSE 3 END AS rank";
-                    parameterArray.push(keyword);
-                    parameterArray.push(keyword);
-                }
-
-                query += " FROM PublicCompany WHERE";
-
-                var hasWhereCondition:boolean = false;
-
-                if(keyword !== null) {
-                    // treat the keyword as a CIK if able to parseFloat()
-                    if(!isNaN(parseFloat(keyword))) {
-                        query = this.appendWhere(query, " cik=?", hasWhereCondition);
-                        parameterArray.push(keyword);
-                        hasWhereCondition = true;
-                    } else {
-                        query = this.appendWhere(query, " ticker LIKE ? || '%' OR companyName LIKE ? || '%'", hasWhereCondition);
-                        
-                        // Push twice to check in ticker and companyName
-                        // TODO: create a text index with ticker and companyName data
-                        parameterArray.push(keyword);
-                        parameterArray.push(keyword);
-                    }
-                }
-
-                if(companyName !== null) {
-                    query = this.appendWhere(query, " companyName LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(companyName);
-                }
-
-                if(ticker !== null) {
-                    query = this.appendWhere(query, " ticker LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(ticker);
-                }
-
-                if(cik !== null) {
-                    query = this.appendWhere(query, " cik LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(cik);
-                }
-
-                if(isSP500 !== null) {
-                    query = this.appendWhere(query, " isSP500=?", hasWhereCondition, "AND");
-                    parameterArray.push(isSP500);
-                }
-
-                if(keyword !== null) {
-                    query += " ORDER BY rank ASC, ticker ASC LIMIT 10";
-                } else {
-                    query += " ORDER BY ticker ASC LIMIT 10";
-                }
-                
-                data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query, parameters: parameterArray });
-                
-                
             } catch(error) {
                 return entities;
             }
-        } else if(action === "selectRandomSP500") {
-            query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
-            data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query });
-        }
+        } 
 
-        var entities;
         if (action === "lookup") {
             entities = this.formatLookupResponse(data);
         } else if(action === "selectRandomSP500") {

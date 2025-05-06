@@ -30,8 +30,11 @@ export class JSONResponse implements IResponseModel {
 
                 resultsArray.push(result);
             }
+
+            this.response.response["ok"] = true;
+            this.response.response["status"] = 200;
         }
-  
+
         this.response.response["results"] = resultsArray;
     }
 
