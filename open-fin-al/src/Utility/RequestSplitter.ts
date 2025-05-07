@@ -10,13 +10,9 @@ export class RequestSplitter {
     }
 
     split(targetKey:string, parentKey: string, childKey: string, action: string=null) {
-        window.console.log(targetKey);
-        window.console.log(parentKey);
-        window.console.log(childKey);
         var requestObj:any = {};
-        window.console.log(this.requestModel);
+
         if(this.requestModel.request.hasOwnProperty(parentKey) && this.requestModel.request[parentKey].hasOwnProperty(childKey)) {
-            window.console.log("ONLY ONE REQUEST");
             requestObj = {
                 [targetKey]: this.requestModel.request[parentKey][childKey]
             };
@@ -25,7 +21,6 @@ export class RequestSplitter {
                 requestObj["action"] = action;
             }
         } else if(this.requestModel.request.hasOwnProperty("request") && this.requestModel.request.request.hasOwnProperty(parentKey) && this.requestModel.request.request[parentKey].hasOwnProperty(childKey)) {
-            window.console.log("TWO REQUESTS");
             requestObj = {
                 request: {
                     [targetKey]: this.requestModel.request.request[parentKey][childKey]

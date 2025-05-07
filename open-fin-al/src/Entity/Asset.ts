@@ -12,10 +12,15 @@ export class Asset implements IEntity {
 
         var symbol = new Field("symbol", "string", null);
         this.fields.set("symbol", symbol);
-        this.fields.set("ticker", symbol);
+
+        var ticker = new Field("ticker", "string", null);
+        this.fields.set("ticker", ticker);
 
         var name = new Field("name", "string", null);
         this.fields.set("name", name);
+
+        var companyName = new Field("companyName", "string", null);
+        this.fields.set("companyName", companyName);
 
         var type = new Field("type", "string", "Cash");
         this.fields.set("type", type);
@@ -51,6 +56,12 @@ export class Asset implements IEntity {
 
         if(json.hasOwnProperty("name")) {
             this.setFieldValue("name", json.name);
+            this.setFieldValue("companyName", json.name);
+        }
+
+        if(json.hasOwnProperty("companyName")) {
+            this.setFieldValue("companyName", json.companyName);
+            this.setFieldValue("name", json.companyName);
         }
 
         if(json.hasOwnProperty("symbol")) {

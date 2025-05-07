@@ -14,8 +14,6 @@ import {JSONRequest} from "../Gateway/Request/JSONRequest";
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
 
 class Portfolio extends Component {
-    portfolioValue = 2534.26;
-
     // Sample stock data for the chart
     stockData = [
         { name: 'Jan', price: 12.00 },
@@ -72,7 +70,7 @@ class Portfolio extends Component {
         }));
     
         const user = await userInteractor.get(userRequestObj);
-        window.console.log(user);
+
         const interactor = new PortfolioInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
@@ -100,17 +98,9 @@ class Portfolio extends Component {
     }
 
     async changeCurrentPortfolio(portfolioId) {
-        const interactor = new PortfolioInteractor();
-        const requestObj = new JSONRequest(JSON.stringify({
-            request: {
-                action: "getPortfolioAssetGroups",
-                portfolio: {
-                    id: portfolioId
-                }
-            }
-        }));
-    
-        const response = await interactor.get(requestObj);
+        this.setState({currentPortfolio: portfolioId});
+        await this.getBuyingPower(null, portfolioId);
+        await this.getPortfolioValue(portfolioId);
     }
 
     async getCashId() {
@@ -123,7 +113,6 @@ class Portfolio extends Component {
     
         const response = await interactor.get(requestObj);
         
-        window.console.log(response);
         if(response.response.ok) {
             this.setState({cashId: response.response.results[0].id});
             return response.response.results[0].id;
@@ -157,21 +146,28 @@ class Portfolio extends Component {
             this.sleep(2000);
             this.setState({isModalOpen: false});
             this.setState({depositMessage: null});
-            this.getBuyingPower(this.state.cashId);
+            await this.getBuyingPower(this.state.cashId);
+            await this.getPortfolioValue();
         } else {
             this.setState({depositMessage: "The deposit failed. If the problem persists, please notify the software provider."});
         }
     }
 
-    async getBuyingPower(cashId) {
+    async getBuyingPower(cashId=null, portfolioId=null) {
+        if(!cashId) {
+            cashId = this.state.cashId;
+        }
+
+        if(!portfolioId) {
+            portfolioId = this.state.currentPortfolio;
+        }
+
         const interactor = new PortfolioTransactionInteractor();
-        window.console.log(this.state.currentPortfolio);
-        window.console.log(this.state.cashId);
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 action: "getBuyingPower",
                 transaction: {
-                    portfolioId: this.state.currentPortfolio,
+                    portfolioId: portfolioId,
                     entry: {
                         assetId: cashId
                     }
@@ -189,21 +185,24 @@ class Portfolio extends Component {
         }    
     }
 
-    async getPortfolioValue() {
+    async getPortfolioValue(portfolioId=null) {
+        if(!portfolioId) {
+            portfolioId = this.state.currentPortfolio;
+        }
+
         const interactor = new PortfolioTransactionInteractor();
-        window.console.log(this.state.currentPortfolio);
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 action: "getPortfolioValue",
                 transaction: {
-                    portfolioId: this.state.currentPortfolio
+                    portfolioId: portfolioId
                 }
                 
             }
         }));
 
         const response = await interactor.get(requestObj);
-        window.console.log(response);
+
         if(response.response.ok) {
             var portfolioValue = 0;
             for(var asset of response.response.results) {
@@ -222,7 +221,6 @@ class Portfolio extends Component {
         const cashId = await this.getCashId();
         await this.getPortfolioValue();
 
-        window.console.log(cashId); 
         if(cashId) {
             await this.getBuyingPower(cashId);
         }
@@ -238,10 +236,7 @@ class Portfolio extends Component {
                 <h2><span className="material-icons">pie_chart</span> Portfolio</h2>
                 <div className="portfolio-controls">
                     <select value={this.state.currentPortfolio || ""}
-                        onChange={(e) => this.setState({
-                            createPortfolio: false, 
-                            currentPortfolio: e.target.value 
-                        })
+                        onChange={(e) => this.changeCurrentPortfolio(e.target.value)
                     }>
                         {this.state.portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
                         {this.state.portfolios.map((portfolio) => (

@@ -39,6 +39,7 @@ function App(props) {
         interval: '1D',
         securitiesList: null,
         searchRef: null,
+        assetId: null,
         isLoading: false,
         minPrice: 0,
         maxPrice: 10,
@@ -92,7 +93,6 @@ function App(props) {
                 }
             }
         } catch(error) {
-            window.console.log(error);
             setPreparationError("Failed to initilize the software. Please contact the software administrator.");
             setLoading(true);
             return false;

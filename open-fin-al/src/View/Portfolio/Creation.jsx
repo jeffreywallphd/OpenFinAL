@@ -46,8 +46,6 @@
                 }
             }));
             const user = await userInteractor.get(userRequestObj);
-            window.console.log(user);
-            window.console.log(user.response?.results[0]?.id);
             
             const interactor = new PortfolioInteractor();
             const requestObj = new JSONRequest(JSON.stringify({
@@ -60,7 +58,6 @@
                     }
                 }
             }));
-            window.console.log(requestObj);
 
             const response = await interactor.post(requestObj);
             props.state.setState({createPortfolio: false});

@@ -3,12 +3,10 @@ import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
-import {StockRequest} from "../Entity/StockRequest";
-import { StockGatewayFactory } from "../Gateway/Data/StockGatewayFactory";
-import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompanyLookupGateway";
-import { StockQuoteGatewayFactory } from "../Gateway/Data/StockQuoteGatewayFactory";
 import { Order } from "../Entity/Order";
 import { SQLiteOrderGateway } from "../Gateway/Data/SQLite/SQLiteOrderGateway";
+import { PortfolioTransactionInteractor } from "./PortfolioTransactionInteractor";
+import { JSONRequest } from "../Gateway/Request/JSONRequest";
 
 declare global {
     interface Window { fs: any; }
@@ -32,8 +30,37 @@ export class OrderInteractor implements IInputBoundary {
         
         const orderCreated = await orderGateway.create(order);
 
+        //TODO: check if market is open and set price as most recent price
         if(orderCreated) {
             response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+
+            const transactionInterator = new PortfolioTransactionInteractor(); 
+            const requestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    action: "purchaseAsset",
+                    transaction: {
+                        portfolioId: order.getFieldValue("portfolioId"),
+                        type: "Buy",
+                        debitEntry: {
+                            assetId: order.getFieldValue("assetId"),
+                            transactionId: -1,
+                            side: "debit",
+                            quantity: order.getFieldValue("quantity"),
+                            price: order.getFieldValue("lastPrice")
+                        },
+                        creditEntry: {
+                            assetId: order.getFieldValue("cashId"),
+                            transactionId: -1,
+                            side: "credit",
+                            quantity: 1,
+                            price: order.getFieldValue("lastPrice") * order.getFieldValue("quantity")
+                        }
+                    }
+                }
+            }));
+
+            const transactionResult = await transactionInterator.post(requestObj);
+            window.console.log(transactionResult);
         } else {
             response = new JSONResponse(JSON.stringify({status: 500, data: {error: "An unknown error occured while placing the order."}}));
         }

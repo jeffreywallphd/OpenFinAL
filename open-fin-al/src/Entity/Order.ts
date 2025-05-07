@@ -45,6 +45,9 @@ export class Order implements IEntity {
 
         var fulfilledDate = new Field("fulfilledDate", "datetime", null);
         this.fields.set("fulfilledDate", fulfilledDate);
+
+        var cashId = new Field("cashId", "integer", null);
+        this.fields.set("cashId", cashId);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
@@ -109,6 +112,10 @@ export class Order implements IEntity {
 
         if(json.hasOwnProperty("fulfilledDate")) {
             this.setFieldValue("fulfilledDate", json.fulfilledDate);
+        }
+
+        if(json.hasOwnProperty("cashId")) {
+            this.setFieldValue("cashId", json.cashId);
         }
     }
 

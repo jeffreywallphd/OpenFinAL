@@ -40,15 +40,13 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                     entity.getFieldValue("type"),
                     entity.getFieldValue("note")
                 ];
-                window.console.log("TRYING TO INSERT TRANSACTION");
+
                 const result = await window.database.SQLiteInsert({ query: transactionQuery, parameters: transactionQueryParameters });
                 var entryResult;
 
-                window.console.log(result);
                 if(result && result.ok) {
                     //insert transaction entries
                     const transactionId = result.lastID;
-                    window.console.log(transactionId);
 
                     //insert debit transaction entry
                     const debitEntity = entity.getFieldValue("debitEntry");
@@ -61,22 +59,66 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                         debitEntity.getFieldValue("price")
                     ];
 
-                    window.console.log("TRYING TO INSERT TRANSACTION ENTRY");
                     entryResult = await window.database.SQLiteInsert({ query: debitTransactionEntryQuery, parameters: debitTransactionEntryQueryParameters });
                 } 
 
-                window.console.log(entryResult);
                 if(entryResult && entryResult.ok) {
                     return true;
                 }
                 return entryResult;
+            } else if(action==="purchaseAsset") {
+                //transaction query
+                transactionQuery = "INSERT INTO PortfolioTransaction (portfolioId,type,note) VALUES (?,?,?)";
+                transactionQueryParameters = [
+                    entity.getFieldValue("portfolioId"),
+                    entity.getFieldValue("type"),
+                    entity.getFieldValue("note")
+                ];
+
+                const result = await window.database.SQLiteInsert({ query: transactionQuery, parameters: transactionQueryParameters });
+                var debitEntryResult;
+                var creditEntryResult;
+
+                if(result && result.ok) {
+                    //insert transaction entries
+                    const transactionId = result.lastID;
+
+                    //insert debit transaction entry
+                    const debitEntity = entity.getFieldValue("debitEntry");
+                    debitTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    debitTransactionEntryQueryParameters = [
+                        transactionId,
+                        debitEntity.getFieldValue("assetId"),
+                        "debit",
+                        debitEntity.getFieldValue("quantity"),
+                        debitEntity.getFieldValue("price")
+                    ];
+
+                    debitEntryResult = await window.database.SQLiteInsert({ query: debitTransactionEntryQuery, parameters: debitTransactionEntryQueryParameters });
+
+                    //insert credit transaction entry to credit Cash
+                    const creditEntity = entity.getFieldValue("creditEntry");
+                    creditTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    creditTransactionEntryQueryParameters = [
+                        transactionId,
+                        creditEntity.getFieldValue("assetId"),
+                        "credit",
+                        1,
+                        creditEntity.getFieldValue("price") * creditEntity.getFieldValue("quantity")
+                    ];
+
+                    creditEntryResult = await window.database.SQLiteInsert({ query: creditTransactionEntryQuery, parameters: creditTransactionEntryQueryParameters });
+                } 
+
+                if(debitEntryResult && debitEntryResult.ok && creditEntryResult && creditEntryResult.ok) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         } catch(error) {
-            window.console.log(error);
             return false;
-        }
-        
-        throw Error("This gateway does not have the ability to create content.");
+        }        
     }
     
     async read(entity: IEntity, action: string): Promise<IEntity[]> {
@@ -95,10 +137,11 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                     
                     query = `
                         SELECT 
-                            SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) AS totalDebits,
-                            SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END) AS totalCredits,
-                            SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) - 
-                            SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END) AS buyingPower
+                            COALESCE(
+                                SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) -
+                                SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END),
+                                0
+                            ) AS buyingPower
                         FROM 
                             PortfolioTransactionEntry AS pte
                         INNER JOIN 
@@ -108,10 +151,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                             AND pte.assetId = ?  
                             AND pt.isCanceled = 0;`;
 
-                    window.console.log(portfolioId);
-                    window.console.log(assetId);
-                    data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId, assetId] });
-                
+                    data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId, assetId] });            
             } else if(action === "getPortfolioValue") {
                 const portfolioId = entity.getFieldValue("portfolioId");
 
@@ -140,19 +180,17 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                     GROUP BY
                         pte.assetId;`;
 
-                window.console.log(portfolioId);
                 data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
             }
         } catch(error) {
             return entities;
         } 
 
-        window.console.log(data);
-        if (action === "getBuyingPower") {
+        if (action === "getBuyingPower" && data) {
             var entity = new Asset();
             entity.setFieldValue("buyingPower", data.buyingPower);            
             entities.push(entity);
-        } else if(action === "getPortfolioValue") {
+        } else if(action === "getPortfolioValue" && data) {
             var entity = new Asset();
             entity.setFieldValue("id", data.id);
             entity.setFieldValue("symbol", data.symbol);

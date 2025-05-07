@@ -41,7 +41,7 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             } else {
                 throw Error("Either no action was sent in the request or an incorrect action was used.");
             }     
-            window.console.log(url);
+
             const urlObject = new URL(url);
 
             var endpointRequest = new JSONRequest(JSON.stringify({

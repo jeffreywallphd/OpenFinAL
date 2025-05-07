@@ -19,17 +19,21 @@ export class PortfolioTransactionInteractor implements IInputBoundary {
         var result;
     
         try {
+            var transaction;
             if(requestModel.request.request.action==="deposit") {
-                window.console.log("MAKING A DEPOSIT");
-                var transaction = new PortfolioTransaction();
+                transaction = new PortfolioTransaction();
                 transaction.fillWithRequest(requestModel);
 
-                window.console.log(transaction);
                 var gateway = new SQLitePortfolioTransactionGateway();
                 result = await gateway.create(transaction, "deposit");
+            } else if(requestModel.request.request.action==="purchaseAsset") {
+                transaction = new PortfolioTransaction();
+                transaction.fillWithRequest(requestModel);
+
+                var gateway = new SQLitePortfolioTransactionGateway();
+                result = await gateway.create(transaction, "purchaseAsset");
             }
 
-            window.console.log(result);
             if(result) {
                 response = new JSONResponse(JSON.stringify({response: {status: 200, ok: true}}));
             } else {
@@ -41,10 +45,8 @@ export class PortfolioTransactionInteractor implements IInputBoundary {
                 }}}));
             }
 
-            window.console.log(response);
             return response.response;
         } catch(error) {
-            window.console.error(error);
             response = new JSONResponse(JSON.stringify({
                 response: {
                     status: 500, 
@@ -81,7 +83,6 @@ export class PortfolioTransactionInteractor implements IInputBoundary {
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
         response.convertFromEntity(results, false);
-        window.console.log(response);
         return response.response;
     }
     

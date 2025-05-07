@@ -18,6 +18,17 @@ function  TickerSearchBar(props) {
         newState.isLoading = true;
         props.handleDataChange(newState);
 
+        if(newState.securitiesList) {
+            for(var security of newState.securitiesList) {
+                if(security.symbol === newState.searchRef) {
+                    window.console.log(newState.searchRef);
+                    window.console.log(security.id);
+                    newState.assetId = security.id;
+                    break;                    
+                }
+            }
+        }
+
         //Get Price Data
         newState = await fetchPriceVolumeData(newState);
 
@@ -177,8 +188,8 @@ function  TickerSearchBar(props) {
             const results = await interactor.get(requestObj);
 
             const newState = props.state;
-            newState.searchRef = results.response.results[0].ticker;
-            newState.securitiesList = results.response.results;
+            newState.searchRef = results.response.results[0] ? results.response.results[0].ticker : "GOOG";
+            newState.securitiesList = results.response.results ? results.response.results : null;
             newState.initializing = false;
             newState.isFirstLoad = false;
 

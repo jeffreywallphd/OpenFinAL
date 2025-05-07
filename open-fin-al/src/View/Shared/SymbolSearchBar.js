@@ -55,9 +55,8 @@ function SymbolSearchBar(props) {
                 }`);
 
                 const searchData = await interactor.get(requestObj);
-                
                 setSecuritiesList(searchData.response.results);
-
+                
                 //Update the state to be passed to the fetch data function
                 const newState = {
                     ...props.state,
@@ -108,8 +107,8 @@ function SymbolSearchBar(props) {
                     {securitiesList ?
                         <datalist id="tickers">
                             {securitiesList.map((listData) => (
-                                <option key={listData.ticker} value={listData.ticker}>
-                                    {listData.companyName}
+                                <option key={listData.id} value={listData.symbol}>
+                                    {listData.name}
                                 </option>
                             ))}
                         </datalist>

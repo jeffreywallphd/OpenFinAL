@@ -25,6 +25,7 @@ function TimeSeriesChart(props) {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [orderQuantity, setOrderQuantity] = useState(0);
     const [timeoutId, setTimeoutId] = useState(null);
+    const [cashId, setCashId] = useState(null);
 
     const openModal = async () => {
         setIsModalOpen(true);
@@ -94,6 +95,23 @@ function TimeSeriesChart(props) {
         setPortfolios(response.response?.results || []); 
     };
 
+    const getCashId = async() => {
+        const interactor = new PortfolioInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getCashId"
+            }
+        }));
+    
+        const response = await interactor.get(requestObj);
+        
+        if(response.response.ok) {
+            setCashId(response.response.results[0].id);
+            return response.response.results[0].id;
+        }
+        return null;        
+    };
+
     const getCurrentPrice = async () => {
         if(props.state.data) {
             const interactor = new StockInteractor();
@@ -107,12 +125,11 @@ function TimeSeriesChart(props) {
             }));
         
             const response = await interactor.get(requestObj);
-            window.console.log(response);
 
             setCurrentQuote(response.response.results[0]);
 
             if(isModalOpen) {
-                const id = setTimeout(getCurrentPrice, 3000);
+                const id = setTimeout(getCurrentPrice, 8000);
                 setTimeoutId(id);
             }
         }
@@ -122,16 +139,20 @@ function TimeSeriesChart(props) {
 
     const placeOrder = async () => {
         const interactor = new OrderInteractor();
+        window.console.log(props.state);
+        window.console.log(props.state.assetId);
+        window.console.log(cashId);
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 order: {
-                    assetId: null,
+                    assetId: props.state.assetId,
                     portfolioId: currentPortfolio,
                     orderType: "Buy",
                     orderMethod: "Market",
                     quantity: orderQuantity,
                     lastPrice: currentQuote.quotePrice,
-                    lastPriceDate: currentQuote.date
+                    lastPriceDate: currentQuote.date,
+                    cashId: cashId
                 }
             }
         }));
@@ -169,6 +190,7 @@ function TimeSeriesChart(props) {
         }
         getDarkMode();
         getPortfolios();
+        getCashId();
     }, []);
 
     setInterval = (selectedInterval) => {

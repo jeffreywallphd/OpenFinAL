@@ -33,7 +33,6 @@ export class PortfolioTransactionEntry implements IEntity {
     }
 
     fillWithRequest(requestModel: IRequestModel) {
-        window.console.log(requestModel);
         var json = requestModel.request.request.transactionEntry;
 
         if(!json.hasOwnProperty("assetId")) {

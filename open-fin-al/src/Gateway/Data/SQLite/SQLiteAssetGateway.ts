@@ -4,6 +4,7 @@ import {ISqlDataGateway} from "../ISqlDataGateway";
 import { parse } from 'node-html-parser';
 import { APIEndpoint } from "../../../Entity/APIEndpoint";
 import { JSONRequest } from "../../Request/JSONRequest";
+import { Asset } from "../../../Entity/Asset";
 
 declare global {
     interface Window { 
@@ -139,7 +140,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
     
     private formatRandomData(data: any): any {
         var array: Array<IEntity> = [];
-        window.console.log(data);
+
         for (const match of data) {           
             var entity = new StockRequest();
             
@@ -157,10 +158,11 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
         var array: Array<IEntity> = [];
 
         for (const match of data) {           
-            var entity = new StockRequest();
+            var entity = new Asset();
             
-            entity.setFieldValue("ticker", match.symbol.toUpperCase());
-            entity.setFieldValue("companyName", match.name);
+            entity.setFieldValue("id", match.id);
+            entity.setFieldValue("symbol", match.symbol.toUpperCase());
+            entity.setFieldValue("name", match.name);
             entity.setFieldValue("cik", match.cik);
             
             array.push(entity);
