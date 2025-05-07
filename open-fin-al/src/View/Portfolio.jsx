@@ -8,13 +8,13 @@ import React, { Component } from "react";
 import { PortfolioCreation } from "./Portfolio/Creation";
 import {UserInteractor} from "../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
+import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
 
 class Portfolio extends Component {
     portfolioValue = 2534.26;
-    buyingPower = 500.00;
 
     // Sample stock data for the chart
     stockData = [
@@ -26,6 +26,13 @@ class Portfolio extends Component {
         { name: 'Jun', price: 15.75 },
     ];
 
+    formatter = new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
     constructor(props) {
         super(props);
         this.state = {
@@ -34,16 +41,24 @@ class Portfolio extends Component {
             portfolios: [],
             isModalOpen: false,
             depositAmount: 0,
-            cashId: null
+            cashId: null,
+            depositMessage: null,
+            portfolioValue: 0,
+            buyingPower: 0,
+            buyingPowerLoaded: false
         };
 
         //Bind methods for element events
         this.openModal = this.openModal.bind(this);
         this.makeDeposit = this.makeDeposit.bind(this);
+        this.getBuyingPower = this.getBuyingPower.bind(this);
     }
 
     async openModal() {
-        this.setState({isModalOpen: true});
+        this.setState({
+            depositMessage: null,
+            isModalOpen: true
+        });
     }
 
     async fetchPortfolios() {    
@@ -111,16 +126,110 @@ class Portfolio extends Component {
         window.console.log(response);
         if(response.response.ok) {
             this.setState({cashId: response.response.results[0].id});
+            return response.response.results[0].id;
         }
+        return null;        
     }
 
     async makeDeposit() {
-        
+        const interactor = new PortfolioTransactionInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "deposit",
+                transaction: {
+                    portfolioId: this.state.currentPortfolio,
+                    type: "Deposit",
+                    debitEntry: {
+                        assetId: this.state.cashId,
+                        transactionId: -1,
+                        side: "debit",
+                        quantity: 1,
+                        price: this.state.depositAmount
+                    }
+                }
+            }
+        }));
+    
+        const response = await interactor.post(requestObj);
+
+        if(response.response.ok) {
+            this.setState({depositMessage: "Successfully deposited the funds!"});
+            this.sleep(2000);
+            this.setState({isModalOpen: false});
+            this.setState({depositMessage: null});
+            this.getBuyingPower(this.state.cashId);
+        } else {
+            this.setState({depositMessage: "The deposit failed. If the problem persists, please notify the software provider."});
+        }
+    }
+
+    async getBuyingPower(cashId) {
+        const interactor = new PortfolioTransactionInteractor();
+        window.console.log(this.state.currentPortfolio);
+        window.console.log(this.state.cashId);
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getBuyingPower",
+                transaction: {
+                    portfolioId: this.state.currentPortfolio,
+                    entry: {
+                        assetId: cashId
+                    }
+                }
+                
+            }
+        }));
+
+        const response = await interactor.get(requestObj);
+        if(response.response.ok) {
+            this.setState({buyingPowerLoaded: true, buyingPower: response.response.results[0].buyingPower});
+            return true;
+        } else {
+            return false;
+        }    
+    }
+
+    async getPortfolioValue() {
+        const interactor = new PortfolioTransactionInteractor();
+        window.console.log(this.state.currentPortfolio);
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getPortfolioValue",
+                transaction: {
+                    portfolioId: this.state.currentPortfolio
+                }
+                
+            }
+        }));
+
+        const response = await interactor.get(requestObj);
+        window.console.log(response);
+        if(response.response.ok) {
+            var portfolioValue = 0;
+            for(var asset of response.response.results) {
+                portfolioValue += asset.assetValue;
+            }
+            
+            this.setState({portfolioValue: portfolioValue});
+            return true;
+        } else {
+            return false;
+        }    
     }
 
     async componentDidMount() {
         await this.fetchPortfolios();
-        await this.getCashId();
+        const cashId = await this.getCashId();
+        await this.getPortfolioValue();
+
+        window.console.log(cashId); 
+        if(cashId) {
+            await this.getBuyingPower(cashId);
+        }
+    }
+
+    async sleep(ms) { 
+       return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     render() {
@@ -141,7 +250,7 @@ class Portfolio extends Component {
                             </option>
                         ))}
                     </select>
-
+                    
                     <button className="add-button" onClick={() => this.setState({ createPortfolio: true })}>
                         New Portfolio +
                     </button>
@@ -166,23 +275,26 @@ class Portfolio extends Component {
                                                     }}>Close</button>
                                             </div>
                                             <p>Amount: <input type="text" value={this.state.depositAmount} onChange={(e) => this.setState({depositAmount: e.target.value})} /></p>
+                                            {this.state.depositMessage ? <p>{this.state.depositMessage}</p> : null}
                                             <button onClick={this.makeDeposit}>Make Deposit</button>  
                                         </div>
                                     </div>
                                 </>
                             )}
                          </div>
-
-                        <div className="portfolio-overview">
-                            <div className="portfolio-card">
-                                <h3>Portfolio Value</h3>
-                                <p className="portfolio-value">${this.portfolioValue.toFixed(2)}</p>
+                        {this.state.buyingPowerLoaded && 
+                            <div className="portfolio-overview">
+                                <div className="portfolio-card">
+                                    <h3>Portfolio Value</h3>
+                                    <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                </div>
+                                <div className="portfolio-card">
+                                    <h3>Buying Power</h3>
+                                    <p className="buying-power">{this.formatter.format(this.state.buyingPower)}</p>
+                                </div>
                             </div>
-                            <div className="portfolio-card">
-                                <h3>Buying Power</h3>
-                                <p className="buying-power">${this.buyingPower.toFixed(2)}</p>
-                            </div>
-                        </div>
+                        }
+                        
 
                         {/* Stock Cards Section */}
                         <div className="stock-list">

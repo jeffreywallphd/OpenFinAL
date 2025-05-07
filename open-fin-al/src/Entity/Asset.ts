@@ -25,6 +25,12 @@ export class Asset implements IEntity {
 
         var isSP500 = new Field("isSP500", "boolean", 0);
         this.fields.set("isSP500", isSP500);
+
+        var buyingPower = new Field("buyingPower", "float", null);
+        this.fields.set("buyingPower", buyingPower);
+
+        var assetValue = new Field("assetValue", "array:float", null);
+        this.fields.set("assetValue", assetValue);
     }
 
     fillWithRequest(requestModel: IRequestModel) {

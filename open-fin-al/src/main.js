@@ -692,13 +692,18 @@ const sqliteRun = async (query, dataArray) => {
   return new Promise((resolve, reject) => {
     try {
       //execute the query
-      db.run(query, dataArray, (err, data) => {
+      db.run(query, dataArray, function (err, data) {
         if (err) {
           reject(err);
           return false;
         }
 
-        resolve(true);
+        //when inserting, return the last insert id
+        if (query.toUpperCase().startsWith("INSERT")) {
+          resolve({ ok: true, lastID: this.lastID }); 
+        } else {
+          resolve(true);
+        }
       });
     } catch (err) {
       reject(err);
@@ -732,7 +737,9 @@ ipcMain.handle('sqlite-get', async (event, args) => {
 });
 
 ipcMain.handle('sqlite-insert', async (event, args) => {
+  console.log("INSERTING DATA")
   const data = await sqliteRun(args["query"], args["parameters"]);
+  console.log(data);
   return data;
 });
 

@@ -20,6 +20,10 @@ export class SQLiteUserGateway implements ISqlDataGateway {
             const query = "INSERT INTO User (firstName, lastName, email, username) VALUES (?, ?, ?, ?)";
             const args  = [entity.getFieldValue("firstName"), entity.getFieldValue("lastName"), entity.getFieldValue("email"), entity.getFieldValue("username")];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
+            
+            if(result && result.ok) {
+                return true;
+            } 
             return result;
         } catch(error) {
             return false;

@@ -20,6 +20,10 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
             const query = "INSERT INTO Portfolio (name, description, userId, isDefault) VALUES (?, ?, ?, ?)";
             const args  = [entity.getFieldValue("name"), entity.getFieldValue("description"), entity.getFieldValue("userId"), entity.getFieldValue("isDefault")];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
+            
+            if(result && result.ok) {
+                return true;
+            } 
             return result;
         } catch(error) {
             return false;

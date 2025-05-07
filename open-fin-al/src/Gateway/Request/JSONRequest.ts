@@ -2,7 +2,7 @@ import {IRequestModel} from "../Request/IRequestModel";
 
 export class JSONRequest implements IRequestModel {
     type: "JSON";
-    request: JSON;
+    request: any;
     
     constructor(json: string) {
         this.convert(json);

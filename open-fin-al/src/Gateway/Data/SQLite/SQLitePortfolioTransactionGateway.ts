@@ -1,6 +1,7 @@
-import { StockRequest } from "../../../Entity/StockRequest";
 import {IEntity} from "../../../Entity/IEntity";
 import {ISqlDataGateway} from "../ISqlDataGateway";
+import { Asset } from "../../../Entity/Asset";
+import { Portfolio } from "../../../Entity/Portfolio";
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
@@ -20,11 +21,61 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
     }
 
     // used to create and periodically refresh the cache
-    async create(entity: IEntity, action: string): Promise<Boolean> {
-        if(action==="deposit") {
-            
-        }
+    async create(entity: IEntity, action: string): Promise<any> {
+        var transactionQuery="";
+        var transactionQueryParameters = [];
 
+        var debitTransactionEntryQuery="";
+        var debitTransactionEntryQueryParameters = [];
+
+        var creditTransactionEntryQuery="";
+        var creditTransactionEntryQueryParameters = [];
+
+        try {
+            if(action==="deposit") {
+                //transaction query
+                transactionQuery = "INSERT INTO PortfolioTransaction (portfolioId,type,note) VALUES (?,?,?)";
+                transactionQueryParameters = [
+                    entity.getFieldValue("portfolioId"),
+                    entity.getFieldValue("type"),
+                    entity.getFieldValue("note")
+                ];
+                window.console.log("TRYING TO INSERT TRANSACTION");
+                const result = await window.database.SQLiteInsert({ query: transactionQuery, parameters: transactionQueryParameters });
+                var entryResult;
+
+                window.console.log(result);
+                if(result && result.ok) {
+                    //insert transaction entries
+                    const transactionId = result.lastID;
+                    window.console.log(transactionId);
+
+                    //insert debit transaction entry
+                    const debitEntity = entity.getFieldValue("debitEntry");
+                    debitTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    debitTransactionEntryQueryParameters = [
+                        transactionId,
+                        debitEntity.getFieldValue("assetId"),
+                        "debit",
+                        debitEntity.getFieldValue("quantity"),
+                        debitEntity.getFieldValue("price")
+                    ];
+
+                    window.console.log("TRYING TO INSERT TRANSACTION ENTRY");
+                    entryResult = await window.database.SQLiteInsert({ query: debitTransactionEntryQuery, parameters: debitTransactionEntryQueryParameters });
+                } 
+
+                window.console.log(entryResult);
+                if(entryResult && entryResult.ok) {
+                    return true;
+                }
+                return entryResult;
+            }
+        } catch(error) {
+            window.console.log(error);
+            return false;
+        }
+        
         throw Error("This gateway does not have the ability to create content.");
     }
     
@@ -33,65 +84,84 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
         var query:string = "";
         var data;
 
-        if(action === "getBuyingPower") {
-            try {
+        try {
+            if(action === "getBuyingPower") {
+                    const portfolioId = entity.getFieldValue("portfolioId");
+                    const assetId = entity.getFieldValue("entry").getFieldValue("assetId");
+
+                    if(portfolioId === null) {
+                        return entities;
+                    }
+                    
+                    query = `
+                        SELECT 
+                            SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) AS totalDebits,
+                            SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END) AS totalCredits,
+                            SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) - 
+                            SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END) AS buyingPower
+                        FROM 
+                            PortfolioTransactionEntry AS pte
+                        INNER JOIN 
+                            PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                        WHERE 
+                            pt.portfolioId = ? 
+                            AND pte.assetId = ?  
+                            AND pt.isCanceled = 0;`;
+
+                    window.console.log(portfolioId);
+                    window.console.log(assetId);
+                    data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId, assetId] });
+                
+            } else if(action === "getPortfolioValue") {
                 const portfolioId = entity.getFieldValue("portfolioId");
 
                 if(portfolioId === null) {
                     return entities;
                 }
                 
-                query = `SELECT * FROM PortfolioTransactionEntry AS pte 
-                    INNER JOIN PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
-                    INNER JOIN Asset AS a ON (pte.assetId = a.id)
-                    WHERE pt.portfolioId=?`;
+                query = `
+                    SELECT
+                        a.symbol AS symbol,
+                        a.type AS type,
+                        a.id AS id,
+                        SUM(CASE
+                            WHEN pte.side = 'debit' THEN pte.quantity * pte.price
+                            ELSE -pte.quantity * pte.price
+                        END) AS assetValue
+                    FROM
+                        PortfolioTransactionEntry AS pte
+                    INNER JOIN
+                        PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                    INNER JOIN
+                        Asset AS a ON (pte.assetId = a.id)
+                    WHERE
+                        pt.portfolioId = ?
+                        AND pt.isCanceled = 0
+                    GROUP BY
+                        pte.assetId;`;
 
+                window.console.log(portfolioId);
                 data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
-
-            } catch(error) {
-                return entities;
             }
+        } catch(error) {
+            return entities;
         } 
 
-        if (action === "lookup") {
-            entities = this.formatLookupResponse(data);
-        } else if(action === "selectRandomSP500") {
-            entities = this.formatRandomData(data);
+        window.console.log(data);
+        if (action === "getBuyingPower") {
+            var entity = new Asset();
+            entity.setFieldValue("buyingPower", data.buyingPower);            
+            entities.push(entity);
+        } else if(action === "getPortfolioValue") {
+            var entity = new Asset();
+            entity.setFieldValue("id", data.id);
+            entity.setFieldValue("symbol", data.symbol);
+            entity.setFieldValue("type", data.type); 
+            entity.setFieldValue("assetValue", data.assetValue);            
+            entities.push(entity);
         }
 
         return entities;
-    }
-    
-    formatRandomData(data: any): any {
-        var array: Array<IEntity> = [];
-
-        for (const match of data) {           
-            var entity = new StockRequest();
-            
-            entity.setFieldValue("ticker", match.ticker.toUpperCase());
-            entity.setFieldValue("companyName", match.companyName);
-            entity.setFieldValue("cik", match.cik);
-            
-            array.push(entity);
-        }
-
-        return array;
-    }
-
-    private formatLookupResponse(data:any) {
-        var array: Array<IEntity> = [];
-
-        for (const match of data) {           
-            var entity = new StockRequest();
-            
-            entity.setFieldValue("ticker", match.ticker.toUpperCase());
-            entity.setFieldValue("companyName", match.companyName);
-            entity.setFieldValue("cik", match.cik);
-            
-            array.push(entity);
-        }
-
-        return array;
     }
 
     private appendWhere(query:string, condition:string, hasWhereCondition:boolean, whereOperator:string = "OR") {
@@ -111,23 +181,12 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
 
     // purge the database of entries for a periodic refresh of the data
     async delete(entity: IEntity, action: string): Promise<number> {
-        try {
-            const query = "DELETE FROM PublicCompany;";
-            const args:any[]  = [];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-delete', { query: query, parameters: args });
-            
-            const query2 = "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='PublicCompany'";
-            await window.electron.ipcRenderer.invoke('sqlite-update', { query: query2, parameters: args });
-            
-            return result;
-        } catch(error) {
-            return 0;
-        }
+        throw Error("This gateway does not have the ability to delete content.");
     }
 
     //check to see if the database table exists
     async checkTableExists() {
-        const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PublicCompany';"
+        const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PortfolioTransaction';"
         const args:any[]  = [];
         const rows = await window.electron.ipcRenderer.invoke('sqlite-query', { query: query, parameters: args });
         
@@ -140,7 +199,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
 
     //for database tables that act as cache, check for the last time a table was updated
     async checkLastTableUpdate() {
-        const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
+        const query = "SELECT changedAt FROM modifications WHERE tableName='PortfolioTransaction' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
         const data = await window.electron.ipcRenderer.invoke('sqlite-get', { query: query, parameters: args });
         

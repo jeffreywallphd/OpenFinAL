@@ -32,6 +32,10 @@ export class SQLiteOrderGateway implements ISqlDataGateway {
                 entity.getFieldValue("fulfilledDate")
             ];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
+
+            if(result && result.ok) {
+                return true;
+            } 
             return result;
         } catch(error) {
             return false;
