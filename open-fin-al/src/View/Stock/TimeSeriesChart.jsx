@@ -125,11 +125,11 @@ function TimeSeriesChart(props) {
             }));
         
             const response = await interactor.get(requestObj);
-
+            window.console.log(response.response);
             setCurrentQuote(response.response.results[0]);
 
             if(isModalOpen) {
-                const id = setTimeout(getCurrentPrice, 8000);
+                const id = setTimeout(getCurrentPrice, 60000);
                 setTimeoutId(id);
             }
         }

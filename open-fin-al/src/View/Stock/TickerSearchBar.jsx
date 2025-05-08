@@ -21,8 +21,6 @@ function  TickerSearchBar(props) {
         if(newState.securitiesList) {
             for(var security of newState.securitiesList) {
                 if(security.symbol === newState.searchRef) {
-                    window.console.log(newState.searchRef);
-                    window.console.log(security.id);
                     newState.assetId = security.id;
                     break;                    
                 }

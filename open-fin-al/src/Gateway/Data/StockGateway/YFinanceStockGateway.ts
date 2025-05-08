@@ -30,7 +30,7 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
     var data;
     if (action === "lookup") {
         data = await this.searchSymbol(entity);
-    } else if (action === "intraday") {
+    } else if (action === "intraday" || action === "quote") {
         data = await this.getIntradayData(entity);
     } else if (action === "interday") {
         data = await this.getInterdayData(entity);
@@ -41,11 +41,22 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
     var entities;
     if (action === "lookup") {
         entities = this.formatLookupResponse(data);
+    } else if(action === "quote") { 
+        entities = this.formatQuoteResponse(data, entity);
     } else {
         entities = this.formatDataResponse(data, entity, action);
     }
 
     return entities;
+  }
+
+  formatQuoteResponse(data: any, entity: IEntity): any {
+    var array: Array<IEntity> = [];
+    const formattedData = this.formatDataResponse(data, entity, "intraday");
+
+    //get only the last result from the quote
+    array.push(formattedData[-1]);
+    return array;
   }
     
   formatDataResponse(data: any, entity: IEntity, action: string): any {
@@ -127,6 +138,15 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
 
     // Check if hour is less than 9 or if it's 9 and minute is less than 30
     return hour < 9 || (hour === 9 && minute < 30);
+  }
+
+  private async getQuote(entity: IEntity) {
+    try {
+      var data = this.getInterdayData(entity);
+      return data;
+    } catch(error) {
+      throw new Error("Error occurred while fetching a quote: " + error.message);
+    }
   }
 
   private async getIntradayData(entity: IEntity) {

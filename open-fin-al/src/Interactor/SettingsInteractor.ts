@@ -214,7 +214,17 @@ export class SettingsInteractor implements IInputBoundary {
 
         currentStockQuoteGateway = config.StockQuoteGateway === "AlphaVantageStockQuoteGateway" ? AlphaVantageStockQuoteGateway : currentStockQuoteGateway;
 
-        const stockQuoteGateways = [AlphaVantageStockQuoteGateway];
+        var YFinanceStockQuoteGateway = new ConfigurationOption();
+        YFinanceStockQuoteGateway.setFieldValue("id", this.generateId());
+        YFinanceStockQuoteGateway.setFieldValue("setting", "StockQuoteGateway");
+        YFinanceStockQuoteGateway.setFieldValue("label", "Yahoo Finance Stock Quote API (Unofficial Community Version)");
+        YFinanceStockQuoteGateway.setFieldValue("name", "YFinanceStockQuoteGateway");
+        YFinanceStockQuoteGateway.setFieldValue("hasValue", false);
+        YFinanceStockQuoteGateway.setFieldValue("isActive", config.StockQuoteGateway === "YFinanceStockQuoteGateway" ? true : false);
+
+        currentStockQuoteGateway = config.StockQuoteGateway === "YFinanceStockQuoteGateway" ? YFinanceStockQuoteGateway : currentStockQuoteGateway;
+
+        const stockQuoteGateways = [AlphaVantageStockQuoteGateway, YFinanceStockQuoteGateway];
         
         var stockQuoteGatewayConfiguration = new Configuration();
         stockQuoteGatewayConfiguration.setFieldValue("id", this.generateId());

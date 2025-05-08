@@ -9,6 +9,7 @@ import { PortfolioCreation } from "./Portfolio/Creation";
 import {UserInteractor} from "../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
+import { StockInteractor } from "../Interactor/StockInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 
 import { PieChart, Pie, Sector, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
@@ -67,19 +68,15 @@ const renderActiveShape = (props) => {
 };
 
 class Portfolio extends Component {
-    // Sample stock data for the chart
-    stockData = [
-        { name: 'Jan', price: 12.00 },
-        { name: 'Feb', price: 13.45 },
-        { name: 'Mar', price: 13.00 },
-        { name: 'Apr', price: 14.50 },
-        { name: 'May', price: 15.00 },
-        { name: 'Jun', price: 15.75 },
-    ];
-
     formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    });
+
+    percentFormatter = new Intl.NumberFormat('en-US', {
+        style: 'percent',
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
     });
@@ -264,8 +261,32 @@ class Portfolio extends Component {
 
         if(response.response.ok) {
             var portfolioValue = 0;
-            for(var asset of response.response.results) {
-                portfolioValue += asset.assetValue;
+            for(var i in response.response.results) {
+                var asset = response.response.results[i];
+
+                if(asset.type==="Stock") {
+                    const interactor = new StockInteractor();
+                    const quoteRequestObj = new JSONRequest(JSON.stringify({
+                        request: {
+                            stock: {
+                                action: "quote",
+                                ticker: asset["symbol"]
+                            }
+                        }
+                    }));
+                
+                    const quoteResponse = await interactor.get(quoteRequestObj);
+
+                    if(quoteResponse.response.ok && quoteResponse.response.results[0].quotePrice) {
+                        response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
+                        response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
+                        portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
+                    } else {
+                        portfolioValue += asset.assetValue;
+                    }
+                } else {
+                    portfolioValue += asset.assetValue;
+                }                
             }
 
             this.setState({assetData: response.response.results});
@@ -308,30 +329,6 @@ class Portfolio extends Component {
         } else {
             return false;
         }    
-    }
-
-    renderActiveShape(props) {
-        const {
-          cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle,
-          fill, payload, percent, value
-        } = props;
-    
-        return (
-          <g>
-            <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-              {payload.name}
-            </text>
-            <Sector
-              cx={cx}
-              cy={cy}
-              innerRadius={innerRadius}
-              outerRadius={outerRadius + 10}
-              startAngle={startAngle}
-              endAngle={endAngle}
-              fill={fill}
-            />
-          </g>
-        );
     }
 
     onPieEnter(_, index) {
@@ -431,19 +428,23 @@ class Portfolio extends Component {
                             <div>
                                 <h3>Stock Assets</h3>
                                 <div className="table-header">
-                                    <div className="table-cell">Company Name</div>
                                     <div className="table-cell">Symbol</div>
-                                    <div className="table-cell">Purchase Price</div>
-                                    <div className="table-cell">Current Value</div>
+                                    <div className="table-cell">Quantity</div>
+                                    <div className="table-cell">Cost</div>
+                                    <div className="table-cell">Value</div>
+                                    <div className="table-cell">Gain/Loss</div>
+                                    <div className="table-cell">% Change</div>
                                 </div>
                                 {this.state.assetData ?
                                     this.state.assetData.map((asset, index) => (
                                          asset.type==="Stock" ?
                                             <div className="table-row">
-                                                <div className="table-cell">{asset.name}</div>
                                                 <div className="table-cell">{asset.symbol}</div>
+                                                <div className="table-cell">{asset.quantity}</div>
                                                 <div className="table-cell">{this.formatter.format(asset.assetValue)}</div>
-                                                <div className="table-cell">TODO</div>
+                                                <div className="table-cell">{this.formatter.format(asset.currentValue)}</div>
+                                                <div className="table-cell">{this.formatter.format(asset.currentValue - asset.assetValue)}</div>
+                                                <div className="table-cell">{this.percentFormatter.format((asset.currentValue - asset.assetValue)/asset.assetValue)}</div>
                                             </div>
                                             : 
                                             null

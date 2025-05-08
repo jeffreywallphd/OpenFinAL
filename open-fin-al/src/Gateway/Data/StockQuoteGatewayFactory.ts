@@ -10,6 +10,8 @@ export class StockQuoteGatewayFactory {
         if(config["StockQuoteGateway"] === "AlphaVantageStockQuoteGateway") {
             const key = await window.vault.getSecret("ALPHAVANTAGE_API_KEY");
             return new AlphaVantageStockGateway(key);
+        } else if(config["StockQuoteGateway"] === "YFinanceStockQuoteGateway") {
+            return new YFinanceStockGateway();
         } else {
             //default will be AlphaVantage for now
             const key = window.vault.getSecret("ALPHAVANTAGE_API_KEY");

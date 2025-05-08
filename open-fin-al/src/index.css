@@ -2483,7 +2483,7 @@ nav ul li a:hover {
 
 .header-cell {
   flex: 1;
-  padding: 10px;
+  padding: 10px 5px;
   text-align: center;
 }
 
@@ -2497,7 +2497,7 @@ nav ul li a:hover {
 
 .table-cell {
   flex: 1;
-  padding: 5px 10px;
+  padding: 5px 5px;
 }
 
 .table-cell input {

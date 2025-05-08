@@ -173,7 +173,11 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                         SUM(CASE
                             WHEN pte.side = 'debit' THEN pte.quantity * pte.price
                             ELSE -pte.quantity * pte.price
-                        END) AS assetValue
+                        END) AS assetValue,
+                        SUM(CASE
+                            WHEN pte.side = 'debit' THEN pte.quantity
+                            ELSE -pte.quantity
+                        END) AS quantity
                     FROM
                         PortfolioTransactionEntry AS pte
                     INNER JOIN
@@ -203,7 +207,11 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                 entity.setFieldValue("name", row.name);
                 entity.setFieldValue("symbol", row.symbol);
                 entity.setFieldValue("type", row.type); 
-                entity.setFieldValue("assetValue", row.assetValue);            
+                entity.setFieldValue("assetValue", row.assetValue);
+                if(action === "getPortfolioValue") {
+                    entity.setFieldValue("quantity", row.quantity);
+                }
+                
                 entities.push(entity);
             }
         }
