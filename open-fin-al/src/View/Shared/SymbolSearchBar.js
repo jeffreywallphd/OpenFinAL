@@ -105,7 +105,7 @@ function SymbolSearchBar(props) {
                            onKeyUp={(e) => checkInput(e)} placeholder="Please enter a ticker symbol"></input>
 
                     {securitiesList ?
-                        <datalist id="tickers">
+                        <datalist id="tickers" className="tickersList">
                             {securitiesList.map((listData) => (
                                 <option key={listData.id} value={listData.symbol}>
                                     {listData.name}

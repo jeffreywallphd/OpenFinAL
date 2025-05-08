@@ -118,7 +118,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                 return [];
             }
         } else if(action === "selectRandomSP500") {
-            query = "SELECT * FROM Asset WHERE isSP500=1 AND id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM Asset WHERE type='Stock')) ORDER BY id LIMIT 1;";
+            query = "SELECT * FROM Asset WHERE isSP500 = 1 AND type = 'Stock' ORDER BY RANDOM() LIMIT 1;";
             data = await window.database.SQLiteQuery({ query: query });
         } else if(action === "getCashId") {
             query = "SELECT id FROM Asset WHERE symbol='Cash' AND type='Cash';"
@@ -126,10 +126,8 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
         }
 
         var entities: Array<IEntity> = [];
-        if (action === "lookup") {
+        if (action === "lookup" || action === "selectRandomSP500") {
             entities = this.formatLookupResponse(data);
-        } else if(action === "selectRandomSP500") {
-            entities = this.formatRandomData(data);
         } else if(action === "getCashId") {
             entity.setFieldValue("id", data[0].id);
             entities.push(entity);   
@@ -223,7 +221,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
     async checkLastTableUpdate() {
         const query = "SELECT changedAt FROM modifications WHERE tableName='Asset' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
-        const data = await window.database.SQLiteSelect({ query: query, parameters: args });
+        const data = await window.database.SQLiteGet({ query: query, parameters: args });
 
         if(data && data.changedAt) {
             return new Date(data.changedAt);

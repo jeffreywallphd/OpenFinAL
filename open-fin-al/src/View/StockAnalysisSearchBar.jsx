@@ -18,7 +18,7 @@ function StockAnalysisSearchBar(props) {
             var cik = null;
 
             newState.securitiesList.find((element) => {
-                if(element.ticker === newState.searchRef) {
+                if(element.symbol === newState.searchRef) {
                     cik = element.cik;
                 }
             });

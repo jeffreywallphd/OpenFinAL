@@ -737,9 +737,7 @@ ipcMain.handle('sqlite-get', async (event, args) => {
 });
 
 ipcMain.handle('sqlite-insert', async (event, args) => {
-  console.log("INSERTING DATA")
   const data = await sqliteRun(args["query"], args["parameters"]);
-  console.log(data);
   return data;
 });
 

@@ -61,7 +61,7 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteGet: (object) => ipcRenderer.invoke('sqlite-get', object),
     SQLiteQuery: (object) => ipcRenderer.invoke('sqlite-query', object),
     SQLiteSelectData: (object) => ipcRenderer.invoke('select-data', object),
-    SQLiteSelect: (object) => ipcRenderer.invoke('sqlite-get', object),
+    SQLiteSelect: (object) => ipcRenderer.invoke('sqlite-query', object),
     SQLiteDelete: (object) => ipcRenderer.invoke('sqlite-delete', object),
     SQLiteUpdate: (object) => ipcRenderer.invoke('sqlite-update', object),
     SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)

@@ -213,7 +213,7 @@ export class SQLiteCompanyLookupGateway implements ISqlDataGateway {
     async checkLastTableUpdate() {
         const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
-        const data = await window.database.SQLiteSelect({ query: query, parameters: args });
+        const data = await window.database.SQLiteGet({ query: query, parameters: args });
 
         if(data && data.changedAt) {
             return new Date(data.changedAt);

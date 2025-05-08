@@ -138,10 +138,8 @@ function TimeSeriesChart(props) {
     const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
     const placeOrder = async () => {
+        //TODO: check to make sure the order and pending orders don't exceed buying power
         const interactor = new OrderInteractor();
-        window.console.log(props.state);
-        window.console.log(props.state.assetId);
-        window.console.log(cashId);
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 order: {

@@ -184,23 +184,27 @@ function  TickerSearchBar(props) {
                     }
                 }
             }`);
-
+            
             const results = await interactor.get(requestObj);
 
             const newState = props.state;
-            newState.searchRef = results.response.results[0] ? results.response.results[0].ticker : "GOOG";
+            newState.searchRef = results.response.results[0].symbol;
             newState.securitiesList = results.response.results ? results.response.results : null;
             newState.initializing = false;
             newState.isFirstLoad = false;
 
             fetchAllData(newState);
         }
+
         if(props.state.isFirstLoad) {
             fetchRandomSP500();
-        } else if(props.state.data.response.results[0]["ticker"] !== props.state.searchRef) {
+        } else if(!props.state.data) {
             const staleState = props.state;
             fetchAllData(staleState);
-        }
+        } else if( props.state.data.response.results[0]["symbol"] !== props.state.searchRef) {
+            const staleState = props.state;
+            fetchAllData(staleState);
+        } 
     }, []);
 
     const handleSymbolChange = (newState) => {

@@ -11,7 +11,60 @@ import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 
-import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
+import { PieChart, Pie, Sector, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
+
+const formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+});
+
+const renderActiveShape = (props) => {
+    const RADIAN = Math.PI / 180;
+    const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
+    const sin = Math.sin(-RADIAN * midAngle);
+    const cos = Math.cos(-RADIAN * midAngle);
+    const sx = cx + (outerRadius + 10) * cos;
+    const sy = cy + (outerRadius + 10) * sin;
+    const mx = cx + (outerRadius + 30) * cos;
+    const my = cy + (outerRadius + 30) * sin;
+    const ex = mx + (cos >= 0 ? 1 : -1) * 22;
+    const ey = my;
+    const textAnchor = cos >= 0 ? 'start' : 'end';
+  
+    return (
+      <g>
+        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+          {payload.name}
+        </text>
+        <Sector
+          cx={cx}
+          cy={cy}
+          innerRadius={innerRadius}
+          outerRadius={outerRadius}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          fill={fill}
+        />
+        <Sector
+          cx={cx}
+          cy={cy}
+          startAngle={startAngle}
+          endAngle={endAngle}
+          innerRadius={outerRadius + 6}
+          outerRadius={outerRadius + 10}
+          fill={fill}
+        />
+        <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
+        <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
+        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${formatter.format(value)}`}</text>
+        <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+          {`(${(percent * 100).toFixed(2)}%)`}
+        </text>
+      </g>
+    );
+};
 
 class Portfolio extends Component {
     // Sample stock data for the chart
@@ -42,14 +95,18 @@ class Portfolio extends Component {
             cashId: null,
             depositMessage: null,
             portfolioValue: 0,
+            assetData: [],
+            chartData: [],
             buyingPower: 0,
-            buyingPowerLoaded: false
+            buyingPowerLoaded: false,
+            activeIndex: 0
         };
 
         //Bind methods for element events
         this.openModal = this.openModal.bind(this);
         this.makeDeposit = this.makeDeposit.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
+        this.onPieEnter = this.onPieEnter.bind(this);
     }
 
     async openModal() {
@@ -101,6 +158,7 @@ class Portfolio extends Component {
         this.setState({currentPortfolio: portfolioId});
         await this.getBuyingPower(null, portfolioId);
         await this.getPortfolioValue(portfolioId);
+        await this.getPortfolioChartData(portfolioId);
     }
 
     async getCashId() {
@@ -148,6 +206,7 @@ class Portfolio extends Component {
             this.setState({depositMessage: null});
             await this.getBuyingPower(this.state.cashId);
             await this.getPortfolioValue();
+            await this.getPortfolioChartData();
         } else {
             this.setState({depositMessage: "The deposit failed. If the problem persists, please notify the software provider."});
         }
@@ -208,7 +267,8 @@ class Portfolio extends Component {
             for(var asset of response.response.results) {
                 portfolioValue += asset.assetValue;
             }
-            
+
+            this.setState({assetData: response.response.results});
             this.setState({portfolioValue: portfolioValue});
             return true;
         } else {
@@ -216,10 +276,73 @@ class Portfolio extends Component {
         }    
     }
 
+    async getPortfolioChartData(portfolioId=null) {
+        if(!portfolioId) {
+            portfolioId = this.state.currentPortfolio;
+        }
+
+        const interactor = new PortfolioTransactionInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getPortfolioValueByType",
+                transaction: {
+                    portfolioId: portfolioId
+                }
+                
+            }
+        }));
+
+        const response = await interactor.get(requestObj);
+
+        if(response.response.ok) {
+            var chartData = [];
+            for(var asset of response.response.results) {
+                var assetObj = {};
+                assetObj.name = asset.type;
+                assetObj.value = asset.assetValue;
+                chartData.push(assetObj);
+            }
+
+            this.setState({chartData: chartData});
+            return true;
+        } else {
+            return false;
+        }    
+    }
+
+    renderActiveShape(props) {
+        const {
+          cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle,
+          fill, payload, percent, value
+        } = props;
+    
+        return (
+          <g>
+            <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+              {payload.name}
+            </text>
+            <Sector
+              cx={cx}
+              cy={cy}
+              innerRadius={innerRadius}
+              outerRadius={outerRadius + 10}
+              startAngle={startAngle}
+              endAngle={endAngle}
+              fill={fill}
+            />
+          </g>
+        );
+    }
+
+    onPieEnter(_, index) {
+        this.setState({ activeIndex: index });
+    }
+
     async componentDidMount() {
         await this.fetchPortfolios();
         const cashId = await this.getCashId();
         await this.getPortfolioValue();
+        await this.getPortfolioChartData();
 
         if(cashId) {
             await this.getBuyingPower(cashId);
@@ -278,41 +401,59 @@ class Portfolio extends Component {
                             )}
                          </div>
                         {this.state.buyingPowerLoaded && 
+                            <>
                             <div className="portfolio-overview">
                                 <div className="portfolio-card">
                                     <h3>Portfolio Value</h3>
                                     <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
                                 </div>
-                                <div className="portfolio-card">
+                                <div>
+                                    <PieChart width={500} height={180}>
+                                        <Pie
+                                        activeIndex={this.state.activeIndex}
+                                        activeShape={renderActiveShape}
+                                        data={this.state.chartData}
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        fill="#5A67D8"
+                                        dataKey="value"
+                                        onMouseEnter={this.onPieEnter}
+                                        />
+                                    </PieChart>
+                                </div>
+                                <div className="portfolio-card">    
                                     <h3>Buying Power</h3>
                                     <p className="buying-power">{this.formatter.format(this.state.buyingPower)}</p>
                                 </div>
                             </div>
+                            <div>
+                                <h3>Stock Assets</h3>
+                                <div className="table-header">
+                                    <div className="table-cell">Company Name</div>
+                                    <div className="table-cell">Symbol</div>
+                                    <div className="table-cell">Purchase Price</div>
+                                    <div className="table-cell">Current Value</div>
+                                </div>
+                                {this.state.assetData ?
+                                    this.state.assetData.map((asset, index) => (
+                                         asset.type==="Stock" ?
+                                            <div className="table-row">
+                                                <div className="table-cell">{asset.name}</div>
+                                                <div className="table-cell">{asset.symbol}</div>
+                                                <div className="table-cell">{this.formatter.format(asset.assetValue)}</div>
+                                                <div className="table-cell">TODO</div>
+                                            </div>
+                                            : 
+                                            null
+                                    )) :
+                                    null
+                                }
+                                
+                            </div>
+                            </>
                         }
-                        
-
-                        {/* Stock Cards Section */}
-                        <div className="stock-list">
-                            {this.renderStockCard('Ford Motor Company', 'F', 13.45, 13.00, 10, 4.50, 3.46)}
-                            {this.renderStockCard('Alphabet Inc.', 'GOOG', 2725.60, 2500.00, 5, 112.50, 9.02)}
-                            {this.renderStockCard('Tesla', 'TSLA', 713.45, 700.00, 7, 93.15, 1.92)}
-                            {this.renderStockCard('Apple', 'AAPL', 145.32, 135.00, 12, 123.84, 7.64)}
-                            {this.renderStockCard('Dow', 'DOW', 64.45, 60.00, 50, 222.50, 7.42)}
-                        </div>
-
-                        {/* Example stock performance chart */}
-                        <div className="portfolio-chart">
-                            <h3>Portfolio Performance</h3>
-                            <ResponsiveContainer width="100%" height={300}>
-                                <LineChart data={this.stockData}>
-                                    <Line type="monotone" dataKey="price" stroke="#8884d8" />
-                                    <CartesianGrid stroke="#ccc" />
-                                    <XAxis dataKey="name" />
-                                    <YAxis />
-                                    <Tooltip />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
                     </div>
                 :
                     <> 

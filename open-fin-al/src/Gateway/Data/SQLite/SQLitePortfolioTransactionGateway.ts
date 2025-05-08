@@ -151,17 +151,23 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                             AND pte.assetId = ?  
                             AND pt.isCanceled = 0;`;
 
-                    data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId, assetId] });            
-            } else if(action === "getPortfolioValue") {
+                    data = await window.database.SQLiteGet({ query: query, parameters: [portfolioId, assetId] });            
+            } else if(action === "getPortfolioValue" || action === "getPortfolioValueByType") {
                 const portfolioId = entity.getFieldValue("portfolioId");
 
                 if(portfolioId === null) {
                     return entities;
                 }
+
+                var group = "a.id";
+                if(action === "getPortfolioValueByType") {
+                    group = "a.type";
+                }
                 
                 query = `
                     SELECT
                         a.symbol AS symbol,
+                        a.name AS name,
                         a.type AS type,
                         a.id AS id,
                         SUM(CASE
@@ -178,7 +184,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                         pt.portfolioId = ?
                         AND pt.isCanceled = 0
                     GROUP BY
-                        pte.assetId;`;
+                        ${group};`;
 
                 data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
             }
@@ -190,13 +196,16 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
             var entity = new Asset();
             entity.setFieldValue("buyingPower", data.buyingPower);            
             entities.push(entity);
-        } else if(action === "getPortfolioValue" && data) {
-            var entity = new Asset();
-            entity.setFieldValue("id", data.id);
-            entity.setFieldValue("symbol", data.symbol);
-            entity.setFieldValue("type", data.type); 
-            entity.setFieldValue("assetValue", data.assetValue);            
-            entities.push(entity);
+        } else if((action === "getPortfolioValue" || action === "getPortfolioValueByType" ) && data) {
+            for(var row of data) {
+                var entity = new Asset();
+                entity.setFieldValue("id", row.id);
+                entity.setFieldValue("name", row.name);
+                entity.setFieldValue("symbol", row.symbol);
+                entity.setFieldValue("type", row.type); 
+                entity.setFieldValue("assetValue", row.assetValue);            
+                entities.push(entity);
+            }
         }
 
         return entities;
