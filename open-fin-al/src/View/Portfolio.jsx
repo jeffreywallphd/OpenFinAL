@@ -405,7 +405,7 @@ class Portfolio extends Component {
                                     <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
                                 </div>
                                 <div>
-                                    <PieChart width={500} height={180}>
+                                    <PieChart width={500} height={300}>
                                         <Pie
                                         activeIndex={this.state.activeIndex}
                                         activeShape={renderActiveShape}
