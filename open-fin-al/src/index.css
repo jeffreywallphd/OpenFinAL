@@ -1133,6 +1133,30 @@ nav ul li a:hover {
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.news-browser-item {
+  width: 100%;
+}
+
+.news-browser-item-image {
+  overflow-y: hidden;
+  vertical-align: top; 
+}
+
+.news-browser-item-image img {
+  display: block;
+}
+
+.news-browser-item-content {
+  overflow-y: hidden;
+}
+
+.news-browser-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .news-item {
@@ -1377,7 +1401,7 @@ nav ul li a:hover {
 .all-trades-link {
   display: block;
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 10px;
   border-radius: 5px;
   text-align: right;
   font-size: 14px;
@@ -1447,7 +1471,7 @@ nav ul li a:hover {
 .trade-button {
   padding: 10px 20px;
   background-color: var(--primary-color-hover);
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   border: none;
   border-radius: 5px;
   cursor: pointer;

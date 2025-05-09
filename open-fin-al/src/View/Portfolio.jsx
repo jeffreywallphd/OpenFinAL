@@ -96,7 +96,8 @@ class Portfolio extends Component {
             chartData: [],
             buyingPower: 0,
             buyingPowerLoaded: false,
-            activeIndex: 0
+            activeIndex: 0,
+            portfolioName: null
         };
 
         //Bind methods for element events
@@ -137,22 +138,25 @@ class Portfolio extends Component {
         const response = await interactor.get(requestObj);
 
         var defaultPortfolio = null;
+        var defaultPortfolioName = null;
         for(var portfolio of response.response?.results) {
             if(portfolio.isDefault) {
                 defaultPortfolio = portfolio.id;
+                defaultPortfolioName = portfolio.name;
                 this.setState({createPortfolio: false});
                 break;
             }
         }
 
         this.setState({
-            currentPortfolio: defaultPortfolio, 
+            currentPortfolio: defaultPortfolio,
+            portfolioName: defaultPortfolioName, 
             portfolios: response.response?.results || [] 
         });
     }
 
-    async changeCurrentPortfolio(portfolioId) {
-        this.setState({currentPortfolio: portfolioId});
+    async changeCurrentPortfolio(portfolioId, portfolioName) {
+        this.setState({currentPortfolio: portfolioId, portfolioName: portfolioName});
         await this.getBuyingPower(null, portfolioId);
         await this.getPortfolioValue(portfolioId);
         await this.getPortfolioChartData(portfolioId);
@@ -356,26 +360,29 @@ class Portfolio extends Component {
                 <h2><span className="material-icons">pie_chart</span> Portfolio</h2>
                 <div className="portfolio-controls">
                     <select value={this.state.currentPortfolio || ""}
-                        onChange={(e) => this.changeCurrentPortfolio(e.target.value)
+                        onChange={(e) => this.changeCurrentPortfolio(e.target.value, e.target.selectedOptions[0].dataset.name)
                     }>
                         {this.state.portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
                         {this.state.portfolios.map((portfolio) => (
-                            <option key={portfolio.id} value={portfolio.id}>
+                            <option key={portfolio.id} value={portfolio.id} data-name={portfolio.name}>
                                 {portfolio.name}
                             </option>
                         ))}
                     </select>
-                    
-                    <button className="add-button" onClick={() => this.setState({ createPortfolio: true })}>
-                        New Portfolio +
-                    </button>
+                    <h2>{this.state.portfolioName}</h2>
+                    <div>
+                        <button onClick={this.openModal}>Deposit Funds</button>
+                        &nbsp;&nbsp;
+                        <button className="add-button" onClick={() => this.setState({ createPortfolio: true })}>
+                            New Portfolio +
+                        </button>
+                    </div>
                 </div>
 
                 {!this.state.createPortfolio && this.state.currentPortfolio ?
                     <div>
                         {/* Portfolio Value and Buying Power Section */}
                         <div className="portfolioDeposit">
-                            <p><button onClick={this.openModal}>Deposit Funds</button></p>
                             {this.state.isModalOpen && (
                                 <>
                                     <div className="modal-backdrop" onClick={() => {

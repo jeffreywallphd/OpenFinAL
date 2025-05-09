@@ -28,8 +28,16 @@ export class AlphaVantageNewsGateway implements IKeyedDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
-        var url = `${this.baseURL}?function=NEWS_SENTIMENT&tickers=${entity.getFieldValue("ticker")}&apikey=${entity.getFieldValue("key")}`;
+        var url = `${this.baseURL}?function=NEWS_SENTIMENT&apikey=${entity.getFieldValue("key")}`;
         
+        if(entity.getFieldValue("ticker") !== null) {
+            url = url + "&tickers=" + entity.getFieldValue("ticker");
+        }
+
+        if(entity.getFieldValue("topic") !== null) {
+            url = url + "&topics=" + entity.getFieldValue("topic");
+        }
+
         if(entity.getFieldValue("keyword") !== null) {
             url = url + "&topics=" + entity.getFieldValue("keyword");
         }
