@@ -9,6 +9,8 @@ import profileIcon from "../Asset/Image/profile.jpg";
 import { NewsInteractor } from "../Interactor/NewsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { NewsBrowser } from "./News/Browser";
+import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
+import { StockInteractor } from "../Interactor/StockInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
 
 const withNavigation = (Component) => {
@@ -19,11 +21,29 @@ const withNavigation = (Component) => {
 };
 
 class Home extends Component {
+  formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
+  percentFormatter = new Intl.NumberFormat('en-US', {
+    style: 'percent',
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+
   constructor(props) {
     super(props);
     this.state = {
         newsData: null,
-        currentNewsIndex: 0
+        currentNewsIndex: 0,
+        buyingPower: 0,
+        originalValue: 0,
+        portfolioValue: 0,
+        assetData: null,
+        randomAsset: null
     };
 
     //Bind methods for element events
@@ -31,10 +51,12 @@ class Home extends Component {
     this.handleNext = this.handleNext.bind(this);
     this.handlePrevious = this.handlePrevious.bind(this);
     this.handleNavigation = this.handleNavigation.bind(this);
+    this.getPortfolioValue = this.getPortfolioValue.bind(this);
   }
 
   async componentDidMount() {
     this.getEconomicNews();
+    this.getPortfolioValue();
   }
 
   handleNavigation(location) {
@@ -85,6 +107,85 @@ class Home extends Component {
     }
   }
 
+  randBetween(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  async getPortfolioValue(portfolioId=null) {
+      if(!portfolioId) {
+          portfolioId = this.state.currentPortfolio;
+      }
+
+      const interactor = new PortfolioTransactionInteractor();
+      const requestObj = new JSONRequest(JSON.stringify({
+          request: {
+              action: "getPortfolioValueAll"
+          }
+      }));
+
+      const response = await interactor.get(requestObj);
+
+      if(response.response.ok) {
+          var portfolioValue = 0;
+          var originalValue = 0;
+          var stockAssets = [];
+
+          for(var i in response.response.results) {
+              var asset = response.response.results[i];
+
+              if(asset.type==="Cash") {
+                this.setState({buyingPower: asset.assetValue});
+              }
+
+              if(asset.type==="Stock") {
+                  const interactor = new StockInteractor();
+                  const quoteRequestObj = new JSONRequest(JSON.stringify({
+                      request: {
+                          stock: {
+                              action: "quote",
+                              ticker: asset["symbol"]
+                          }
+                      }
+                  }));
+              
+                  const quoteResponse = await interactor.get(quoteRequestObj);
+
+                  if(quoteResponse.response.ok && quoteResponse.response.results[0].quotePrice) {
+                      response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
+                      response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
+                      portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
+                  } else {
+                      portfolioValue += asset.assetValue;
+                  }
+
+                  stockAssets.push(response.response.results[i]);
+              } else {
+                  portfolioValue += asset.assetValue;
+              }
+              
+              originalValue += asset.assetValue;
+          }
+
+          this.setState({assetData: response.response.results, randomAsset: stockAssets[this.randBetween(0, stockAssets.length-1)]});
+          this.setState({originalValue: originalValue, portfolioValue: portfolioValue});
+          return true;
+      } else {
+          return false;
+      }    
+  }
+
+  calculatePercentChange(oldPrice=null, newPrice=null) {
+    if(!oldPrice) {
+      oldPrice = this.state.originalValue;
+    }
+    if(!newPrice) {
+      newPrice = this.state.portfolioValue;
+    }
+
+    const percentChange = (newPrice - oldPrice)/oldPrice;
+    return percentChange;
+  }
+
   render() {
     return (
       <main>
@@ -92,12 +193,8 @@ class Home extends Component {
           <div className="nav-left">
             <h1><span className="material-icons">dashboard</span> Dashboard</h1>
           </div>
-          <div className="nav-center">
-            <span className="material-icons search-icon">search</span>
-            <input type="search" placeholder="Search OpenFinAL" />
-          </div>
           <div className="nav-right">
-            <img src={profileIcon} alt="profile pic" className='profile-picture' />
+            <span className="material-icons large-material-icon" onClick={() => this.handleNavigation('/settings')}>account_circle</span>
           </div>
         </header>
         <section className="content-grid">
@@ -109,26 +206,41 @@ class Home extends Component {
               <p><span className="material-icons">check_circle</span>Trades</p>
             </div>
             <div className="your-trades">
-              <h3>Recent Trades</h3>
+              <h3>My Trades</h3>
               <div className="trade">
-                <p>Netflix</p>
-                <span className="trade-amount positive">+ $50</span>
-                <span className="trade-time">Today, 16:36</span>
+                <p>{this.state.randomAsset ? this.state.randomAsset.symbol : null}</p>
+                {this.state.randomAsset ?
+                  <>
+                    <span>
+                      {this.formatter.format(this.state.randomAsset.currentValue)}
+                    </span> 
+                    <span className="trade-amount positive" 
+                      style={this.calculatePercentChange(this.state.randomAsset.assetValue, this.state.randomAsset.currentValue)>=0 ? 
+                        {color:"green"} : {color:"red"}}>
+                          {this.state.randomAsset ? 
+                            this.percentFormatter.format(this.calculatePercentChange(this.state.randomAsset.assetValue, this.state.randomAsset.currentValue)) 
+                            : 
+                            null}
+                    </span>
+                  </>
+                  : 
+                  null}
+                
               </div>
               <div className="trade">
-              <Link to="/portfolio" className="all-trades-link">
-                All Trades &rarr;
-              </Link>
+                <Link to="/portfolio" className="all-trades-link">
+                  All Trades &rarr;
+                </Link>
                 <button className="trade-button" onClick={() => this.handleNavigation('/price')}>Trade Now</button>
               </div>
             </div>
             <div className="earnings">
               <h3><span className="material-icons">trending_up</span> Total Value</h3>
-              <p>$350.40</p>
+              <p>{this.formatter.format(this.state.portfolioValue)} <span style={this.calculatePercentChange()>=0 ? {color:"green"}: {color:"red"}}>{this.calculatePercentChange()>0 ? "+" : ""}{this.percentFormatter.format(this.calculatePercentChange())}</span></p>
             </div>
             <div className="invested">
-              <h3><span className="material-icons">account_balance_wallet</span> Total Invested</h3>
-              <p>$300.10</p>
+              <h3><span className="material-icons">account_balance_wallet</span> Total Buying Power</h3>
+              <p>{this.formatter.format(this.state.buyingPower)} ({this.percentFormatter.format(this.state.buyingPower/this.state.portfolioValue)} cash)</p>
             </div>
             <div className="promo">
               <div className="promo-text">

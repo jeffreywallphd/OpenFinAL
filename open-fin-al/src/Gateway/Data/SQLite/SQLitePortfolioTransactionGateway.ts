@@ -152,16 +152,23 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                             AND pt.isCanceled = 0;`;
 
                     data = await window.database.SQLiteGet({ query: query, parameters: [portfolioId, assetId] });            
-            } else if(action === "getPortfolioValue" || action === "getPortfolioValueByType") {
+            } else if(action === "getPortfolioValue" || action === "getPortfolioValueByType" || action === "getPortfolioValueAll") {
                 const portfolioId = entity.getFieldValue("portfolioId");
 
-                if(portfolioId === null) {
+                if(portfolioId === null && action !== "getPortfolioValueAll") {
                     return entities;
                 }
 
                 var group = "a.id";
                 if(action === "getPortfolioValueByType") {
                     group = "a.type";
+                }
+
+                var args = [portfolioId];
+                var portfolioIdString = " AND pt.portfolioId=? ";
+                if(action === "getPortfolioValueAll") {
+                    portfolioIdString = " ";
+                    args = [];
                 }
                 
                 query = `
@@ -185,12 +192,12 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                     INNER JOIN
                         Asset AS a ON (pte.assetId = a.id)
                     WHERE
-                        pt.portfolioId = ?
-                        AND pt.isCanceled = 0
+                        pt.isCanceled = 0
+                        ${portfolioIdString}
                     GROUP BY
                         ${group};`;
 
-                data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
+                data = await window.database.SQLiteSelect({ query: query, parameters: args });
             }
         } catch(error) {
             return entities;
@@ -200,7 +207,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
             var entity = new Asset();
             entity.setFieldValue("buyingPower", data.buyingPower);            
             entities.push(entity);
-        } else if((action === "getPortfolioValue" || action === "getPortfolioValueByType" ) && data) {
+        } else if((action === "getPortfolioValue" || action === "getPortfolioValueByType" || action === "getPortfolioValueAll") && data) {
             for(var row of data) {
                 var entity = new Asset();
                 entity.setFieldValue("id", row.id);
@@ -208,7 +215,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                 entity.setFieldValue("symbol", row.symbol);
                 entity.setFieldValue("type", row.type); 
                 entity.setFieldValue("assetValue", row.assetValue);
-                if(action === "getPortfolioValue") {
+                if(action === "getPortfolioValue" || action === "getPortfolioValueAll") {
                     entity.setFieldValue("quantity", row.quantity);
                 }
                 

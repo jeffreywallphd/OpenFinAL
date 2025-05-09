@@ -166,6 +166,13 @@ button.HamburgerMenu {
   margin: 0px;
 }
 
+.flex-with-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
 .btn-group button {
   background-color: #CCCCCC;
   color: var(--text-color-medium);
@@ -1036,10 +1043,10 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 0px;
   /* background-color: #fff; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   border-radius: 10px; 
 }
 
@@ -1074,11 +1081,13 @@ nav ul li a:hover {
   font-size: 16px;
 }
 
-.nav-right .profile-picture {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
+.nav-right {
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.large-material-icon {
+  font-size: 40px; /* Adjust the size as needed, e.g., 24px, 36px, 48px, etc. */
 }
 
 /* Main content grid that holds both stats and news bar */
@@ -1096,7 +1105,7 @@ nav ul li a:hover {
   justify-content: space-between;
   flex-wrap: wrap;
   height:20%;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .current-month {
@@ -1306,6 +1315,7 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 150px;
 }
 
 .earnings .invested {
