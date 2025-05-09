@@ -6,6 +6,7 @@ import { ConfigurationSection } from "../Entity/Configuration/ConfigurationSecti
 import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
 import ConfigUpdater from "../Utility/ConfigManager";
+import { EconomicIndicator } from "@Entity/EconomicIndicator";
 
 export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -307,6 +308,32 @@ export class SettingsInteractor implements IInputBoundary {
         ratioGatewayConfiguration.setFieldValue("purpose", "A stock ratio API will allow you to view important financial ratios");
         ratioGatewayConfiguration.setFieldValue("options", ratioGateways);
 
+        //create EconomicIndicatorGateway Configurations
+        var currentEconomicIndicatorGateway = null;
+
+        var AlphaVantageEconomicGateway = new ConfigurationOption();
+        AlphaVantageEconomicGateway.setFieldValue("id", this.generateId());
+        AlphaVantageEconomicGateway.setFieldValue("setting", "EconomicIndicatorGateway");
+        AlphaVantageEconomicGateway.setFieldValue("label", "Alpha Vantage Economic API Gateway");
+        AlphaVantageEconomicGateway.setFieldValue("name", "AlphaVantageEconomicGateway");
+        AlphaVantageEconomicGateway.setFieldValue("hasValue", true);
+        AlphaVantageEconomicGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageEconomicGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        AlphaVantageEconomicGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
+        AlphaVantageEconomicGateway.setFieldValue("isActive", config.EconomicIndicatorGateway === "AlphaVantageEconomicGateway" ? true : false);
+        AlphaVantageEconomicGateway.setFieldValue("valueIsKey", true);
+
+        currentEconomicIndicatorGateway = config.EconomicIndicatorGateway === "AlphaVantageEconomicGateway" ? AlphaVantageEconomicGateway : currentEconomicIndicatorGateway;
+
+        const economicGateways = [AlphaVantageEconomicGateway];
+        
+        var economicIndicatorGatewayConfiguration = new Configuration();
+        economicIndicatorGatewayConfiguration.setFieldValue("id", this.generateId());
+        economicIndicatorGatewayConfiguration.setFieldValue("name", "EconomicIndicatorGateway");
+        economicIndicatorGatewayConfiguration.setFieldValue("type", "select");
+        economicIndicatorGatewayConfiguration.setFieldValue("purpose", "An economic indicator API will allow you to access economic data");
+        economicIndicatorGatewayConfiguration.setFieldValue("options", economicGateways);
+
         //create Chatbot Model Configurations
         const chatbotModelSettings = await this.createChatbotModelSettings(config);
 
@@ -322,7 +349,7 @@ export class SettingsInteractor implements IInputBoundary {
         const dataConfigSection = new ConfigurationSection();
         dataConfigSection.setFieldValue("id", this.generateId());
         dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
-        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, stockQuoteGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration]);
+        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, stockQuoteGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration, economicIndicatorGatewayConfiguration]);
 
         const chatbotModelConfigSection = new ConfigurationSection();
         chatbotModelConfigSection.setFieldValue("id", this.generateId());
@@ -349,6 +376,7 @@ export class SettingsInteractor implements IInputBoundary {
                             NewsGateway: currentNewsGateway.toObject(),
                             ReportGateway: currentReportGateway.toObject(),
                             RatioGateway: currentRatioGateway.toObject(),
+                            EconomicIndicatorGateway: currentEconomicIndicatorGateway.toObject(),
                             ChatbotModel: chatbotModelSettings.currentAIModel.toObject(),
                             ChatbotModelName: chatbotModelSettings.chatbotModelName.toObject(),
                             ChatbotModelMaxOutputTokens: chatbotModelSettings.chatbotMaxTokens.toObject(),
@@ -370,7 +398,8 @@ export class SettingsInteractor implements IInputBoundary {
                 currentStockQuoteGateway.toObject(), 
                 currentNewsGateway.toObject(), 
                 currentReportGateway.toObject(), 
-                currentRatioGateway.toObject(), 
+                currentRatioGateway.toObject(),
+                currentEconomicIndicatorGateway.toObject(), 
                 chatbotModelSettings.currentAIModel.toObject(),
                 newsSummaryModelSettings.currentAIModel.toObject(),
                 userEmail.toObject()

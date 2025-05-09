@@ -1315,7 +1315,7 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 150px;
+  height: 200px;
 }
 
 .earnings .invested {

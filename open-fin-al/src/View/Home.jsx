@@ -12,6 +12,7 @@ import { NewsBrowser } from "./News/Browser";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
+import { EconomicChart } from './Dashboard/EconomicChart';
 
 const withNavigation = (Component) => {
   return function WrappedComponent(props) {
@@ -43,7 +44,13 @@ class Home extends Component {
         originalValue: 0,
         portfolioValue: 0,
         assetData: null,
-        randomAsset: null
+        randomAsset: null,
+        data: [],
+        interval: "",
+        priceMin: 0,
+        priceMax: 100,
+        yAxisStart: "02/01/2024",
+        yAxisEnd: "02/01/2025"
     };
 
     //Bind methods for element events
@@ -183,7 +190,7 @@ class Home extends Component {
     }
 
     const percentChange = (newPrice - oldPrice)/oldPrice;
-    return percentChange;
+    return percentChange; 
   }
 
   render() {
@@ -244,8 +251,8 @@ class Home extends Component {
             </div>
             <div className="promo">
               <div className="promo-text">
-                <h2>Try OpenFinAL Now!</h2>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                <h3>Economic Data</h3>
+                <EconomicChart state={this.state}/>
               </div>
             </div>
           </div>

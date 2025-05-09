@@ -42,6 +42,7 @@ class ConfigUpdater {
                     NewsGateway: "AlphaVantageNewsGateway",
                     ReportGateway: "SecAPIGateway",
                     RatioGateway: "AlphaVantageRatioGateway",
+                    EconomicIndicatorGateway: "AlphaVantageEconomicGateway",
                     ChatbotModel: "OpenAIModel",
                     UserSettings: {
                         FirstName: "",
