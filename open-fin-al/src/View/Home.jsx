@@ -11,6 +11,7 @@ import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { NewsBrowser } from "./News/Browser";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
+import {EconomicIndicatorInteractor} from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
 import { EconomicChart } from './Dashboard/EconomicChart';
 
@@ -35,6 +36,12 @@ class Home extends Component {
     maximumFractionDigits: 2,
   });
 
+  dateFormatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+  });
+
   constructor(props) {
     super(props);
     this.state = {
@@ -45,12 +52,13 @@ class Home extends Component {
         portfolioValue: 0,
         assetData: null,
         randomAsset: null,
+        indicatorName: null,
         data: [],
         interval: "",
         priceMin: 0,
         priceMax: 100,
-        yAxisStart: "02/01/2024",
-        yAxisEnd: "02/01/2025"
+        yAxisStart: Date.now(),
+        yAxisEnd: Date.now()
     };
 
     //Bind methods for element events
@@ -59,15 +67,72 @@ class Home extends Component {
     this.handlePrevious = this.handlePrevious.bind(this);
     this.handleNavigation = this.handleNavigation.bind(this);
     this.getPortfolioValue = this.getPortfolioValue.bind(this);
+    this.getEconomicData = this.getEconomicData.bind(this);
   }
 
   async componentDidMount() {
     this.getEconomicNews();
     this.getPortfolioValue();
+    this.getEconomicData();
   }
 
   handleNavigation(location) {
     this.props.navigate(location);
+  }
+
+  async getEconomicData(type="GDP") {
+      const interactor = new EconomicIndicatorInteractor();
+      const requestObj = new JSONRequest(JSON.stringify({
+          request: {
+              action: "getGDP",
+              economics: {
+                name: "Real GDP"
+              }
+          }
+      }));
+  
+      const response = await interactor.get(requestObj);
+
+      if(response.response.ok) {
+          var data = response.response.results[0]["data"];
+          var startDate = new Date("01-01-2010");
+          var filteredData = data.filter(entry => new Date(entry.date) > startDate);
+          var endDate = new Date(filteredData[filteredData.length - 1].date);
+
+          filteredData = filteredData.map(entry => ({
+            ...entry,
+            value: parseFloat(entry.value)
+          }));
+
+          window.console.log(endDate);
+          
+          let min = Infinity;
+          let max = -Infinity;
+ 
+          for(var entry of filteredData) {
+            if(entry.value < min) {
+              min = entry.value;
+            }
+
+            if(entry.value > max) {
+              max = entry.value;
+            }
+          }
+
+          window.console.log(`min ${min}`); //returns 10044.238
+          window.console.log(`max ${max}`); //returns 9869.003
+
+          this.setState({
+              name: response.response.results[0].name,
+              data: filteredData,
+              yAxisStart: this.dateFormatter.format(startDate), 
+              yAxisEnd: this.dateFormatter.format(endDate),
+              priceMin: min,
+              priceMax: max,
+          });
+      } 
+
+      return null;        
   }
 
   async getEconomicNews() {
@@ -251,7 +316,7 @@ class Home extends Component {
             </div>
             <div className="promo">
               <div className="promo-text">
-                <h3>Economic Data</h3>
+                <h3>{this.state.name ? this.state.name : "Economic Data"}</h3>
                 <EconomicChart state={this.state}/>
               </div>
             </div>

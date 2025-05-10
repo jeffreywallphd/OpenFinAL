@@ -21,7 +21,7 @@ function NewsBrowser({ listingData, handlePrevious, handleNext }) {
       <div className="news-browser-item-image" style={{ marginBottom: '10px', height: '180px' }}>
         <img src={listingData.thumbnail} alt="Thumbnail" style={{ width: '100%', height: 'auto', borderRadius: '4px' }} />
       </div>
-      <div className="news-browser-item-content" style={{ height: '200px' }}>
+      <div className="news-browser-item-content" style={{ height: '240px' }}>
         <h4 className="news-item-link" style={{ margin: '0' }} onClick={
             () => window.urlWindow.openUrlWindow(listingData.url)
           }>

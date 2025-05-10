@@ -60,7 +60,7 @@ function EconomicChart(props) {
     }
 
     //evenly spaces the ticks of the time series chart by putting the ticks in a fixed intervall into Array "ticks" determined by tickCount
-    const tickCount = 4;
+    const tickCount = 2;
     const tickInterval = (priceMaxPadded - priceMinPadded) / (tickCount - 1);
     const ticks = Array.from({ length: tickCount }, (_, index) => (priceMinPadded + tickInterval * index).toFixed(2));
 
@@ -69,22 +69,22 @@ function EconomicChart(props) {
     return(<>
             <div>            
                 {/* The actual chart displaying the data from recharts */}
-                <AreaChart width={550} height={150} key="timeSeries" data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart width={550} height={150} key="timeSeries" data={data} margin={{ top: 10, right: 30, left: 40, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor={chartColor} stopOpacity={0.8}/>
                             <stop offset="95%" stopColor={chartColor} stopOpacity={0}/>
                         </linearGradient>
                     </defs>
-                    <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
-                    <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks}/>
+                    <XAxis dataKey={"date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
+                    <YAxis type="number" domain={[props.state.minPrice, props.state.maxPrice]} />
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>
                     <Tooltip 
                         contentStyle={toolTipStyle.contentStyle}
                         labelStyle={toolTipStyle.labelStyle}
                         itemStyle={toolTipStyle.itemStyle}
                     />
-                    <Area type="monotone" dataKey="price" stroke={chartColor} fillOpacity={1} fill="url(#colorArea)" dot={false}/>
+                    <Area type="monotone" dataKey="value" stroke={chartColor} fillOpacity={1} fill="url(#colorArea)" dot={false}/>
                 </AreaChart>
             </div>
     </>);

@@ -28,10 +28,11 @@ export class EconomicIndicatorInteractor implements IInputBoundary {
         
         //search for the requested information via the API gateway
         var results = await gateway.read(entity, requestModel.request.request.action);
-        
+
         //convert the API gateway response to a JSON reponse object
         var response = new JSONResponse();
         response.convertFromEntity(results, false);
+        window.console.log(response);
         return response.response;
     }
     

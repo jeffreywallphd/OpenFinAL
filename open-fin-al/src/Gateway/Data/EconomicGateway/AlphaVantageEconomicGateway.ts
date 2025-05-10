@@ -30,8 +30,9 @@ export class AlphaVantageEconomicGateway implements IKeyedDataGateway {
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
         var url = `${this.baseURL}?`;
 
-        if(action==="getGPD") {
+        if(action==="getGDP") {
             url = url + "function=REAL_GDP";
+            entity.setFieldValue("name", "Real Gross Domestic Product (GDP)");
         } else if(action==="getGDPPerCapita") {
             url = url + "function=REAL_GDP_PER_CAPITA";
         } else if(action==="getTreasuryYield") {
@@ -94,20 +95,16 @@ export class AlphaVantageEconomicGateway implements IKeyedDataGateway {
 
     private formatDataResponse(data: { [key: string]: any }, entity:IEntity, action:string) {
         var array: Array<IEntity> = [];
-        
-        var newsFeed = data["feed"];
+        window.console.log(data);
+        var indicatorData = data["data"].reverse();
                 
-        const formattedData: Array<{ [key: string]: any }> = [];
+        entity.setFieldValue("data", indicatorData);
 
-        for (var key in newsFeed) {           
-            var item = this.createDataItem(newsFeed[key]);
-            formattedData.push(item);
+        if(data["unit"]) {
+            entity.setFieldValue("unit", data["unit"]);
         }
 
-        entity.setFieldValue("data", formattedData.reverse());
-
         array.push(entity);
-
         return array;
     }
 

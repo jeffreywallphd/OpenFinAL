@@ -21,6 +21,12 @@ export class EconomicIndicator implements IEntity {
 
         var data = new Field("data", "any", null);
         this.fields.set("data", data);
+
+        var unit = new Field("unit", "string", null);
+        this.fields.set("unit", unit);
+
+        var key = new Field("key", "string", null);
+        this.fields.set("key", key);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
