@@ -1438,7 +1438,7 @@ nav ul li a:hover {
 .current-month p {
   display: flex;
   align-items: center;
-  color: orange;
+  color: var(--text-color-white);
   font-size: small;
 }
 

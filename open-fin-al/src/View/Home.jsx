@@ -11,6 +11,7 @@ import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { NewsBrowser } from "./News/Browser";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
+import { MarketStatusInteractor } from "../Interactor/MarketStatusInteractor";
 import {EconomicIndicatorInteractor} from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
 import { EconomicChart } from './Dashboard/EconomicChart';
@@ -58,7 +59,8 @@ class Home extends Component {
         priceMin: 0,
         priceMax: 100,
         yAxisStart: Date.now(),
-        yAxisEnd: Date.now()
+        yAxisEnd: Date.now(),
+        marketData: null
     };
 
     //Bind methods for element events
@@ -68,16 +70,38 @@ class Home extends Component {
     this.handleNavigation = this.handleNavigation.bind(this);
     this.getPortfolioValue = this.getPortfolioValue.bind(this);
     this.getEconomicData = this.getEconomicData.bind(this);
+    this.getMarketStatus = this.getMarketStatus.bind(this);
   }
 
   async componentDidMount() {
     this.getEconomicNews();
     this.getPortfolioValue();
     this.getEconomicData();
+    this.getMarketStatus();
   }
 
   handleNavigation(location) {
     this.props.navigate(location);
+  }
+
+  async getMarketStatus() {
+    const interactor = new MarketStatusInteractor();
+    const requestObj = new JSONRequest(JSON.stringify({
+        request: {
+            market: {}
+        }
+    }));
+
+    const response = await interactor.get(requestObj);
+    window.console.log(response);
+    if(response.response.ok) {
+        this.setState({
+          marketData: response.response.results,
+        });
+        return true;
+    } else {
+        return false;
+    }    
   }
 
   async getEconomicData(type="GDP") {
@@ -272,10 +296,18 @@ class Home extends Component {
         <section className="content-grid">
           <div className="stats">
             <div className="current-month">
-              <h6>Current Month</h6>
-              <h3>$682.5</h3>
+              {this.state.marketData ? 
+                  this.state.marketData.map((market) => {
+                    return (
+                      <p>
+                        The {market.type} Market is:&nbsp; {market.status.toUpperCase()}
+                      </p>)
+                  })
+                  :
+                  null
+              }
               <hr />
-              <p><span className="material-icons">check_circle</span>Trades</p>
+              <p><span className="material-icons">check_circle</span>Trade</p>
             </div>
             <div className="your-trades">
               <h3>My Trades</h3>

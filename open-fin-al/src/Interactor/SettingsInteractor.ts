@@ -7,6 +7,7 @@ import {Configuration} from "../Entity/Configuration/Configuration";
 import {ConfigurationOption} from "../Entity/Configuration/ConfigurationOption";
 import ConfigUpdater from "../Utility/ConfigManager";
 import { EconomicIndicator } from "@Entity/EconomicIndicator";
+import { MarketStatus } from "@Entity/MarketStatus";
 
 export class SettingsInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -147,6 +148,32 @@ export class SettingsInteractor implements IInputBoundary {
         userEmailConfiguration.setFieldValue("type", "text");
         userEmailConfiguration.setFieldValue("purpose", "");
         userEmailConfiguration.setFieldValue("options", [userEmail]);
+
+        //create MarketStatusGateway Configurations
+        var currentMarketStatusGateway = null;
+
+        var AlphaVantageMarketGateway = new ConfigurationOption();
+        AlphaVantageMarketGateway.setFieldValue("id", this.generateId());
+        AlphaVantageMarketGateway.setFieldValue("setting", "MarketStatusGateway");
+        AlphaVantageMarketGateway.setFieldValue("label", "Alpha Vantage Market API");
+        AlphaVantageMarketGateway.setFieldValue("name", "AlphaVantageMarketGateway");
+        AlphaVantageMarketGateway.setFieldValue("hasValue", true);
+        AlphaVantageMarketGateway.setFieldValue("valueName", "ALPHAVANTAGE_API_KEY");
+        AlphaVantageMarketGateway.setFieldValue("valueSite", "https://www.alphavantage.co/support/#api-key");
+        AlphaVantageMarketGateway.setFieldValue("value", await this.configUpdater.getSecret("ALPHAVANTAGE_API_KEY") || "");
+        AlphaVantageMarketGateway.setFieldValue("isActive", config.MarketStatusGateway === "AlphaVantageMarketGateway" ? true : false);
+        AlphaVantageMarketGateway.setFieldValue("valueIsKey", true);
+
+        currentMarketStatusGateway = config.MarketStatusGateway === "AlphaVantageMarketGateway" ? AlphaVantageMarketGateway : currentMarketStatusGateway;
+
+        const marketStatusGateways = [AlphaVantageMarketGateway];
+        
+        var marketStatusGatewayConfiguration = new Configuration();
+        marketStatusGatewayConfiguration.setFieldValue("id", this.generateId());
+        marketStatusGatewayConfiguration.setFieldValue("name", "MarketStatusGateway");
+        marketStatusGatewayConfiguration.setFieldValue("type", "select");
+        marketStatusGatewayConfiguration.setFieldValue("purpose", "A market status API will allow you to view whether different markets are open");
+        marketStatusGatewayConfiguration.setFieldValue("options", marketStatusGateways);
 
         //create StockGateway Configurations
         var currentStockGateway = null;
@@ -349,7 +376,7 @@ export class SettingsInteractor implements IInputBoundary {
         const dataConfigSection = new ConfigurationSection();
         dataConfigSection.setFieldValue("id", this.generateId());
         dataConfigSection.setFieldValue("label", "Financial Data API Configurations");
-        dataConfigSection.setFieldValue("configurations", [stockGatewayConfiguration, stockQuoteGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration, economicIndicatorGatewayConfiguration]);
+        dataConfigSection.setFieldValue("configurations", [marketStatusGatewayConfiguration, stockGatewayConfiguration, stockQuoteGatewayConfiguration, newsGatewayConfiguration, reportGatewayConfiguration, ratioGatewayConfiguration, economicIndicatorGatewayConfiguration]);
 
         const chatbotModelConfigSection = new ConfigurationSection();
         chatbotModelConfigSection.setFieldValue("id", this.generateId());
@@ -371,6 +398,7 @@ export class SettingsInteractor implements IInputBoundary {
                             LastName: userLastName.toObject(),
                             Username: username.toObject(),
                             Email: userEmail.toObject(),
+                            MarketStatusGateway: currentMarketStatusGateway.toObject(),
                             StockGateway: currentStockGateway.toObject(),
                             StockQuoteGateway: currentStockQuoteGateway.toObject(),
                             NewsGateway: currentNewsGateway.toObject(),
@@ -394,6 +422,7 @@ export class SettingsInteractor implements IInputBoundary {
             var validCount = 0;
 
             const currentConfigurations = [
+                currentMarketStatusGateway.toObject(),
                 currentStockGateway.toObject(),
                 currentStockQuoteGateway.toObject(), 
                 currentNewsGateway.toObject(), 
@@ -418,7 +447,7 @@ export class SettingsInteractor implements IInputBoundary {
             } else {
                 data = {
                     response: {
-                        status: 400,
+                        status: 400, 
                         data:{
                             error: "All required configurations are not yet set."
                 }}};

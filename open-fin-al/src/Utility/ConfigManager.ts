@@ -1,3 +1,5 @@
+import { MarketStatus } from "@Entity/MarketStatus";
+
 // allow the transformers contextBridge to be used in TypeScript
 declare global {
     interface Window { 
@@ -37,6 +39,7 @@ class ConfigUpdater {
             if(!await window.config.exists()) {
                 const defaultConfig = {
                     DarkMode: false,
+                    MarketStatusGateway: "AlphaVantageMarketGateway", 
                     StockGateway: "AlphaVantageStockGateway",
                     StockQuoteGateway: "AlphaVantageStockQuoteGateway",
                     NewsGateway: "AlphaVantageNewsGateway",
