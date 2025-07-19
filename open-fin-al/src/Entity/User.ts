@@ -16,6 +16,9 @@ export class User implements IEntity {
         var lastName = new Field("lastName", "string", null);
         this.fields.set("lastName", lastName);
 
+        var email = new Field("email", "string", null);
+        this.fields.set("email", email);
+
         var username = new Field("username", "string", null);
         this.fields.set("username", username);
     }
@@ -23,7 +26,7 @@ export class User implements IEntity {
     fillWithRequest(requestModel: IRequestModel) {
         var json = requestModel.request;
 
-        if(!json.request.hasOwnProperty("username")) {
+        if(!json.request.user.hasOwnProperty("username")) {
             throw new Error("A username must be provided to create a new user");
         }
 
@@ -36,7 +39,11 @@ export class User implements IEntity {
             this.setFieldValue("lastName", json.request.user.lastName);
         }
 
-        if(json.request.stock.hasOwnProperty("username")) {
+        if(json.request.user.hasOwnProperty("email")) {
+            this.setFieldValue("email", json.request.user.email);
+        }
+
+        if(json.request.user.hasOwnProperty("username")) {
             this.setFieldValue("username", json.request.user.username);
         }
     }

@@ -1,7 +1,7 @@
-import { StockRequest } from "../../../Entity/StockRequest";
 import {IEntity} from "../../../Entity/IEntity";
 import {ISqlDataGateway} from "../ISqlDataGateway";
-import { parse } from 'node-html-parser';
+import { Asset } from "../../../Entity/Asset";
+import { Portfolio } from "../../../Entity/Portfolio";
 
 // allow the yahoo.finance contextBridge to be used in TypeScript
 declare global {
@@ -9,7 +9,6 @@ declare global {
 }
 
 export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
-    databasePath = "./src/Asset/DB/OpenFinAL.db";
     connection: any = null;
     sourceName: string = "SQLite Database";
 
@@ -22,143 +21,209 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
     }
 
     // used to create and periodically refresh the cache
-    async create(entity: IEntity, action: string): Promise<Boolean> {
+    async create(entity: IEntity, action: string): Promise<any> {
+        var transactionQuery="";
+        var transactionQueryParameters = [];
+
+        var debitTransactionEntryQuery="";
+        var debitTransactionEntryQueryParameters = [];
+
+        var creditTransactionEntryQuery="";
+        var creditTransactionEntryQueryParameters = [];
+
         try {
-            const query = "INSERT INTO PublicCompany (ticker, cik) VALUES (?, ?)";
-            const args  = [entity.getFieldValue("ticker"), entity.getFieldValue("cik")];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-insert', { database: this.databasePath, query: query, parameters: args });
-            return true;
+            if(action==="deposit") {
+                //transaction query
+                transactionQuery = "INSERT INTO PortfolioTransaction (portfolioId,type,note) VALUES (?,?,?)";
+                transactionQueryParameters = [
+                    entity.getFieldValue("portfolioId"),
+                    entity.getFieldValue("type"),
+                    entity.getFieldValue("note")
+                ];
+
+                const result = await window.database.SQLiteInsert({ query: transactionQuery, parameters: transactionQueryParameters });
+                var entryResult;
+
+                if(result && result.ok) {
+                    //insert transaction entries
+                    const transactionId = result.lastID;
+
+                    //insert debit transaction entry
+                    const debitEntity = entity.getFieldValue("debitEntry");
+                    debitTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    debitTransactionEntryQueryParameters = [
+                        transactionId,
+                        debitEntity.getFieldValue("assetId"),
+                        "debit",
+                        debitEntity.getFieldValue("quantity"),
+                        debitEntity.getFieldValue("price")
+                    ];
+
+                    entryResult = await window.database.SQLiteInsert({ query: debitTransactionEntryQuery, parameters: debitTransactionEntryQueryParameters });
+                } 
+
+                if(entryResult && entryResult.ok) {
+                    return true;
+                }
+                return entryResult;
+            } else if(action==="purchaseAsset") {
+                //transaction query
+                transactionQuery = "INSERT INTO PortfolioTransaction (portfolioId,type,note) VALUES (?,?,?)";
+                transactionQueryParameters = [
+                    entity.getFieldValue("portfolioId"),
+                    entity.getFieldValue("type"),
+                    entity.getFieldValue("note")
+                ];
+
+                const result = await window.database.SQLiteInsert({ query: transactionQuery, parameters: transactionQueryParameters });
+                var debitEntryResult;
+                var creditEntryResult;
+
+                if(result && result.ok) {
+                    //insert transaction entries
+                    const transactionId = result.lastID;
+
+                    //insert debit transaction entry
+                    const debitEntity = entity.getFieldValue("debitEntry");
+                    debitTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    debitTransactionEntryQueryParameters = [
+                        transactionId,
+                        debitEntity.getFieldValue("assetId"),
+                        "debit",
+                        debitEntity.getFieldValue("quantity"),
+                        debitEntity.getFieldValue("price")
+                    ];
+
+                    debitEntryResult = await window.database.SQLiteInsert({ query: debitTransactionEntryQuery, parameters: debitTransactionEntryQueryParameters });
+
+                    //insert credit transaction entry to credit Cash
+                    const creditEntity = entity.getFieldValue("creditEntry");
+                    creditTransactionEntryQuery = "INSERT INTO PortfolioTransactionEntry (transactionId,assetId,side,quantity,price) VALUES (?,?,?,?,?)";
+                    creditTransactionEntryQueryParameters = [
+                        transactionId,
+                        creditEntity.getFieldValue("assetId"),
+                        "credit",
+                        1,
+                        creditEntity.getFieldValue("price") * creditEntity.getFieldValue("quantity")
+                    ];
+
+                    creditEntryResult = await window.database.SQLiteInsert({ query: creditTransactionEntryQuery, parameters: creditTransactionEntryQueryParameters });
+                } 
+
+                if(debitEntryResult && debitEntryResult.ok && creditEntryResult && creditEntryResult.ok) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
         } catch(error) {
             return false;
-            window.console.error(error);
-        }
+        }        
     }
     
     async read(entity: IEntity, action: string): Promise<IEntity[]> {
+        var entities: Array<IEntity> = [];
         var query:string = "";
         var data;
 
-        if(action === "lookup") {
-            try {
-                const keyword = entity.getFieldValue("keyword");
-                const companyName = entity.getFieldValue("companyName");
-                const ticker = entity.getFieldValue("ticker");
-                const cik = entity.getFieldValue("cik");
-                const isSP500 = entity.getFieldValue("isSP500");
+        try {
+            if(action === "getBuyingPower") {
+                    const portfolioId = entity.getFieldValue("portfolioId");
+                    const assetId = entity.getFieldValue("entry").getFieldValue("assetId");
 
-                if(keyword === null && companyName === null && ticker === null && cik === null) {
-                    return [];
-                }
-                
-                query = "SELECT *";
-
-                // an array to contain the parameters for the parameterized query
-                const parameterArray:any[] = [];
-
-                // create a preference for ticker matches over companyName matches
-                if(keyword !== null) {
-                    query += ", CASE WHEN ticker LIKE ? || '%' THEN 1 WHEN companyName LIKE ? || '%' THEN 2 ELSE 3 END AS rank";
-                    parameterArray.push(keyword);
-                    parameterArray.push(keyword);
-                }
-
-                query += " FROM PublicCompany WHERE";
-
-                var hasWhereCondition:boolean = false;
-
-                if(keyword !== null) {
-                    // treat the keyword as a CIK if able to parseFloat()
-                    if(!isNaN(parseFloat(keyword))) {
-                        query = this.appendWhere(query, " cik=?", hasWhereCondition);
-                        parameterArray.push(keyword);
-                        hasWhereCondition = true;
-                    } else {
-                        query = this.appendWhere(query, " ticker LIKE ? || '%' OR companyName LIKE ? || '%'", hasWhereCondition);
-                        
-                        // Push twice to check in ticker and companyName
-                        // TODO: create a text index with ticker and companyName data
-                        parameterArray.push(keyword);
-                        parameterArray.push(keyword);
+                    if(portfolioId === null) {
+                        return entities;
                     }
+                    
+                    query = `
+                        SELECT 
+                            COALESCE(
+                                SUM(CASE WHEN pte.side = 'debit' THEN pte.quantity * pte.price ELSE 0 END) -
+                                SUM(CASE WHEN pte.side = 'credit' THEN pte.quantity * pte.price ELSE 0 END),
+                                0
+                            ) AS buyingPower
+                        FROM 
+                            PortfolioTransactionEntry AS pte
+                        INNER JOIN 
+                            PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                        WHERE 
+                            pt.portfolioId = ? 
+                            AND pte.assetId = ?  
+                            AND pt.isCanceled = 0;`;
+
+                    data = await window.database.SQLiteGet({ query: query, parameters: [portfolioId, assetId] });            
+            } else if(action === "getPortfolioValue" || action === "getPortfolioValueByType" || action === "getPortfolioValueAll") {
+                const portfolioId = entity.getFieldValue("portfolioId");
+
+                if(portfolioId === null && action !== "getPortfolioValueAll") {
+                    return entities;
                 }
 
-                if(companyName !== null) {
-                    query = this.appendWhere(query, " companyName LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(companyName);
+                var group = "a.id";
+                if(action === "getPortfolioValueByType") {
+                    group = "a.type";
                 }
 
-                if(ticker !== null) {
-                    query = this.appendWhere(query, " ticker LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(ticker);
-                }
-
-                if(cik !== null) {
-                    query = this.appendWhere(query, " cik LIKE '%' || ? || '%'", hasWhereCondition);
-                    parameterArray.push(cik);
-                }
-
-                if(isSP500 !== null) {
-                    query = this.appendWhere(query, " isSP500=?", hasWhereCondition, "AND");
-                    parameterArray.push(isSP500);
-                }
-
-                if(keyword !== null) {
-                    query += " ORDER BY rank ASC, ticker ASC LIMIT 10";
-                } else {
-                    query += " ORDER BY ticker ASC LIMIT 10";
+                var args = [portfolioId];
+                var portfolioIdString = " AND pt.portfolioId=? ";
+                if(action === "getPortfolioValueAll") {
+                    portfolioIdString = " ";
+                    args = [];
                 }
                 
-                data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query, parameters: parameterArray });
-                
-                
-            } catch(error) {
-                window.console.error(error);
+                query = `
+                    SELECT
+                        a.symbol AS symbol,
+                        a.name AS name,
+                        a.type AS type,
+                        a.id AS id,
+                        SUM(CASE
+                            WHEN pte.side = 'debit' THEN pte.quantity * pte.price
+                            ELSE -pte.quantity * pte.price
+                        END) AS assetValue,
+                        SUM(CASE
+                            WHEN pte.side = 'debit' THEN pte.quantity
+                            ELSE -pte.quantity
+                        END) AS quantity
+                    FROM
+                        PortfolioTransactionEntry AS pte
+                    INNER JOIN
+                        PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                    INNER JOIN
+                        Asset AS a ON (pte.assetId = a.id)
+                    WHERE
+                        pt.isCanceled = 0
+                        ${portfolioIdString}
+                    GROUP BY
+                        ${group};`;
+
+                data = await window.database.SQLiteSelect({ query: query, parameters: args });
             }
-        } else if(action === "selectRandomSP500") {
-            query = "SELECT * FROM PublicCompany WHERE id > (ABS(RANDOM()) % (SELECT max(id) + 1 FROM PublicCompany)) ORDER BY id LIMIT 1;";
-            data = await window.electron.ipcRenderer.invoke('sqlite-query', { database: this.databasePath, query: query });
-        }
+        } catch(error) {
+            return entities;
+        } 
 
-        var entities;
-        if (action === "lookup") {
-            entities = this.formatLookupResponse(data);
-        } else if(action === "selectRandomSP500") {
-            entities = this.formatRandomData(data);
+        if (action === "getBuyingPower" && data) {
+            var entity = new Asset();
+            entity.setFieldValue("buyingPower", data.buyingPower);            
+            entities.push(entity);
+        } else if((action === "getPortfolioValue" || action === "getPortfolioValueByType" || action === "getPortfolioValueAll") && data) {
+            for(var row of data) {
+                var entity = new Asset();
+                entity.setFieldValue("id", row.id);
+                entity.setFieldValue("name", row.name);
+                entity.setFieldValue("symbol", row.symbol);
+                entity.setFieldValue("type", row.type); 
+                entity.setFieldValue("assetValue", row.assetValue);
+                if(action === "getPortfolioValue" || action === "getPortfolioValueAll") {
+                    entity.setFieldValue("quantity", row.quantity);
+                }
+                
+                entities.push(entity);
+            }
         }
 
         return entities;
-    }
-    
-    formatRandomData(data: any): any {
-        var array: Array<IEntity> = [];
-
-        for (const match of data) {           
-            var entity = new StockRequest();
-            
-            entity.setFieldValue("ticker", match.ticker.toUpperCase());
-            entity.setFieldValue("companyName", match.companyName);
-            entity.setFieldValue("cik", match.cik);
-            
-            array.push(entity);
-        }
-
-        return array;
-    }
-
-    private formatLookupResponse(data:any) {
-        var array: Array<IEntity> = [];
-
-        for (const match of data) {           
-            var entity = new StockRequest();
-            
-            entity.setFieldValue("ticker", match.ticker.toUpperCase());
-            entity.setFieldValue("companyName", match.companyName);
-            entity.setFieldValue("cik", match.cik);
-            
-            array.push(entity);
-        }
-
-        return array;
     }
 
     private appendWhere(query:string, condition:string, hasWhereCondition:boolean, whereOperator:string = "OR") {
@@ -178,24 +243,12 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
 
     // purge the database of entries for a periodic refresh of the data
     async delete(entity: IEntity, action: string): Promise<number> {
-        try {
-            const query = "DELETE FROM PublicCompany;";
-            const args:any[]  = [];
-            const result = await window.electron.ipcRenderer.invoke('sqlite-delete', { query: query, parameters: args });
-            
-            const query2 = "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='PublicCompany'";
-            await window.electron.ipcRenderer.invoke('sqlite-update', { query: query2, parameters: args });
-            
-            return result;
-        } catch(error) {
-            window.console.error(error);
-            return 0;
-        }
+        throw Error("This gateway does not have the ability to delete content.");
     }
 
     //check to see if the database table exists
     async checkTableExists() {
-        const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PublicCompany';"
+        const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='PortfolioTransaction';"
         const args:any[]  = [];
         const rows = await window.electron.ipcRenderer.invoke('sqlite-query', { query: query, parameters: args });
         
@@ -208,7 +261,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
 
     //for database tables that act as cache, check for the last time a table was updated
     async checkLastTableUpdate() {
-        const query = "SELECT changedAt FROM modifications WHERE tableName='PublicCompany' ORDER BY changedAt DESC LIMIT 1"
+        const query = "SELECT changedAt FROM modifications WHERE tableName='PortfolioTransaction' ORDER BY changedAt DESC LIMIT 1"
         const args:any[]  = [];
         const data = await window.electron.ipcRenderer.invoke('sqlite-get', { query: query, parameters: args });
         
@@ -219,54 +272,7 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
         }
     }
 
-    async refreshTableCache(entity: IEntity) {
-        await this.delete(entity, "");
-
-        const response = await fetch('https://www.sec.gov/files/company_tickers.json');
-        const secData = await response.json();
-
-        // Parse the SEC JSON file to extract ticker, CIK, and companyName
-        for(var key in secData) {
-            var ticker = secData[key]["ticker"];
-            var cik = secData[key]["cik_str"];
-            var companyName = secData[key]["title"].toUpperCase();
-
-            if(cik.toString().length < 10) {
-                const diff = 10 - cik.toString().length;
-                var newCik = "";
-
-                for(var i=0; i < diff; i++) {
-                    newCik += "0";
-                }
-
-                cik = newCik + cik;
-            }
-            
-            const query = "INSERT INTO PublicCompany (companyName, ticker, cik) VALUES(?,?,?)";
-            const args  = [companyName, ticker, cik];
-            await window.electron.ipcRenderer.invoke('sqlite-insert', { query: query, parameters: args });
-        } 
-
-        // get the S&P 500 companies and store those in a database
-        const SP500Response = await fetch("https://en.wikipedia.org/wiki/List_of_S%26P_500_companies");
-        const SP500Object = parse(await SP500Response.text());
-
-        // get all of the rows from the consituents table that stores the S&P500 companies
-        const rows = SP500Object.querySelector("#constituents").querySelectorAll("tr");
-
-        // loop over all rows in the constituents table to extract S&P500 tickers
-        for(var row of rows) {
-            var tds = Array.from(row.querySelectorAll("td"));
-
-            // for valid rows in the table, get the ticker from the first cell and update the database
-            if(tds.length > 0) {
-                var SP500ticker = tds[0].querySelector("a").innerText;
-                const updateQuery = "UPDATE PublicCompany SET isSP500=1 WHERE ticker=?";
-                const updateArgs = [SP500ticker];
-                await window.electron.ipcRenderer.invoke('sqlite-update', { query: updateQuery, parameters: updateArgs });
-            }
-        }
-
-        
+    async refreshTableCache(entity: IEntity):Promise<Boolean> {
+        return false;
     }
 }

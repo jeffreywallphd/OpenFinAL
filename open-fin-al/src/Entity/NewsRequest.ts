@@ -13,6 +13,9 @@ export class NewsRequest implements IEntity {
         var ticker = new Field("ticker", "string", null);
         this.fields.set("ticker", ticker);
 
+        var topic = new Field("topic", "string", null);
+        this.fields.set("topic", topic);
+
         var companyName = new Field("companyName", "string", null);
         this.fields.set("companyName", companyName);
 
@@ -56,6 +59,10 @@ export class NewsRequest implements IEntity {
 
         if(json.request.news.hasOwnProperty("ticker")) {
             this.setFieldValue("ticker", json.request.news.ticker);
+        }
+
+        if(json.request.news.hasOwnProperty("topic")) {
+            this.setFieldValue("topic", json.request.news.topic);
         }
 
         if(json.request.news.hasOwnProperty("companyName")) {

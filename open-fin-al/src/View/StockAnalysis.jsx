@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import '../index.css';
 import { StockAnalysisSearchBar } from './StockAnalysisSearchBar';
 import { DataContext } from "./App";
@@ -98,7 +99,6 @@ const StockAnalysis = () => {
       for (const metric in selectedMetrics) {
         var chartData = [];
         for (const stock of Object.values(state.comparisonData)) {
-          window.console.log(stock);
           if(selectedMetrics[metric].isSelected) {
             chartData.push({
               label: stock.response.results[0].data.Symbol,
@@ -123,10 +123,19 @@ const StockAnalysis = () => {
       });
     } 
   }, [state.searchRef, state.comparisonData]);
-  
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const handleDataChange = (newState) => {
-    window.console.log(newState.comparisonData);
     setState(newState);
+
+    setTimeout(() => {
+      navigate('/refresh', { replace: true }); // dummy path
+      setTimeout(() => {
+          navigate(location.pathname, { replace: true }); // go back
+      }, 10);
+    }, 50); // slight delay to allow config update
   };
 
   const formatter = new Intl.NumberFormat('en-US', {

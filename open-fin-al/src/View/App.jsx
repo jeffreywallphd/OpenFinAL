@@ -7,14 +7,20 @@
 import React, { useState, createContext, useEffect } from "react";
 
 // Imports for react pages and assets
-import AppLoaded from "./AppLoaded";
-import { AppPreparing } from "./AppPreparing";
+import AppLoaded from "./App/Loaded";
+import { AppPreparing } from "./App/Preparing";
+import { AppConfiguring } from "./App/Configuring";
+import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
 const DataContext = createContext();
 
 function App(props) {
     const currentDate = new Date();
     const [loading, setLoading] = useState(true);
+    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
+    const [configured, setConfigured] = useState(false);
+    const [preparationError, setPreparationError] = useState(null);
     const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
@@ -22,6 +28,8 @@ function App(props) {
         dataSource: null,
         secData: null,
         secSource: null,
+        newsData: null,
+        newsSource: null,
         comparisonData: {},
         chartData: null,
         error: null,
@@ -31,6 +39,7 @@ function App(props) {
         interval: '1D',
         securitiesList: null,
         searchRef: null,
+        assetId: null,
         isLoading: false,
         minPrice: 0,
         maxPrice: 10,
@@ -41,30 +50,123 @@ function App(props) {
 
     const value = { state, setState };
 
-    // Clear localStorage when the app is closed or refreshed
-    useEffect(() => {
-        const clearDarkMode = () => {
-            //localStorage.removeItem("darkMode");
-            localStorage.setItem("darkMode", "false");
-        };
+    // Establish dark mode settings when loaded or refreshed
+    const getDarkMode = async () => {
+        const config = await window.config.load();
+        if(config && config.DarkMode) {
+            document.body.classList.add("dark-mode");
+        } else {
+            document.body.classList.remove("dark-mode");
+        }
+    };
 
-        window.addEventListener("beforeunload", clearDarkMode);
-        return () => {
-            window.removeEventListener("beforeunload", clearDarkMode);
-        };
+    useEffect( () => {
+        getDarkMode();
     }, []);
 
     const handleLoading = () => {
         setLoading(false);
     };
 
+    const handleConfigured = async () => {
+        setConfigured(true);
+        await checkIfFullyInitialized(); 
+    };
+
+    const executeDataInitialization = async() => {
+        try {
+            const interactor = new InitializationInteractor();
+            const requestObj = new JSONRequest(`{}`);
+            const response = await interactor.post(requestObj,"initializeData");
+
+            if(response.response.ok) {
+                setLoading(false);
+                return true;
+            } else {
+                //tables may have been deleted and need to be recreated
+                const configurationResponse = await interactor.post(requestObj,"createConfig");
+                
+                if(configurationResponse.response.ok) {
+                    return await executeDataInitialization();
+                } else {
+                    throw new Error();
+                }
+            }
+        } catch(error) {
+            setPreparationError("Failed to initilize the software. Please contact the software administrator.");
+            setLoading(true);
+            return false;
+        }
+    };
+
+    const checkIfFullyInitialized = async () => {
+        try {
+            //determine if application is fully configured and data initialized
+            const interactor = new InitializationInteractor();
+            const requestObj = new JSONRequest(`{}`);
+            const response = await interactor.get(requestObj,"isInitialized");
+            
+            if(response.response.ok) {
+                setConfigured(true);
+
+                if(secureConnectionsValidated) {
+                    setLoading(false);
+                } else {
+                    const interactor = new InitializationInteractor();
+                    const requestObj = new JSONRequest(`{}`);
+                    const response = await interactor.post(requestObj,"refreshPinnedCertificates");
+                    setSecureConnectionsValidated(true);
+                    setLoading(false);
+                }
+
+                return true;
+            } else {
+                //check if the site is uninitialized but configured
+                const configurationResponse = await interactor.get(requestObj,"isConfigured");
+
+                if(configurationResponse.response.ok) {
+                    setConfigured(true);
+                    getDarkMode();
+
+                    //app is not initialized, so start data initialization
+                    const initialized = await executeDataInitialization();
+
+                    if(initialized) {
+                        setLoading(false);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    await interactor.post(requestObj,"createConfig");
+                    setConfigured(false);
+                    setLoading(true);
+                    return false;
+                }
+            }
+        } catch(error) {
+            setConfigured(false);
+            setLoading(true);
+            return false;
+        }
+    };
+
+    useEffect( () => {
+        checkIfFullyInitialized();
+    }, []);
+
     return (
-        loading ? 
-            <AppPreparing handleLoading={handleLoading}/> 
+        configured ?
+            (
+                loading ?
+                        <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
+                    :
+                        <DataContext.Provider value={value}>
+                            <AppLoaded checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured} />
+                        </DataContext.Provider>            
+            )        
         : 
-            <DataContext.Provider value={value}>
-                <AppLoaded />
-            </DataContext.Provider>
+            <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>
     );
 }
 

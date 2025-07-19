@@ -166,6 +166,13 @@ button.HamburgerMenu {
   margin: 0px;
 }
 
+.flex-with-space {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+
 .btn-group button {
   background-color: #CCCCCC;
   color: var(--text-color-medium);
@@ -209,6 +216,10 @@ button.HamburgerMenu {
 .loadingContent {
   color: var(--text-color-light);
   text-align: center;
+}
+
+.loadingText p {
+  color: var(--text-color-white);
 }
 
 .loader {
@@ -309,6 +320,11 @@ code {
   background-color: var(--background-color);
   overflow-x: hidden;
   /*position: static;*/
+}
+
+.page.only {
+  height: 100vh;
+   overflow-y: auto;
 }
 
 .homeContainer {
@@ -542,7 +558,6 @@ code {
 }
 
 /* Styling for BrowseFAQ Page */
-
 .gridContainer {
   display: grid;
   grid-template-columns: 50% 50%;
@@ -750,6 +765,36 @@ code {
 }
 
 /* Styling for Portfolio Page */
+
+.portfolio-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.portfolio-chart {
+  margin-top: 20px;
+}
+
+.portfolio-overview {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.portfolio-card {
+  background-color: var(--background-color);
+  padding: 20px;
+  border-radius: 5px;
+  width: 45%;
+  text-align: center;
+}
+
+.portfolio-value, .buying-power {
+  font-size: 24px;
+  font-weight: bold;
+}
 
 .portfolioTableContainer {
   height: 135px;
@@ -998,10 +1043,10 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px;
+  padding: 0px;
   /* background-color: #fff; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   border-radius: 10px; 
 }
 
@@ -1036,11 +1081,13 @@ nav ul li a:hover {
   font-size: 16px;
 }
 
-.nav-right .profile-picture {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  object-fit: cover;
+.nav-right {
+  font-size: 40px;
+  cursor: pointer;
+}
+
+.large-material-icon {
+  font-size: 40px; /* Adjust the size as needed, e.g., 24px, 36px, 48px, etc. */
 }
 
 /* Main content grid that holds both stats and news bar */
@@ -1058,7 +1105,7 @@ nav ul li a:hover {
   justify-content: space-between;
   flex-wrap: wrap;
   height:20%;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .current-month {
@@ -1095,12 +1142,41 @@ nav ul li a:hover {
   border-radius: 10px;
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.news-browser-item {
+  width: 100%;
+}
+
+.news-browser-item-image {
+  overflow-y: hidden;
+  vertical-align: top; 
+}
+
+.news-browser-item-image img {
+  display: block;
+}
+
+.news-browser-item-content {
+  overflow-y: hidden;
+}
+
+.news-browser-item-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .news-item {
   margin-bottom: 20px;
   display: flex;
   align-items: flex-start;
+}
+
+.news-item-actions {
+  display: flex;
+  align-items: center;
 }
 
 .news-item-link {
@@ -1133,6 +1209,102 @@ nav ul li a:hover {
   margin: 5px 0;
 }
 
+/* Styles for the news summary modal */
+
+.news-summary-modal {
+  position: fixed; /* Stay in place */
+  z-index: 100000; /* Sit on top of everything else */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgba(0, 0, 0, 0.4); /* Black w/ opacity */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.news-summary-content {
+  background-color: var(--background-color);
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  width: 700px;
+  border-radius: 7px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  position: relative; /* To position potential close button */
+  display: flex; /* Make content a flex container */
+  flex-direction: column; /* Stack items vertically */
+}
+
+.news-summary-content p {
+  color: var(--text-color-medium-dark);
+  margin-bottom: 10px;
+  overflow-y: auto;
+}
+
+.news-summary-header {
+  display: flex; /* Make the header a flex container */
+  justify-content: space-between; /* Put space between the title and the button */
+  align-items: center; /* Optional: Vertically align items in the center */
+  margin-bottom: 10px; /* Add some space below the header */
+}
+
+.news-summary-header h2 {
+  margin-top: 0;
+  color: var(--text-color-dark);
+}
+
+.news-summary-header button {
+  background: var(--background-color-highlight-light);
+  color: var(--text-color-medium);
+  border: none;
+  font-size: 1.2em;
+  cursor: pointer;
+  color: var(--text-color-medium);
+}
+
+.news-summary-header button:hover {
+  background: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
+}
+
+.small-loader {
+  visibility: visible;
+  border: 12px solid #f3f3f3;
+  border-top: 12px solid #3498db;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+  animation: spin 2s linear infinite;
+  display: inline-block;
+}
+
+.small-loader.hidden {
+  display: none;
+}
+
+.error {
+  color: red;
+}
+
+.error-message {
+  color: red;
+  margin-left: 20px;
+}
+
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4); /* Semi-transparent black */
+  z-index: 999; /* Sit below the modal but above the page content */
+}
+
 /* Promo Section (below the stats and news) */
 .promo {
   flex: 1 1 60%; /* Allow the promo section to take up 60% of the container width */
@@ -1143,6 +1315,7 @@ nav ul li a:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: 200px;
 }
 
 .earnings .invested {
@@ -1238,7 +1411,7 @@ nav ul li a:hover {
 .all-trades-link {
   display: block;
   margin-top: 20px;
-  padding: 10px 20px;
+  padding: 10px;
   border-radius: 5px;
   text-align: right;
   font-size: 14px;
@@ -1265,7 +1438,7 @@ nav ul li a:hover {
 .current-month p {
   display: flex;
   align-items: center;
-  color: orange;
+  color: var(--text-color-white);
   font-size: small;
 }
 
@@ -1308,7 +1481,7 @@ nav ul li a:hover {
 .trade-button {
   padding: 10px 20px;
   background-color: var(--primary-color-hover);
-  color: var(--text-color-light);
+  color: var(--text-color-white);
   border: none;
   border-radius: 5px;
   cursor: pointer;
@@ -1383,25 +1556,6 @@ nav ul li a:hover {
   font-family: Arial, sans-serif;
 }
 
-.portfolio-overview {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-.portfolio-card {
-  background-color: var(--background-color);
-  padding: 20px;
-  border-radius: 5px;
-  width: 45%;
-  text-align: center;
-}
-
-.portfolio-value, .buying-power {
-  font-size: 24px;
-  font-weight: bold;
-}
-
 .stock-list {
   display: flex;
   flex-wrap: wrap;
@@ -1429,9 +1583,6 @@ nav ul li a:hover {
   color: red;
 }
 
-.portfolio-chart {
-  margin-top: 20px;
-}
 
 .faq-page {
   font-family: Arial, sans-serif;
@@ -2046,68 +2197,190 @@ nav ul li a:hover {
   background-color: #c82333;
 }
 
-.chatBot {
-  border: 3px solid var(--primary-color);
-  border-radius: 10px;
-  margin: 50px auto;
-  overflow: hidden;
-  width: 500px;
-  overflow-y: clip;
-  height: 600px;
+/* Chatbot and Toggle Icon*/
+
+.chatBotToggle {
+  position: relative;
+  height: 0;
+}
+
+.circle {
+  width: 55px;
+  height: 55px;
+  background-color: var(--accent-color); /* Blue color */
+  border-radius: 50%;
+  position: fixed;
+  bottom: 20px; /* 20px from the bottom */
+  left: 95%; /* Position the circle 95% from the left of the screen */
+  transform: translateX(-50%); /* Center the circle horizontally */
+  cursor: pointer;
+  transition: background-color 0.3s;
+  display: flex; /* Use flexbox to center the image */
+  justify-content: center; /* Center the image horizontally */
+  align-items: center; /* Center the image vertically */
+  overflow: hidden; /* Ensures the image stays within the circle */
+}
+
+.circle:hover {
+  background-color: #2980b9; /* Darker blue color on hover */
+}
+
+.chatbotIcon {
+  width: 30px; /* Image size inside the circle */
+  height: 30px; /* Image size inside the circle */
+  object-fit: cover; /* Ensures the image fits within the circle without distortion */
+  filter: invert(1);
+}
+
+.chatbot-modal {
+  height: 100vh;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+  z-index: 9000;  /* Make sure it's on top */
+}
+
+.chatbot-modal-content {
+  padding: 0;
+  margin: 0;
+  width: 500px; /* Set a fixed width for the modal */
+  height: 100vh; /* Set a fixed height for the modal */
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden; /* Prevents any overflow of content */
+}
+
+.chatbot-modal-content header {
+  display: flex;
+  background-color: var(--primary-color);
+  align-items: center;            /* Vertically center the items */
+  border-radius: 0px;
+  width: 100%;
+}
+
+.close-btn {
+  margin-left: auto; /* pushes it to the right */
+  margin-right: 10px;
+  background-color: var(--primary-color);
+  color: var(--text-color-white);
+  border: none;
+  padding: 5px 10px 5px 10px;;
+  cursor: pointer;
+  font-size: 20px;
+}
+
+.chatHistory {
+  height: 150px;
+  width: 100%;
+  padding: 15px;
   background-color: var(--background-color);
-  background-size: contain;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-  background-repeat: no-repeat;
-  background-position: center;
+  flex-grow: 0;
+  overflow-y: auto;
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.chatHistory h3 {
+  color: var(--text-color-dark);
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+.chatControls {
+  padding: 10px;
+  background-color: var(--primary-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.chatSettings {
+  cursor: pointer;
+  color: var(--text-color-white);
+  margin-right: 10px;
+}
+
+.chatControls button {
+  padding: 10px;
+  margin:0;
+  margin-left: 10px;
+  background-color: var(--primary-color-hover);
+}
+
+.chatBot {
+  border-radius: 0px;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
+  background-color: var(--background-color);
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  /* overflow-y: auto;  Enable scrolling if content overflows */
 }
 
 .chatbox {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  list-style-type: none;
   padding: 15px;
-  list-style: none;
+  margin: 0;
   overflow-y: auto;
-  height: 400px;
 }
 
 .chatbox li {
-  margin-bottom: 10px;
+  margin: 0;
 }
 
 .chat p {
-  padding: 10px;
-  border-radius: 10px;
+  padding: 15px;
+  border-radius: 5px;
   word-wrap: break-word;
+  line-height: 20px;
+}
+
+.chat-incoming {
+  margin: 0;
+}
+
+.chat-outgoing{
+  text-align: right;
 }
 
 .chat-outgoing p {
-  background-color: var(--primary-color);
-  align-self: flex-end;
+  background-color: var(--primary-color-hover);
   color: var(--text-color-white);
 }
 
 .chat-incoming p {
-  background-color: var(--primary-color-hover); /*This is the Chatbot's message*/
+  background-color: var(--primary-color); /*This is the Chatbot's message*/
   color: var(--text-color-white);
 }
 
 .chat-input {
   padding: 10px;
+  margin: 0;
   border-top: 1px solid var(--background-color-highlight);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .chat-input textarea {
-  width: 522px;
+  width: 500px;
   padding: 10px;
   border: 1px solid var(--background-color-highlight);
-  border-radius: 7px;
+  border-radius: 4px;
   resize: none;
   outline: none;
   overflow-y: scroll;
   background-color: var(--background-color-highlight-light);
-  font-size: 16px;
+  font-size: 14px;
   color: var(--text-color-dark);
   font-weight: 600;
-  margin-top: -10px;
-  margin-left: -15px;
   height: 71px;
 }
 
@@ -2134,15 +2407,15 @@ nav ul li a:hover {
 
 #sendBTN {
   width: 100%;
-  padding: 30px;
+  padding: 20px;
   border: 0;
+  margin: 0;
   outline: none;
   font-size: 20px;
   font-weight: 600;
-  border-radius: 5px;
+  border-radius: 0px;
   cursor: pointer;
   color: var(--text-color-white);
-  margin-top: 12px;
   background-color: var(--primary-color);
 }
 
@@ -2156,32 +2429,6 @@ nav ul li a:hover {
   font-weight: 600;
   color: black;
   margin-left: 550px;
-}
-
-/* Close button */
-.close-btn {
-  background-color: var(--background-color);
-  color: var(--text-color-dark);
-  border: none;
-  padding: 5px;
-  cursor: pointer;
-  margin: 0;
-}
-
-.chatBot header {
-  display: flex;
-  background-color: var(--primary-color);
-  justify-content: space-between; /* Position items on opposite sides */
-  align-items: center;            /* Vertically center the items */
-  padding: 10px 20px 10px 0px;             /* Optional, adjust padding as needed */
-  border-radius: 7px 7px 0 0;
-}
-
-.chatBot header h2 {
-  flex: 1; /* This allows <h2> to take available space */
-  text-align: center; /* Center the <h2> text */
-  color: var(--text-color-white);
-  margin: 0;
 }
 
 /* Comparison Table in StockAnalysis.jsx */
@@ -2203,11 +2450,27 @@ nav ul li a:hover {
   border: 1px solid var(--background-color-highlight);
   padding: 10px;
   text-align: right;
-}/* Settings Component Styles */
+}
+
+/* Settings Component Styles */
 .page {
   padding: 20px;
   background-color: var(--background-color);
   min-height: 100vh;
+}
+
+.page header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.page header h2 {
+  display: flex;
+}
+
+.page header button {
+  display: flex;
+  flex: 1;
 }
 
 .settings-title {
@@ -2218,11 +2481,11 @@ nav ul li a:hover {
 }
 
 .settings-card {
-  background-color: white;
+  background-color: var(--background-color);
   border-radius: 10px;
-  padding: 20px;
-  margin-bottom: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 10px;
+  margin-bottom: 5px;
+  /*box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);*/
 }
 
 .card-title {
@@ -2240,21 +2503,47 @@ nav ul li a:hover {
 
 .table-header {
   display: flex;
-  background-color: #e0e0e0;
+  background-color: var(--background-color-highlight);
+  color: var(--text-color-medium-dark);
   font-weight: bold;
   border-radius: 4px 4px 0 0;
+  padding: 10px;
+}
+
+.table-header h3 {
+  padding: 0;
+  margin: 0;
 }
 
 .header-cell {
   flex: 1;
-  padding: 10px;
+  padding: 10px 5px;
   text-align: center;
 }
 
 .table-row {
   display: flex;
-  border-bottom: 1px solid #e0e0e0;
-  background-color: #f5f5f5;
+  border-bottom: 1px solid var(--background-color-highlight);
+  background-color: var(--background-color-highlight-light);
+  color: var(--text-color-dark);
+  padding: 10px;
+}
+
+.table-cell {
+  flex: 1;
+  padding: 5px 5px;
+}
+
+.table-cell input {
+  width: 90%;
+}
+
+.table-cell textarea {
+  width: 90%;
+  height: 100px;
+  background-color: var(--background-color-highlight-light);
+  font-size: 14px;
+  color: var(--text-color-dark);
 }
 
 .api-cell, .key-cell {
@@ -2266,22 +2555,30 @@ nav ul li a:hover {
   width: 100%;
   padding: 8px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: #f5f5f5;
+  border: 1px solid var(--background-color-highlight-light);
+  background-color: var(--background-color);
 }
 
 .api-key-input {
-  width: 100%;
-  padding: 8px;
+  width: 95%;
+  padding: 12px;
   border-radius: 4px;
-  border: 1px solid #ddd;
-  background-color: white;
+  border: 1px solid var(--background-color-highlight-light);
+  background-color: var(--background-color);
+}
+
+.configDescription {
+  font-size: 13px;
+}
+
+.spanLink {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--primary-color);
+  display: inline-block;
 }
 
 .save-button-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
   margin-top: 20px;
 }
 
@@ -2301,6 +2598,7 @@ nav ul li a:hover {
 
 .message {
   margin-top: 10px;
+  margin-left: 20px;
   color: green;
   text-align: center;
 }
@@ -2312,12 +2610,13 @@ nav ul li a:hover {
 .style-options {
   display: flex;
   justify-content: center;
-  padding: 20px 0;
+  padding: 0px;
+  margin: 0px;
 }
 
 .dark-mode-button {
   background-color: var(--accent-color);
-  color: white;
+  color: var(--text-color-white);
   border: none;
   border-radius: 4px;
   padding: 10px 20px;
@@ -2335,30 +2634,9 @@ nav ul li a:hover {
   color: #f0f0f0;
 }
 
-.dark-mode .settings-card {
-  background-color: #333;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-  color: var(--text-color-light);
-}
-
-.dark-mode .table-header {
-  background-color: #444;
-  color: var(--text-color-light);
-}
-
 .dark-mode .card-title {
   color: var(--text-color-dark);
 }
 
-.dark-mode .table-row {
-  background-color: #3a3a3a;
-  border-bottom: 1px solid #444;
-  color: var(--text-color-light);
-}
 
-.dark-mode .api-select,
-.dark-mode .api-key-input {
-  background-color: #444;
-  border: 1px solid #555;
-  color: white;
-}
+

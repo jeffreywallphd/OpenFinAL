@@ -65,7 +65,7 @@ export function Learn() {
             query += " LIMIT ?"
             const limit = 25;
             inputData.push(limit);
-            await window.electron.ipcRenderer.invoke('select-data', { query, inputData }).then((data) => {
+            await window.database.SQLiteSelectData({ query, inputData }).then((data) => {
                 setState({
                     modules: data,
                     isLoading: false,

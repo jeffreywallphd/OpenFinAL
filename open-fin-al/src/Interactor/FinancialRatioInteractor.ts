@@ -5,11 +5,7 @@ import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import {IDataGateway} from "../Gateway/Data/IDataGateway";
 import {SecRequest} from "../Entity/SecRequest";
 import { XMLResponse } from "../Gateway/Response/XMLResponse";
-import { FinancialRatioGatewayFactory } from "@DataGateway/FinancialRatioGatewayFactory";
-
-declare global {
-    interface Window { fs: any; }
-}
+import { FinancialRatioGatewayFactory } from "../Gateway/Data/FinancialRatioGatewayFactory";
 
 export class FinancialRatioInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -25,9 +21,9 @@ export class FinancialRatioInteractor implements IInputBoundary {
         sec.fillWithRequest(requestModel);
 
         //instantiate the correct API gateway
-        const config = window.fs.fs.readFileSync('./config/default.json', "utf-8");
+        const config = await window.config.load();
         const secGatewayFactory = new FinancialRatioGatewayFactory();
-        var secGateway: IDataGateway = await secGatewayFactory.createGateway(JSON.parse(config));
+        var secGateway: IDataGateway = await secGatewayFactory.createGateway(config);
 
         sec.setFieldValue("key", secGateway.key);
         

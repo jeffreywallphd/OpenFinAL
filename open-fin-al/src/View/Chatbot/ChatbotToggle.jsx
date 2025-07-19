@@ -1,7 +1,6 @@
 import React, { Component } from "react";
-import './ChatbotToggle.css';  // Ensure styles are correctly linked
 import chatbotIcon from './comment-alt.png';
-import Chatbot from "./Chatbot";
+import Chatbot from "../Chatbot";
 
 class ChatbotToggle extends Component {
     constructor(props) {
@@ -24,12 +23,8 @@ class ChatbotToggle extends Component {
                     </div>
                 </div>
 
-                {this.state.toggle && (
-                    <div className="chatbot-modal">
-                        <div className="chatbot-modal-content">                            
-                            <Chatbot handleToggle={this.handleClick} /> {/* The chatbot component */}
-                        </div>
-                    </div>
+                {this.state.toggle && (                                                
+                    <Chatbot handleToggle={this.handleClick} />                         
                 )}
             </div>
         );

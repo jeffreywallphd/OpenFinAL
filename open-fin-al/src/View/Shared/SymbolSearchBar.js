@@ -16,8 +16,16 @@ function SymbolSearchBar(props) {
     
     //Checks the keyUp event to determine if a key was hit or a datalist option was selected
     const checkInput = async (e) => {
-        //Unidentified means datalist option was selected, otherwise a key was hit
-        if (e.key == "Unidentified"){
+        if(e.key === "Enter") {
+            //hide the securities list after completion of search
+            setSecuritiesList(null);
+
+            //fetch symbol and then fetch related data
+            const newState = await fetchSymbol();
+            await props.fetchData(newState);
+            return;
+        } else if (e.key === "Unidentified") {
+            //Unidentified means datalist option was selected, otherwise a key was hit
             //fetch symbol and then fetch related data
             const newState = await fetchSymbol();
             await props.fetchData(newState);
@@ -47,14 +55,15 @@ function SymbolSearchBar(props) {
                 }`);
 
                 const searchData = await interactor.get(requestObj);
-                
                 setSecuritiesList(searchData.response.results);
-
+                
                 //Update the state to be passed to the fetch data function
                 const newState = {
                     ...props.state,
                     initializing: false,
                     data: props.state.data,
+                    newsData: props.state.newsData,
+                    secData: props.state.secData,
                     ticker: props.state.ticker,
                     cik: props.state.cik,
                     error: props.state.error,
@@ -96,10 +105,10 @@ function SymbolSearchBar(props) {
                            onKeyUp={(e) => checkInput(e)} placeholder="Please enter a ticker symbol"></input>
 
                     {securitiesList ?
-                        <datalist id="tickers">
+                        <datalist id="tickers" className="tickersList">
                             {securitiesList.map((listData) => (
-                                <option key={listData.ticker} value={listData.ticker}>
-                                    {listData.companyName}
+                                <option key={listData.id} value={listData.symbol}>
+                                    {listData.name}
                                 </option>
                             ))}
                         </datalist>

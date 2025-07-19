@@ -18,7 +18,7 @@ function StockAnalysisSearchBar(props) {
             var cik = null;
 
             newState.securitiesList.find((element) => {
-                if(element.ticker === newState.searchRef) {
+                if(element.symbol === newState.searchRef) {
                     cik = element.cik;
                 }
             });
@@ -43,12 +43,14 @@ function StockAnalysisSearchBar(props) {
                 newState.secSource = secResults.response.source;
                 newState.cik = cik;
                 newState.comparisonData[newState.cik] = secResults;
+                newState.isFirstLoad = false;
                 
                 props.handleDataChange(newState);
 
                 return newState;
             }
         } catch(error) {
+            newState.isFirstLoad = false;
             return newState;
         }
     }
