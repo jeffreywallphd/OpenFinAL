@@ -16,7 +16,7 @@ function Settings(props) {
         }
         getInitialDarkMode();
     });
-    
+
     const interactor = new SettingsInteractor();
 
     // Function to get setting sections from interactor
@@ -83,14 +83,14 @@ function Settings(props) {
         const request = new JSONRequest(JSON.stringify({
             configurations: settings
         }));
-      
+
         var response = await interactor.post(request);
 
         if(response.response.status == 200) {
             setMessage("Successfully saved the configuration");
             await sleep(1000);
             setMessage(null);
-            
+
             const isConfigured = props.checkIfConfigured();
 
             setTimeout(() => {
@@ -110,7 +110,7 @@ function Settings(props) {
         await window.config.save(config);
 
         setDarkMode(config.DarkMode);
-    
+
         if (config.DarkMode) {
             document.body.classList.add("dark-mode");
         } else {
@@ -131,7 +131,7 @@ function Settings(props) {
         }
 
         getDarkMode();
-    }, []);    
+    }, []);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -147,7 +147,7 @@ function Settings(props) {
                             id="dark-mode-toggle"
                             onClick={() => {
                                 toggleDarkMode();
-                        
+
                                 // Force refresh of the route after state change
                                 setTimeout(() => {
                                     navigate('/refresh', { replace: true }); // dummy path
@@ -157,11 +157,11 @@ function Settings(props) {
                                 }, 50); // slight delay to allow config update
                             }}
                             >
-                                {darkMode ? "Dark Mode" : "Light Mode"}
+                                {darkMode ? "Light Mode" : "Dark Mode"}
                         </button>
                     </div>
                 </div>
-            </header> 
+            </header>
             {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
                 <div className="settings-card">
                     <h3 className="card-title">{section.label}</h3>
@@ -172,7 +172,7 @@ function Settings(props) {
                         </div>
                         {section.configurations.map((configuration) => (
                             <>
-                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} />                                                                                   
+                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} />
                             </>
                         ))}
                     </div>
@@ -181,7 +181,7 @@ function Settings(props) {
                         {message && <span className="message">{message}</span>}
                     </div>
                 </div>
-            ))}                      
+            ))}
         </div>
     );
 }
