@@ -160,25 +160,31 @@ class Home extends Component {
   }
 
   async getEconomicNews() {
-      const interactor = new NewsInteractor();
-      const requestObj = new JSONRequest(JSON.stringify({
-          request: {
-              news: {
-                  topic: "economy_macro",
-                  limit: 20
-              }              
+      try {
+          const interactor = new NewsInteractor();
+          const requestObj = new JSONRequest(JSON.stringify({
+              request: {
+                  news: {
+                      topic: "economy_macro",
+                      limit: 20
+                  }              
+              }
+          }));
+
+          const response = await interactor.get(requestObj);
+
+          if(response && response.response && response.response.ok) {
+              this.setState({
+                newsData: response.response.results[0]["data"],
+                currentListing: response.response.results[0]["data"][0]
+              });
+              return true;
+          } else {
+              console.error('News API response error:', response);
+              return false;
           }
-      }));
-
-      const response = await interactor.get(requestObj);
-
-      if(response.response.ok) {
-          this.setState({
-            newsData: response.response.results[0]["data"],
-            currentListing: response.response.results[0]["data"][0]
-          });
-          return true;
-      } else {
+      } catch (error) {
+          console.error('Error fetching economic news:', error);
           return false;
       }    
   }
@@ -285,14 +291,9 @@ class Home extends Component {
   render() {
     return (
       <main>
-        <header className="top-nav">
-          <div className="nav-left">
-            <h1><span className="material-icons">dashboard</span> Dashboard</h1>
-          </div>
-          <div className="nav-right">
-            <span className="material-icons large-material-icon" onClick={() => this.handleNavigation('/settings')}>account_circle</span>
-          </div>
-        </header>
+        <div className="dashboardTitleContainer">
+          <h2 style={{margin: "0px"}}><span className="material-icons dashboardIcon">dashboard</span> Dashboard</h2>
+        </div>
         <section className="content-grid">
           <div className="stats">
             <div className="current-month">

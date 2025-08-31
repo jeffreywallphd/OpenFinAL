@@ -214,33 +214,41 @@ class Portfolio extends Component {
     }
 
     async getBuyingPower(cashId=null, portfolioId=null) {
-        if(!cashId) {
-            cashId = this.state.cashId;
-        }
-
-        if(!portfolioId) {
-            portfolioId = this.state.currentPortfolio;
-        }
-
-        const interactor = new PortfolioTransactionInteractor();
-        const requestObj = new JSONRequest(JSON.stringify({
-            request: {
-                action: "getBuyingPower",
-                transaction: {
-                    portfolioId: portfolioId,
-                    entry: {
-                        assetId: cashId
-                    }
-                }
-                
+        try {
+            if(!cashId) {
+                cashId = this.state.cashId;
             }
-        }));
 
-        const response = await interactor.get(requestObj);
-        if(response.response.ok) {
-            this.setState({buyingPowerLoaded: true, buyingPower: response.response.results[0].buyingPower});
-            return true;
-        } else {
+            if(!portfolioId) {
+                portfolioId = this.state.currentPortfolio;
+            }
+
+            const interactor = new PortfolioTransactionInteractor();
+            const requestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    action: "getBuyingPower",
+                    transaction: {
+                        portfolioId: portfolioId,
+                        entry: {
+                            assetId: cashId
+                        }
+                    }
+                    
+                }
+            }));
+
+            const response = await interactor.get(requestObj);
+            if(response && response.response && response.response.ok && response.response.results && response.response.results[0]) {
+                this.setState({buyingPowerLoaded: true, buyingPower: response.response.results[0].buyingPower});
+                return true;
+            } else {
+                console.error('Buying power API response error:', response);
+                this.setState({buyingPowerLoaded: true, buyingPower: 0});
+                return false;
+            }
+        } catch (error) {
+            console.error('Error fetching buying power:', error);
+            this.setState({buyingPowerLoaded: true, buyingPower: 0});
             return false;
         }    
     }

@@ -19,13 +19,18 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
         const sqlSchema = `
             DROP TABLE IF EXISTS LearningModule;
             DROP TABLE IF EXISTS LearningModulePage;
+            DROP TABLE IF EXISTS Portfolio;
+            DROP TABLE IF EXISTS User;
 
-            CREATE TABLE IF NOT EXISTS User (
+            CREATE TABLE User (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 firstName TEXT,
                 lastName TEXT,
                 email TEXT,
-                username TEXT UNIQUE NOT NULL
+                username TEXT UNIQUE NOT NULL,
+                pinHash TEXT,
+                lastLogin TIMESTAMP,
+                dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
             CREATE TABLE IF NOT EXISTS CertAuthMetaData (

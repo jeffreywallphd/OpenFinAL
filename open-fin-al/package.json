@@ -7,6 +7,9 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
+    "debug": "ELECTRON_ENABLE_LOGGING=1 electron-forge start",
+    "debug-main": "electron-forge start -- --inspect-electron=9229",
+    "debug-renderer": "electron-forge start -- --remote-debugging-port=9222",
     "clean": "rm -rf .webpack out node_modules package-lock.json && npm install && npm run postinstall",
     "package": "electron-forge package",
     "make": "electron-forge make",
