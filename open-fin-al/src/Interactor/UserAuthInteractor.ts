@@ -76,11 +76,11 @@ export class UserAuthInteractor {
             console.log('UserAuthInteractor: Creating default portfolio...');
             await window.database.SQLiteInsert({
                 query: `INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)`,
-                parameters: [`${userData.firstName}'s Portfolio`, result.lastID]
+                parameters: [`${userData.firstName}'s Portfolio`, result.lastInsertRowid]
             });
 
             console.log('UserAuthInteractor: Registration completed successfully');
-            return { success: true, userId: result.lastID };
+            return { success: true, userId: result.lastInsertRowid };
         } catch (error) {
             console.error('UserAuthInteractor: Registration error:', error);
             return { success: false, error: `Registration failed: ${error.message || 'Unknown error'}` };
