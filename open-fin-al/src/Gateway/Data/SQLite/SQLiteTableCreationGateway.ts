@@ -22,7 +22,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             DROP TABLE IF EXISTS Portfolio;
             DROP TABLE IF EXISTS User;
 
-            CREATE TABLE User (
+            CREATE TABLE IF NOT EXISTS User (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 firstName TEXT,
                 lastName TEXT,
