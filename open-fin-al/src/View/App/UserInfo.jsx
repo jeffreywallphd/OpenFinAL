@@ -43,7 +43,7 @@ function UserInfo({ onLogout }) {
 
     return (
         <div className="user-bubble-container" ref={bubbleRef}>
-            <div className="user-avatar-bubble" onClick={toggleBubble}>
+            <div className="user-avatar-bubble" onClick={toggleBubble} role="button" tabIndex="0">
                 <span className="material-icons">account_circle</span>
             </div>
             
