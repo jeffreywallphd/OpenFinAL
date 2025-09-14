@@ -10,6 +10,7 @@ import React, { useState, createContext, useEffect } from "react";
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
 import { AppConfiguring } from "./App/Configuring";
+import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
@@ -21,6 +22,8 @@ function App(props) {
     const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
     const [configured, setConfigured] = useState(false);
     const [preparationError, setPreparationError] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
@@ -48,7 +51,7 @@ function App(props) {
         yAxisEnd: new Date().toISOString().split('T')[0]
     });
 
-    const value = { state, setState };
+    const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
     // Establish dark mode settings when loaded or refreshed
     const getDarkMode = async () => {
@@ -62,7 +65,43 @@ function App(props) {
 
     useEffect( () => {
         getDarkMode();
+        checkAuthenticationState();
     }, []);
+
+    // Check if user is already authenticated from previous session
+    const checkAuthenticationState = () => {
+        try {
+            const savedUser = localStorage.getItem('openfinAL_user');
+            if (savedUser) {
+                const userData = JSON.parse(savedUser);
+                setUser(userData);
+                setIsAuthenticated(true);
+                console.log('User session restored:', userData);
+            }
+        } catch (error) {
+            console.error('Error restoring user session:', error);
+            localStorage.removeItem('openfinAL_user');
+        }
+    };
+
+    // Handle successful authentication
+    const handleAuthSuccess = (userData) => {
+        setUser(userData);
+        setIsAuthenticated(true);
+        
+        // Save user session
+        localStorage.setItem('openfinAL_user', JSON.stringify(userData));
+        
+        console.log('User authenticated successfully:', userData);
+    };
+
+    // Handle user logout
+    const handleLogout = () => {
+        setUser(null);
+        setIsAuthenticated(false);
+        localStorage.removeItem('openfinAL_user');
+        console.log('User logged out');
+    };
 
     const handleLoading = () => {
         setLoading(false);
@@ -155,6 +194,11 @@ function App(props) {
         checkIfFullyInitialized();
     }, []);
 
+    // If not authenticated, show authentication interface
+    if (!isAuthenticated) {
+        return <AuthContainer onAuthSuccess={handleAuthSuccess} />;
+    }
+
     return (
         configured ?
             (
@@ -162,7 +206,11 @@ function App(props) {
                         <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
                     :
                         <DataContext.Provider value={value}>
-                            <AppLoaded checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured} />
+                            <AppLoaded 
+                                checkIfConfigured={checkIfFullyInitialized} 
+                                handleConfigured={handleConfigured}
+                                onLogout={handleLogout}
+                            />
                         </DataContext.Provider>            
             )        
         : 
