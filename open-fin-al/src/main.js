@@ -62,6 +62,7 @@ handleSquirrelEvent();
 const os = require('os');
 const ipcMain = require('electron').ipcMain;
 const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer');
 const keytar = require('keytar');
 const express = require('express');
@@ -70,6 +71,26 @@ const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
 const yf = require("yahoo-finance2").default;
+
+// Migration function
+async function runMigrations() {
+  try {
+    if (!betterDb) {
+      console.log('Better-sqlite3 database not initialized, skipping migrations');
+      return;
+    }
+    
+    const migrationsPath = path.join(__dirname, 'Database', 'migrations');
+    const { MigrationManager } = require('./Database/MigrationManager');
+    const migrationManager = new MigrationManager(betterDb, migrationsPath);
+    
+    await migrationManager.runMigrations();
+    console.log('All migrations completed successfully');
+  } catch (error) {
+    console.error('Failed to run migrations:', error);
+    throw error;
+  }
+}
 
 //////////////////////////// Main Electron Window Section ////////////////////////////
 
@@ -568,6 +589,7 @@ const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(app.getPath('userData'), dbFileName);
 
 let db;
+let betterDb;
 
 const sqliteExists = async () => {
   try {
@@ -588,6 +610,12 @@ const getDB = async () => {
         console.log('Connected to database');
       }
     });
+
+    // Also initialize better-sqlite3 for migrations
+    betterDb = new Database(dbPath);
+    
+    // Run migrations
+    await runMigrations();
 
     return true;
   } catch (error) {
