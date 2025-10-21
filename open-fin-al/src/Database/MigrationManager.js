@@ -60,12 +60,16 @@ class MigrationManager {
         const filePath = join(this.migrationsPath, filename);
         const sql = readFileSync(filePath, 'utf-8');
         
-        // Execute within a transaction for safety
-        const transaction = this.db.transaction(() => {
-            this.db.exec(sql);
-        });
+        // Temporarily disable schema validation to allow migrations on databases
+        // with legacy/quirky schema definitions (e.g., double-quoted string literals)
+        this.db.pragma('writable_schema = ON');
         
-        transaction();
+        try {
+            this.db.exec(sql);
+        } finally {
+            // Re-enable schema validation
+            this.db.pragma('writable_schema = OFF');
+        }
     }
 
     markMigrationAsExecuted(filename) {
