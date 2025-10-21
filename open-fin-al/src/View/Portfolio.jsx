@@ -115,22 +115,24 @@ class Portfolio extends Component {
     }
 
     async fetchPortfolios() {    
-        const userInteractor = new UserInteractor();
-        const userRequestObj = new JSONRequest(JSON.stringify({
-            request: {
-                user: {
-                    username: await window.config.getUsername()
-                }
-            }
-        }));
-    
-        const user = await userInteractor.get(userRequestObj);
+        // Get user from localStorage (auth system)
+        const savedUser = localStorage.getItem('openfinAL_user');
+        if (!savedUser) {
+            console.error('No user found in session');
+            return;
+        }
+        
+        const userData = JSON.parse(savedUser);
+        if (!userData.id) {
+            console.error('Invalid user session');
+            return;
+        }
 
         const interactor = new PortfolioInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 portfolio: {
-                    userId: user.response?.results[0]?.id
+                    userId: userData.id
                 }
             }
         }));
@@ -172,7 +174,7 @@ class Portfolio extends Component {
     
         const response = await interactor.get(requestObj);
         
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             this.setState({cashId: response.response.results[0].id});
             return response.response.results[0].id;
         }
@@ -200,7 +202,7 @@ class Portfolio extends Component {
     
         const response = await interactor.post(requestObj);
 
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             this.setState({depositMessage: "Successfully deposited the funds!"});
             this.sleep(2000);
             this.setState({isModalOpen: false});
@@ -271,7 +273,7 @@ class Portfolio extends Component {
 
         const response = await interactor.get(requestObj);
 
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             var portfolioValue = 0;
             for(var i in response.response.results) {
                 var asset = response.response.results[i];
@@ -289,11 +291,14 @@ class Portfolio extends Component {
                 
                     const quoteResponse = await interactor.get(quoteRequestObj);
 
-                    if(quoteResponse.response.ok && quoteResponse.response.results[0].quotePrice) {
+                    if(quoteResponse?.response?.ok && quoteResponse.response.results[0]?.quotePrice) {
                         response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
                         response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
                         portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
                     } else {
+                        // If quote not available, use the original asset value
+                        response.response.results[i]["quotePrice"] = asset.assetValue / asset.quantity;
+                        response.response.results[i]["currentValue"] = asset.assetValue;
                         portfolioValue += asset.assetValue;
                     }
                 } else {
@@ -327,7 +332,7 @@ class Portfolio extends Component {
 
         const response = await interactor.get(requestObj);
 
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             var chartData = [];
             for(var asset of response.response.results) {
                 var assetObj = {};
@@ -350,11 +355,15 @@ class Portfolio extends Component {
     async componentDidMount() {
         await this.fetchPortfolios();
         const cashId = await this.getCashId();
-        await this.getPortfolioValue();
-        await this.getPortfolioChartData();
+        
+        // Only fetch portfolio data if a portfolio is selected
+        if(this.state.currentPortfolio) {
+            await this.getPortfolioValue();
+            await this.getPortfolioChartData();
 
-        if(cashId) {
-            await this.getBuyingPower(cashId);
+            if(cashId) {
+                await this.getBuyingPower(cashId);
+            }
         }
     }
 
