@@ -33,56 +33,43 @@ export class UserAuthInteractor {
         pin: string
     }): Promise<{success: boolean, userId?: number, error?: string}> {
         try {
-            console.log('UserAuthInteractor: Starting registration for username:', userData.username);
-            
             // Check if window.database is available
             if (!window.database) {
-                console.error('UserAuthInteractor: window.database is not available');
                 return { success: false, error: 'Database not available' };
             }
 
             // Validate PIN format
             if (!PinEncryption.validatePinFormat(userData.pin)) {
-                console.error('UserAuthInteractor: Invalid PIN format');
                 return { success: false, error: 'Invalid PIN format' };
             }
 
             // Check if username already exists
-            console.log('UserAuthInteractor: Checking if username exists...');
             const existingUsers = await window.database.SQLiteQuery({
                 query: `SELECT id FROM User WHERE username = ?`,
                 parameters: [userData.username]
             });
 
             if (existingUsers && existingUsers.length > 0) {
-                console.error('UserAuthInteractor: Username already exists');
                 return { success: false, error: 'Username already exists' };
             }
 
             // Hash the PIN
-            console.log('UserAuthInteractor: Hashing PIN...');
             const pinHash = await PinEncryption.hashPin(userData.pin);
 
             // Insert new user
-            console.log('UserAuthInteractor: Inserting new user...');
             const result = await window.database.SQLiteInsert({
                 query: `INSERT INTO User (firstName, lastName, username, pinHash) VALUES (?, ?, ?, ?)`,
                 parameters: [userData.firstName, userData.lastName, userData.username, pinHash]
             });
 
-            console.log('UserAuthInteractor: User insert result:', result);
-
             // Create default portfolio for the user
-            console.log('UserAuthInteractor: Creating default portfolio...');
             await window.database.SQLiteInsert({
                 query: `INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)`,
                 parameters: [`${userData.firstName}'s Portfolio`, result.lastID]
             });
 
-            console.log('UserAuthInteractor: Registration completed successfully');
             return { success: true, userId: result.lastID };
         } catch (error) {
-            console.error('UserAuthInteractor: Registration error:', error);
             return { success: false, error: `Registration failed: ${error.message || 'Unknown error'}` };
         }
     }
@@ -134,7 +121,6 @@ export class UserAuthInteractor {
 
             return { success: true, user: userWithoutPin };
         } catch (error) {
-            console.error('Login error:', error);
             return { success: false, error: 'Login failed' };
         }
     }
@@ -186,7 +172,6 @@ export class UserAuthInteractor {
 
             return { success: true };
         } catch (error) {
-            console.error('PIN change error:', error);
             return { success: false, error: 'PIN change failed' };
         }
     }
@@ -204,7 +189,6 @@ export class UserAuthInteractor {
             });
             return portfolios || [];
         } catch (error) {
-            console.error('Error fetching user portfolios:', error);
             return [];
         }
     }
@@ -222,7 +206,6 @@ export class UserAuthInteractor {
             });
             return portfolios && portfolios.length > 0 ? portfolios[0] : null;
         } catch (error) {
-            console.error('Error fetching default portfolio:', error);
             return null;
         }
     }
@@ -260,7 +243,6 @@ export class UserAuthInteractor {
 
             return { success: true, userId: user.id };
         } catch (error) {
-            console.error('PIN reset initiation error:', error);
             return { success: false, error: 'PIN reset initiation failed' };
         }
     }
@@ -292,7 +274,6 @@ export class UserAuthInteractor {
 
             return { success: true };
         } catch (error) {
-            console.error('PIN reset completion error:', error);
             return { success: false, error: 'PIN reset failed' };
         }
     }
