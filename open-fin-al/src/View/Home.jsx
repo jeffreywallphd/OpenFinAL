@@ -94,7 +94,7 @@ class Home extends Component {
 
     const response = await interactor.get(requestObj);
     window.console.log(response);
-    if(response.response.ok) {
+    if(response?.response?.ok) {
         this.setState({
           marketData: response.response.results,
         });
@@ -117,7 +117,7 @@ class Home extends Component {
   
       const response = await interactor.get(requestObj);
 
-      if(response.response.ok) {
+      if(response?.response?.ok) {
           var data = response.response.results[0]["data"];
           var startDate = new Date("01-01-2010");
           var filteredData = data.filter(entry => new Date(entry.date) > startDate);
@@ -227,7 +227,7 @@ class Home extends Component {
 
       const response = await interactor.get(requestObj);
 
-      if(response.response.ok) {
+      if(response?.response?.ok) {
           var portfolioValue = 0;
           var originalValue = 0;
           var stockAssets = [];
@@ -252,11 +252,14 @@ class Home extends Component {
               
                   const quoteResponse = await interactor.get(quoteRequestObj);
 
-                  if(quoteResponse.response.ok && quoteResponse.response.results[0].quotePrice) {
+                  if(quoteResponse?.response?.ok && quoteResponse.response.results[0]?.quotePrice) {
                       response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
                       response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
                       portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
                   } else {
+                      // If quote not available, use the original asset value
+                      response.response.results[i]["quotePrice"] = asset.assetValue / asset.quantity;
+                      response.response.results[i]["currentValue"] = asset.assetValue;
                       portfolioValue += asset.assetValue;
                   }
 
