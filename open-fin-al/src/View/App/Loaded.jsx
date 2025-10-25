@@ -20,6 +20,7 @@ import { Analysis } from "../Analysis";
 import BuyReport from "../BuyReport";
 import { TimeSeries } from "../Stock";
 import { News } from "../News";
+import { Assessments } from "../Assessments";
 import { Learn } from "../Learn";
 import { LearningModuleDetails } from "../LearningModule/LearningModuleDetails";
 import { LearningModulePage } from "../LearningModule/LearningModulePage";
@@ -52,7 +53,7 @@ class AppLoaded extends Component {
     super(props);
 
     this.props = props;
-    
+
     this.state = {
       menuCollapsed: false,
     };
@@ -62,17 +63,17 @@ class AppLoaded extends Component {
   }
 
   componentDidMount() {
-    this.checkDarkMode(); 
+    this.checkDarkMode();
   }
 
   toggleMenu() {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
 
   handleClick = () => {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
     var img = document.getElementById("logo");
@@ -97,7 +98,7 @@ class AppLoaded extends Component {
       <HashRouter>
         <>
           <div className="main">
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <div className="logo sidebar-padding">
                 <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
@@ -115,13 +116,14 @@ class AppLoaded extends Component {
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
+                  <li><NavLink to="/assessments"><span className="material-icons">assignment</span> Assessments</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
               </nav>
             </aside>
             <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
-              <ScrollToTop  onRouteChange={this.checkDarkMode}/>
+              <ScrollToTop onRouteChange={this.checkDarkMode} />
 
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -134,6 +136,7 @@ class AppLoaded extends Component {
                 <Route path="/learningModule" element={<LearningModuleDetails />} />
                 <Route path="/learningModulePage" element={<LearningModulePage />} />
                 <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
+                <Route path="/assessments" element={<Assessments />}></Route>
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
@@ -141,11 +144,11 @@ class AppLoaded extends Component {
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
-              Licensed under GPL-3.0<br/>&copy;2023 All rights reserved
+              Licensed under GPL-3.0<br />&copy;2023 All rights reserved
             </footer>
           </div>
         </>
-        <ChatbotToggle/>
+        <ChatbotToggle />
 
       </HashRouter>
 

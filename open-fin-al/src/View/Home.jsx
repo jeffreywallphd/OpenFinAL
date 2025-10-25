@@ -15,7 +15,6 @@ import { MarketStatusInteractor } from "../Interactor/MarketStatusInteractor";
 import { EconomicIndicatorInteractor } from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link } from 'react-router-dom';
 import { EconomicChart } from './Dashboard/EconomicChart';
-import { KnowledgeAssessment } from './FinancialKnowledgeSurvey';
 
 const withNavigation = (Component) => {
   return function WrappedComponent(props) {
@@ -361,9 +360,6 @@ class Home extends Component {
               null
             }
           </div>
-        </section>
-        <section id="temporary-survey-container">
-          <KnowledgeAssessment /> {/*TODO: move to "Assessments" tab*/}
         </section>
       </main>
     );
