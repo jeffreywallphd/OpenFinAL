@@ -4,7 +4,7 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { Component, useEffect, useContext } from "react";
+import React, { Component, useEffect } from "react";
 import {
   Routes,
   Route,
@@ -12,7 +12,6 @@ import {
   HashRouter,
   useLocation
 } from "react-router-dom";
-import { DataContext } from "../App";
 
 // Imports for react pages and assets
 import Home from "../Home";
@@ -21,6 +20,7 @@ import { Analysis } from "../Analysis";
 import BuyReport from "../BuyReport";
 import { TimeSeries } from "../Stock";
 import { News } from "../News";
+import { Assessments } from "../Assessments";
 import { Learn } from "../Learn";
 import { LearningModuleDetails } from "../LearningModule/LearningModuleDetails";
 import { LearningModulePage } from "../LearningModule/LearningModulePage";
@@ -35,7 +35,6 @@ import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
 import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
-import { UserInfo } from "./UserInfo";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop({ onRouteChange }) {
@@ -54,7 +53,7 @@ class AppLoaded extends Component {
     super(props);
 
     this.props = props;
-    
+
     this.state = {
       menuCollapsed: false,
     };
@@ -64,17 +63,17 @@ class AppLoaded extends Component {
   }
 
   componentDidMount() {
-    this.checkDarkMode(); 
+    this.checkDarkMode();
   }
 
   toggleMenu() {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
 
   handleClick = () => {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
     var img = document.getElementById("logo");
@@ -99,21 +98,15 @@ class AppLoaded extends Component {
       <HashRouter>
         <>
           <div className="main">
-          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-            {/* Top Header Bar */}
-            <header className="top-header">
-              <div className="header-left">
-                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
-                <div className="header-logo">
-                  <img src={this.state.logo} alt="OpenFinAL Logo" className="header-logo-img" />
-                </div>
-              </div>
-              <div className="header-right">
-                <UserInfo onLogout={this.props.onLogout} />
-              </div>
-            </header>
-
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
+              <div className="logo sidebar-padding">
+                <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
+              </div>
+              <div className="sidebar-padding">
+                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
+              </div>
               <nav className="sidebar-padding">
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
@@ -123,13 +116,14 @@ class AppLoaded extends Component {
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
+                  <li><NavLink to="/assessments"><span className="material-icons">assignment</span> Assessments</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
                 </ul>
               </nav>
             </aside>
-            <div className={`content ${menuCollapsed ? 'closed' : ''} with-header`}>
-              <ScrollToTop  onRouteChange={this.checkDarkMode}/>
+            <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
+              <ScrollToTop onRouteChange={this.checkDarkMode} />
 
               <Routes>
                 <Route path="/" element={<Home />} />
@@ -142,6 +136,7 @@ class AppLoaded extends Component {
                 <Route path="/learningModule" element={<LearningModuleDetails />} />
                 <Route path="/learningModulePage" element={<LearningModulePage />} />
                 <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
+                <Route path="/assessments" element={<Assessments />}></Route>
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
@@ -149,11 +144,11 @@ class AppLoaded extends Component {
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
-              Licensed under GPL-3.0<br/>&copy;2023 All rights reserved
+              Licensed under GPL-3.0<br />&copy;2023 All rights reserved
             </footer>
           </div>
         </>
-        <ChatbotToggle/>
+        <ChatbotToggle />
 
       </HashRouter>
 

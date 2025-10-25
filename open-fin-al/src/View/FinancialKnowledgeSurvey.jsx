@@ -138,7 +138,7 @@ const questions = [
   },
 ];
 
-const KnowledgeAssessment = () => {
+const FinancialKnowledgeSurvey = () => {
 
   const [step, setStep] = useState("begin");
   const [answers, setAnswers] = useState([]);
@@ -205,71 +205,64 @@ const KnowledgeAssessment = () => {
   }
 
   return (
-    <>
-      <header>
-        <h1>Financial Streamlining - Investor Assessment</h1>
-        <h2>Investor Assessment</h2>
-      </header>
-
-      <div className="survey-wrapper">
-        {step === "begin" && (
-          <div className="survey-container">
-            <div className="disclaimer-content">
-              <h2>Welcome to the financial-knowledge assessment! Please click the button to begin.</h2>
-              <div className="disclaimer-buttons">
-                <button
-                  className="agree-button"
-                  onClick={() => setStep("assessment")}>
-                  Begin Assessment
-                </button>
-              </div>
+    <div className="survey-wrapper">
+      {step === "begin" && (
+        <div className="disclaimer-container">
+          <div className="disclaimer-content">
+            <h2>Welcome to the financial-knowledge assessment! Please click the button to begin.</h2>
+            <div className="disclaimer-buttons">
+              <button
+                className="agree-button"
+                onClick={() => setStep("assessment")}>
+                Begin Assessment
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {step === "assessment" && (
+      {step === "assessment" && (
+        <div className="survey-container">
+          <div className="survey-content">
+            <div className="question-container">
+              <p className="question-text">{questions[currentQuestion].questionText}</p>
+              <div className="answer-options">
+                {questions[currentQuestion].answerOptions.map((opt) => (
+                  <button
+                    key={opt.answerText}
+                    onClick={() => handleAnswer(currentQuestion, opt)}
+                    className={`option-button ${answers[currentQuestion] === opt.answerText ? "selected" : ""}`}
+                    disabled={answers[currentQuestion] && answers[currentQuestion] !== opt.answerText}
+                  >
+                    {opt.answerText}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="navigation-container">
+              <button className="next-question-button" onClick={() => nextQuestion(currentQuestion)}>Next</button>
+              <button className="submit-assessment" onClick={() => testScoreCalculation(answers)}>Submit Assessment</button>
+            </div>
+          </div>
+        </div>
+      )
+      }
+
+
+      {
+        step === "results" && (
           <div className="survey-container">
-            <div className="survey-content">
-              <div className="question-container">
-                <p className="question-text">{questions[currentQuestion].questionText}</p>
-                <div className="answer-options">
-                  {questions[currentQuestion].answerOptions.map((opt) => (
-                    <button
-                      key={opt.answerText}
-                      onClick={() => handleAnswer(currentQuestion, opt)}
-                      className={`option-button ${answers[currentQuestion] === opt.answerText ? "selected" : ""}`}
-                      disabled={answers[currentQuestion] && answers[currentQuestion] !== opt.answerText}
-                    >
-                      {opt.answerText}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div className="navigation-container">
-                <button className="next-question-button" onClick={() => nextQuestion(currentQuestion)}>Next</button>
-                <button className="submit-assessment" onClick={() => testScoreCalculation(answers)}>Submit Assessment</button>
-              </div>
+            <div className="result-container">
+              <h2 className="result-tilte">Results</h2>
+              <p className="result-text">Score: {result?.score}</p>
+              <p className="result-text">Investor Type: {result?.level}</p>
+              <p className="result-text">Learning Path: {result?.learningPath}</p>
             </div>
           </div>
         )
-        }
-
-
-        {
-          step === "results" && (
-            <div className="survey-container">
-              <div className="result-container">
-                <h2 className="result-tilte">Results</h2>
-                <p className="result-text">Score: {result?.score}</p>
-                <p className="result-text">Investor Type: {result?.level}</p>
-                <p className="result-text">Learning Path: {result?.learningPath}</p>
-              </div>
-            </div>
-          )
-        }
-      </div>
-    </>
+      }
+    </div>
   );
 }
 
-export { KnowledgeAssessment }; // TODO: change to 'export default'
+export default FinancialKnowledgeSurvey;
