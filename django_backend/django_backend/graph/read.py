@@ -7,7 +7,7 @@ def get_recommendations(user_id: str, max_count: int = 5):
 
     cypher = """
     MATCH (u:User {id:$userId})
-    MATCH (m:Module)
+    MATCH (m:LearningModule)
     WHERE NOT EXISTS { (u)-[:COMPLETED]->(m) }
     WITH u,m,abs(coalesce(m.difficulty,1)-(coalesce(u.knowledgeLevel,1)+$sweet.delta)) AS diffGap
     WITH u,m,1.0/(1.0+$sweet.sharpness*diffGap) AS gapFitRaw
