@@ -10,6 +10,7 @@ const FinancialKnowledgeSurvey = () => {
 
   const questions = [
     {
+      id: 1,
       questionText: "If you buy a company's stock, what are you actually doing?",
       answerOptions: [
         { answerText: "You're buying ownership — you own a part of the company.", score: 4 },
@@ -19,6 +20,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 2,
       questionText: "Over the past 20 years in the U.S., which investment has usually had the highest average returns?",
       answerOptions: [
         { answerText: "Investing in stocks", score: 4 },
@@ -28,6 +30,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 3,
       questionText:
         "Over the long run, what's a realistic average yearly return to expect from a well-diversified U.S. stock mutual fund?",
       answerOptions: [
@@ -38,6 +41,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 4,
       questionText: "How would you evaluate whether a stock is overvalued or undervalued?",
       answerOptions: [
         { answerText: "I'd analyze fundamentals, trends, and valuation models like DCF.", score: 4 },
@@ -47,6 +51,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 5,
       questionText: "What role do index funds play in a portfolio?",
       answerOptions: [
         { answerText: "They offer diversified exposure to specific sectors using underlying securities.", score: 4 },
@@ -56,6 +61,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 6,
       questionText: "How do interest rates affect investments?",
       answerOptions: [
         { answerText: "I actively monitor rate trends to adjust my investment strategy.", score: 4 },
@@ -65,6 +71,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 7,
       questionText: "What does the \"time value of money\" mean?",
       answerOptions: [
         { answerText: "A dollar today is worth more than a dollar in the future due to its earning potential.", score: 4 },
@@ -74,6 +81,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 8,
       questionText: "Which kind of bond is considered the safest to invest in?",
       answerOptions: [
         { answerText: "U.S. Treasury bond", score: 4 },
@@ -83,6 +91,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 9,
       questionText: "I plan to begin taking money from my investments in…",
       answerOptions: [
         { answerText: "1-2 years", score: 4 },
@@ -92,6 +101,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 10,
       questionText: "My current and future income sources are…",
       answerOptions: [
         { answerText: "Very Unstable", score: 4 },
@@ -101,6 +111,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 11,
       questionText: "How would you describe your understanding of how taxes affect your investments?",
       answerOptions: [
         { answerText: "I don't really know how investment taxes work.", score: 1 },
@@ -110,6 +121,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 12,
       questionText: "How would you describe your current knowledge of investing?",
       answerOptions: [
         { answerText: "I'm completely new and don't know basic terms like \"stock\" or \"bond.\"", score: 1 },
@@ -119,6 +131,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 13,
       questionText: "Have you ever invested in stocks, bonds, or other securities?",
       answerOptions: [
         { answerText: "No, never.", score: 1 },
@@ -128,6 +141,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 14,
       questionText: "What does \"diversification\" mean in investing?",
       answerOptions: [
         { answerText: "Putting all your money in one stock for higher returns.", score: 1 },
@@ -137,6 +151,7 @@ const FinancialKnowledgeSurvey = () => {
       ],
     },
     {
+      id: 15,
       questionText: "How familiar are you with financial ratios like P/E or Debt-to-Equity?",
       answerOptions: [
         { answerText: "Not at all.", score: 1 },
@@ -199,8 +214,8 @@ const FinancialKnowledgeSurvey = () => {
       level === "Beginner"
         ? "Start with basic investing concepts, risk and return fundamentals."
         : level === "Intermediate"
-        ? "Explore portfolio diversification, bonds, and mutual funds."
-        : "Focus on advanced topics like valuation models, risk analytics, and trading strategies.";
+          ? "Explore portfolio diversification, bonds, and mutual funds."
+          : "Focus on advanced topics like valuation models, risk analytics, and trading strategies.";
 
     setStep("results");
     setResult({ score, level, learningPath });
@@ -229,13 +244,12 @@ const FinancialKnowledgeSurvey = () => {
           <p>
             <strong>Level:</strong>{" "}
             <span
-              className={`level-tag ${
-                result.level === "Beginner"
+              className={`level-tag ${result.level === "Beginner"
                   ? "beginner"
                   : result.level === "Intermediate"
-                  ? "intermediate"
-                  : "advanced"
-              }`}
+                    ? "intermediate"
+                    : "advanced"
+                }`}
             >
               {result.level}
             </span>
@@ -310,9 +324,8 @@ const FinancialKnowledgeSurvey = () => {
         {question.answerOptions.map((choice, idx) => (
           <label
             key={idx}
-            className={`answer-option ${
-              selectedAnswer === choice.answerText ? "selected" : ""
-            }`}
+            className={`answer-option ${selectedAnswer === choice.answerText ? "selected" : ""
+              }`}
           >
             <input
               type="radio"
