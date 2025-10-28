@@ -666,7 +666,19 @@ async function pushSync() {
   }
 }
 
-
+ipcMain.handle('api-post', async (_event, { path, body }) => {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const text = await res.text(); // don't assume JSON
+    return { ok: res.ok, status: res.status, text };
+  } catch (e) {
+    return { ok: false, status: 0, text: String(e) };
+  }
+});
 //////////////////////////// Database Section ////////////////////////////
 
 //const dbFileName = 'OpenFinAL.sqlite';

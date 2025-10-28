@@ -1,4 +1,49 @@
 from .neo import driver
+import time
+
+def mark_started(user_id: str, module_id: str):
+    cypher = """
+    MATCH (u:User)           WHERE toString(u.id) = toString($uid)
+    MATCH (m:LearningModule) WHERE toString(m.id) = toString($mid)
+    WITH u,m
+    WHERE NOT (u)-[:COMPLETED]->(m)
+    MERGE (u)-[s:STARTED]->(m)
+    ON CREATE SET s.ts = $ts
+    RETURN count(s) AS created
+    """
+    with driver.session() as s:
+        s.run(cypher, uid=user_id, mid=module_id, ts=int(time.time()*1000))
+
+def mark_completed(user_id: str, module_id: str, score: float):
+    cypher = """
+    MATCH (u:User)           WHERE toString(u.id) = toString($uid)
+    MATCH (m:LearningModule) WHERE toString(m.id) = toString($mid)
+
+    // only allow completion if score >= 0.70
+    WITH u,m,$score AS sc
+    WHERE sc >= 0.70
+
+    // remove STARTED if it exists
+    OPTIONAL MATCH (u)-[st:STARTED]->(m)
+    DELETE st
+
+    // create COMPLETED with ts and score
+    MERGE (u)-[c:COMPLETED]->(m)
+    SET c.ts = $ts, c.score = sc
+
+    // bump concept knowledge by module difficulty (or minLevel as fallback)
+    WITH u,m
+    OPTIONAL MATCH (m)-[:TEACHES]->(c:Concept)
+    WITH u,c,coalesce(m.minLevel,1.0) AS bump
+    WHERE c IS NOT NULL
+    MERGE (u)-[k:KNOWS]->(c)
+    SET k.level = coalesce(k.level,0) + bump,
+        k.updatedAt = $ts
+
+    RETURN {completed:true} AS res
+    """
+    with driver.session() as s:
+        s.run(cypher, uid=user_id, mid=module_id, score=score, ts=int(time.time()*1000))
 
 def save_pre_assessment(user_id:str, level:int, risk:str):
     cypher = """
@@ -8,14 +53,14 @@ def save_pre_assessment(user_id:str, level:int, risk:str):
     with driver.session() as s:
         s.execute_write(lambda tx: tx.run(cypher, userId=user_id, level=level, risk=risk))
 
-def mark_completed(user_id:str, module_id:str, quiz_score=None):
-    cypher = """
-    MATCH (u:User {id:$userId}), (m:Module {id:$moduleId})
-    MERGE (u)-[r:COMPLETED]->(m)
-    ON CREATE SET r.ts=timestamp(), r.score=$quizScore
-    """
-    with driver.session() as s:
-        s.execute_write(lambda tx: tx.run(cypher, userId=user_id, moduleId=module_id, quizScore=quiz_score))
+# def mark_completed(user_id:str, module_id:str, quiz_score=None):
+#     cypher = """
+#     MATCH (u:User {id:$userId}), (m:Module {id:$moduleId})
+#     MERGE (u)-[r:COMPLETED]->(m)
+#     ON CREATE SET r.ts=timestamp(), r.score=$quizScore
+#     """
+#     with driver.session() as s:
+#         s.execute_write(lambda tx: tx.run(cypher, userId=user_id, moduleId=module_id, quizScore=quiz_score))
 
 def sync_to_graph(payload: dict):
     with driver.session() as s:
