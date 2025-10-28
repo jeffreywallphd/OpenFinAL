@@ -67,9 +67,9 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)
 });
 
-contextBridge.exposeInMainWorld('yahoo', {
+/*contextBridge.exposeInMainWorld('yahoo', {
     finance: require('yahoo-finance2').default
-});
+});*/
 
 contextBridge.exposeInMainWorld('yahooFinance', {
     chart: (ticker, options) => ipcRenderer.invoke('yahoo-chart', ticker, options),

@@ -70,9 +70,8 @@ const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
-const yf = require("yahoo-finance2").default;
+//const yf = require("yahoo-finance2").default; //causing a module load error. Using code below to dynamically import yahoo-finance2
 
-/* 
 let yf;
 function getYF() {
   if (!yf) {
@@ -80,7 +79,6 @@ function getYF() {
   }
   return yf;
 }
-*/
 
 // Migration function
 async function runMigrations() {
