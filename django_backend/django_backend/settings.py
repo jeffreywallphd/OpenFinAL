@@ -72,7 +72,9 @@ MIDDLEWARE = [
 # Ensure CORS headers allow requests from the frontend
 CORS_ALLOW_ALL_ORIGINS = False  
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000', 
+    'http://localhost:3000',
+    "http://localhost:3001",
+    "http://127.0.0.1:8000", 
     "http://127.0.0.1",  # Add your Electron app URL
     "http://localhost"
 ]
