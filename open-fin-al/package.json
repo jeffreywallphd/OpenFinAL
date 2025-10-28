@@ -81,7 +81,7 @@
     "util": "^0.12.5",
     "uuid": "^11.1.0",
     "xml2js": "^0.6.2",
-    "yahoo-finance2": "^2.13.3"
+    "yahoo-finance2": "release-2.x"
   },
   "build": {
     "appId": "com.openfinal.app",
