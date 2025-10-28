@@ -72,6 +72,16 @@ const crypto = require("crypto");
 const tls = require("tls");
 const yf = require("yahoo-finance2").default;
 
+/* 
+let yf;
+function getYF() {
+  if (!yf) {
+    yf = import('yahoo-finance2').then(m => m.default || m);
+  }
+  return yf;
+}
+*/
+
 // Migration function
 async function runMigrations() {
   try {

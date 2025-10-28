@@ -237,7 +237,7 @@ class Portfolio extends Component {
         }));
 
         const response = await interactor.get(requestObj);
-        if(response.response.ok) {
+        if(response.response.ok && response.response.results[0]) {
             this.setState({buyingPowerLoaded: true, buyingPower: response.response.results[0].buyingPower});
             return true;
         } else {
