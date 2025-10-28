@@ -38,24 +38,19 @@ export function LearningModuleDetails() {
   };
 
   const handleStartClick = async () => {
-    const moduleId = String(location?.state?.moduleId || "");
-    if (!moduleId) return;
+    const moduleId = String(location?.state?.moduleId || '');
+    if (!moduleId) { alert('Missing moduleId'); return; }
 
-    try {
-      const resp = await window.api.post("/api/module/start", {
-        userId: 1,
-        moduleId,
-      });
-      console.log("POST /api/module/start ->", resp.status, resp.text);
-    } catch (e) {
-      console.error("startModule error", e);
-    }
+    console.log('▶ START click for moduleId:', moduleId);
 
-    // Navigate to the first page after POST
-    navigate("/learningModulePage", {
-      state: { pages: state.pages, currentPageIndex: 0 },
+    const resp = await window.api.post('/api/module/start', { userId: 1, moduleId });
+    console.log('◀ start response:', resp.status, resp.text);
+    alert(`Start status: ${resp.status}`);
+
+    navigate('/learningModulePage', {
+        state: { pages: state.pages, currentPageIndex: 0 },
     });
-  };
+    };
 
   return (
     <div className="page">
