@@ -7,13 +7,19 @@
   "main": ".webpack/main",
   "scripts": {
     "start": "electron-forge start",
+    "debug": "ELECTRON_ENABLE_LOGGING=1 electron-forge start",
+    "debug-main": "electron-forge start -- --inspect-electron=9229",
+    "debug-renderer": "electron-forge start -- --remote-debugging-port=9222",
     "clean": "rm -rf .webpack out node_modules package-lock.json && npm install && npm run postinstall",
     "package": "electron-forge package",
     "make": "electron-forge make",
     "publish": "electron-forge publish",
     "postinstall": "electron-rebuild --version 35.1.5",
     "build": "electron-builder --win --x64",
-    "lint": "echo \"No linting configured\""
+    "lint": "echo \"No linting configured\"",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "keywords": [],
   "author": {
@@ -23,7 +29,9 @@
   "license": "LGPL-3.0-or-later",
   "devDependencies": {
     "@babel/core": "^7.26.10",
-    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-env": "^7.28.3",
+    "@babel/preset-react": "^7.27.1",
+    "@babel/preset-typescript": "^7.27.1",
     "@electron-forge/cli": "^7.8.0",
     "@electron-forge/maker-deb": "^7.8.0",
     "@electron-forge/maker-rpm": "^7.8.0",
@@ -33,6 +41,10 @@
     "@electron-forge/plugin-fuses": "^7.8.0",
     "@electron-forge/plugin-webpack": "^7.8.0",
     "@electron/fuses": "^1.8.0",
+    "@testing-library/jest-dom": "^6.8.0",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/jest": "^30.0.0",
     "@vercel/webpack-asset-relocator-loader": "^1.7.3",
     "babel-loader": "^10.0.0",
     "browserify-fs": "^1.0.0",
@@ -42,10 +54,14 @@
     "electron": "35.1.5",
     "electron-builder": "^26.0.12",
     "electron-rebuild": "^3.2.9",
+    "jest": "^30.1.1",
+    "jest-environment-jsdom": "^30.1.1",
+    "jest-transform-stub": "^2.0.0",
     "node-loader": "^2.1.0",
     "path-browserify": "^1.0.1",
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.4",
+    "ts-jest": "^29.4.1",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {

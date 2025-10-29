@@ -61,6 +61,7 @@ module.exports = {
         "tls": false,
         "better-sqlite3": false,
         "sqlite3": false,
+        "vm": false, // Disable vm module polyfill as it's not needed for browser
         "assert": require.resolve("assert"),
         "crypto": require.resolve("crypto-browserify"),
         "os": require.resolve("os-browserify/browser"),

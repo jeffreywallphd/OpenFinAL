@@ -76,7 +76,6 @@ const yf = require("yahoo-finance2").default;
 async function runMigrations() {
   try {
     if (!betterDb) {
-      console.log('Better-sqlite3 database not initialized, skipping migrations');
       return;
     }
     
@@ -85,9 +84,7 @@ async function runMigrations() {
     const migrationManager = new MigrationManager(betterDb, migrationsPath);
     
     await migrationManager.runMigrations();
-    console.log('All migrations completed successfully');
   } catch (error) {
-    console.error('Failed to run migrations:', error);
     throw error;
   }
 }
@@ -365,9 +362,7 @@ async function startAPIFetcher() {
     }
   });
 
-  expressApp.listen(3001, () => {
-    console.log('Proxy server listening on port 3001');
-  });
+  expressApp.listen(3001);
 }
 
 //get certificate fingerprint to ensure secure access
@@ -605,9 +600,7 @@ const getDB = async () => {
   try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
-        console.error('Could not connect to database', err);
-      } else {
-        console.log('Connected to database');
+        // Database connection error
       }
     });
 
@@ -619,7 +612,6 @@ const getDB = async () => {
 
     return true;
   } catch (error) {
-    console.error('Error initializing database:', error);
     return false;
   }
 }
