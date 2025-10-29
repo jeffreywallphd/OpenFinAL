@@ -17,8 +17,8 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
     // used to create and periodically refresh the cache
     async create(entity: IEntity): Promise<Boolean> {
         try {
-            const query = "INSERT INTO Portfolio (name, description, userId, isDefault) VALUES (?, ?, ?, ?)";
-            const args  = [entity.getFieldValue("name"), entity.getFieldValue("description"), entity.getFieldValue("userId"), entity.getFieldValue("isDefault")];
+            const query = "INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, ?)";
+            const args  = [entity.getFieldValue("name"), entity.getFieldValue("userId"), entity.getFieldValue("isDefault")];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
             
             if(result && result.ok) {
@@ -26,7 +26,12 @@ export class SQLitePortfolioGateway implements ISqlDataGateway {
             } 
             return result;
         } catch(error) {
-            return false;
+            console.error('Portfolio creation error in gateway:', error);
+            // Check for duplicate name error
+            if (error.message && error.message.includes('UNIQUE constraint failed')) {
+                throw new Error('A portfolio with this name already exists');
+            }
+            throw error;
         }
     }
     

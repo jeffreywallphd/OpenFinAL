@@ -60,22 +60,24 @@ function TimeSeriesChart(props) {
     const [orderMessage, setOrderMessage] = useState("");
 
     const getPortfolios = async () => {
-        const userInteractor = new UserInteractor();
-        const userRequestObj = new JSONRequest(JSON.stringify({
-            request: {
-                user: {
-                    username: await window.config.getUsername()
-                }
-            }
-        }));
-    
-        const user = await userInteractor.get(userRequestObj);
+        // Get user from localStorage (auth system)
+        const savedUser = localStorage.getItem('openfinAL_user');
+        if (!savedUser) {
+            console.error('No user found in session');
+            return;
+        }
+        
+        const userData = JSON.parse(savedUser);
+        if (!userData.id) {
+            console.error('Invalid user session');
+            return;
+        }
         
         const interactor = new PortfolioInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 portfolio: {
-                    userId: user.response?.results[0]?.id
+                    userId: userData.id
                 }
             }
         }));
@@ -105,7 +107,7 @@ function TimeSeriesChart(props) {
     
         const response = await interactor.get(requestObj);
         
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             setCashId(response.response.results[0].id);
             return response.response.results[0].id;
         }
@@ -157,7 +159,7 @@ function TimeSeriesChart(props) {
 
         const response = await interactor.post(requestObj);
 
-        if(response.response.ok) {
+        if(response?.response?.ok) {
             clearPriceTimeout();
             setOrderMessage("The order was successfully placed!");
             sleep(2000);
