@@ -63,12 +63,12 @@ describe('LearningModule class', () => {
         };
 
         const learningModule = new LearningModule();
-        expect(() => learningModule.fillWithRequest(requestModel)).toThrowError("Making a request about a learning module requires a learningModule property");
+        expect(() => learningModule.fillWithRequest(requestModel)).toThrow("Making a request about a learning module requires a learningModule property");
     });
 
     it('should throw an error for non-existent field key', () => {
         const learningModule = new LearningModule();
-        expect(() => learningModule.setFieldValue('invalidField', 'value')).toThrowError('The requested data property does not exist.');
+        expect(() => learningModule.setFieldValue('invalidField', 'value')).toThrow('The requested data property does not exist.');
     });
 
     it('should getFields from the fields Map', () => {
