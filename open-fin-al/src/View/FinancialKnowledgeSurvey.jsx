@@ -261,7 +261,7 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "How would you evaulate whether a stock is overvalued or undervalued?",
       answerOptions: [
         { answerText: "I\'d analyze fundamentals, trends, and valuation models like DCF.", score: 4 },
-        { answerText: "I\'d compare its P/E ratio and otehr metrix to industry averages.", score: 3 },
+        { answerText: "I\'d compare its P/E ratio and other metrics to industry averages.", score: 3 },
         { answerText: "I\'d look at the current price compared to past prices.", score: 2 },
         { answerText: "I\'m not sure.", score: 1 }
       ]
