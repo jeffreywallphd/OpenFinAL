@@ -11,6 +11,7 @@ const Survey = (props) => {
     const [showResult, setShowResult] = useState(false);
     const [result, setResult] = useState(0);
     const [resultList, setResultList] = useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
 
     useEffect(() => {
         if (!props.title) {
@@ -108,6 +109,7 @@ const Survey = (props) => {
     
 
     const handleAnswer = (option) => {
+        setSelectedOption(option.label);
         const updatedResults = [...resultList];
         if (typeof option.value === "function") {
             updatedResults[currentQuestion] = option.value(option);
@@ -118,10 +120,12 @@ const Survey = (props) => {
     }
     const handleBack = () => {
         setCurrentQuestion(currentQuestion - 1);
+        setSelectedOption(null);
     }
 
     const handleNext = () => {
         setCurrentQuestion(currentQuestion + 1);
+        setSelectedOption(null);
     }
 
     const calculateResult = () => {
@@ -221,7 +225,7 @@ const Survey = (props) => {
                                             key={option.value}
                                             onClick={() => handleAnswer(option)}
                                             className={`option-button ${
-                                                resultList[currentQuestion] === option.value 
+                                                selectedOption === option.label 
                                                     ? 'selected' 
                                                     : ''
                                             }`}
