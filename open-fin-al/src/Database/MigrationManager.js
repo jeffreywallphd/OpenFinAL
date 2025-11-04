@@ -71,7 +71,6 @@ class MigrationManager {
             // If the error is about duplicate column, treat as success
             // This handles cases where schema already has the columns from previous runs
             if (error.message && error.message.includes('duplicate column name')) {
-                console.log(`Migration ${filename}: Columns already exist, skipping...`);
                 return; // Successfully skip this migration
             }
             throw error; // Re-throw other errors
