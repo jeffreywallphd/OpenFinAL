@@ -123,7 +123,7 @@ CREATE TABLE IF NOT EXISTS LearningModuleQuizCompletion(
     FOREIGN KEY (userId) REFERENCES User(id)    
 );
 
-INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (1, "Introduction to Stocks", "This learning module provides you with an introduction to stocks and the stock market.", "stock market", 10, "Stock");
+INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (1, "Introduction to Stocks", "Learn equity basics, market indices, and fundamental terminology.", "stock market equity fundamentals", 15, "Stock");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (1, "Introduction to Stocks", "What is a Stock and What Happens When you Invest?", 1, "TitlePage");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, pageNumber) VALUES (1, "Topics Covered", "Stocks/Slide2.html", 2);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageNumber, pageType) VALUES (1, "What is a Stock?", 3, "SectionPage");
@@ -137,7 +137,7 @@ INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voice
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (1, "Stock Options", "Stocks/Slide11.html", "Stocks/Slide11_Stocks.mp3", 11);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (1, "Returns", "Stocks/Slide12.html", "Stocks/Slide12_Stocks.mp3", 12);
 
-INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (2, "Introduction to Bonds", "This learning module provides you with an introduction to bonds.", "bonds investment introduction", 10, "Bond");
+INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (2, "Introduction to Bonds", "Explore bond types, yields, and how interest rates affect pricing.", "bonds investment yields interest rates", 12, "Bond");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (2, "Introduction to Bonds", "What is a Bond?", 1, "TitlePage");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, pageNumber) VALUES (2, "Topics Covered", "Bonds/Slide2.html",2);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (2, "Bonds", "What they are", 3, "SectionPage");
@@ -158,15 +158,15 @@ INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber,
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (7, "Ratios", "StockScreening/Slide4.html", "StockScreening/StockScreeningSlide4.mp3", 4);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (7, "Build Your own Strategy", "StockScreening/Slide5.html", "StockScreening/StockScreeningSlide5.mp3", 5);
 
-INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (8, "Basics of Blockchain", "This learning module provides you with an introduction to blockchain.", "blockchain introduction", 10, "Blockchain");
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (8, "A Beginner's Overview To Blockchain", "Blockchain/Slide2.html", "Blockchain/BlockchainSlide2.mp3", 1);
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (8, "Blockchain Basics", "Blockchain/Slide3.html", "Blockchain/BlockchainSlide3.mp3", 2);
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (8, "How to invest in Crypto and NFTs?", "Multiple exchanges and opportunities!", 3, "SectionPage");
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (8, "Ratios", "Blockchain/Slide4.html", "Blockchain/BlockchainSlide4.mp3", 4);
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (8, "Crypto and NFTs", "Blockchain/Slide5.html", "Blockchain/BlockchainSlide5.mp3", 5);
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (8, "Risks and Obligations", "Blockchain/Slide6.html", "Blockchain/BlockchainSlide6.mp3", 6);
+INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (3, "Basics of Blockchain", "Understand distributed ledgers, consensus, and real-world use cases.", "blockchain distributed ledgers consensus", 10, "Blockchain");
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (3, "A Beginner's Overview To Blockchain", "Blockchain/Slide2.html", "Blockchain/BlockchainSlide2.mp3", 1);
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (3, "Blockchain Basics", "Blockchain/Slide3.html", "Blockchain/BlockchainSlide3.mp3", 2);
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (3, "How to invest in Crypto and NFTs?", "Multiple exchanges and opportunities!", 3, "SectionPage");
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (3, "Ratios", "Blockchain/Slide4.html", "Blockchain/BlockchainSlide4.mp3", 4);
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (3, "Crypto and NFTs", "Blockchain/Slide5.html", "Blockchain/BlockchainSlide5.mp3", 5);
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (3, "Risks and Obligations", "Blockchain/Slide6.html", "Blockchain/BlockchainSlide6.mp3", 6);
 
-INSERT OR IGNORE INTO LearningModule (id,title, description, keywords, timeEstimate, category) VALUES (4, "Risk Free Investments", "This learning module provides you with some helpful information about risk free investments", "risk free investments", 10, "Risk Free Investments");
+INSERT OR IGNORE INTO LearningModule (id,title, description, keywords, timeEstimate, category) VALUES (4, "Risk-Free Investments", "Discover treasury bills, money market funds, and capital preservation.", "risk free investments treasury bills", 8, "Risk Free Investments");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, pageNumber) VALUES (4, "Topics Covered", "RiskFreeInvestments/Slide1.html", 1);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageNumber, pageType) VALUES (4, "What are risk free investments?", 2, "SectionPage");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "What types are there?", "RiskFreeInvestments/Slide3.html", "RiskFreeInvestments/Slide3_RiskFree.mp3", 3);
@@ -176,3 +176,9 @@ INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voice
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "What does each type do? Money Market", "RiskFreeInvestments/Slide7.html", "RiskFreeInvestments/Slide7_RiskFree.mp3", 7);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "What does each type do? CD's", "RiskFreeInvestments/Slide8.html", "RiskFreeInvestments/Slide8_RiskFree.mp3", 8);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "How safe are they?", "RiskFreeInvestments/Slide9.html", "RiskFreeInvestments/Slide9_RiskFree.mp3", 9);
+
+INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (5, "ETF Fundamentals", "What ETFs are, tracking error, and how to evaluate expense ratios.", "etf exchange traded funds expense ratios", 14, "Index");
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (5, "ETF Fundamentals", "Understanding Exchange-Traded Funds", 1, "TitlePage");
+
+INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (6, "Intro to Options", "Calls vs puts, Greeks, and risk management considerations.", "options calls puts greeks risk", 18, "Stock");
+INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (6, "Intro to Options", "Options Trading Basics", 1, "TitlePage");
