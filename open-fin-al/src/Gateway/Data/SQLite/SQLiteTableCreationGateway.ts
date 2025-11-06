@@ -27,13 +27,10 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 firstName TEXT,
                 lastName TEXT,
                 email TEXT,
-<<<<<<< HEAD
-=======
                 username TEXT UNIQUE NOT NULL,
                 pinHash TEXT,
                 lastLogin TIMESTAMP,
                 dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
->>>>>>> 1aaa66f7cd760d5d228ea1a29c4bc9b689bbceca
                 overalKnowledgeLevel TEXT,
                 riskScore TEXT,
                 username TEXT UNIQUE NOT NULL
@@ -242,7 +239,6 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 key TEXT PRIMARY KEY,
                 value TEXT
             );
-<<<<<<< HEAD
 
             CREATE TABLE IF NOT EXISTS Concept (
                 key INTEGER PRIMARY KEY,
