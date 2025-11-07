@@ -1,0 +1,476 @@
+/* Learning Modules Styles */
+
+.learning-modules-container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.learning-page-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--text-color-dark);
+    margin-bottom: 30px;
+}
+
+/* Recommended Module Card */
+.recommended-module-card {
+    position: relative;
+    background: linear-gradient(135deg, var(--primary-color) 0%, rgba(42, 50, 110, 0.95) 100%);
+    border: 2px solid var(--primary-color);
+    border-radius: 16px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    overflow: hidden;
+}
+
+.recommended-badge {
+    display: inline-block;
+    background-color: var(--tertiary-color);
+    color: var(--text-color-white);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.recommended-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 30px;
+}
+
+.recommended-main {
+    flex: 1;
+}
+
+.recommended-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-color-white);
+    margin: 0 0 15px 0;
+    line-height: 1.3;
+}
+
+.recommended-description {
+    font-size: 16px;
+    color: rgba(255, 255, 255, 0.9);
+    margin-bottom: 15px;
+    line-height: 1.6;
+}
+
+.recommended-reason {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+
+.reason-label {
+    font-weight: 600;
+    color: var(--text-color-white);
+}
+
+.recommended-time {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.time-icon {
+    font-size: 16px;
+}
+
+.recommended-icon-container {
+    position: relative;
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.recommended-icon {
+    font-size: 80px;
+    color: var(--tertiary-color);
+    opacity: 0.6;
+    position: relative;
+    z-index: 2;
+}
+
+.icon-rays {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 120px;
+    z-index: 1;
+}
+
+.ray {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 24px;
+    background: var(--tertiary-color);
+    opacity: 0.4;
+    border-radius: 2px;
+    transform-origin: center center;
+}
+
+.ray-1 {
+    transform: translate(-50%, -50%) rotate(0deg) translateY(-68px);
+}
+
+.ray-2 {
+    transform: translate(-50%, -50%) rotate(45deg) translateY(-60px);
+}
+
+.ray-3 {
+    transform: translate(-50%, -50%) rotate(90deg) translateY(-60px);
+}
+
+.ray-4 {
+    transform: translate(-50%, -50%) rotate(135deg) translateY(-60px);
+}
+
+.ray-5 {
+    transform: translate(-50%, -50%) rotate(180deg) translateY(-60px);
+}
+
+.ray-6 {
+    transform: translate(-50%, -50%) rotate(225deg) translateY(-60px);
+}
+
+.ray-7 {
+    transform: translate(-50%, -50%) rotate(270deg) translateY(-60px);
+}
+
+.ray-8 {
+    transform: translate(-50%, -50%) rotate(315deg) translateY(-60px);
+}
+
+.recommended-progress-section {
+    margin-top: 30px;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.progress-label {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.progress-percentage {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color-white);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color-hover) 0%, var(--tertiary-color) 100%);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.recommended-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+
+/* Search Bar */
+.module-search-container {
+    margin-bottom: 40px;
+    width: 100%;
+}
+
+.module-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.search-icon {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--primary-color);
+    font-size: 18px;
+    z-index: 2;
+}
+
+.module-search-input {
+    width: 100%;
+    padding: 16px 20px 16px 55px;
+    font-size: 16px;
+    border: 2px solid var(--background-color-highlight);
+    border-radius: 12px;
+    background-color: var(--background-color);
+    color: var(--text-color-dark);
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.module-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--background-color-highlight-light);
+}
+
+.module-search-input::placeholder {
+    color: var(--text-color-medium);
+}
+
+/* All Learning Modules Section */
+.modules-section-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--text-color-dark);
+    margin-bottom: 25px;
+}
+
+.modules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+/* Module Card */
+.module-card {
+    position: relative;
+    background-color: var(--background-color);
+    border: 2px solid var(--background-color-highlight);
+    border-radius: 12px;
+    padding: 25px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.module-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 24px var(--background-color-highlight);
+    transform: translateY(-2px);
+}
+
+.module-icon {
+    font-size: 48px;
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+.module-content {
+    margin-bottom: 20px;
+}
+
+.module-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--text-color-dark);
+    margin: 0 0 10px 0;
+    line-height: 1.4;
+}
+
+.module-description {
+    font-size: 14px;
+    color: var(--text-color-medium-dark);
+    line-height: 1.6;
+    margin: 0;
+}
+
+.module-footer {
+    margin-top: auto;
+}
+
+.module-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.module-time {
+    font-size: 13px;
+    color: var(--text-color-medium-dark);
+}
+
+.module-progress-percent {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-color-dark);
+}
+
+.module-progress-bar {
+    width: 100%;
+    height: 6px;
+    background-color: var(--background-color-highlight-light);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.module-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color) 0%, var(--primary-color-hover) 100%);
+    border-radius: 10px;
+    transition: width 0.3s ease;
+}
+
+.module-link {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Loading and Error States */
+.modules-loading,
+.modules-error {
+    text-align: center;
+    padding: 60px 20px;
+    font-size: 18px;
+    color: var(--text-color-medium-dark);
+}
+
+.modules-error {
+    color: var(--text-color-medium-dark);
+    opacity: 0.7;
+}
+
+/* Dark Mode Adjustments */
+body.dark-mode .recommended-module-card {
+    background: linear-gradient(135deg, rgba(102, 116, 241, 0.3) 0%, rgba(74, 85, 104, 0.4) 100%);
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+body.dark-mode .recommended-icon {
+    opacity: 0.5;
+}
+
+body.dark-mode .ray {
+    opacity: 0.3;
+}
+
+body.dark-mode .module-card {
+    background-color: var(--background-color-highlight-light);
+    border-color: var(--background-color-highlight);
+}
+
+body.dark-mode .module-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    background-color: var(--background-color);
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .modules-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .modules-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .recommended-content {
+        flex-direction: column;
+    }
+
+    .recommended-icon {
+        font-size: 60px;
+    }
+
+    .recommended-icon-container {
+        align-self: flex-end;
+        margin-right: 10px;
+    }
+
+    .icon-rays {
+        width: 90px;
+        height: 90px;
+    }
+
+    .ray {
+        height: 18px;
+        width: 3px;
+    }
+
+    .ray-1 {
+        transform: translate(-50%, -50%) rotate(0deg) translateY(-51px);
+    }
+
+    .ray-2 {
+        transform: translate(-50%, -50%) rotate(45deg) translateY(-45px);
+    }
+
+    .ray-3 {
+        transform: translate(-50%, -50%) rotate(90deg) translateY(-45px);
+    }
+
+    .ray-4 {
+        transform: translate(-50%, -50%) rotate(135deg) translateY(-45px);
+    }
+
+    .ray-5 {
+        transform: translate(-50%, -50%) rotate(180deg) translateY(-45px);
+    }
+
+    .ray-6 {
+        transform: translate(-50%, -50%) rotate(225deg) translateY(-45px);
+    }
+
+    .ray-7 {
+        transform: translate(-50%, -50%) rotate(270deg) translateY(-45px);
+    }
+
+    .ray-8 {
+        transform: translate(-50%, -50%) rotate(315deg) translateY(-45px);
+    }
+
+    .learning-page-title {
+        font-size: 28px;
+    }
+
+    .recommended-title {
+        font-size: 24px;
+    }
+}
