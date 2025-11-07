@@ -652,7 +652,11 @@ async function pushSync() {
     if (res.ok) {
       console.log('Sync successful with Neo4j.');
       db.run(
+<<<<<<< HEAD
+        `INSERT INTO Meta(key,value) VALUES('lastSyncTs', ?) 
+=======
         `INSERT INTO Meta(key,value) VALUES('lastSyncTs', ?)
+>>>>>>> 1aaa66f7cd760d5d228ea1a29c4bc9b689bbceca
          ON CONFLICT(key) DO UPDATE SET value=excluded.value`,
         [String(res.newLastSyncTs)]
       );

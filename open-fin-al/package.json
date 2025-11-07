@@ -49,7 +49,7 @@
     "babel-loader": "^10.0.0",
     "browserify-fs": "^1.0.0",
     "copy-dependencies": "file:./forge-plugins",
-    "copy-webpack-plugin": "^13.0.0",
+    "copy-webpack-plugin": "^13.0.1",
     "css-loader": "^6.11.0",
     "electron": "35.1.5",
     "electron-builder": "^26.0.12",

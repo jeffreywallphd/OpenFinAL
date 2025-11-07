@@ -225,9 +225,3 @@ INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voice
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "What does each type do? Money Market", "RiskFreeInvestments/Slide7.html", "RiskFreeInvestments/Slide7_RiskFree.mp3", 7);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "What does each type do? CD's", "RiskFreeInvestments/Slide8.html", "RiskFreeInvestments/Slide8_RiskFree.mp3", 8);
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, pageContentUrl, voiceoverUrl, pageNumber) VALUES (4, "How safe are they?", "RiskFreeInvestments/Slide9.html", "RiskFreeInvestments/Slide9_RiskFree.mp3", 9);
-
-INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (5, "ETF Fundamentals", "What ETFs are, tracking error, and how to evaluate expense ratios.", "etf exchange traded funds expense ratios", 14, "Index");
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (5, "ETF Fundamentals", "Understanding Exchange-Traded Funds", 1, "TitlePage");
-
-INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (6, "Intro to Options", "Calls vs puts, Greeks, and risk management considerations.", "options calls puts greeks risk", 18, "Stock");
-INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (6, "Intro to Options", "Options Trading Basics", 1, "TitlePage");
