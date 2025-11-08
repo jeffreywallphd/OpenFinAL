@@ -30,7 +30,7 @@ body.dark-mode {
   --tertiary-color: #4a5568;
   --background-color: #282828;
   --background-color-highlight-light: #202020;
-  --background-color-highlight: #181818; 
+  --background-color-highlight: #181818;
   --accent-color: #4a5568;
   --highlight-color: #ecc94b;
   --text-color-white: #EEEEEE;
@@ -82,7 +82,7 @@ body {
 }
 
 a {
-  color: var(--primary-color);  
+  color: var(--primary-color);
 }
 
 a:hover {
@@ -103,7 +103,7 @@ input, select, option {
   border: 1px solid var(--text-color-medium-dark);
   box-shadow: none;
   padding: 8px;
-  border-radius: 4px; 
+  border-radius: 4px;
 }
 
 p, div {
@@ -285,7 +285,7 @@ code {
 
 .sidePanel {
   margin-left: 30px;
-} 
+}
 
 .sidebar.collapsed {
   max-width: 55px;
@@ -680,7 +680,7 @@ code {
   flex-direction: column;
   border-radius: 10px;
   padding: 10px;
-  background-color: var(--background-color); 
+  background-color: var(--background-color);
   align-items: center;
   min-width: 300px;
 }
@@ -1061,7 +1061,7 @@ nav ul li a:hover {
   /* background-color: #fff; */
   /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
   margin-bottom: 0px;
-  border-radius: 10px; 
+  border-radius: 10px;
 }
 
 .nav-left h1 {
@@ -1165,7 +1165,7 @@ nav ul li a:hover {
 
 .news-browser-item-image {
   overflow-y: hidden;
-  vertical-align: top; 
+  vertical-align: top;
 }
 
 .news-browser-item-image img {
@@ -1204,7 +1204,7 @@ nav ul li a:hover {
 }
 
 .news-item-image {
-  vertical-align: top; 
+  vertical-align: top;
 }
 
 .news-item-image img {
@@ -1605,14 +1605,14 @@ nav ul li a:hover {
 .faq-page h1 {
   font-size: 32px;
   color: var(--primary-color) ;
-  text-align: center; 
+  text-align: center;
   margin: 0 auto;
 }
 
 .faq-page h2 {
   font-size: 24px;
   color: var(--primary-color) ;
-  text-align: center; 
+  text-align: center;
   margin: 0 auto;
 }
 
@@ -1778,7 +1778,9 @@ nav ul li a:hover {
 }
 
 .survey-button,
-.create-pool-button {
+.create-pool-button,
+.next-button,
+.back-button {
   background-color: var(--accent-color);
   border: none;
   border-radius: 5px;
@@ -1788,7 +1790,9 @@ nav ul li a:hover {
 }
 
 .survey-button:hover,
-.create-pool-button:hover {
+.create-pool-button:hover,
+.next-button:hover,
+.back-button:hover {
   background-color: var(--accent-color);
 }
 
@@ -2092,7 +2096,9 @@ nav ul li a:hover {
   background-color: var(--accent-color);
 }
 
-.survey-button {
+.survey-button,
+.next-button,
+.back-button {
   padding: 0.75rem 1.5rem;
   background-color: var(--primary-color);
   color: var(--text-color-light);
@@ -2103,10 +2109,15 @@ nav ul li a:hover {
   transition: background-color 0.2s ease;
 }
 
-.survey-button:hover {
+.survey-button:hover,
+.next-button:hover,
+.back-button:hover {
   background-color: var(--accent-color);
 }
 
+.next-button {
+  margin-left: auto;
+}
 
 .disclaimer-container {
   background-color: rgba(0, 0, 0, 0.05);
@@ -2802,11 +2813,11 @@ body.dark-mode .pin-login-error {
     padding: 24px;
     margin: 16px;
   }
-  
+
   .pin-login-title {
     font-size: 28px;
   }
-  
+
   .pin-login-subtitle {
     font-size: 14px;
   }
