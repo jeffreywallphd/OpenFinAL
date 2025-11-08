@@ -62,6 +62,7 @@ handleSquirrelEvent();
 const os = require('os');
 const ipcMain = require('electron').ipcMain;
 const sqlite3 = require('sqlite3').verbose();
+const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer');
 const keytar = require('keytar');
 const express = require('express');
@@ -69,7 +70,32 @@ const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
-const yf = require("yahoo-finance2").default;
+//const yf = require("yahoo-finance2").default; //causing a module load error. Using code below to dynamically import yahoo-finance2
+
+let yf;
+function getYF() {
+  if (!yf) {
+    yf = import('yahoo-finance2').then(m => m.default || m);
+  }
+  return yf;
+}
+
+// Migration function
+async function runMigrations() {
+  try {
+    if (!betterDb) {
+      return;
+    }
+    
+    const migrationsPath = path.join(__dirname, 'Database', 'migrations');
+    const { MigrationManager } = require('./Database/MigrationManager');
+    const migrationManager = new MigrationManager(betterDb, migrationsPath);
+    
+    await migrationManager.runMigrations();
+  } catch (error) {
+    throw error;
+  }
+}
 
 //////////////////////////// Main Electron Window Section ////////////////////////////
 
@@ -344,9 +370,7 @@ async function startAPIFetcher() {
     }
   });
 
-  expressApp.listen(3001, () => {
-    console.log('Proxy server listening on port 3001');
-  });
+  expressApp.listen(3001);
 }
 
 //get certificate fingerprint to ensure secure access
@@ -568,6 +592,7 @@ const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(app.getPath('userData'), dbFileName);
 
 let db;
+let betterDb;
 
 const sqliteExists = async () => {
   try {
@@ -583,15 +608,18 @@ const getDB = async () => {
   try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
-        console.error('Could not connect to database', err);
-      } else {
-        console.log('Connected to database');
+        // Database connection error
       }
     });
 
+    // Also initialize better-sqlite3 for migrations
+    betterDb = new Database(dbPath);
+    
+    // Run migrations
+    await runMigrations();
+
     return true;
   } catch (error) {
-    console.error('Error initializing database:', error);
     return false;
   }
 }
