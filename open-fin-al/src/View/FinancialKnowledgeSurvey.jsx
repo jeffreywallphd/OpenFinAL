@@ -7,10 +7,10 @@ const FinancialKnowledgeSurvey = () => {
       id: 1,
       questionText: "How would you describe your current knowledge of investing?",
       answerOptions: [
-        { answerText: "I'm completely new and don\'t know basic terms like \"stock\" or \"bond\".", score: 1 },
-        { answerText: "I know the basics but haven\'t invested much.", score: 2 },
-        { answerText: "I\'m comfortable with concepts like diversification and have some experience.", score: 3 },
-        { answerText: "I\'m experienced and familiar with advanced topics like options or market analysis.", score: 4 }
+        { answerText: "I'm completely new and don't know basic terms like \"stock\" or \"bond\".", score: 1 },
+        { answerText: "I know the basics but haven't invested much.", score: 2 },
+        { answerText: "I'm comfortable with concepts like diversification and have some experience.", score: 3 },
+        { answerText: "I'm experienced and familiar with advanced topics like options or market analysis.", score: 4 }
       ]
     },
     {
@@ -19,7 +19,7 @@ const FinancialKnowledgeSurvey = () => {
       answerOptions: [
         { answerText: "No, never.", score: 1 },
         { answerText: "Yes, but only through a retirement account like a 401(k).", score: 2 },
-        { answerText: "Yes, I\'ve made a few individual investments.", score: 3 },
+        { answerText: "Yes, I've made a few individual investments.", score: 3 },
         { answerText: "Yes, I actively manage a portfolio.", score: 4 }
       ]
     },
@@ -28,7 +28,7 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "How familiar are you with financial ratios like P/E or Debt-to-Equity?",
       answerOptions: [
         { answerText: "Not at all.", score: 1 },
-        { answerText: "I\'ve heard of them but don\'t understand how to use them.", score: 2 },
+        { answerText: "I've heard of them but don't understand how to use them.", score: 2 },
         { answerText: "I can interpret them for basic stock analysis.", score: 3 },
         { answerText: "I use them regularly in my investment decisions.", score: 4 }
       ]
@@ -37,23 +37,23 @@ const FinancialKnowledgeSurvey = () => {
       id: 4,
       questionText: "How would you describe your understanding of how taxes affect your investments?",
       answerOptions: [
-        { answerText: "I don\'t really know how investment taxes work.", score: 1 },
-        { answerText: "I\'ve heard fo capital gains and tax-advantaged accounts, but don\'t fully understand them.", score: 2 },
+        { answerText: "I don't really know how investment taxes work.", score: 1 },
+        { answerText: "I've heard of capital gains and tax-advantaged accounts, but don't fully understand them.", score: 2 },
         { answerText: "I understand key concepts like short- vs long-term capital gains and tax deferral.", score: 3 },
         { answerText: "I actively consider tax implications (e.g., harvesting losses, asset location) when investing.", score: 4 }
       ]
     },
     {
       id: 5,
-      questionText: "text",
+      questionText: "What does \"diversification\" mean in investing?",
       answerOptions: [
-        { answerText: "Putting all your money in one stock for higher returns", score: 1 },
+        { answerText: "Putting all your money in one stock for higher returns.", score: 1 },
         { answerText: "Spreading investments across different assets to reduce risk.", score: 3 },
         { answerText: "Buying only low-risk bonds.", score: 2 },
-        { answerText: "I don\'t know.", score: 1 }
+        { answerText: "I don't know.", score: 1 }
       ]
     }
-  ]
+  ];
 
   const questionSet2 = [
     {
@@ -70,10 +70,10 @@ const FinancialKnowledgeSurvey = () => {
       id: 2,
       questionText: "Over the past 20 years in the U.S., which investment has usually had the highest average returns?",
       answerOptions: [
-        { answerText: "Investing in stocks", score: 4 },
-        { answerText: "Buying bonds", score: 3 },
-        { answerText: "Putting money into precious metals like gold or silver", score: 2 },
-        { answerText: "Keeping cash in a CD or money market account", score: 1 },
+        { answerText: "Investing in stocks.", score: 4 },
+        { answerText: "Buying bonds.", score: 3 },
+        { answerText: "Putting money into precious metals like gold or silver.", score: 2 },
+        { answerText: "Keeping cash in a CD or money market account.", score: 1 },
       ],
     },
     {
@@ -131,9 +131,9 @@ const FinancialKnowledgeSurvey = () => {
       id: 8,
       questionText: "Which kind of bond is considered the safest to invest in?",
       answerOptions: [
-        { answerText: "U.S. Treasury bond", score: 4 },
+        { answerText: "U.S. Treasury bonds", score: 4 },
         { answerText: "Municipal bonds", score: 3 },
-        { answerText: "Corporate Bonds", score: 2 },
+        { answerText: "Corporate bonds", score: 2 },
         { answerText: "Unsure", score: 1 },
       ],
     },
@@ -153,7 +153,7 @@ const FinancialKnowledgeSurvey = () => {
       answerOptions: [
         { answerText: "Very Unstable", score: 4 },
         { answerText: "Unstable", score: 3 },
-        { answerText: "Somewhat stable", score: 2 },
+        { answerText: "Somewhat Stable", score: 2 },
         { answerText: "Stable", score: 1 },
       ],
     },
@@ -171,7 +171,7 @@ const FinancialKnowledgeSurvey = () => {
       id: 12,
       questionText: "How would you describe your current knowledge of investing?",
       answerOptions: [
-        { answerText: "I'm completely new and don't know basic terms like \"stock\" or \"bond.\"", score: 1 },
+        { answerText: "I'm completely new and don't know basic terms like \"stock\" or \"bond\".", score: 1 },
         { answerText: "I know the basics but haven't invested much.", score: 2 },
         { answerText: "I'm comfortable with concepts like diversification and have some experience.", score: 3 },
         { answerText: "I'm experienced and familiar with advanced topics like options or market analysis.", score: 4 },
@@ -207,16 +207,6 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "I use them regularly in my investment decisions.", score: 4 },
       ],
     },
-    {
-      id: 16,
-      questionText: "How would you describe your understanding of how taxes affect your investments?",
-      answerOptions: [
-        { answerText: "I don\'t really know how investment taxes work at all.", score: 1 },
-        { answerText: "I\'ve heard of capital gains and tax-advantaged accounts, but don't fully understand them.", score: 2 },
-        { answerText: "I understand key concepts like short- vs. long-term capital gains and tax deferral.", score: 3 },
-        { answerText: "I actively consider tax implications (e.g., harvesting losses, asset location) when investing.", score: 4 }
-      ]
-    }
   ];
 
   const questionSet3 = [
@@ -224,10 +214,10 @@ const FinancialKnowledgeSurvey = () => {
       id: 1,
       questionText: "If you buy a company's stock, what are you actually doing?",
       answerOptions: [
-        { answerText: "You\'re buying ownershiop - you own a part of the company.", score: 4 },
-        { answerText: "You\'re letting the company borrow your money.", score: 3 },
-        { answerText: "You\'re putting in money and the company promises to pay you back with extra later.", score: 2 },
-        { answerText: "You\'re on the hook if the company owes money or goes into debt.", score: 1 }
+        { answerText: "You're buying ownership - you own a part of the company.", score: 4 },
+        { answerText: "You're letting the company borrow your money.", score: 3 },
+        { answerText: "You're putting in money and the company promises to pay you back with extra later.", score: 2 },
+        { answerText: "You're on the hook if the company owes money or goes into debt.", score: 1 }
       ]
     },
     {
@@ -236,13 +226,13 @@ const FinancialKnowledgeSurvey = () => {
       answerOptions: [
         { answerText: "Investing in stocks.", score: 4 },
         { answerText: "Buying bonds.", score: 3 },
-        { answerText: "Putting money into precious metals like gold or silver", score: 2 },
-        { answerText: "Keeping cash in a CD or money market account", score: 1 }
+        { answerText: "Putting money into precious metals like gold or silver.", score: 2 },
+        { answerText: "Keeping cash in a CD or money market account.", score: 1 }
       ]
     },
     {
       id: 3,
-      questionText: "Over the long run, what\'s a realistic average yearly return to expect from a well-diversified U.S. stock mutual fund?",
+      questionText: "Over the long run, what's a realistic average yearly return to expect from a well-diversified U.S. stock mutual fund?",
       answerOptions: [
         { answerText: "10%", score: 4 },
         { answerText: "5%", score: 3 },
@@ -252,22 +242,22 @@ const FinancialKnowledgeSurvey = () => {
     },
     {
       id: 4,
-      questionText: "How would you evaulate whether a stock is overvalued or undervalued?",
+      questionText: "How would you evaluate whether a stock is overvalued or undervalued?",
       answerOptions: [
-        { answerText: "I\'d analyze fundamentals, trends, and valuation models like DCF.", score: 4 },
-        { answerText: "I\'d compare its P/E ratio and other metrics to industry averages.", score: 3 },
-        { answerText: "I\'d look at the current price compared to past prices.", score: 2 },
-        { answerText: "I\'m not sure.", score: 1 }
+        { answerText: "I'd analyze fundamentals, trends, and valuation models like DCF.", score: 4 },
+        { answerText: "I'd compare its P/E ratio and other metrics to industry averages.", score: 3 },
+        { answerText: "I'd look at the current price compared to past prices.", score: 2 },
+        { answerText: "I'm not sure.", score: 1 }
       ]
     },
     {
       id: 5,
-      questionText: "What role do index funds play in a portfoilo?",
+      questionText: "What role do index funds play in a portfolio?",
       answerOptions: [
         { answerText: "They offer diversified exposure to specific sectors using underlying securities.", score: 4 },
         { answerText: "They help spread risk by investing in a broad market.", score: 3 },
-        { answerText: "They\'re similar to stocks.", score: 2 },
-        { answerText: "I\'m not sure.", score: 1 }
+        { answerText: "They're similar to stocks.", score: 2 },
+        { answerText: "I'm not sure.", score: 1 }
       ]
     },
     {
@@ -275,9 +265,9 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "How do interest rates affect investments?",
       answerOptions: [
         { answerText: "I actively monitor rate trends to adjust my investment strategy.", score: 4 },
-        { answerText: "I understnad that rising rates can negatively impact bonds and equities.", score: 3 },
+        { answerText: "I understand that rising rates can negatively impact bonds and equities.", score: 3 },
         { answerText: "I know they impact the market, but I'm not sure how.", score: 2 },
-        { answerText: "I\'m not sure.", score: 1 }
+        { answerText: "I'm not sure.", score: 1 }
       ]
     },
     {
@@ -285,18 +275,18 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "What does the \"time value of money\" mean?",
       answerOptions: [
         { answerText: "A dollar today is worth more than a dollar in the future due to its earning potential.", score: 4 },
-        { answerText: "INflation and other economic conditions can erode the value of money over time.", score: 3 },
+        { answerText: "Inflation and other economic conditions can erode the value of money over time.", score: 3 },
         { answerText: "It refers to how long you can hold cash before investing it.", score: 2 },
         { answerText: "It means future money will always grow at the same rate.", score: 1 }
       ]
     },
     {
       id: 8,
-      questionText: "Which kinds of bond is considered the safest to invest in?",
+      questionText: "Which kind of bond is considered the safest to invest in?",
       answerOptions: [
-        { answerText: "U.S. Treasury bond", score: 4 },
+        { answerText: "U.S. Treasury bonds", score: 4 },
         { answerText: "Municipal bonds", score: 3 },
-        { answerText: "Corporate Bonds", score: 2 },
+        { answerText: "Corporate bonds", score: 2 },
         { answerText: "Unsure", score: 1 }
       ]
     },
@@ -305,16 +295,16 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "What does diversification mean in investing?",
       answerOptions: [
         { answerText: "Putting all your money in one stock for higher returns.", score: 1 },
-        { answerText: "Spreadnig investments across different assets to reduce risk.", score: 2 },
+        { answerText: "Spreading investments across different assets to reduce risk.", score: 2 },
         { answerText: "Buying only low-risk bonds.", score: 3 },
-        { answerText: "I don\'t know.", score: 4 }
+        { answerText: "I don't know.", score: 4 }
       ]
     },
     {
       id: 10,
-      questionText: "What do financial rations like P/E (Price-to-Earnings) or Debt-to-Equity help investors evaluate?",
+      questionText: "What do financial ratios like P/E (Price-to-Earnings) or Debt-to-Equity help investors evaluate?",
       answerOptions: [
-        { answerText: "A company\'s profitability and financial health.", score: 4 },
+        { answerText: "A company's profitability and financial health.", score: 4 },
         { answerText: "The number of shares a company has issued.", score: 3 },
         { answerText: "How much cash the company holds.", score: 2 },
         { answerText: "The company's market and advertising expenses.", score: 1 }
@@ -325,19 +315,19 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "How would you describe your understanding of how taxes affect your investments?",
       answerOptions: [
         { answerText: "I actively consider tax implications (e.g., harvesting losses, asset location) when investing.", score: 4 },
-        { answerText: "I\'ve heard of capital gains and tax-advantage accounts, but don\'t fully understand them.", score: 2 },
+        { answerText: "I've heard of capital gains and tax-advantage accounts, but don't fully understand them.", score: 2 },
         { answerText: "I understand key concepts like short- vs long-term capital gains and tax deferral.", score: 3 },
-        { answerText: "I don\'t really know how investment taxes work.", score: 1 }
+        { answerText: "I don't really know how investment taxes work.", score: 1 }
       ]
     },
     {
       id: 12,
-      questionText: "What is the main difference between a Roth IRA and a Tradiitonal IRA?",
+      questionText: "What is the main difference between a Roth IRA and a Traditional IRA?",
       answerOptions: [
         { answerText: "Roth IRAs use after-tax contributions making withdrawals tax-free in retirement.", score: 4 },
         { answerText: "Traditional IRAs use after-tax contributions, so withdrawals are tax-free.", score: 3 },
         { answerText: "Roth IRAs are only for high-income earners.", score: 2 },
-        { answerText: "I\'m not sure.", score: 1 }
+        { answerText: "I'm not sure.", score: 1 }
       ]
     },
     {
@@ -356,7 +346,7 @@ const FinancialKnowledgeSurvey = () => {
       answerOptions: [
         { answerText: "How easily an asset can be converted to cash without losing value.", score: 4 },
         { answerText: "The total amount of debt a company owns.", score: 3 },
-        { answerText: "The company\'s ability to generate profit over time.", score: 2 },
+        { answerText: "The company's ability to generate profit over time.", score: 2 },
         { answerText: "The difference between revenue and expenses.", score: 1 }
       ]
     },
@@ -367,17 +357,17 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "Their deductible expenses exceed the standard deduction amount.", score: 4 },
         { answerText: "It guarantees a larger tax refund.", score: 3 },
         { answerText: "It eliminates the need to file state taxes.", score: 2 },
-        { answerText: "It\'s required for all high-income taxpayers.", score: 1 }
+        { answerText: "It's required for all high-income taxpayers.", score: 1 }
       ]
     },
     {
       id: 16,
-      questionText: "When you purchase a company\'s bond, what does that mean?",
+      questionText: "When you purchase a company's bond, what does that mean?",
       answerOptions: [
-        { answerText: "You\'ve loaned money to the company.", score: 4 },
-        { answerText: "You\'ve become a partial owner of the company.", score: 3 },
+        { answerText: "You've loaned money to the company.", score: 4 },
+        { answerText: "You've become a partial owner of the company.", score: 3 },
         { answerText: "You get to vote on company decisions like shareholders do.", score: 2 },
-        { answerText: "You\'re responsible for the company\'s debts.", score: 1 }
+        { answerText: "You're responsible for the company's debts.", score: 1 }
       ]
     },
     {
@@ -387,7 +377,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "Go up", score: 4 },
         { answerText: "Are not affected", score: 3 },
         { answerText: "Go down", score: 2 },
-        { answerText: "Don\'t know/Not sure", score: 1 }
+        { answerText: "Don't know/Not sure", score: 1 }
       ]
     },
     {
@@ -396,28 +386,28 @@ const FinancialKnowledgeSurvey = () => {
       answerOptions: [
         { answerText: "SIPC (Securities Investor Protection Corporation)", score: 4 },
         { answerText: "SEC (Securities and Exchange Commission)", score: 3 },
-        { answerText: "FINRA (Financial INdustry Regulation Authority)", score: 2 },
+        { answerText: "FINRA (Financial Industry Regulation Authority)", score: 2 },
         { answerText: "FDIC (Federal Deposit Insurance Corporation)", score: 1 }
       ]
     },
     {
       id: 19,
-      questionText: "In general, hwo do risk and return relate to each other in investing?",
+      questionText: "In general, how do risk and return relate to each other in investing?",
       answerOptions: [
         { answerText: "Riskier investments usually offer higher potential returns over time.", score: 4 },
         { answerText: "Riskier investments usually offer lower returns over time.", score: 3 },
         { answerText: "Risk level has no effect on investment returns.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
       id: 20,
       questionText: "Are hedge funds required to follow the same rules and regulations as mutual funds?",
       answerOptions: [
-        { answerText: "No, hedge funds operate with fewer regulations than mutula funds.", score: 4 },
+        { answerText: "No, hedge funds operate with fewer regulations than mutual funds.", score: 4 },
         { answerText: "Yes, they follow the exact same regulations.", score: 3 },
         { answerText: "They are more heavily regulated than mutual funds.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -427,7 +417,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "Because the interest earned on municipal bonds is often exempt from federal (and sometimes state) taxes.", score: 4 },
         { answerText: "Because municipal bonds are riskier investments.", score: 3 },
         { answerText: "Because municipal bonds are not backed by any government entity.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -437,7 +427,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "Common stock", score: 4 },
         { answerText: "Corporate bonds", score: 3 },
         { answerText: "Preferred stock", score: 2 },
-        { answerText: "Not sure / Don\'t know", score: 1 }
+        { answerText: "Not sure / Don't know", score: 1 }
       ]
     },
     {
@@ -445,9 +435,9 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "What does \"compound interest\" mean?",
       answerOptions: [
         { answerText: "Earning interest on both your original investment and on the interest it already earned.", score: 4 },
-        { answerText: "Interest that is only calculated on the intial deposit.", score: 3 },
+        { answerText: "Interest that is only calculated on the initial deposit.", score: 3 },
         { answerText: "Interest that decreases over time.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -457,7 +447,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "Pools money from many investors to buy a diversified portfolio of securities.", score: 4 },
         { answerText: "Guarantees a fixed return.", score: 3 },
         { answerText: "Only invests in government bonds.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -465,7 +455,7 @@ const FinancialKnowledgeSurvey = () => {
       questionText: "What is dollar-cost averaging (DCA)?",
       answerOptions: [
         { answerText: "Investing a fixed amount of money at regular intervals regardless of market conditions.", score: 4 },
-        { answerText: "Buying mroe shares when prices rise to maximize returns.", score: 3 },
+        { answerText: "Buying more shares when prices rise to maximize returns.", score: 3 },
         { answerText: "Timing investments to buy only when the market drops.", score: 2 },
         { answerText: "Investing all your money at once for faster growth.", score: 1 }
       ]
@@ -482,12 +472,12 @@ const FinancialKnowledgeSurvey = () => {
     },
     {
       id: 27,
-      questionText: "What is the differnece between a stock\'s market capitalization and its share price?",
+      questionText: "What is the difference between a stock's market capitalization and its share price?",
       answerOptions: [
         { answerText: "Market cap is the total value of all shares, while share price is the cost of one share.", score: 4 },
         { answerText: "Market cap refers only to company profits, while share price reflects investor demand.", score: 3 },
         { answerText: "They are the same measure expressed differently.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -497,17 +487,17 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "A program that automatically uses dividends to purchase more shares of the same stock.", score: 4 },
         { answerText: "A plan that pays out dividends only once per year.", score: 3 },
         { answerText: "A savings account for dividend income.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
       id: 29,
-      questionText: "What does \"beta\" mean in realtion to a stock or portfolio?",
+      questionText: "What does \"beta\" mean in relation to a stock or portfolio?",
       answerOptions: [
-        { answerText: "How much a stock\'s price moves compared to the overall market.", score: 4 },
+        { answerText: "How much a stock's price moves compared to the overall market.", score: 4 },
         { answerText: "The company's earnings growth rate.", score: 3 },
         { answerText: "The average dividend yield of the stock.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     },
     {
@@ -517,10 +507,10 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "To automatically sell a security if its price falls to a certain level, limiting potential losses.", score: 4 },
         { answerText: "To guarantee a dividend payout.", score: 3 },
         { answerText: "To automatically buy more shares when prices drop.", score: 2 },
-        { answerText: "Not sure / Don\'t know.", score: 1 }
+        { answerText: "Not sure / Don't know.", score: 1 }
       ]
     }
-  ]
+  ];
 
   const [step, setStep] = useState("begin");
   const [answers, setAnswers] = useState([]);
