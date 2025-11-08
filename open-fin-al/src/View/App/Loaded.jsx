@@ -30,7 +30,7 @@ import logoNoTextDark from "../../Asset/Image/openfinal_logo_dark_no_text.png";
 import logoDark from "../../Asset/Image/logo-dark.png";
 import navIcon from "../../Asset/Image/navIcon.png";
 import { Settings } from "../Settings";
-import Snp500 from "../snp500";
+import SNP500 from "../snp500";
 import Forecast from "../Forecast";
 import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
@@ -122,7 +122,7 @@ class AppLoaded extends Component {
                   <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
-                  <li><NavLink to="/snp500"><span className="material-icons">timeline</span> SNP 500 Analysis</NavLink></li>
+                  <li><NavLink to="/snp500"><span className="material-icons">leaderboard</span> SNP 500 Analysis</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
@@ -144,7 +144,7 @@ class AppLoaded extends Component {
                 <Route path="/learningModule" element={<LearningModuleDetails />} />
                 <Route path="/learningModulePage" element={<LearningModulePage />} />
                 <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
-                <Route path="/snp500" element={<Sp500 />} />
+                <Route path="/snp500" element={<SNP500 />} />
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
