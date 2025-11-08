@@ -1,13 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 const FinancialKnowledgeSurvey = () => {
-  const [step, setStep] = useState("begin");
-  const [answers, setAnswers] = useState([]);
-  const [result, setResult] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [showNext, setShowNext] = useState(false);
-  const [showSubmit, setShowSubmit] = useState(false);
-
   const questionSet1 = [
     {
       id: 1,
@@ -46,7 +40,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "I don\'t really know how investment taxes work.", score: 1 },
         { answerText: "I\'ve heard fo capital gains and tax-advantaged accounts, but don\'t fully understand them.", score: 2 },
         { answerText: "I understand key concepts like short- vs long-term capital gains and tax deferral.", score: 3 },
-        { answerText: "I actively consider tax implications (e.g., harvesting losses, asse location) when investing.", score: 4 }
+        { answerText: "I actively consider tax implications (e.g., harvesting losses, asset location) when investing.", score: 4 }
       ]
     },
     {
@@ -333,7 +327,7 @@ const FinancialKnowledgeSurvey = () => {
         { answerText: "I actively consider tax implications (e.g., harvesting losses, asset location) when investing.", score: 4 },
         { answerText: "I\'ve heard of capital gains and tax-advantage accounts, but don\'t fully understand them.", score: 2 },
         { answerText: "I understand key concepts like short- vs long-term capital gains and tax deferral.", score: 3 },
-        {}
+        { answerText: "I don\'t really know how investment taxes work.", score: 1 }
       ]
     },
     {
@@ -390,10 +384,10 @@ const FinancialKnowledgeSurvey = () => {
       id: 17,
       questionText: "Typically, when interest rates drop, what happens to bond prices?",
       answerOptions: [
-        { answerOptions: "Go up", score: 4 },
-        { answerOptions: "Are not affected", score: 3 },
-        { answerOptions: "Go down", score: 2 },
-        { answerOptions: "Don\'t know/Not sure", score: 1 }
+        { answerText: "Go up", score: 4 },
+        { answerText: "Are not affected", score: 3 },
+        { answerText: "Go down", score: 2 },
+        { answerText: "Don\'t know/Not sure", score: 1 }
       ]
     },
     {
@@ -490,7 +484,7 @@ const FinancialKnowledgeSurvey = () => {
       id: 27,
       questionText: "What is the differnece between a stock\'s market capitalization and its share price?",
       answerOptions: [
-        { answerText: "Market cap is teh total value of all shares, while share price is the cost of one share.", score: 4 },
+        { answerText: "Market cap is the total value of all shares, while share price is the cost of one share.", score: 4 },
         { answerText: "Market cap refers only to company profits, while share price reflects investor demand.", score: 3 },
         { answerText: "They are the same measure expressed differently.", score: 2 },
         { answerText: "Not sure / Don\'t know.", score: 1 }
@@ -528,12 +522,31 @@ const FinancialKnowledgeSurvey = () => {
     }
   ]
 
+  const [step, setStep] = useState("begin");
+  const [answers, setAnswers] = useState([]);
+  const [result, setResult] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [showNext, setShowNext] = useState(false);
+  const [showSubmit, setShowSubmit] = useState(false);
+  const questionSet = questionSet1; // To change question set for testing purposes, change this variable
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleRetake = () => {
+    setStep("begin");
+    setAnswers([]);
+    setResult(null);
+    setCurrentQuestion(0);
+    setShowNext(false);
+    setShowSubmit(false);
+  }
+
   const handleAnswer = (index, choice) => {
     const newAnswers = [...answers];
     newAnswers[index] = choice.answerText;
     setAnswers(newAnswers);
 
-    if (index < questionSet3.length - 1) {
+    if (index < questionSet.length - 1) {
       setShowNext(true);
       setShowSubmit(false);
     } else {
@@ -543,7 +556,7 @@ const FinancialKnowledgeSurvey = () => {
   };
 
   const nextQuestion = () => {
-    if (currentQuestion < questionSet3.length - 1) {
+    if (currentQuestion < questionSet.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
       setShowNext(false);
       setShowSubmit(false);
@@ -558,12 +571,12 @@ const FinancialKnowledgeSurvey = () => {
     }
   };
 
-  const testScoreCalculation = (answers) => {
+  const scoreCalculation = (answers) => {
     let score = 0;
 
     answers.forEach((answerText, index) => {
       if (!answerText) return;
-      const question = questionSet3[index];
+      const question = questionSet[index];
       const selectedAnswer = question.answerOptions.find(
         (opt) => opt.answerText === answerText
       );
@@ -589,198 +602,103 @@ const FinancialKnowledgeSurvey = () => {
 
   if (step === "begin") {
     return (
-      <div className="survey-container">
-        <h2>Investment Knowledge Assessment</h2>
-        <p>
-          Take this short quiz to measure your investing knowledge and discover your level.
-        </p>
-        <button onClick={() => setStep("quiz")}>Start Assessment</button>
-      </div>
+      <div className="disclaimer-container">
+        <div className="disclaimer-content">
+          <h2>Investment Knowledge Assessment</h2>
+          <div className="disclaimer-text">
+            <ul>
+              <h3>Important Notice</h3>
+              <li>This assessment is for informational purposes only.</li>
+              <li>Your responses are not saved or stored anywhere.</li>
+              <li>The results provided are indicative and should not be considered as professional financial advice.</li>
+              <li>For actual investment decisions, please consult with a qualified financial advisor.</li>
+            </ul>
+          </div>
+          <button className="agree-button" onClick={() => setStep("quiz")}>Start Assessment</button>
+        </div>
+      </div >
     );
   }
 
   if (step === "results" && result) {
     return (
-      <div className="result-card">
-        <h2>🎯 Your Investment Knowledge Result</h2>
-        <div className="result-details">
-          <p>
-            <strong>Score:</strong> <span className="highlight">{result.score}</span>
-          </p>
-          <p>
-            <strong>Level:</strong>{" "}
-            <span
-              className={`level-tag ${result.level === "Beginner"
-                ? "beginner"
-                : result.level === "Intermediate"
-                  ? "intermediate"
-                  : "advanced"
-                }`}
-            >
-              {result.level}
-            </span>
-          </p>
-          <div className="path-box">
-            <h3>Recommended Learning Path:</h3>
-            <p>{result.learningPath}</p>
+      <div className="disclaimer-container">
+        <div className="disclaimer-content">
+          <h2 className="result-title">Your Investment Knowledge Result</h2>
+          <div className="result-details">
+            <p>
+              <strong>Score: </strong>{result.score}
+            </p>
+            <p>
+              <strong>Level:</strong>{" "}
+              <span
+                className={`level-tag ${result.level === "Beginner"
+                  ? "beginner"
+                  : result.level === "Intermediate"
+                    ? "intermediate"
+                    : "advanced"
+                  }`}
+              >
+                {result.level}
+              </span>
+            </p>
+            <p><strong>Recommended Learning Path: </strong>{result.learningPath}</p>
           </div>
         </div>
-        <button className="retake-btn" onClick={() => window.location.reload()}>
+        <button className="retake-btn" onClick={() => handleRetake()}>
           Retake Assessment
         </button>
-
-        <style>{`
-          .result-card {
-            max-width: 600px;
-            margin: 60px auto;
-            background: #ffffff;
-            border-radius: 16px;
-            padding: 30px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
-          }
-          .highlight {
-            color: #00796b;
-            font-weight: bold;
-          }
-          .level-tag {
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-weight: bold;
-            color: white;
-          }
-          .level-tag.beginner { background-color: #ff7043; }
-          .level-tag.intermediate { background-color: #29b6f6; }
-          .level-tag.advanced { background-color: #43a047; }
-          .path-box {
-            margin-top: 20px;
-            background: #f9f9f9;
-            border-left: 5px solid #00796b;
-            padding: 15px;
-            text-align: left;
-            border-radius: 8px;
-          }
-          .retake-btn {
-            margin-top: 20px;
-            background-color: #00796b;
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            border: none;
-          }
-          .retake-btn:hover {
-            background-color: #004d40;
-          }
-        `}</style>
       </div>
     );
   }
 
-  const question = questionSet3[currentQuestion];
+  const question = questionSet[currentQuestion];
   const selectedAnswer = answers[currentQuestion];
 
   return (
-    <div className="quiz-container">
-      <h2>Question {currentQuestion + 1}</h2>
-      <p>{question.questionText}</p>
+    <div className="disclaimer-container">
+      <div className="survey-container">
+        <div className="question-container">
+          <h2>Question {currentQuestion + 1}</h2>
+          <p class="question-text">{question.questionText}</p>
 
-      <div className="answers-container">
-        {question.answerOptions.map((choice, idx) => (
-          <label
-            key={idx}
-            className={`answer-option ${selectedAnswer === choice.answerText ? "selected" : ""
-              }`}
-          >
-            <input
-              type="radio"
-              name={`question-${currentQuestion}`}
-              value={choice.answerText}
-              checked={selectedAnswer === choice.answerText}
-              onChange={() => handleAnswer(currentQuestion, choice)}
-            />
-            {choice.answerText}
-          </label>
-        ))}
+          <div className="options-container">
+            {question.answerOptions.map((choice, idx) => (
+              <label
+                key={idx}
+                className={`option-button ${selectedAnswer === choice.answerText ? "selected" : ""
+                  }`}>
+                <input
+                  type="radio"
+                  name={`question-${currentQuestion}`}
+                  value={choice.answerText}
+                  checked={selectedAnswer === choice.answerText}
+                  onChange={() => handleAnswer(currentQuestion, choice)}
+                />
+                {choice.answerText}
+              </label>
+            ))}
+          </div>
+        </div>
+
+        <div className="navigation-container">
+          {currentQuestion > 0 && (
+            <button className="back-button" onClick={prevQuestion}>
+              Back
+            </button>
+          )}
+          {showNext && (
+            <button className="next-button" onClick={nextQuestion}>
+              Next
+            </button>
+          )}
+          {showSubmit && (
+            <button className="submit-button" onClick={() => scoreCalculation(answers)}>
+              Submit Assessment
+            </button>
+          )}
+        </div>
       </div>
-
-      <div className="navigation-container">
-        {currentQuestion > 0 && (
-          <button className="back-button" onClick={prevQuestion}>
-            Back
-          </button>
-        )}
-        {showNext && (
-          <button className="next-question-button" onClick={nextQuestion}>
-            Next
-          </button>
-        )}
-        {showSubmit && (
-          <button
-            className="submit-assessment"
-            onClick={() => testScoreCalculation(answers)}
-          >
-            Submit Assessment
-          </button>
-        )}
-      </div>
-
-      <style>{`
-        .quiz-container {
-          width: 100%;
-          max-width: 700px;
-          margin: auto;
-          background: white;
-          border-radius: 16px;
-          box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-          padding: 25px;
-          margin-top: 40px;
-        }
-        .answers-container {
-          display: flex;
-          flex-direction: column;
-          gap: 10px;
-          margin: 20px 0;
-        }
-        .answer-option {
-          padding: 10px;
-          border: 1px solid #ccc;
-          border-radius: 8px;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          transition: 0.3s ease;
-        }
-        .answer-option.selected {
-          background-color: #e0f7fa;
-          border-color: #00796b;
-        }
-        .navigation-container {
-          display: flex;
-          justify-content: space-between;
-          margin-top: 20px;
-        }
-        button {
-          padding: 10px 16px;
-          border: none;
-          border-radius: 8px;
-          cursor: pointer;
-          font-weight: bold;
-          color: white;
-          background-color: #00796b;
-        }
-        button:hover {
-          background-color: #004d40;
-        }
-        .back-button {
-          background-color: #757575;
-        }
-        .back-button:hover {
-          background-color: #424242;
-        }
-      `}</style>
     </div>
   );
 };
