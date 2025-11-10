@@ -5,7 +5,10 @@ CREATE TABLE IF NOT EXISTS User (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   firstName TEXT,
   lastName TEXT,
-  username TEXT UNIQUE NOT NULL
+  username TEXT UNIQUE NOT NULL,
+  pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
+  lastLogin DATETIME,
+  dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (

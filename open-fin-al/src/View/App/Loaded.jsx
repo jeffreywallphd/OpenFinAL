@@ -4,7 +4,7 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { Component, useEffect } from "react";
+import React, { Component, useEffect, useContext } from "react";
 import {
   Routes,
   Route,
@@ -12,6 +12,7 @@ import {
   HashRouter,
   useLocation
 } from "react-router-dom";
+import { DataContext } from "../App";
 
 // Imports for react pages and assets
 import Home from "../Home";
@@ -36,6 +37,7 @@ import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
 import RiskAnalysis from "../RiskAnalysis";
 import SurveyDemo from "../SurveyDemo";
+import { UserInfo } from "./UserInfo";
 
 // Scrolls to the top of a page after every route change
 function ScrollToTop({ onRouteChange }) {
@@ -100,14 +102,20 @@ class AppLoaded extends Component {
         <>
           <div className="main">
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-            <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
-              <div className="logo sidebar-padding">
-                <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
-                <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
-              </div>
-              <div className="sidebar-padding">
+            {/* Top Header Bar */}
+            <header className="top-header">
+              <div className="header-left">
                 <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
+                <div className="header-logo">
+                  <img src={this.state.logo} alt="OpenFinAL Logo" className="header-logo-img" />
+                </div>
               </div>
+              <div className="header-right">
+                <UserInfo onLogout={this.props.onLogout} />
+              </div>
+            </header>
+
+            <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
               <nav className="sidebar-padding">
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
@@ -123,7 +131,7 @@ class AppLoaded extends Component {
                 </ul>
               </nav>
             </aside>
-            <div className={`content ${menuCollapsed ? 'closed' : ''}`}>
+            <div className={`content ${menuCollapsed ? 'closed' : ''} with-header`}>
               <ScrollToTop  onRouteChange={this.checkDarkMode}/>
 
               <Routes>
