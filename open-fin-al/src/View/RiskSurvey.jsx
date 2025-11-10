@@ -464,4 +464,4 @@ const RiskSurvey = () => {
             )}
         
 
-export { RiskSurvey };
+export default RiskSurvey;

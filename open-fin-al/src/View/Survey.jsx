@@ -11,7 +11,6 @@ const Survey = (props) => {
     const [showResult, setShowResult] = useState(false);
     const [result, setResult] = useState(0);
     const [resultList, setResultList] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
 
     useEffect(() => {
         if (!props.title) {
@@ -93,7 +92,6 @@ const Survey = (props) => {
                 }
             }
         }
-        setResultList(Array(props.questions.length).fill(null));
     }, [props]);
 
     const handleAgree = () => {
@@ -108,24 +106,17 @@ const Survey = (props) => {
     };
     
 
-    const handleAnswer = (option) => {
-        setSelectedOption(option.label);
+    const handleAnswer = (value) => {
         const updatedResults = [...resultList];
-        if (typeof option.value === "function") {
-            updatedResults[currentQuestion] = option.value(option);
-        } else {
-            updatedResults[currentQuestion] = option.value;
-        }
+        updatedResults[currentQuestion] = value;
         setResultList(updatedResults);
     }
     const handleBack = () => {
         setCurrentQuestion(currentQuestion - 1);
-        setSelectedOption(null);
     }
 
     const handleNext = () => {
         setCurrentQuestion(currentQuestion + 1);
-        setSelectedOption(null);
     }
 
     const calculateResult = () => {
@@ -134,12 +125,10 @@ const Survey = (props) => {
             totalScore = props.aggFunc(resultList);
         }
         else {
-            let nullCount = 0;
             for (let score of resultList) {
-                if (score === null) nullCount++;
-                else totalScore += score;
+                totalScore += score;
             }
-            totalScore = totalScore / (resultList.length - nullCount);
+            totalScore = totalScore / resultList.length;
         }
         if (props.setResult) {
             props.setResult(totalScore);
@@ -163,28 +152,24 @@ const Survey = (props) => {
             {showDisclaimer ? (
                 <div className="disclaimer-container">
                     <div className="disclaimer-content">
-                        {props.disclaimer !== false ? (
-                            <>
-                                <h2> {props.disclaimerTitle || "Important Notice"}</h2>
-                                <div className="disclaimer-text">
-                                    {props.disclaimer || (
-                                        <ul>
-                                            <li>This survey is for informational purposes only.</li>
-                                            <li>Your responses are not saved or stored anywhere.</li>
-                                            <li>The results provided are indicative and should not be considered as professional financial advice.</li>
-                                            <li>For actual investment decisions, please consult with a qualified financial advisor.</li>
-                                        </ul>
-                                    )}
-                                </div>
-
-                            </>
-                        ) : <   h2> Welcome to the Survey </h2>}
+                        <h2> {props.disclaimerTitle || "Important Notice"}</h2>
+                        <div className="disclaimer-text">
+                            {props.disclaimer || (
+                                <ul>
+                                    <li>This survey is for informational purposes only.</li>
+                                    <li>Your responses are not saved or stored anywhere.</li>
+                                    <li>The results provided are indicative and should not be considered as professional financial advice.</li>
+                                    <li>For actual investment decisions, please consult with a qualified financial advisor.</li>
+                                </ul>
+                            )}
+                            
+                        </div>
                         <div className="disclaimer-buttons">
                             <button
                                 onClick={handleAgree}
                                 className="agree-button"
                             >
-                                {props.disclaimer !== false ? "I Understand and Agree" : "Continue"}
+                                I Understand and Agree
                             </button>
                             <button
                                 onClick={() => setShowDisclaimer(false)}
@@ -223,9 +208,9 @@ const Survey = (props) => {
                                     {props.questions[currentQuestion].options.map((option) => (
                                         <button
                                             key={option.value}
-                                            onClick={() => handleAnswer(option)}
+                                            onClick={() => handleAnswer(option.value)}
                                             className={`option-button ${
-                                                selectedOption === option.label 
+                                                resultList[currentQuestion] === option.value 
                                                     ? 'selected' 
                                                     : ''
                                             }`}
@@ -248,7 +233,7 @@ const Survey = (props) => {
                                 {currentQuestion === props.questions.length - 1 ? (
                                     <button
                                         onClick={calculateResult}
-                                        disabled={(!resultList[currentQuestion] && props.questions[currentQuestion].options.length > 0)}
+                                        disabled={!resultList[currentQuestion]}
                                         className="submit-button"
                                     >
                                         Submit
@@ -256,7 +241,7 @@ const Survey = (props) => {
                                 ) : (
                                     <button
                                         onClick={handleNext}
-                                        disabled={(!resultList[currentQuestion] && props.questions[currentQuestion].options.length > 0)}
+                                        disabled={!resultList[currentQuestion]}
                                         className="nav-button"
                                     >
                                         Next
