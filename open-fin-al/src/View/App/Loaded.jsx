@@ -35,8 +35,8 @@ import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
 import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
-import RiskAnalysis from "../RiskAnalysis";
-import SurveyDemo from "../SurveyDemo";
+import RiskAnalysis from "../RiskAnalysis/RiskAnalysis";
+import SurveyDemo from "../SurveyTemplate/SurveyDemo";
 import { UserInfo } from "./UserInfo";
 
 // Scrolls to the top of a page after every route change

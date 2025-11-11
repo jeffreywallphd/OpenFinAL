@@ -1,9 +1,9 @@
 import React, { Component, useContext, useEffect, useState } from "react";
-import { TickerSearchBar } from "./Stock/TickerSearchBar";
-import { TickerSidePanel } from "./Stock/TickerSidePanel";
-import { DataContext } from "./App";
+import { TickerSearchBar } from "../Stock/TickerSearchBar";
+import { TickerSidePanel } from "../Stock/TickerSidePanel";
+import { DataContext } from "../App";
 import { RiskSurvey } from "./RiskSurvey";
-import { Survey } from "./Survey";
+import { Survey } from "../SurveyTemplate/Survey";
 // import yahooFinance from "yahoo-finance";
 
 const questionSet1 = [
