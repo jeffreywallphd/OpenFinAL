@@ -575,9 +575,21 @@ const FinancialKnowledgeSurvey = () => {
     });
 
     let level = "";
-    if (score <= 20) level = "Beginner";
-    else if (score <= 40) level = "Intermediate";
-    else level = "Advanced";
+    if (questionSet === questionSet1) {
+      if (score <= 8) level = "Beginner";
+      else if (score <= 16) level = "Intermediate";
+      else level = "Advanced"
+    }
+    else if (questionSet === questionSet2) {
+      if (score <= 20) level = "Beginner";
+      else if (score <= 40) level = "Intermediate";
+      else level = "Advanced";
+    }
+    else {
+      if (score <= 40) level = "Beginner";
+      else if (score <= 60) level = "Intermediate";
+      else level = "Advanced";
+    }
 
     let learningPath =
       level === "Beginner"
