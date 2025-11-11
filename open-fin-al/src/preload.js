@@ -71,9 +71,12 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)
 });
 
+/*
+commenting out this contextBridge to void require() errors, because it seems to have been replaced by the new yahooFinance context bridge below. 
+That bridge calls to a dynamic import instea of require to avoid errors. Will remove this after further testing.
 contextBridge.exposeInMainWorld('yahoo', {
     finance: require('yahoo-finance2').default
-});
+});*/
 
 contextBridge.exposeInMainWorld('yahooFinance', {
     chart: (ticker, options) => ipcRenderer.invoke('yahoo-chart', ticker, options),
