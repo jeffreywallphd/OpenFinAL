@@ -64,26 +64,20 @@ const ipcMain = require('electron').ipcMain;
 const sqlite3 = require('sqlite3').verbose();
 const Database = require('better-sqlite3');
 const puppeteer = require('puppeteer');
+const { spawn } = require('child_process');
 const keytar = require('keytar');
 const express = require('express');
 const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
-//const yf = require("yahoo-finance2").default; //causing a module load error. Using code below to dynamically import yahoo-finance2
-
-let yf;
-function getYF() {
-  if (!yf) {
-    yf = import('yahoo-finance2').then(m => m.default || m);
-  }
-  return yf;
-}
+const yf = require("yahoo-finance2").default;
 
 // Migration function
 async function runMigrations() {
   try {
     if (!betterDb) {
+      console.log('Better-sqlite3 database not initialized, skipping migrations');
       return;
     }
     
@@ -92,7 +86,9 @@ async function runMigrations() {
     const migrationManager = new MigrationManager(betterDb, migrationsPath);
     
     await migrationManager.runMigrations();
+    console.log('All migrations completed successfully');
   } catch (error) {
+    console.error('Failed to run migrations:', error);
     throw error;
   }
 }
@@ -162,13 +158,14 @@ app.whenReady().then(() => {
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
           img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com; 
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
-          connect-src 'self' http://localhost:3001;`
+          connect-src 'self' http://localhost:3001 http://localhost:5000;`
         ],
       },
     });
   });
 
   startAPIFetcher();
+  startChatbotServer();
 
   createWindow();
 
@@ -370,7 +367,9 @@ async function startAPIFetcher() {
     }
   });
 
-  expressApp.listen(3001);
+  expressApp.listen(3001, () => {
+    console.log('Proxy server listening on port 3001');
+  });
 }
 
 //get certificate fingerprint to ensure secure access
@@ -608,7 +607,9 @@ const getDB = async () => {
   try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
-        // Database connection error
+        console.error('Could not connect to database', err);
+      } else {
+        console.log('Connected to database');
       }
     });
 
@@ -620,6 +621,7 @@ const getDB = async () => {
 
     return true;
   } catch (error) {
+    console.error('Error initializing database:', error);
     return false;
   }
 }
@@ -777,5 +779,47 @@ ipcMain.handle('sqlite-update', async (event, args) => {
 ipcMain.handle('sqlite-delete', async (event, args) => {
   const data = await sqliteRun(args["query"], args["parameters"]);
   return data;
+});
+
+// Function to start the Python chatbot server
+let chatbotProcess = null;
+
+const startChatbotServer = () => {
+  try {
+    const backendPath = path.join(__dirname, '..', '..', '..', 'backend', 'chatbot_backend.py');
+    console.log('Starting chatbot server from:', backendPath);
+    
+    // Spawn Python process to run the chatbot backend
+    chatbotProcess = spawn('python', [backendPath], {
+      cwd: path.join(__dirname, '..', '..', '..', 'backend'),
+      stdio: 'pipe'
+    });
+
+    chatbotProcess.stdout.on('data', (data) => {
+      console.log(`Chatbot server: ${data}`);
+    });
+
+    chatbotProcess.stderr.on('data', (data) => {
+      console.error(`Chatbot server error: ${data}`);
+    });
+
+    chatbotProcess.on('close', (code) => {
+      console.log(`Chatbot server process exited with code ${code}`);
+      chatbotProcess = null;
+    });
+
+    console.log('Chatbot server started successfully');
+  } catch (error) {
+    console.error('Failed to start chatbot server:', error);
+  }
+};
+
+// Clean up chatbot process on app quit
+app.on('before-quit', () => {
+  if (chatbotProcess) {
+    console.log('Terminating chatbot server...');
+    chatbotProcess.kill();
+    chatbotProcess = null;
+  }
 });
 

@@ -11,7 +11,7 @@ DATABASE_PORT=
 
 3. Clone the fine-tuned TinyLlama model from the HuggingFace Repository
 
-    Temporary link: https://huggingface.co/JudyJuezhu/Fine-tuned_TinyLlama
+    Link: https://huggingface.co/OpenFinAL/AI_Chatbot
 
 4. Your file structure in \backend should be like:
 ```text

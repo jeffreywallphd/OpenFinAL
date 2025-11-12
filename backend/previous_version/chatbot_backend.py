@@ -12,10 +12,9 @@ import os
 load_dotenv()
 
 # -------------------- MODEL SETUP --------------------
-MODEL_DIR = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
+# MODEL_DIR = "TinyLlama/TinyLlama-1.1B-Chat-v1.0"
 
-# Optionally, use a local model checkpoint
-# MODEL_DIR = "models/TinyLlama-1.1B-Chat-v1.0/checkpoint-730"
+MODEL_DIR = "models/TinyLlama-1.1B-Chat-v1.0/checkpoint-730"
 
 torch_device = "cuda" if torch.cuda.is_available() else "cpu"
 tokenizer = AutoTokenizer.from_pretrained(MODEL_DIR)

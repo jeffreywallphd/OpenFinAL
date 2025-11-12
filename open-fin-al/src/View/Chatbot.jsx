@@ -1,60 +1,84 @@
-import React, { Component } from "react";
-import {LanguageModelInteractor} from "../Interactor/LanguageModelInteractor";
-import {JSONRequest} from "../Gateway/Request/JSONRequest";
-import ConfigUpdater from "../Utility/ConfigManager"
+/*
+Chatbot.jsx
+-----------
+This file defines a React component that provides a chat UI for interacting with a local AI chatbot backend. The component manages chat state, handles user input, and communicates with a local Node.js server (chatbot_server.js) that runs a Hugging Face Transformers model (Xenova/gpt2) for text generation. The UI displays the chat history and allows the user to send messages and receive AI-generated replies.
 
+Key Data Types:
+- State: {
+    messages: Array<{ content: string, role: 'user' | 'assistant' }>,
+    userInput: string
+  }
+- Props: {
+    handleToggle: function (for closing the chat modal)
+  }
+- Backend API: POST /chat with { messages: Array<{ content, role }> } returns { reply: string }
+*/
+
+import React, { Component } from "react";
+
+/**
+ * Chatbot React component
+ * Renders a chat modal UI, manages chat state, and communicates with the backend chatbot server.
+ * Usage: <Chatbot handleToggle={...} />
+ *
+ * State:
+ * - messages: Array of chat message objects ({ content: string, role: 'user' | 'assistant' })
+ * - userInput: Current value of the user's input textarea
+ *
+ * Props:
+ * - handleToggle: Function to close/hide the chat modal
+ */
 class Chatbot extends Component {
     constructor(props) {
         super(props);
         this.state = {
             messages: [
-                { content: "Hey! How can I assist you today?", role: "assistant" } // Initial bot message
+                { content: "Hey! How can I assist you today?", role: "assistant" }
             ],
             userInput: ""
         };
     }
 
+    /**
+     * Handles changes in the user input textarea.
+     * @param {React.ChangeEvent<HTMLTextAreaElement>} event
+     */
     handleInputChange = (event) => {
         this.setState({ userInput: event.target.value });
     };
 
+    /**
+     * Handles sending a user message to the backend and updating the chat history.
+     * Sends a POST request directly to the local backend with the full message history.
+     * Updates state with the assistant's reply or an error message.
+     */
     handleSendMessage = async () => {
-        const configManager = new ConfigUpdater();
-        const config = await configManager.getConfig();
-
         const { userInput, messages } = this.state;
-        if (userInput.trim() === "") return; // Prevent sending empty messages
+        if (userInput.trim() === "") return;
 
-        // Append new user message below existing messages
         let updatedMessages = [...messages, { content: userInput, role: "user" }];
+        this.setState({ messages: updatedMessages, userInput: "" });
 
-        this.setState({ messages: updatedMessages, userInput: "" }); // Clear input after sending
-        var interactor = new LanguageModelInteractor();
-        // TODO: Fix to send all messages rather than most recent.
-        var requestObj = new JSONRequest(`{
-            "request": {
-                "model": {
-                    "name":"${config.ChatbotModelSettings.ChatbotModelName}",
-                    "messages": [
-                        {
-                            "role": "user",
-                            "content": "${userInput.replace(/[^a-zA-Z0-9 :]/g, "")}"
-                        }
-                    ]
-                }
-            }
-        }`);
-        
-        let response = await interactor.post(requestObj);
-        
-        updatedMessages = [...this.state.messages, response];
-
-        this.setState({
-            messages: updatedMessages, 
-            userInput: this.state.userInput
-        });
+        // Use direct fetch to call the new Python backend (Flask)
+        try {
+            const response = await fetch("http://localhost:5000/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ messages: updatedMessages })
+            });
+            const data = await response.json();
+            console.log("Backend response:", data); // Debug log
+            updatedMessages = [...updatedMessages, { content: data.reply, role: "assistant" }];
+            this.setState({ messages: updatedMessages });
+        } catch (error) {
+            updatedMessages = [...updatedMessages, { content: "[Error: Could not reach local model]", role: "assistant" }];
+            this.setState({ messages: updatedMessages });
+        }
     };
 
+    /**
+     * Renders the chat modal UI, including chat history, input, and controls.
+     */
     render() {
         return (
             <div className="chatbot-modal">
@@ -69,7 +93,7 @@ class Chatbot extends Component {
                         <button>New Chat</button>
                         <div className="chatSettings"><span className="material-icons">settings</span></div>
                     </div>
-                    <div className="chatBot">                        
+                    <div className="chatBot">
                         <ul className="chatbox">
                             {this.state.messages.map((msg, index) => (
                                 <li key={index} className={`chat ${msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
