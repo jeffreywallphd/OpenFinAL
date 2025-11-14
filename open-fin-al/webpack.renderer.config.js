@@ -1,6 +1,7 @@
 const rules = require('./webpack.rules');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 rules.push({
   test: /\.css$/,
@@ -11,6 +12,12 @@ module.exports = {
   node: {
     __dirname: true,
   },
+
+  devServer: {
+    static: path.resolve(__dirname, 'public'), // serve /public during dev
+    devMiddleware: { writeToDisk: true },
+  },
+
   module: {
       rules: [
           {
@@ -46,8 +53,14 @@ module.exports = {
       ],
   },
   plugins: [
-      new HtmlWebpackPlugin({
-          template: './src/index.html',
+      new HtmlWebpackPlugin({ template: './src/index.html' }),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'public'),
+            to: path.resolve(__dirname, '.webpack/renderer'),
+          },
+        ],
       }),
   ],
   resolve: {
@@ -61,6 +74,7 @@ module.exports = {
         "tls": false,
         "better-sqlite3": false,
         "sqlite3": false,
+        "vm": false, // Disable vm module polyfill as it's not needed for browser
         "assert": require.resolve("assert"),
         "crypto": require.resolve("crypto-browserify"),
         "os": require.resolve("os-browserify/browser"),
@@ -74,6 +88,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, '.webpack/renderer'),
-    filename: 'renderer.js'
+    filename: 'renderer.js',
+    publicPath: '/',
   }
 };

@@ -1,0 +1,16 @@
+ID,Module,Description,Time Estimate (minutes),Minimum Level,Keywords,Minimum Knowledge,Risk Tag,Module Type
+1,Basics of Blockchain - Beginner,Learn how blockchain works and why it matters.,10,Beginner,"blockchain beginner, wallets, blocks",1,Low,Slides
+2,Risk Free Investments - Beginner,Explore safe ways to grow your money.,10,Beginner,"risk-free, treasuries, CDs, savings",1,Low,Slides
+3,What is stock screening - Beginner,Discover how to find stocks using basic filters.,10,Beginner,"stock screening, filters, factors",1,Med,Slides
+4,Introduction to Bonds - Beginner,Understand what bonds are and how they earn returns.,10,Beginner,"bonds, fixed income, yield, coupon",1,Low,Slides
+5,Introduction to Stocks - Beginner,Learn how stocks work and why people invest in them.,10,Beginner,"beginner stocks, accounts, tickers",1,High,Slides
+6,Basics of Blockchain - Intermediate,Dive deeper into blockchain uses and key technologies.,12,Intermediate,"blockchain intermediate, smart contracts, tokens",2,Low,Slides
+7,Risk Free Investments - Intermediate,Compare low-risk investment options and strategies.,12,Intermediate,"risk-free, treasuries, CDs, savings",2,Low,Slides
+8,What is stock screening - Intermediate,Learn advanced criteria for evaluating stocks.,12,Intermediate,"stock screening, filters, factors",2,High,Slides
+9,Introduction to Bonds - Intermediate,"Analyze bond types, yields, and market influences.",12,Intermediate,"bonds, fixed income, yield, coupon",2,Med,Slides
+10,Introduction to Stocks - Intermediate,Study stock valuation and market performance factors.,12,Intermediate,"stocks, equities, stock market, basics",2,High,Slides
+11,Basics of Blockchain - Advanced,"Explore blockchain architecture, consensus, and smart contracts.",15,Advanced,"blockchain, crypto basics, consensus",3,Med,Slides
+12,Risk Free Investments - Advanced,Evaluate risk-free rates and portfolio integration methods.,15,Advanced,"risk-free, treasuries, CDs, savings",3,Low,Slides
+13,What is stock screening - Advanced,Build complex screens using technical and fundamental data.,15,Advanced,"stock screening, filters, factors",3,High,Slides
+14,Introduction to Bonds - Advanced,"Assess bond portfolios, pricing models, and risk management.",15,Advanced,"bonds, fixed income, yield, coupon",3,Med,Slides
+15,Introduction to Stocks - Advanced,Apply advanced analysis to stock selection and portfolio design.,15,Advanced,"intermediate stocks, valuation, dividends",3,High,Slides

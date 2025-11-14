@@ -1,5 +1,5 @@
 # OpenFinAL
-OpenFinAL is an open source financial analytics tool designed to provide financial analytics capabilties at a low cost. The tool is meant to provide novice investors with the opportunity to learn and explore financial analytics capabilities, beginning with a simple set of analytics tools and gradually learning more complex tools and models.
+OpenFinAL is an open source financial analytics tool designed to provide financial analytics capabilties at a low cost. The tool is meant to provide novice investors with an adaptive learning experience where they can learn and explore financial analytics capabilities, beginning with a simple set of analytics tools and gradually learning more complex tools and models.
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
@@ -9,28 +9,17 @@ To begin contributing to the repository follow the instructions below. If you ar
 ### Quick Install Instructions
 1. Ensure you have a version of git installed on your computer appropriate for your operating system
 2. Download and install NodeJS: https://nodejs.org/en/download
-3. Clone the repository: https://github.com/jeffreywallphd/AutoProphet.git
-4. In the open-fin-al folder, rename the config_DEFAULT folder to: config
-   * The folder should containa a file named: default.json
-   * The file should look something like this: 
-   ```
-   {
-      "StockGateway": "AlphaVantageStockGateway",
-      "NewsGateway": "AlphaVantageNewsGateway",
-      "ReportGateway": "SecAPIGateway",
-      "RatioGateway": "AlphaVantageRatioGateway"
-   }
-   ```
-5. Install the project dependencies in the terminal/command line, by running: npm install
-6. Install the follwing dpenedncies to configure a development mode:  npm install nodemon concurrently --save-dev
-7. To see the existing software, run: npm start
+3. Clone the repository: https://github.com/jeffreywallphd/OpenFinAL.git
+5. While in the open-fin-al folder, install the project dependencies in the terminal/command line, by running: npm install
+7. To see the existing software, in a terminal/command line run: npm start
 8. The application should load in an Electron window.
-9. Configure the environment with desired data API's (and API keys where needed) from the Settings section of the application.
+9. Create a login and configure the environment with desired data API's (and API keys where needed) from the Settings section of the application.
    * If you choose the AlphaVantage API's, a free key can be obtained here: https://www.alphavantage.co/support/#api-key
-   * If you choose to use Financial Modeling Prep, a free key can be obtained through account signup here: https://site.financialmodelingprep.com/. After signup, the key can be found in the Dashboard.
+   * If you choose to use Financial Modeling Prep, a free key can be obtained through account signup here: https://site.financialmodelingprep.com/. After signup, the FMP key can be found in the Dashboard.
+10. The software should now be configured and ready to use.
 
 ### Detailed Install Instructions
-The following instructions provide greater detail for contributors new to software development.
+The following instructions provide greater detail for contributors who are new to software development.
 
 #### Software you may find useful when working on this project
 1. To interact with this repository, you will need a version of git on your computer. Git is a program that allows you to store project files on a local repository on your computer that can communicate with this remote GitHub repository. There are some options that you can use for this purpose:
@@ -42,7 +31,7 @@ The following instructions provide greater detail for contributors new to softwa
 2. To view/edit code, contribute to documentation, or work with the folder and file structure of the software, you will need an integrated development environment (IDE). IDE's have many tools to help you build software. You can also use many IDEs to run git commands using simple user interface tools. 
 
    * A common IDE that supports multiple programming languages is VS Code. 
-   * VS code will also allow you make connections with GitHub. You may still need a tool like Git for Windows for VS code to properly integrate with GitHub.
+   * VS code will also allow you make connections with GitHub and use git through a user interface instead of the terminal/command line. You may still need a tool like Git for Windows for VS code to properly integrate with GitHub.
    * Download VS Code at: https://code.visualstudio.com/download
 
 3. This software project utilizes NodeJS. Before you can successfully work on this project, you will need to download NodeJS. NodeJS will also install the node package manager (npm). You will use npm to install Javascript packages and start the software.  
@@ -56,7 +45,7 @@ To contribute to the software project, you will need to set up the project envir
 
 1. First, you will need to clone the repository. Cloning a repository copies the code from the GitHub repository to the repository on your local computer. There are multiple tools you can use to clone a repository. If you like command line tools, you can use GitBash, which comes with Git for Windows. If you prefer a graphical user interface, you can use GitHub Destkop or VS Code. 
 
-   * You will need the following repository URL to clone this repository: https://github.com/jeffreywallphd/AutoProphet.git
+   * You will need the following repository URL to clone this repository: https://github.com/jeffreywallphd/OpenFinAL.git
    * To clone a repository on GitHub Desktop, click File -> Clone repository. You will then paste the repository URL above and select a location to store the files on your computer.
 
      ![Screenshot 2024-03-21 004049](https://github.com/jeffreywallphd/AutoProphet/assets/148374675/2a98257c-dea1-40df-abc2-ae74c9448274)
@@ -67,25 +56,7 @@ To contribute to the software project, you will need to set up the project envir
 
    ![image](https://github.com/jeffreywallphd/AutoProphet/blob/main/documentation/images/vs_code_cloning.png?raw=true)
 
-2. Once you clone the repository, you will need to rename a folder. For security and other reasons, some files should not exist on a public GitHub repository. 
-
-   You will need to rename a folder that is used to store configuration information. The OpenFinAL project is designed to be configurable. For example, you can choose different data providers for stock price and volume data, SEC financial statements, financial news, etc.
-
-      * In the open-fin-al folder, locate the folder named: config_DEFAULT
-      * rename the folder to: config
-      * Once the folder is renamed, ensure that the folder contains a file named: **default.json**. This file will store information about which data sources to use.
-      * Open the default.json file and ensure that it contains information that looks something like this:
-
-
-      {
-         "StockGateway": "AlphaVantageStockGateway",
-         "NewsGateway": "AlphaVantageNewsGateway",
-         "ReportGateway": "SecAPIGateway",
-         "RatioGateway": "AlphaVantageRatioGateway"
-      }
-      ```
-
-3. With the repository cloned and the config folder renamed, you are now ready to start the program. If you haven't already done so, you will need to install NodeJS mentioned earlier. To run the program, open the terminal/command line. 
+3. With the repository cloned, you are now ready to start the program. If you haven't already done so, you will need to install NodeJS mentioned earlier. To run the program, open the terminal/command line. 
 
    * VS Code has a terminal built in. To access the terminal in VS Code, Click the View -> Terminal option from the top menu bar. 
    * You will need to point the terminal to the open-fin-al folder. This can be done with the **cd** command (i.e., change directory). If you are in VS Code, simply type the following and press Enter: **cd open-fin-al**
@@ -109,16 +80,17 @@ To contribute to the software project, you will need to set up the project envir
 
     <img width="1919" alt="dashboard_OpenFinAL" src="https://github.com/user-attachments/assets/da2cbaad-ba52-4020-aabf-b37c49e7a31c" />
 
-5. With the application open, you now need to configure the environment settings. Once the application installs necessary data and loads the menu sidebar, click the **Settings** option. 
+5. With the application open, you now need to create a user login and configure the environment settings. Once the application installs necessary data and loads the menu sidebar, click the **Settings** option. The software may automatically place you on the settings page after logging in. 
 
    a. In the Settings section, select the data providers you would prefer to use for different purposes, such as retrieving stock data, news data, financial reports, etc. Some of the data providers offer free keys with options to upgrade to premium keys. If you are using this software for a university course, your professor may be able to get you a premium key for free for some data providers, such as AlphaVantage.
 
-      * If you choose from the AlphaVantage API's, a free key can be obtained here: https://www.alphavantage.co/support/#api-key. Premium keys may be availabe through your professor for free.
-      * If you choose to use Financial Modeling Prep API's, a free key can be obtained through account signup here: https://site.financialmodelingprep.com/. After signup, the key can be found in the Dashboard.
+      * If you choose from the AlphaVantage API's, a free key can be obtained here: https://www.alphavantage.co/support/#api-key. Again, premium keys may be availabe through your professor for free.
+      * If you choose to use Financial Modeling Prep API's, a free key can be obtained through account signup here: https://site.financialmodelingprep.com/. After signup, the key can be found in the Dashboard of the FMP website.
 
 6. Whenever you want to start the project to view what your code changes did to the software, simply use the terminal to get to the OpenFinAL folder and run: **npm start**
 
-   * If you need to start over at any point by re-cloning the GitHub project, you may also need to repeat these steps. 
+   * If you need to start over at any point by re-cloning the GitHub project, you may also need to repeat these steps.
+   * If you are actively developing, the software should allow you to see you code edits without running npm start each time. Just make sure you save the code files in your IDE and then shift back to the OpenFinAL application and your changes should work automatically. 
 
 NOTE: For further help and instructions on how to use git please refer to [Git Usage](GITUSAGE.md)
 ## Disclaimers
@@ -135,7 +107,7 @@ The authors of this software are not financial experts. This software should not
 ## Collaboration Practices
 Please be sure to read through the [Best Coding Practices](BestCodingPractices.md) document before you start collaborating.
 
-As you use git and GitHub to manager your contributions, follow the guidelines outlined in the [Git Practices](GitPractices.md) document. Remember to pull from main regularly to avoid code conflicts.
+As you use git and GitHub to manage your contributions, follow the guidelines outlined in the [Git Practices](GitPractices.md) document. Remember to pull from main regularly to avoid code conflicts.
 
 ## Future Feature Ideas
 To contribute feature ideas or to see other's ideas for features, please see the [Issues](https://github.com/jeffreywallphd/AutoProphet/issues) section of this repository. Your ideas are welcome. Please tag your feature ideas as "enhancements" so they are easy to find. 
@@ -150,10 +122,12 @@ All gratitude to the Michigan Tech students who worked on this project to develo
 * Students at Michigan Technological University in MIS 4100 - Emerging Technologies: Fall 2023
 * Students at Michigan Technological University in MIS 3200 - Systems Analysis and Design: Spring 2024
 * Students at Michigan Technological University in MIS 4100 - Emerging Technologies: Fall 2024
-* Students at Michigan Technological University in BA 5200 - IS Management and Data Analytics: Fall 2024
+* Students at Michigan Technological University in BA 5200 - IS Management and Data Analytics: Fall 2024 and Fall 2025
 * Students at Michigan Technological University in MIS 3200 - Systems Analysis and Design: Spring 2025
 
 ### Dependencies
 Please see the package.json file in the OpenFinAL folder for a list of the dependencies used in this project.
+
+As a general rule, we are choosing to prefer the ^-style of versioning for npm dependencies to minimize issues with dependency conflicts and still allow for patch and minor updates to be updated automatically. This will require the ocassional updating of dependencies for major releases. 
 
 
