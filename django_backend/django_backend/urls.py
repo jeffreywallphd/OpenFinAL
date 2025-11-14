@@ -20,11 +20,16 @@ from django.urls import path,include
 
 from django.conf import settings
 from django.conf.urls.static import static
+from django_backend import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/',include('chatbot_be.urls')),
-    path('', lambda request: redirect('/api/home_view/', permanent=False)),
+    #path('api/',include('chatbot_be.urls')),
+    #path('', lambda request: redirect('/api/home_view/', permanent=False)),
+    path('api/assessment/', views.save_assessment_view),
+    path('api/modules/<str:module_id>/complete/', views.complete_module_view),
+    #path('api/recommendations/', views.recommend_view),
+    path("", include("django_backend.graph.urls")),
 ]
 
 
