@@ -24,23 +24,23 @@ export function Learn() {
 
     useEffect(() => {
         selectData();
-            // === New Block for Recommendation ===
-        async function fetchRecommendation() {
-            try {
-                const res = await fetch("http://127.0.0.1:8000/api/recommendation?userId=1&k=1");
-                const data = await res.json();
-                if (data.ok && data.items && data.items.length > 0) {
-                    const module = data.items[0].module;
-                    alert(`Recommended Module:\n${module.title}`);
-                } else {
-                    console.log("No recommendation available.");
-                }
-            } catch (err) {
-                console.error("Error fetching recommendation:", err);
+            
+        // Fetch top recommended module from backend
+        async function fetchTopRecommendation() {
+        try {
+            const res = await fetch("http://127.0.0.1:8000/api/recommendation?userId=1&k=1");
+            const data = await res.json();
+            if (data.ok && data.items && data.items.length > 0) {
+            const module = data.items[0].module;
+            setState(prev => ({ ...prev, recommendedModule: module }));
             }
+        } catch (e) {
+            console.error("Error fetching recommendation:", e);
+        }
         }
 
-        fetchRecommendation();
+        fetchTopRecommendation();
+
     }, []);
 
     //Checks the keyUp event to determine if a key was hit

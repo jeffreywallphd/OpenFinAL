@@ -154,7 +154,7 @@ app.whenReady().then(() => {
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com;
           img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com;
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
-          connect-src 'self' http://localhost:3001;`
+          connect-src 'self' http://127.0.0.1:8000 http://localhost:3001;`
         ],
       },
     });
@@ -719,7 +719,7 @@ const getDB = async () => {
           const sql = fs.readFileSync(schemaPath, 'utf8');
 
           // Execute schema, then sync
-          db.exec(sql, (e) => {
+          db.exec(sql, async (e) => {
             if (e) {
               console.error('schema.sql failed:', e);
               return;
@@ -753,6 +753,9 @@ const getDB = async () => {
 
     // Run migrations
     await runMigrations();
+
+    const migs = betterDb.prepare('SELECT * FROM migrations').all();
+    console.log('Applied migrations:', migs);
 
     return true;
   } catch (error) {

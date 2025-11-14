@@ -8,6 +8,7 @@ def start_module(request):
     if request.method != "POST":
         return JsonResponse({"ok": False, "error": "POST only"}, status=405)
     data = json.loads(request.body.decode("utf-8"))
+    print("start_module payload:", data)
     mark_started(str(data["userId"]), str(data["moduleId"]))
     return JsonResponse({"ok": True})
 

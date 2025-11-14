@@ -51,6 +51,39 @@ function SlideshowWindow(props) {
         navigate("/learn");
     };
     
+    const handleComplete = async () => {
+        try {
+            // For now, same as start_module: userId = 1
+            const userId = 1;
+
+            const currentPage = props.pages[props.currentPageIndex];
+            const moduleId =
+                currentPage?.moduleId ?? props.pages[0]?.moduleId;
+
+            if (!moduleId) {
+                console.error("No moduleId found on pages:", props.pages);
+                alert("Could not determine module id for completion.");
+                return;
+            }
+
+            const score = 1.0; // 100% – passes the 0.70 threshold in mark_completed
+
+            const resp = await window.api.post("/api/module/complete", {
+                userId,
+                moduleId,
+                score,
+            });
+
+            console.log("POST /api/module/complete ->", resp.status, resp.text);
+            alert("Module marked as completed!");
+        } catch (err) {
+            console.error("complete_module error", err);
+            alert("Could not mark module as completed. Check console for details.");
+        }
+    };
+
+
+
     const playAudio = () => {
         const currentPage = props.pages[props.currentPageIndex];
         console.log("Current Page:", currentPage); // Log the current page
@@ -83,12 +116,18 @@ function SlideshowWindow(props) {
     return (
         <div className="container">
 
-               {/*Button to navigate to the learn page */}
-               <button 
+            {/*Button to navigate to the learn page */}
+            <button 
                 className="nav-button learn"
                 onClick={navigateToLearn}
             >
                 Go to Learn
+            </button>
+            <button 
+                className="nav-button complete"
+                onClick={handleComplete}
+            >
+                Complete Module
             </button>
 
             {/* Navigation Buttons Outside the Window
@@ -319,6 +358,16 @@ function SlideshowWindow(props) {
                     position: absolute;
                     top: 12px;
                     left: 12px;
+                    border-radius: 6px;
+                    padding: 8px 12px;
+                    z-index: 12;
+                }
+
+                .nav-button.complete {
+                    background: #28a745;
+                    position: absolute;
+                    top: 12px;
+                    left: 140px;   /* moves it to the right of Go to Learn button */
                     border-radius: 6px;
                     padding: 8px 12px;
                     z-index: 12;

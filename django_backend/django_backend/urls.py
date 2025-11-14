@@ -28,7 +28,7 @@ urlpatterns = [
     #path('', lambda request: redirect('/api/home_view/', permanent=False)),
     path('api/assessment/', views.save_assessment_view),
     path('api/modules/<str:module_id>/complete/', views.complete_module_view),
-    path('api/recommendations/', views.recommend_view),
+    #path('api/recommendations/', views.recommend_view),
     path("", include("django_backend.graph.urls")),
 ]
 

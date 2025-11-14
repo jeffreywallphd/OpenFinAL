@@ -1,18 +1,19 @@
 from .neo import driver
 import time
 
-def mark_started(user_id: str, module_id: str):
+def mark_started(user_id: int, module_id: int):
     cypher = """
-    MATCH (u:User)           WHERE toString(u.id) = toString($uid)
-    MATCH (m:LearningModule) WHERE toString(m.id) = toString($mid)
+    MERGE (u:User           {id: toInteger($uid)})
+    MERGE (m:LearningModule {id: toInteger($mid)})
     WITH u,m
     WHERE NOT (u)-[:COMPLETED]->(m)
     MERGE (u)-[s:STARTED]->(m)
     ON CREATE SET s.ts = $ts
-    RETURN count(s) AS created
+    RETURN count(s) AS touched
     """
     with driver.session() as s:
         s.run(cypher, uid=user_id, mid=module_id, ts=int(time.time()*1000))
+        
 
 def mark_completed(user_id: str, module_id: str, score: float):
     cypher = """
@@ -88,10 +89,18 @@ def sync_to_graph(payload: dict):
         # TEACHES
         s.run("""
         UNWIND $rows AS r
-        MATCH (m:LearningModule {id:r.moduleId})
-        MATCH (c:Concept {key:r.conceptKey})
+        WITH r
+        // normalize incoming IDs
+        WITH r.moduleId AS mId,
+            r.conceptKey AS cKey,
+            coalesce(r.strength, 1.0) AS strength
+        WHERE mId IS NOT NULL AND cKey IS NOT NULL
+
+        MERGE (m:LearningModule {id: mId})
+        MERGE (c:Concept {key: cKey})
         MERGE (m)-[t:TEACHES]->(c)
-        SET t.strength = coalesce(r.strength, 1.0)
+        ON CREATE SET t.strength = strength
+        ON MATCH  SET t.strength = strength
         """, rows=payload.get("moduleConcepts", []))
 
         # REQUIRES
@@ -126,8 +135,8 @@ def sync_to_graph(payload: dict):
         # KNOWS as :User-[:KNOWS {level}]->:Concept
         s.run("""
         UNWIND $rows AS r
-        MATCH (u:User {id:r.userId})
-        MATCH (c:Concept {key:r.conceptKey})
+        MATCH (u:User {id:toInteger(r.userId)})
+        MATCH (c:Concept {key:toInteger(r.conceptKey)})
         MERGE (u)-[k:KNOWS]->(c)
         SET k.level = r.level,
             k.updatedAt = r.updatedAt
