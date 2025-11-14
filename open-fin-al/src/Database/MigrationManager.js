@@ -32,7 +32,10 @@ class MigrationManager {
                 }
             }
         } catch (error) {
-            console.error('Migration failed:', error);
+            // Ignore duplicate column errors - these are expected when schema already exists
+            if (error.message && error.message.includes('duplicate column name')) {
+                return;
+            }
             throw error;
         }
     }
@@ -63,6 +66,8 @@ class MigrationManager {
 
         try {
             this.db.exec(sql);
+        } catch (error) {
+            throw error; // Re-throw other errors
         } finally {
             // Re-enable schema validation
             this.db.pragma('writable_schema = OFF');
