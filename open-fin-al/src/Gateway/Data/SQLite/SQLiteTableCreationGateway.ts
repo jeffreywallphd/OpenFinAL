@@ -297,8 +297,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category, minLevel, riskTag) VALUES (9, "Advanced Risk-Free Investments", "Evaluate risk-free rates and portfolio integration methods.", "risk-free, treasuries, CDs, savings", 15, "Risk-Free Investments", 3, 1);
             INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category, minLevel, riskTag) VALUES (12, "Advanced Stock Screening", "Build complex screens using technical and fundamental data.", "stock screening, filters, factors", 15, "Stock Screening", 3, 3);
             INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category, minLevel, riskTag) VALUES (15, "Advanced Blockchain", "Explore blockchain architecture, consensus, and smart contracts.", "blockchain, crypto basics, consensus", 15, "Blockchain", 3, 2);
-            INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category, minLevel, riskTag) VALUES (16, "Basic Investing Strategies", "Learn core investing habits for long-term growth and stability.", "investing, diversification, goals, strategy", 10, "Investing Strategies", 1, 1);
-
+            
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (1, 2, 1);
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (2, 2, 1);
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (3, 2, 1);
@@ -314,7 +313,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (13, 6, 1);
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (14, 6, 1);
             INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (15, 6, 1);
-            INSERT OR IGNORE INTO LearningModuleConcept (moduleId, conceptKey, strength) VALUES (16, 1, 1);
+            
 
             INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageContentUrl, voiceoverUrl, pageNumber, pageType) VALUES (1, 'Beginner Stocks', NULL, 'BeginnerStocks/pdfjs-embed.html', NULL, 1, 'ContentPage');
             INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageContentUrl, voiceoverUrl, pageNumber, pageType) VALUES (4, 'Beginner Bonds', NULL, 'BeginnerBonds/pdfjs-embed.html', NULL, 1, 'ContentPage');
