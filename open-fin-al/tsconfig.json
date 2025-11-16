@@ -10,7 +10,7 @@
       "esModuleInterop": true,
       "moduleResolution": "node",
       "importHelpers": true,
-      "types": ["node"],
+      "types": ["node", "jest"],
       "baseUrl": "./src",
       "paths": {
         "@Entity/*": ["Entity/*"],

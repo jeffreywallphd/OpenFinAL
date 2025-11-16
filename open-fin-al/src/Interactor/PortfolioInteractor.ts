@@ -37,7 +37,7 @@ export class PortfolioInteractor implements IInputBoundary {
                 response: {
                     status: 500, 
                     data: {
-                        error: "An unknown error occurred while creating the user"
+                        error: error.message || "An unknown error occurred while creating the portfolio"
             }}}));
             return response.response;
         }    
