@@ -561,6 +561,27 @@ const FinancialKnowledgeSurvey = () => {
     }
   };
 
+  // --- SAVE SURVEY RESULT TO SQLITE ---
+async function saveSurveyLevelToDB(userId, level) {
+  try {
+    if (!window.database || !window.database.SQLiteUpdate) {
+      console.error("Database API is not available.");
+      return;
+    }
+
+    // Only update the level column
+    await window.database.SQLiteUpdate({
+      query: `UPDATE User SET overallKnowledgeLevel = ? WHERE id = ?`,
+      parameters: [level, userId]
+    });
+
+    console.log("Survey level saved successfully:", level);
+  } catch (err) {
+    console.error("Error saving survey level:", err);
+  }
+}
+
+
   const scoreCalculation = (answers) => {
     let score = 0;
 
@@ -578,17 +599,27 @@ const FinancialKnowledgeSurvey = () => {
     if (score <= 20) level = "Beginner";
     else if (score <= 40) level = "Intermediate";
     else level = "Advanced";
+    
+  const learningPaths = {
+  Beginner: "Start with basic investing concepts, risk and return fundamentals.",
+  Intermediate: "Explore portfolio diversification, bonds, and mutual funds.",
+  Advanced: "Focus on advanced topics like valuation models, risk analytics, and trading strategies."
+};
 
-    let learningPath =
-      level === "Beginner"
-        ? "Start with basic investing concepts, risk and return fundamentals."
-        : level === "Intermediate"
-          ? "Explore portfolio diversification, bonds, and mutual funds."
-          : "Focus on advanced topics like valuation models, risk analytics, and trading strategies.";
+let learningPath = learningPaths[level] || learningPaths.Advanced;
 
     setStep("results");
     setResult({ score, level, learningPath });
-  };
+
+    // --- SAVE TO DB ---
+  const userId = location.state?.userId; // get userId from location.state
+  if (userId) {
+    saveSurveyLevelToDB(userId, level);
+  } else {
+    console.error("User ID not found. Cannot save survey level.");
+  }
+};
+  
 
   if (step === "begin") {
     return (

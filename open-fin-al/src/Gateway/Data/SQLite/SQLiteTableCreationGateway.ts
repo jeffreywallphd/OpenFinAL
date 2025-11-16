@@ -30,7 +30,8 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 username TEXT UNIQUE NOT NULL,
                 pinHash TEXT,
                 lastLogin TIMESTAMP,
-                dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                overallKnowledgeLevel TEXT DEFAULT 'Beginner'
             );
 
             CREATE TABLE IF NOT EXISTS CertAuthMetaData (

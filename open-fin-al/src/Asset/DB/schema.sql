@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS User (
   pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
   lastLogin DATETIME,
   dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  overallKnowledgeLevel TEXT DEFAULT 'Beginner'
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (
@@ -122,6 +123,8 @@ CREATE TABLE IF NOT EXISTS LearningModuleQuizCompletion(
     FOREIGN KEY (moduleQuizId) REFERENCES LearningModuleQuiz(id)
     FOREIGN KEY (userId) REFERENCES User(id)    
 );
+
+
 
 INSERT OR IGNORE INTO LearningModule (id, title, description, keywords, timeEstimate, category) VALUES (1, "Introduction to Stocks", "This learning module provides you with an introduction to stocks and the stock market.", "stock market", 10, "Stock");
 INSERT OR IGNORE INTO LearningModulePage (moduleId, title, subTitle, pageNumber, pageType) VALUES (1, "Introduction to Stocks", "What is a Stock and What Happens When you Invest?", 1, "TitlePage");
