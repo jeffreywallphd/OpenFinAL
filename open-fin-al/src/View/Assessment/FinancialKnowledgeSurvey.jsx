@@ -600,12 +600,13 @@ async function saveSurveyLevelToDB(userId, level) {
     else if (score <= 40) level = "Intermediate";
     else level = "Advanced";
 
-    let learningPath =
-      level === "Beginner"
-        ? "Start with basic investing concepts, risk and return fundamentals."
-        : level === "Intermediate"
-          ? "Explore portfolio diversification, bonds, and mutual funds."
-          : "Focus on advanced topics like valuation models, risk analytics, and trading strategies.";
+    const learningPaths = {
+      Beginner: "Start with basic investing concepts, risk and return fundamentals.",
+      Intermediate: "Explore portfolio diversification, bonds, and mutual funds.",
+      Advanced: "Focus on advanced topics like valuation models, risk analytics, and trading strategies."
+    };
+
+    let learningPath = learningPaths[level] || learningPaths.Advanced;
 
     setStep("results");
     setResult({ score, level, learningPath });
@@ -618,7 +619,7 @@ async function saveSurveyLevelToDB(userId, level) {
     console.error("User ID not found. Cannot save survey level.");
   }
 };
-  
+
 
   if (step === "begin") {
     return (

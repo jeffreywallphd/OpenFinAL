@@ -20,7 +20,7 @@ import { Analysis } from "../Analysis";
 import BuyReport from "../BuyReport";
 import { TimeSeries } from "../Stock";
 import { News } from "../News";
-import { Assessments } from "../Assessments";
+import { Assessments } from "../Assessment/Assessments";
 import { Learn } from "../Learn";
 import { LearningModuleDetails } from "../LearningModule/LearningModuleDetails";
 import { LearningModulePage } from "../LearningModule/LearningModulePage";
