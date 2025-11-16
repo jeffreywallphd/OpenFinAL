@@ -197,7 +197,7 @@ const Survey = (props) => {
                 </div>
             ) : !isSurveyActive ? (
                 <div className="start-container">
-                    {result && (
+                    {result !== 0 && (
                         <div className="displayed-result">
                             Your Final Score: {result}
                         </div>
