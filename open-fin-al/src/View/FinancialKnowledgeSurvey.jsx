@@ -599,14 +599,13 @@ async function saveSurveyLevelToDB(userId, level) {
     if (score <= 20) level = "Beginner";
     else if (score <= 40) level = "Intermediate";
     else level = "Advanced";
-    
-  const learningPaths = {
-  Beginner: "Start with basic investing concepts, risk and return fundamentals.",
-  Intermediate: "Explore portfolio diversification, bonds, and mutual funds.",
-  Advanced: "Focus on advanced topics like valuation models, risk analytics, and trading strategies."
-};
 
-let learningPath = learningPaths[level] || learningPaths.Advanced;
+    let learningPath =
+      level === "Beginner"
+        ? "Start with basic investing concepts, risk and return fundamentals."
+        : level === "Intermediate"
+          ? "Explore portfolio diversification, bonds, and mutual funds."
+          : "Focus on advanced topics like valuation models, risk analytics, and trading strategies.";
 
     setStep("results");
     setResult({ score, level, learningPath });
