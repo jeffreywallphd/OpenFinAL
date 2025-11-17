@@ -50,7 +50,7 @@
   - [MIS4000](documentation/past_documentation/2024/Fall2024/MIS4000)
 
 ### [3.3 2025](documentation/past_documentation/2025)
-- [Fall 2025](past_documentation/2025/Fall2025)
+- [Fall 2025](OpenFinAL/past_documentation/2025/Fall2025)
   - [Team 1 (AI Chatbot)](documentation/past_documentation/2025/Fall2025/Team1-AIChatBot)
   - [Team 2 (Adaptive Learning)](documentation/past_documentation/2025/Fall2025/Team2-AdaptiveLearning)
   - [Team 3 (Risk Management)](documentation/past_documentation/2025/Fall2025/Team3-RiskManagement)
