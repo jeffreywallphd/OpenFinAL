@@ -8,7 +8,8 @@ CREATE TABLE IF NOT EXISTS User (
   username TEXT UNIQUE NOT NULL,
   pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
   lastLogin DATETIME,
-  dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  riskTolerance ENUM('low', 'low/mid', 'mid', 'mid/high', 'high') DEFAULT 'low'
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (

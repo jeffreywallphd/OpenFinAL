@@ -130,8 +130,8 @@ const Survey = (props) => {
 
     const calculateResult = () => {
         let totalScore = 0;
-        if (props.aggFunc) {
-            totalScore = props.aggFunc(resultList);
+        if (props.scoringFunction) {
+            totalScore = props.scoringFunction(resultList);
         }
         else {
             let nullCount = 0;
@@ -271,7 +271,7 @@ const Survey = (props) => {
                     ) : (
                         <div className="result-container">
                             <h2 className="result-title">Your Assessment Result</h2>
-                            <p className="result-text">{Math.round(result * 100) / 100}</p>
+                            <p className="result-text">{result}</p>
                         </div>
                     )}
                 </div>

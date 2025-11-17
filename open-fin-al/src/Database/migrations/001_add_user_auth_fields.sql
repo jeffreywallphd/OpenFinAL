@@ -10,5 +10,7 @@ ALTER TABLE User ADD COLUMN lastLogin DATETIME;
 -- Add date created timestamp with default value
 ALTER TABLE User ADD COLUMN dateCreated DATETIME DEFAULT CURRENT_TIMESTAMP;
 
+ALTER TABLE User ADD COLUMN rockTolerance ENUM('low', 'low/mid', 'mid', 'mid/high', 'high') DEFAULT 'low';
+
 -- Update existing users to have a dateCreated value
 UPDATE User SET dateCreated = CURRENT_TIMESTAMP WHERE dateCreated IS NULL;
