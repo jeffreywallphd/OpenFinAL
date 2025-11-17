@@ -39,17 +39,17 @@
 - [Business Infrastructure Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/non_technical/project%20management/businessplan)
 - [PI (Program Increment) Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/non_technical/project%20management/pi%20planning)
 
-### 2.4 [Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation)
+### 3. [Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation)
 
-#### 2.4.1 [2023](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2023)
+#### 3.1 [2023](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2023)
 - [Spring 2023](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2023/Spring%202023)
 
-#### 2.4.2 [2024](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2024)
+#### 3.2 [2024](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2024)
 - [Fall 2024](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2024/Fall%202024)
   - [BA5200](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2024/Fall%202024/BA5200)
   - [MIS4000](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2024/Fall%202024/MIS4000)
 
-#### 2.4.3 [2025](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025)
+#### 3.3 [2025](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025)
 - [Fall 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Fall%202025)
   - [Team 1 (AI Chatbot)](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Fall%202025/Team%201%20-%20AI%20Chat%20Bot)
   - [Team 2 (Adaptive Learning)](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Fall%202025/Team%202%20-%20Adaptive%20Learning)
@@ -58,6 +58,6 @@
   - [Team 5 (10k/10q)](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Fall%202025/Team%205%20-%2010k10q)
 - [Spring 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Spring%202025)
 
-#### 2.4.4 2026
+#### 3.4 2026
 - Fall 2026
 - Spring 2026
