@@ -1,6 +1,6 @@
 # Documentation — [Table of Contents](documentation/tableofcontents.md)
 
-## [1. Code-Related](/code_related)
+## [1. Code-Related](documentation/code_related)
 
 ### [1.1 Front-End](documentation/code_related/frontend)
 - [Dark Mode](documentation/code_related/frontend/darkmode)
