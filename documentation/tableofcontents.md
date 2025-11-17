@@ -39,7 +39,7 @@
 - [Business Infrastructure Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/non_technical/project%20management/businessplan)
 - [PI (Program Increment) Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/non_technical/project%20management/pi%20planning)
 
-### 3. [Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation)
+## 3. [Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation)
 
 #### 3.1 [2023](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2023)
 - [Spring 2023](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2023/Spring%202023)
