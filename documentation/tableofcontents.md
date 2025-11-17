@@ -27,37 +27,37 @@
 
 ## [2. Non-Technical](documentation/non_technical)
 
-### [2.1 Current View](documentation/non_technical/current view)
+### [2.1 Current View](documentation/non_technical/currentview)
 - Visuals of Current Product
 - Video Walkthrough
 
-### [2.2 Style Guide](documentation/non_technical/style guide)
-- [Style guide](documentation/non_technical/style guide/style_guide.md)
+### [2.2 Style Guide](documentation/non_technical/styleguide)
+- [Style guide](documentation/non_technical/styleguide/style_guide.md)
 
-### [2.3 Project Management](documentation/non_technical/project management)
-- [Product Roadmap](documentation/non_technical/project management/product roadmap)
-- [Business Infrastructure Plan](documentation/non_technical/project management/businessplan)
-- [PI (Program Increment) Plan](documentation/non_technical/project management/pi planning)
+### [2.3 Project Management](documentation/non_technical/projectmanagement)
+- [Product Roadmap](documentation/non_technical/projectmanagement/productroadmap)
+- [Business Infrastructure Plan](documentation/non_technical/projectmanagement/businessplan)
+- [PI (Program Increment) Plan](documentation/non_technical/projectmanagement/piplanning)
 
 ## [3. Past Documentation](documentation/past_documentation)
 
 ### [3.1 2023](documentation/past_documentation/2023)
-- [Spring 2023](documentation/past_documentation/2023/Spring 2023)
+- [Spring 2023](documentation/past_documentation/2023/Spring2023)
 
 ### [3.2 2024](documentation/past_documentation/2024)
-- [Fall 2024](documentation/past_documentation/2024/Fall 2024)
-  - [BA5200](documentation/past_documentation/2024/Fall 2024/BA5200)
-  - [MIS4000](documentation/past_documentation/2024/Fall 2024/MIS4000)
+- [Fall 2024](documentation/past_documentation/2024/Fall2024)
+  - [BA5200](documentation/past_documentation/2024/Fall2024/BA5200)
+  - [MIS4000](documentation/past_documentation/2024/Fall2024/MIS4000)
 
 ### [3.3 2025](documentation/past_documentation/2025)
-- [Fall 2025](documentation/past_documentation/2025/Fall 2025)
-  - [Team 1 (AI Chatbot)](documentation/past_documentation/2025/Fall 2025/Team 1 - AI Chat Bot)
-  - [Team 2 (Adaptive Learning)](documentation/past_documentation/2025/Fall 2025/Team 2 - Adaptive Learning)
-  - [Team 3 (Risk Management)](documentation/past_documentation/2025/Fall 2025/Team 3 - Risk Management)
-  - [Team 4 (Financial Streamlining)](documentation/past_documentation/2025/Fall 2025/Team 4 - Financial Streamlining)
-  - [Team 5 (10k/10q)](documentation/past_documentation/2025/Fall 2025/Team 5 - 10k10q)
-- [Spring 2025](documentation/past_documentation/2025/Spring 2025)
+- [Fall 2025](documentation/past_documentation/2025/Fall2025)
+  - [Team 1 (AI Chatbot)](documentation/past_documentation/2025/Fall2025/Team1-AIChatBot)
+  - [Team 2 (Adaptive Learning)](documentation/past_documentation/2025/Fall2025/Team2-AdaptiveLearning)
+  - [Team 3 (Risk Management)](documentation/past_documentation/2025/Fall2025/Team3-RiskManagement)
+  - [Team 4 (Financial Streamlining)](documentation/past_documentation/2025/Fall2025/Team4-FinancialStreamlining)
+  - [Team 5 (10k/10q)](documentation/past_documentation/2025/Fall2025/Team5-10k10q)
+- [Spring 2025](documentation/past_documentation/2025/Spring2025)
 
 ### [3.4 2026](documentation/past_documentation/2026)
-- [Fall 2026](documentation/past_documentation/2026/Fall 2026)
-- [Spring 2026](documentation/past_documentation/2026/Spring 2026)
+- [Fall 2026](documentation/past_documentation/2026/Fall2026)
+- [Spring 2026](documentation/past_documentation/2026/Spring2026)
