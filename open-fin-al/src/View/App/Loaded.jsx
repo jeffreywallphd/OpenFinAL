@@ -127,7 +127,7 @@ class AppLoaded extends Component {
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
-                  <li><NavLink to="/survey-demo"><span className="material-icons">assessment</span> Survey Demo</NavLink></li>
+                  {/* <li><NavLink to="/survey-demo"><span className="material-icons">assessment</span> Survey Demo</NavLink></li> */}
                 </ul>
               </nav>
             </aside>
