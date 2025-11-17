@@ -58,6 +58,6 @@
   - [Team 5 (10k/10q)](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Fall%202025/Team%205%20-%2010k10q)
 - [Spring 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/8be88207b5e6aaf087964e1f38bee278abfdbc0a/documentation/past_documentation/2025/Spring%202025)
 
-### 3.4 2026
-- Fall 2026
-- Spring 2026
+### 3.4 [2026](https://github.com/jeffreywallphd/OpenFinAL/tree/2b3172f545f05158fd7ce7010842afb0032346b8/documentation/past_documentation/2026)
+- [Fall 2026](https://github.com/jeffreywallphd/OpenFinAL/tree/2b3172f545f05158fd7ce7010842afb0032346b8/documentation/past_documentation/2026/Fall%202026)
+- [Spring 2026](https://github.com/jeffreywallphd/OpenFinAL/tree/2b3172f545f05158fd7ce7010842afb0032346b8/documentation/past_documentation/2026/Spring%202026)
