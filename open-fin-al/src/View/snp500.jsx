@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { FinancialAnalysisInteractor } from '../Interactor/FinancialAnalysisInteractor';
+import AdvancedFinancialAnalysis from './AdvancedFinancialAnalysis';
 
 function SnP500() {
   const tickerRef = useRef(null);
@@ -8,6 +8,8 @@ function SnP500() {
   const [sector, setSector] = useState('');
   const [industry, setIndustry] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [hasResults, setHasResults] = useState(false);
+  const [showAdvancedAnalysis, setShowAdvancedAnalysis] = useState(false);
   
   const [ratios, setRatios] = useState({
     currentRatio: '-',
@@ -36,49 +38,19 @@ function SnP500() {
     { name: 'Debt-To-Equity Ratio', key: 'debtToEquity' },
     { name: 'Return on Equity (ROE)', key: 'returnOnEquity' },
     { name: 'Quick Ratio', key: 'quickRatio' },
-    { name: 'Return on Assets (ROA)', key: 'returnOnAssetsROA' }
+    { name: '', key: '' }
   ];
 
-  const handleSearch = async () => {
-    const searchTicker = tickerRef.current.value;
-    
-    if (!searchTicker) {
-      alert('Please enter a ticker symbol');
-      return;
-    }
-
-    setIsLoading(true);
-    
-    try {
-      const interactor = new FinancialAnalysisInteractor();
-      const result = await interactor.analyzeCompany(searchTicker);
-      
-      if (result.success && result.companyInfo) {
-        setBusinessName(result.companyInfo.businessName);
-        setTickerSymbol(result.companyInfo.tickerSymbol);
-        setSector(result.companyInfo.sector);
-        setIndustry(result.companyInfo.industry);
-        setRatios(result.ratios);
-      } else {
-        alert(`No data found for ticker: ${searchTicker}`);
-        handleClear();
-      }
-      
-    } catch (error) {
-      console.error('Search error:', error);
-      alert('Error searching for company data');
-      handleClear();
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   const handleClear = () => {
-    tickerRef.current.value = '';
+    if (tickerRef.current) {
+      tickerRef.current.value = '';
+    }
     setBusinessName('');
     setTickerSymbol('');
     setSector('');
     setIndustry('');
+    setHasResults(false);
+    setShowAdvancedAnalysis(false);
     setRatios({
       currentRatio: '-',
       returnOnAssets: '-',
@@ -94,6 +66,115 @@ function SnP500() {
       returnOnAssetsROA: '-'
     });
   };
+
+  const handleAdvancedAnalysis = () => {
+    setShowAdvancedAnalysis(true);
+  };
+
+  const handleBackFromAdvanced = () => {
+    setShowAdvancedAnalysis(false);
+  };
+
+  const testDatabaseConnection = async () => {
+    try {
+      const testQuery = "SELECT COUNT(*) as count FROM FinancialData";
+      const result = await window.database.SQLiteSelectData({ 
+        query: testQuery, 
+        inputData: [] 
+      });
+      
+      alert(`✅ Database connected! Found ${result[0].count} records`);
+      
+    } catch (error) {
+      alert(`❌ Database test failed: ${error.message}`);
+    }
+  };
+
+  const handleSearch = async () => {
+    const searchTicker = tickerRef.current.value;
+    
+    if (!searchTicker) {
+      alert('Please enter a ticker symbol');
+      return;
+    }
+
+    setIsLoading(true);
+    
+    try {
+      console.log('🔍 Searching for:', searchTicker.toUpperCase());
+      
+      const query = `
+        SELECT ticker, company_name, year, revenues, gross_profit, net_income_loss, earnings_per_share_basic 
+        FROM FinancialData 
+        WHERE ticker = ? 
+        ORDER BY year DESC 
+        LIMIT 1
+      `;
+      
+      const results = await window.database.SQLiteSelectData({ 
+        query, 
+        inputData: [searchTicker.toUpperCase()] 
+      });
+      
+      if (results && results.length > 0) {
+        const data = results[0];
+        console.log('✅ Found company:', data.company_name);
+        
+        setBusinessName(data.company_name);
+        setTickerSymbol(data.ticker);
+        setSector('Technology');
+        setIndustry('Software');
+        setHasResults(true);
+        
+        const revenues = data.revenues || 0;
+        const grossProfit = data.gross_profit || 0;
+        const netIncome = data.net_income_loss || 0;
+        const eps = data.earnings_per_share_basic || 0;
+        
+        const calculatePercentage = (part, whole) => {
+          if (!whole || whole === 0) return '-';
+          return `${((part / whole) * 100).toFixed(2)}%`;
+        };
+        
+        setRatios({
+          currentRatio: '',
+          returnOnAssets: '',
+          grossProfitMargin: calculatePercentage(grossProfit, revenues),
+          netProfitMargin: calculatePercentage(netIncome, revenues),
+          operatingProfitMargin: '',
+          assetTurnover: '',
+          earningsPerShare: eps ? `$${eps.toFixed(2)}` : '-',
+          priceToEarnings: '',
+          debtToEquity: '',
+          returnOnEquity: '',
+          quickRatio: '',
+          returnOnAssetsROA: ''
+        });
+        
+      } else {
+        setHasResults(false);
+        alert(`No financial data found for ticker: ${searchTicker.toUpperCase()}\n\nTry: MSFT, AAPL, NVDA, AMZN, GOOG`);
+      }
+      
+    } catch (error) {
+      console.error('❌ Search error:', error);
+      setHasResults(false);
+      alert(`Database error: ${error.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // If we're showing advanced analysis, render that component instead
+  if (showAdvancedAnalysis) {
+    return (
+      <AdvancedFinancialAnalysis
+        ticker={tickerSymbol}
+        companyName={businessName}
+        onBack={handleBackFromAdvanced}
+      />
+    );
+  }
 
   return (
     <div className="page">
@@ -114,7 +195,7 @@ function SnP500() {
               type="text" 
               ref={tickerRef}
               className="priceSearchBar" 
-              placeholder="Please enter a ticker symbol (e.g., MSFT, AAPL, NVDA)"
+              placeholder="Enter ticker symbol (e.g., MSFT, AAPL, NVDA, AMZN)"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button className="priceSearchButton" onClick={handleSearch} disabled={isLoading}>
@@ -124,6 +205,9 @@ function SnP500() {
 
           <div className="inputGroup">
             <button className="bigbutton" onClick={handleClear}>Clear</button>
+            <button className="bigbutton" onClick={testDatabaseConnection} style={{marginLeft: '10px'}}>
+              Test Connection
+            </button>
           </div>
 
           {/* Company Info Display */}
@@ -150,9 +234,37 @@ function SnP500() {
           </div>
         </div>
 
-        {/* Investment Ratios Section */}
-        <div className="riskContainer">
-          <h3 className="riskHeader">Investment Ratios:</h3>
+        {/* Investment Ratios Section with Advanced Analysis Button */}
+        <div className="riskContainer" style={{ position: 'relative' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
+            <h3 className="riskHeader">Investment Ratios:</h3>
+            
+            {/* Advanced Analysis Button - Only shows when hasResults is true */}
+            {hasResults && (
+              <button 
+                className="advanced-analysis-btn"
+                onClick={handleAdvancedAnalysis}
+                style={{
+                  padding: '10px 20px',
+                  backgroundColor: '#007bff',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '5px',
+                  cursor: 'pointer',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  display: 'flex',
+                  alignItems: 'center',
+                  height: '40px'
+                }}
+              >
+                <span className="material-icons" style={{ marginRight: '8px', fontSize: '18px' }}>
+                  analytics
+                </span>
+                Advanced Financial Analysis
+              </button>
+            )}
+          </div>
           
           {investmentRatios.map((ratio, index) => (
             <div key={index} className="bigScoreContainer">
