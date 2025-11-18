@@ -1,0 +1,111 @@
+.risk-container {
+    overflow-y: scroll;
+    height: 90vh;
+}
+
+.risk-table {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-collapse: collapse;
+}
+
+.risk-table tbody {
+    display: flex;
+    flex-direction: row;
+}
+
+.risk-table th {
+    background-color: var(--background-color-highlight);
+    color: var(--text-color-dark);
+    padding: 10px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.risk-table tr {
+    display: flex;
+    flex-direction: column;
+}
+
+.risk-table td {
+    border: 1px solid var(--background-color-highlight);
+    padding: 10px;
+    text-align: right;
+}
+
+h2 {
+    color: var(--text-color-light);
+    text-align: center;
+}
+
+.flex-container {
+    display: flex;
+    flex-direction: row;
+    align-items: top;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 5vh;
+}
+
+.piecrust {
+    width: 50vh;
+    height: 50vh;
+}
+
+.risk-display {
+    width: max-content;        /* container shrinks to fit h3 width */
+    max-width: 100%;           /* prevents overflow on small screens */
+}
+
+.riskbar-container {
+    width: 100%;               /* takes width of .risk-display */
+    margin-top: 4px;
+}
+
+.riskbar-track {
+    width: 100%;               /* exactly the width of the h3 */
+    height: 8px;
+    background: #e0e0e0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.riskbar-fill {
+    height: 100%;
+    transition: width 0.7s ease-in-out;
+    border-radius: 4px;
+}
+
+.risk-low {
+    background-color: #4caf50; /* Green */
+}
+.risk-low-mid {
+    background-color: #8bc34a; /* Light Green */
+}
+.risk-mid {
+    background-color: #ffeb3b; /* Yellow */
+}
+.risk-mid-high {
+    background-color: #ff9800; /* Orange */
+}
+.risk-high {
+    background-color: #f44336; /* Red */
+}
+
+.survey-popup {
+    height:50vh;
+    width: 80vh;
+    background-color: var(--background-color);
+    position:relative;
+    padding: 5vh;
+}
+
+.risk-close {
+    position:absolute;
+    z-index: 10;
+}
+
+.risk-survey-content {
+    margin:auto;
+}

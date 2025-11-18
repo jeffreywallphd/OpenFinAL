@@ -36,6 +36,8 @@ import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
 import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
+import RiskAnalysis from "../RiskAnalysis/RiskAnalysis";
+import SurveyDemo from "../SurveyTemplate/SurveyDemo";
 import { UserInfo } from "./UserInfo";
 
 // Scrolls to the top of a page after every route change
@@ -127,6 +129,7 @@ class AppLoaded extends Component {
                   <li><NavLink to="/assessments"><span className="material-icons">assignment</span> Assessments</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
+                  {/* <li><NavLink to="/survey-demo"><span className="material-icons">assessment</span> Survey Demo</NavLink></li> */}
                 </ul>
               </nav>
             </aside>
@@ -136,7 +139,8 @@ class AppLoaded extends Component {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/analysis" element={<Analysis />} />
+                <Route path="/analysis" element={<RiskAnalysis />} />
+                <Route path="/analysis-bad" element={<Analysis />} />
                 <Route path="/buy-report" element={<BuyReport />} />
                 <Route path="/price" element={<TimeSeries />} />
                 <Route path="/news" element={<News />} />
@@ -149,6 +153,7 @@ class AppLoaded extends Component {
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
+                <Route path="/survey-demo" element={<SurveyDemo />} />
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>

@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS User (
   lastLogin DATETIME,
   dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
   overallKnowledgeLevel TEXT
+  riskTolerance ENUM('low', 'low/mid', 'mid', 'mid/high', 'high') DEFAULT 'low'
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (
