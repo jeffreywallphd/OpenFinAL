@@ -11,9 +11,7 @@ class Assessments extends Component {
           <div className="nav-left">
             <h1><span className="material-icons">assignment</span> Assessments</h1>
           </div>
-          <div className="nav-right">
-            <span className="material-icons large-material-icon" onClick={() => this.handleNavigation('/settings')}>account_circle</span>
-          </div>
+
         </header>
         <section className="knowledge-survey">
           <FinancialKnowledgeSurvey />
