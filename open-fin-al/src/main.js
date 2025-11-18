@@ -709,6 +709,7 @@ const getDB = async () => {
   try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
+        // Database connection error
         console.error('Could not connect to database', err);
         return;
       }

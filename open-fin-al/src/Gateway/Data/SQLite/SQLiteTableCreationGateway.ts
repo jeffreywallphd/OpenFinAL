@@ -30,8 +30,8 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 username TEXT UNIQUE NOT NULL,
                 pinHash TEXT,
                 lastLogin TIMESTAMP,
-                dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                overalKnowledgeLevel TEXT,
+                dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                overallKnowledgeLevel TEXT,
                 riskScore TEXT,
             );
  

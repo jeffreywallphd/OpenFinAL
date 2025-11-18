@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS User (
   pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
   lastLogin DATETIME,
   dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+  overallKnowledgeLevel TEXT
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (
