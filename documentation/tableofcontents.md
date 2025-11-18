@@ -1,4 +1,4 @@
-# Documentation — [Table of Contents](/tableofcontents.md)
+# Documentation — [Table of Contents](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/tableofcontents.md)
 
 ## [1. Code-Related](documentation/code_related)
 
