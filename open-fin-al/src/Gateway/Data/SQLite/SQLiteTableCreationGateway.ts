@@ -172,6 +172,33 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 changedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             );
 
+            
+                   /*Financial Data table for company metrics*/
+
+            
+            CREATE TABLE IF NOT EXISTS FinancialData (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                ticker TEXT NOT NULL,
+                cik TEXT NOT NULL,
+                company_name TEXT NOT NULL,
+                year INTEGER NOT NULL,
+                revenues DECIMAL(18,2),
+                revenues_period_end DATE,
+                cost_of_revenue DECIMAL(18,2),
+                operating_expenses DECIMAL(18,2),
+                net_income_loss DECIMAL(18,2),
+                earnings_per_share_basic DECIMAL(8,2),
+                earnings_per_share_diluted DECIMAL(8,2),
+                gross_profit DECIMAL(18,2),
+                operating_income_loss DECIMAL(18,2),
+                date_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(ticker, year)
+            );
+
+            CREATE INDEX IF NOT EXISTS idx_financialdata_ticker ON FinancialData(ticker);
+            CREATE INDEX IF NOT EXISTS idx_financialdata_year ON FinancialData(year);
+            CREATE INDEX IF NOT EXISTS idx_financialdata_cik ON FinancialData(cik);
+            
             /*create a trigger to update the modificaitons table when Delete occurs on PublicCompany*/
             CREATE TRIGGER IF NOT EXISTS PublicCompanyOnDelete AFTER DELETE ON PublicCompany
             BEGIN
