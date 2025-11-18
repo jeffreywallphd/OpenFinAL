@@ -1,7 +1,7 @@
 import React, { useState, Component } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import FinancialKnowledgeSurvey from './FinancialKnowledgeSurvey';
-import RiskSurvey from '../RiskSurvey';
+import RiskSurvey from '../RiskAnalysis/RiskSurvey';
 
 class Assessments extends Component {
   render() {

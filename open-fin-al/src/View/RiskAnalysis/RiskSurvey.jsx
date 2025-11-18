@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import { Survey } from "../SurveyTemplate/Survey";
 
+// ancient question sets, saved but not currently in use
 const questionSet1 = [
     {
         id: 1,
@@ -224,244 +226,297 @@ const questionSet3 = [
     }
 ];
 
-const RiskSurvey = () => {
-    const [isSurveyActive, setIsSurveyActive] = useState(false);
-    const [hasAgreed, setHasAgreed] = useState(false);
-    const [showDisclaimer, setShowDisclaimer] = useState(true);
-    const [currentSet, setCurrentSet] = useState(1);
-    const [currentQuestion, setCurrentQuestion] = useState(0);
-    const [set1Answers, setSet1Answers] = useState(Array(11).fill(null));
-    const [set2Answers, setSet2Answers] = useState(Array(7).fill(null));
-    const [set3Answers, setSet3Answers] = useState(Array(6).fill(null));
-    const [showResult, setShowResult] = useState(false);
-    const [result, setResult] = useState("");
-    const [displayedResult, setDisplayedResult] = useState(null);
+const currentQuestions = [
+  {
+    id: 0,
+    text: "How would you feel if your portfolio dropped 20% in a month?",
+    options: [
+      { value: 1, label: "Very anxious — I’d want to sell immediately" },
+      { value: 2, label: "Concerned — I’d consider reducing exposure" },
+      { value: 3, label: "Uncomfortable but I’d likely hold" },
+      { value: 4, label: "Unbothered — I’d see it as a buying opportunity" }
+    ]
+  },
+  {
+    id: 1,
+    text: "What’s the largest percentage loss you could tolerate before feeling compelled to sell?",
+    options: [
+      { value: 1, label: "Less than 10%" },
+      { value: 2, label: "10–20%" },
+      { value: 3, label: "20–35%" },
+      { value: 4, label: "Over 35%" }
+    ]
+  },
+  {
+    id: 2,
+    text: "Do you lose sleep or get anxious when markets are volatile?",
+    options: [
+      { value: 1, label: "Yes, it keeps me up at night" },
+      { value: 2, label: "Sometimes, but I try not to worry" },
+      { value: 3, label: "Rarely — I can tolerate ups and downs" },
+      { value: 4, label: "No — I stay calm and focused on the long term" }
+    ]
+  },
+  {
+    id: 3,
+    text: "Would you describe yourself as a cautious, moderate, or aggressive investor?",
+    options: [
+      { value: 1, label: "Very cautious" },
+      { value: 2, label: "Moderate" },
+      { value: 3, label: "Growth-oriented" },
+      { value: 4, label: "Aggressive / high-risk taker" }
+    ]
+  },
+  {
+    id: 4,
+    text: "Do you focus more on potential gains or potential losses when making investment decisions?",
+    options: [
+      { value: 1, label: "Completely focused on avoiding losses" },
+      { value: 2, label: "More focused on safety than gains" },
+      { value: 3, label: "Balanced between risk and reward" },
+      { value: 4, label: "Mostly focused on maximizing gains" }
+    ]
+  },
+  {
+    id: 5,
+    text: "Have you ever sold an investment in a panic?",
+    options: [
+      { value: 1, label: "Yes, multiple times" },
+      { value: 2, label: "Yes, once or twice" },
+      { value: 3, label: "Rarely — I try to stay disciplined" },
+      { value: 4, label: "Never — I stay the course regardless" }
+    ]
+  },
+  {
+    id: 6,
+    text: "Do you typically stick to your investment plan, or do you change course when the market moves suddenly?",
+    options: [
+      { value: 1, label: "I often change course or react emotionally" },
+      { value: 2, label: "I sometimes adjust my plan" },
+      { value: 3, label: "I mostly stay disciplined" },
+      { value: 4, label: "I always follow my long-term plan" }
+    ]
+  },
+  {
+    id: 7,
+    text: "What types of investments have you made in the past?",
+    options: [
+      { value: 1, label: "Only low-risk (savings, CDs, bonds)" },
+      { value: 2, label: "Some moderate-risk (mutual funds, ETFs)" },
+      { value: 3, label: "High-risk (stocks, crypto)" },
+      { value: 4, label: "Very high-risk or speculative (options, startups, leveraged assets)" }
+    ]
+  },
+  {
+    id: 8,
+    text: "What percentage of your total net worth is currently invested in the stock market?",
+    options: [
+      { value: 1, label: "Less than 10%" },
+      { value: 2, label: "10–30%" },
+      { value: 3, label: "30–60%" },
+      { value: 4, label: "Over 60%" }
+    ]
+  },
+  {
+    id: 9,
+    text: "Do you rely on your investments for short-term needs, or are they primarily long-term?",
+    options: [
+      { value: 1, label: "Rely heavily on them for short-term needs" },
+      { value: 2, label: "Occasionally use investment funds" },
+      { value: 3, label: "Mostly long-term focus" },
+      { value: 4, label: "Completely long-term; no short-term reliance" }
+    ]
+  },
+  {
+    id: 10,
+    text: "If you lost 25% of your investment today, how would it impact your lifestyle or financial obligations?",
+    options: [
+      { value: 1, label: "Severely — it would cause financial hardship" },
+      { value: 2, label: "Noticeable impact, but manageable" },
+      { value: 3, label: "Minimal impact — I’d adjust spending slightly" },
+      { value: 4, label: "No impact — I’d continue as normal" }
+    ]
+  },
+  {
+    id: 11,
+    text: "What is your investment time horizon?",
+    options: [
+      { value: 1, label: "1–3 years" },
+      { value: 2, label: "3–5 years" },
+      { value: 3, label: "5–10 years" },
+      { value: 4, label: "10+ years" }
+    ]
+  },
+  {
+    id: 12,
+    text: "If two investments had the same expected return, but one had twice the volatility, which would you choose?",
+    options: [
+      { value: 1, label: "The stable, low-volatility one" },
+      { value: 2, label: "Probably the stable one, unless the risk is small" },
+      { value: 3, label: "Either — depends on the opportunity" },
+      { value: 4, label: "The high-volatility one — more excitement and potential" }
+    ]
+  },
+  {
+    id: 13,
+    text: "You’re offered a guaranteed 5% annual return or a 50/50 chance to earn 15% or 0%. Which do you take?",
+    options: [
+      { value: 1, label: "Guaranteed 5% — safety first" },
+      { value: 2, label: "Likely the 5%, but I’d think about the gamble" },
+      { value: 3, label: "Take the 50/50 — I’m comfortable with risk" },
+      { value: 4, label: "Definitely the 50/50 — go big or go home" }
+    ]
+  },
+  {
+    id: 14,
+    text: "Would you prefer a smooth but low-return investment, or a high-return investment with sharp ups and downs?",
+    options: [
+      { value: 1, label: "Smooth and low-return" },
+      { value: 2, label: "Mostly smooth with some volatility" },
+      { value: 3, label: "Moderately volatile with higher potential" },
+      { value: 4, label: "Highly volatile, high-return" }
+    ]
+  },
+  {
+    id: 15,
+    text: "What would you do if your retirement account lost 30% in a year due to a market crash?",
+    options: [
+      { value: 1, label: "Sell to avoid further losses" },
+      { value: 2, label: "Wait cautiously for recovery" },
+      { value: 3, label: "Hold and consider rebalancing" },
+      { value: 4, label: "Buy more while prices are low" }
+    ]
+  },
+  {
+    id: 16,
+    text: "Do you think it’s more important to take on risk when you’re younger or older?",
+    options: [
+      { value: 1, label: "Avoid risk at any age" },
+      { value: 2, label: "Minimize risk at all times" },
+      { value: 3, label: "Take more risk while younger" },
+      { value: 4, label: "Take aggressive risks early to maximize growth" }
+    ]
+  },
+  {
+    id: 17,
+    text: "What is the largest percentage drop in your investment portfolio you could accept?",
+    options: [
+      { value: 1, label: "I can't tolerate any losses" },
+      { value: 2, label: "I prefer to avoid a loss greater than 15%" },
+      { value: 3, label: "I'm okay with a 20% loss" },
+      { value: 4, label: "I can handle significant drops" }
+    ]
+  },
+  {
+    id: 18,
+    text: "If you faced sudden job loss two months before a planned luxury vacation, your response would be to",
+    options: [
+      { value: 1, label: "Cancel the vacation completely" },
+      { value: 2, label: "Scale down to a more affordable trip" },
+      { value: 3, label: "Proceed with the vacation as planned" },
+      { value: 4, label: "Add on more to your vacation" }
+    ]
+  },
+  {
+    id: 19,
+    text: "If you won $5000, how would you consider using it?",
+    options: [
+      { value: 1, label: "Keep it as cash" },
+      { value: 2, label: "Put it in a high-yield savings account" },
+      { value: 3, label: "Invest it in stocks" },
+      { value: 4, label: "Gamble it for a chance at a bigger win" }
+    ]
+  },
+  {
+    id: 20,
+    text: "If your stocks dropped 30% in value, your reaction would be:",
+    options: [
+      { value: 1, label: "Sell to minimize loss" },
+      { value: 2, label: "Hold on and wait for recovery" },
+      { value: 3, label: "Invest more to average down" },
+      { value: 4, label: "Reevaluate my investment strategy before deciding" }
+    ]
+  },
+  {
+    id: 21,
+    text: "What is your primary goal of investing?",
+    options: [
+      { value: 1, label: "Maintain my wealth" },
+      { value: 2, label: "Long-term wealth accumulation" },
+      { value: 3, label: "Quick profits" },
+      { value: 4, label: "Generate regular income or dividends" }
+    ]
+  },
+  {
+    id: 22,
+    text: "How comfortable are you with investing in high-risk stocks?",
+    options: [
+      { value: 1, label: "Not comfortable at all" },
+      { value: 2, label: "Somewhat comfortable" },
+      { value: 3, label: "Very Comfortable" },
+      { value: 4, label: "Certain" }
+    ]
+  },
+  {
+    id: 23,
+    text: "What percentage of your total investments is currently in stocks?",
+    options: [
+      { value: 1, label: "Below 30%" },
+      { value: 2, label: "30–60%" },
+      { value: 3, label: "60–80%" },
+      { value: 4, label: "Over 80%" }
+    ]
+  },
+  {
+    id: 24,
+    text: "How do you rate your understanding of investing concepts?",
+    options: [
+      { value: 1, label: "Not very knowledgeable" },
+      { value: 2, label: "Moderately knowledgeable" },
+      { value: 3, label: "Very knowledgeable" },
+      { value: 4, label: "Expert in investing" }
+    ]
+  }
+];
 
-    const handleAgree = () => {
-        setHasAgreed(true);
-        setShowDisclaimer(false);
-        setIsSurveyActive(true);
-    };
-
-    const startSurvey = () => {
-        setShowDisclaimer(true);
-        setHasAgreed(false);
-    };
+const RiskSurvey = (props) => {
     
-    const getCurrentQuestionSet = () => {
-        switch (currentSet) {
-            case 1:
-                return questionSet1;
-            case 2:
-                return questionSet2;
-            case 3:
-                return questionSet3;
-            default:
-                return questionSet1;
-        }
-    };
+    const setUserRiskTolerance = props.setUserRiskTolerance;
+    const scoreSurvey = (answerList) => {
+        const maxScore = currentQuestions.reduce((sum, q) => {
+            const maxOption = Math.max(...q.options.map(o => o.value));
+            return sum + maxOption;
+        }, 0);
 
-    const handleAnswer = (value) => {
-        switch (currentSet) {
-            case 1:
-                const newSet1Answers = [...set1Answers];
-                newSet1Answers[currentQuestion] = value;
-                setSet1Answers(newSet1Answers);
-                break;
-            case 2:
-                const newSet2Answers = [...set2Answers];
-                newSet2Answers[currentQuestion] = value;
-                setSet2Answers(newSet2Answers);
-                break;
-            case 3:
-                const newSet3Answers = [...set3Answers];
-                newSet3Answers[currentQuestion] = value;
-                setSet3Answers(newSet3Answers);
-                break;
-        }
-    };
+        const minScore = currentQuestions.reduce((sum, q) => {
+            const minOption = Math.min(...q.options.map(o => o.value));
+            return sum + minOption;
+        }, 0);
 
-    const handleNext = () => {
-        const currentQuestionSet = getCurrentQuestionSet();
-        if (currentQuestion < currentQuestionSet.length - 1) {
-            setCurrentQuestion(currentQuestion + 1);
-        } else if (currentSet < 3) {
-            setCurrentSet(currentSet + 1);
-            setCurrentQuestion(0);
-        } else {
-            calculateResult();
-        }
-    };
+        const rawScore = answerList.reduce((sum, val) => sum + val, 0);
+        const normalizedScore = ((rawScore - minScore) / (maxScore - minScore));
 
-    const handleBack = () => {
-        if (currentQuestion > 0) {
-            setCurrentQuestion(currentQuestion - 1);
-        } else if (currentSet > 1) {
-            setCurrentSet(currentSet - 1);
-            const previousSetLength = currentSet === 2 ? questionSet1.length : questionSet2.length;
-            setCurrentQuestion(previousSetLength - 1);
-        }
-    };
-
-    const calculateResult = () => {
-        const set1Score = set1Answers.reduce((acc, curr) => acc + curr, 0) / 34;
-        const set2Score = set2Answers.reduce((acc, curr) => acc + curr, 0) / 24;
-        const set3Score = set3Answers.reduce((acc, curr) => acc + curr, 0) / 23;
-        
-        const totalScore = (set1Score)*(0.5) + (set2Score)*(0.25) + (set3Score)*(0.25);
-        
-        let riskProfile;
-        if (totalScore >= 0.8) {
-            riskProfile = "High Risk Taker";
-        } else if (totalScore <= 0.40) {
-            riskProfile = "Low Risk Taker";
-        } else {
-            riskProfile = "Moderate Risk Taker";
-        }
-        
-        setResult(riskProfile);
-        setDisplayedResult(riskProfile);
-        setShowResult(true);
-    };
-
-    const handleClose = () => {
-        setIsSurveyActive(false);
-        setShowResult(false);
-        setCurrentSet(1);
-        setCurrentQuestion(0);
-        setSet1Answers(Array(11).fill(null));
-        setSet2Answers(Array(8).fill(null));
-        setSet3Answers(Array(5).fill(null));
-    };
-
-
-    const currentQuestionSet = getCurrentQuestionSet();
-    const getCurrentAnswers = () => {
-        switch (currentSet) {
-            case 1:
-                return set1Answers;
-            case 2:
-                return set2Answers;
-            case 3:
-                return set3Answers;
-            default:
-                return [];
-        }
-    };
-
+        console.log(minScore, maxScore, rawScore, normalizedScore);
+        return getRiskClassFromLevel(normalizedScore);
+    }
     return (
-        <div className="survey-wrapper">
-            {showDisclaimer ? (
-                <div className="disclaimer-container">
-                    <div className="disclaimer-content">
-                        <h2>Important Notice</h2>
-                        <div className="disclaimer-text">
-                            <ul>
+        <div className="risk-survey-content">
+            <Survey
+                title="Risk Assessment Survey"
+                disclaimer={<ul>
                                 <li>This risk assessment survey is for informational purposes only.</li>
                                 <li>Your responses are not saved or stored anywhere.</li>
                                 <li>The results provided are indicative and should not be considered as professional financial advice.</li>
                                 <li>For actual investment decisions, please consult with a qualified financial advisor.</li>
-                            </ul>
-                        </div>
-                        <div className="disclaimer-buttons">
-                            <button
-                                onClick={handleAgree}
-                                className="agree-button"
-                            >
-                                I Understand and Agree
-                            </button>
-                            <button
-                                onClick={() => setShowDisclaimer(false)}
-                                className="cancel-button"
-                            >
-                                Cancel
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            ) : !isSurveyActive ? (
-                <div className="start-container">
-                    {displayedResult && (
-                        <div className="displayed-result">
-                            Your Risk Profile: {displayedResult}
-                        </div>
-                    )}
-                    <button 
-                        onClick={startSurvey}
-                        className="survey-button"
-                    >
-                        Take Risk Assessment Survey
-                    </button>
-                </div>
-            ) : (
-                <div className="survey-container">
-                    {!showResult ? (
-                        <div className="survey-content">
-                            <h2 className="survey-title">Risk Assessment Survey - Set {currentSet}</h2>
-                            
-                            <div className="question-container">
-                                <p className="question-text">
-                                    {getCurrentQuestionSet()[currentQuestion].text}
-                                </p>
-                                <div className="options-container">
-                                    {getCurrentQuestionSet()[currentQuestion].options.map((option) => (
-                                        <button
-                                            key={option.value}
-                                            onClick={() => handleAnswer(option.value)}
-                                            className={`option-button ${
-                                                getCurrentAnswers()[currentQuestion] === option.value 
-                                                    ? 'selected' 
-                                                    : ''
-                                            }`}
-                                        >
-                                            {option.label}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-
-                            <div className="navigation-container">
-                                <button
-                                    onClick={handleBack}
-                                    disabled={currentQuestion === 0 && currentSet === 1}
-                                    className="nav-button"
-                                >
-                                    Back
-                                </button>
-
-                                {currentSet === 3 && currentQuestion === getCurrentQuestionSet().length - 1 ? (
-                                    <button
-                                        onClick={calculateResult}
-                                        disabled={!getCurrentAnswers()[currentQuestion]}
-                                        className="submit-button"
-                                    >
-                                        Submit
-                                    </button>
-                                ) : (
-                                    <button
-                                        onClick={handleNext}
-                                        disabled={!getCurrentAnswers()[currentQuestion]}
-                                        className="nav-button"
-                                    >
-                                        Next
-                                    </button>
-                                )}
-                            </div>
-
-                            <div className="progress-text">
-                                Set {currentSet}: Question {currentQuestion + 1} of {getCurrentQuestionSet().length}
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="result-container">
-                            <h2 className="result-title">Your Risk Assessment Result</h2>
-                            <p className="result-text">{result}</p>
-                        </div>
-                    )}
-                </div>
-            )}
-                </div>
-            )}
+                            </ul>}
+                setResult={setUserRiskTolerance}
+                scoringFunction={scoreSurvey}
+                questions={currentQuestions}
+            />
+            
+        </div>
+    )
+}
         
 
-export { RiskSurvey };
+export default RiskSurvey;
