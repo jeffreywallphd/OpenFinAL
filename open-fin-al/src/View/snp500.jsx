@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { FinancialAnalysisInteractor } from '../Interactor/FinancialAnalysisInteractor';
 
-function FinancialAnalysis() {
+function SnP500() {
   const tickerRef = useRef(null);
-  
   const [businessName, setBusinessName] = useState('');
   const [tickerSymbol, setTickerSymbol] = useState('');
   const [sector, setSector] = useState('');
@@ -39,7 +39,7 @@ function FinancialAnalysis() {
     { name: 'Return on Assets (ROA)', key: 'returnOnAssetsROA' }
   ];
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const searchTicker = tickerRef.current.value;
     
     if (!searchTicker) {
@@ -49,30 +49,28 @@ function FinancialAnalysis() {
 
     setIsLoading(true);
     
-    // TODO: Replace with actual API call
-    setTimeout(() => {
-      setBusinessName('Apple Inc.');
-      setTickerSymbol(searchTicker.toUpperCase());
-      setSector('Technology');
-      setIndustry('Consumer Electronics');
+    try {
+      const interactor = new FinancialAnalysisInteractor();
+      const result = await interactor.analyzeCompany(searchTicker);
       
-      setRatios({
-        currentRatio: '1.07',
-        returnOnAssets: '22.61%',
-        grossProfitMargin: '43.31%',
-        netProfitMargin: '25.31%',
-        operatingProfitMargin: '29.82%',
-        assetTurnover: '0.89',
-        earningsPerShare: '$6.11',
-        priceToEarnings: '28.5',
-        debtToEquity: '1.96',
-        returnOnEquity: '147.25%',
-        quickRatio: '0.83',
-        returnOnAssetsROA: '22.61%'
-      });
+      if (result.success && result.companyInfo) {
+        setBusinessName(result.companyInfo.businessName);
+        setTickerSymbol(result.companyInfo.tickerSymbol);
+        setSector(result.companyInfo.sector);
+        setIndustry(result.companyInfo.industry);
+        setRatios(result.ratios);
+      } else {
+        alert(`No data found for ticker: ${searchTicker}`);
+        handleClear();
+      }
       
+    } catch (error) {
+      console.error('Search error:', error);
+      alert('Error searching for company data');
+      handleClear();
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
   };
 
   const handleClear = () => {
@@ -102,7 +100,7 @@ function FinancialAnalysis() {
       <div className="riskTitleContainer">
         <h2>
           <span className="material-icons">assessment</span> 
-          10K / 10Q Financial Analysis
+          S&P 500 Financial Analysis
         </h2>
       </div>
 
@@ -116,7 +114,7 @@ function FinancialAnalysis() {
               type="text" 
               ref={tickerRef}
               className="priceSearchBar" 
-              placeholder="Please enter a ticker symbol"
+              placeholder="Please enter a ticker symbol (e.g., MSFT, AAPL, NVDA)"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
             <button className="priceSearchButton" onClick={handleSearch} disabled={isLoading}>
@@ -170,5 +168,5 @@ function FinancialAnalysis() {
   );
 }
 
-export { FinancialAnalysis };
-export default FinancialAnalysis;
+export { SnP500 };
+export default SnP500;
