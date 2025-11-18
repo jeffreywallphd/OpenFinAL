@@ -27,10 +27,8 @@ class MigrationManager {
 
             for (const filename of migrationFiles) {
                 if (!executedMigrations.includes(filename)) {
-                    console.log(`Running migration: ${filename}`);
                     await this.executeMigration(filename);
                     this.markMigrationAsExecuted(filename);
-                    console.log(`Completed migration: ${filename}`);
                 }
             }
         } catch (error) {
@@ -45,7 +43,6 @@ class MigrationManager {
                 .filter(file => file.endsWith('.sql'))
                 .sort();
         } catch (error) {
-            console.log('No migrations directory found or no migration files');
             return [];
         }
     }
@@ -59,13 +56,17 @@ class MigrationManager {
     async executeMigration(filename) {
         const filePath = join(this.migrationsPath, filename);
         const sql = readFileSync(filePath, 'utf-8');
-        
-        // Execute within a transaction for safety
-        const transaction = this.db.transaction(() => {
+
+        // Temporarily disable schema validation to allow migrations on databases
+        // with legacy/quirky schema definitions (e.g., double-quoted string literals)
+        this.db.pragma('writable_schema = ON');
+
+        try {
             this.db.exec(sql);
-        });
-        
-        transaction();
+        } finally {
+            // Re-enable schema validation
+            this.db.pragma('writable_schema = OFF');
+        }
     }
 
     markMigrationAsExecuted(filename) {

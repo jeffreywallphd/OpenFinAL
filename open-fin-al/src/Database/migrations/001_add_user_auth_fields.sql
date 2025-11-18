@@ -2,7 +2,7 @@
 -- This migration adds PIN authentication fields to the User table
 
 -- Add PIN field (8-digit validation will be handled in application layer)
-ALTER TABLE User ADD COLUMN pin TEXT;
+ALTER TABLE User ADD COLUMN pinHash TEXT;
 
 -- Add last login timestamp
 ALTER TABLE User ADD COLUMN lastLogin DATETIME;
