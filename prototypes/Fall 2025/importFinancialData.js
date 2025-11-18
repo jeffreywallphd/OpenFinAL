@@ -4,7 +4,7 @@ const path = require('path');
 const os = require('os');
 
 const dbPath = path.join(os.homedir(), 'AppData', 'Roaming', 'OpenFinAL', 'OpenFinAL.sqlite');
-const excelPath = path.join(__dirname, '..', 'data', 'financial_data.xlsx');
+const excelPath = path.join(__dirname, '..', 'Fall 2025', 'financial_data.xlsx');
 
 function importData() {
     const db = new sqlite3.Database(dbPath);
