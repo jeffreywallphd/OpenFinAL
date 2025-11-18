@@ -1,9 +1,9 @@
-# Documentation — [Table of Contents](documentation/tableofcontents.md)
+# Documentation — [Table of Contents](/tableofcontents.md)
 
 ## [1. Code-Related](documentation/code_related)
 
 ### [1.1 Front-End](documentation/code_related/frontend)
-- [Dark Mode](documentation/code_related/frontend/darkmode)
+- [Dark Mode](code_related/frontend/darkmode)
 
 ### [1.2 Back-End](documentation/code_related/backend)
 - [ERDS (Entity Relationship Diagrams)](documentation/code_related/backend/erds)
