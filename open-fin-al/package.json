@@ -7,10 +7,10 @@
   "description": "An AI-enabled software to learn financial investing",
   "main": ".webpack/main",
   "scripts": {
-    "start": "electron-forge start",
-    "debug": "ELECTRON_ENABLE_LOGGING=1 electron-forge start",
-    "debug-main": "electron-forge start -- --inspect-electron=9229",
-    "debug-renderer": "electron-forge start -- --remote-debugging-port=9222",
+    "start": "cross-env ELECTRON_WEBPACK_WDS_PORT=3001 electron-forge start",
+    "debug": "cross-env ELECTRON_ENABLE_LOGGING=1 ELECTRON_WEBPACK_WDS_PORT=3001 electron-forge start",
+    "debug-main": "cross-env ELECTRON_WEBPACK_WDS_PORT=3001 electron-forge start -- --inspect-electron=9229",
+    "debug-renderer": "cross-env ELECTRON_WEBPACK_WDS_PORT=3001 electron-forge start -- --remote-debugging-port=9222",
     "clean": "rm -rf .webpack out node_modules package-lock.json && npm install && npm run postinstall",
     "package": "electron-forge package",
     "make": "electron-forge make",
@@ -51,6 +51,7 @@
     "browserify-fs": "^1.0.0",
     "copy-dependencies": "file:./forge-plugins",
     "copy-webpack-plugin": "^13.0.1",
+    "cross-env": "^7.0.3",
     "css-loader": "^6.11.0",
     "electron": "35.1.5",
     "electron-builder": "^26.0.12",
@@ -63,6 +64,7 @@
     "stream-browserify": "^3.0.0",
     "style-loader": "^3.3.4",
     "ts-jest": "^29.4.1",
+    "webpack-cli": "^6.0.1",
     "webpack-node-externals": "^3.0.0"
   },
   "dependencies": {
