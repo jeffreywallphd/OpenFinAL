@@ -94,11 +94,11 @@ class Home extends Component {
 
     const response = await interactor.get(requestObj);
     window.console.log(response);
-    if (response.response.ok) {
-      this.setState({
-        marketData: response.response.results,
-      });
-      return true;
+    if(response?.response?.ok) {
+        this.setState({
+          marketData: response.response.results,
+        });
+        return true;
     } else {
       return false;
     }
@@ -117,7 +117,7 @@ class Home extends Component {
 
     const response = await interactor.get(requestObj);
 
-    if (response.response.ok) {
+    if (response?.response?.ok) {
       var data = response.response.results[0]["data"];
       var startDate = new Date("01-01-2010");
       var filteredData = data.filter(entry => new Date(entry.date) > startDate);
@@ -127,7 +127,7 @@ class Home extends Component {
         ...entry,
         value: parseFloat(entry.value)
       }));
-
+  
       window.console.log(endDate);
 
       let min = Infinity;
@@ -160,27 +160,33 @@ class Home extends Component {
   }
 
   async getEconomicNews() {
-    const interactor = new NewsInteractor();
-    const requestObj = new JSONRequest(JSON.stringify({
-      request: {
-        news: {
-          topic: "economy_macro",
-          limit: 20
-        }
-      }
-    }));
+      try {
+          const interactor = new NewsInteractor();
+          const requestObj = new JSONRequest(JSON.stringify({
+              request: {
+                  news: {
+                      topic: "economy_macro",
+                      limit: 20
+                  }              
+              }
+          }));
 
-    const response = await interactor.get(requestObj);
+          const response = await interactor.get(requestObj);
 
-    if (response.response.ok) {
-      this.setState({
-        newsData: response.response.results[0]["data"],
-        currentListing: response.response.results[0]["data"][0]
-      });
-      return true;
-    } else {
-      return false;
-    }
+          if(response && response.response && response.response.ok) {
+              this.setState({
+                newsData: response.response.results[0]["data"],
+                currentListing: response.response.results[0]["data"][0]
+              });
+              return true;
+          } else {
+              console.error('News API response error:', response);
+              return false;
+          }
+      } catch (error) {
+          console.error('Error fetching economic news:', error);
+          return false;
+      }    
   }
 
   handleNext() {
@@ -221,7 +227,7 @@ class Home extends Component {
 
     const response = await interactor.get(requestObj);
 
-    if (response.response.ok) {
+    if (response?.response?.ok) {
       var portfolioValue = 0;
       var originalValue = 0;
       var stockAssets = [];
@@ -243,15 +249,18 @@ class Home extends Component {
               }
             }
           }));
-
+          
           const quoteResponse = await interactor.get(quoteRequestObj);
 
-          if (quoteResponse.response.ok && quoteResponse.response.results[0].quotePrice) {
-            response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
-            response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
-            portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
+          if(quoteResponse?.response?.ok && quoteResponse.response.results[0]?.quotePrice) {
+              response.response.results[i]["quotePrice"] = quoteResponse.response.results[0].quotePrice;
+              response.response.results[i]["currentValue"] = asset.quantity * quoteResponse.response.results[0].quotePrice;
+              portfolioValue += asset.quantity * quoteResponse.response.results[0].quotePrice;
           } else {
-            portfolioValue += asset.assetValue;
+              // If quote not available, use the original asset value
+              response.response.results[i]["quotePrice"] = asset.assetValue / asset.quantity;
+              response.response.results[i]["currentValue"] = asset.assetValue;
+              portfolioValue += asset.assetValue;
           }
 
           stockAssets.push(response.response.results[i]);
@@ -285,14 +294,9 @@ class Home extends Component {
   render() {
     return (
       <main>
-        <header className="top-nav">
-          <div className="nav-left">
-            <h1><span className="material-icons">dashboard</span> Dashboard</h1>
-          </div>
-          <div className="nav-right">
-            <span className="material-icons large-material-icon" onClick={() => this.handleNavigation('/settings')}>account_circle</span>
-          </div>
-        </header>
+        <div className="dashboardTitleContainer">
+          <h2 style={{margin: "0px"}}><span className="material-icons dashboardIcon">dashboard</span> Dashboard</h2>
+        </div>
         <section className="content-grid">
           <div className="stats">
             <div className="current-month">
