@@ -598,7 +598,6 @@ const API_BASE = 'http://127.0.0.1:8000'; // change if backend runs elsewhere
 async function pushSync() {
   const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, err => {
     if (err) console.error('Could not open SQLite DB', err);
-    else console.log('Connected to database for sync');
   });
 
   // helper to run SELECT and get all rows as Promise
@@ -640,17 +639,6 @@ async function pushSync() {
       lastSyncTs
     };
 
-    console.log("SYNC BODY COUNTS:", {
-      has_user: !!user,
-      modules: modules.length,
-      modulePages: modulePages.length,
-      concepts: concepts.length,
-      moduleConcepts: moduleConcepts.length,
-      userModules: userModules.length,
-      userConcepts: userConcepts.length,
-      modulePrereqs: modulePrereqs.length
-    });
-
     const res = await fetch(`${API_BASE}/api/sync`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -658,7 +646,6 @@ async function pushSync() {
     }).then(r => r.json());
 
     if (res.ok) {
-      console.log('Sync successful with Neo4j.');
       db.run(
         `INSERT INTO Meta(key,value) VALUES('lastSyncTs', ?)
          ON CONFLICT(key) DO UPDATE SET value=excluded.value`,
@@ -713,14 +700,12 @@ const getDB = async () => {
         return;
       }
 
-      console.log('Connected to database');
 
       // Resolve schema.sql path (dev vs packaged)
       const schemaPath = app.isPackaged
         ? path.join(process.resourcesPath, 'Asset', 'DB', 'schema.sql')
         : path.join(app.getAppPath(), 'src', 'Asset', 'DB', 'schema.sql');
 
-      console.log('schema.sql path:', schemaPath);
 
       try {
         if (fs.existsSync(schemaPath)) {
@@ -732,7 +717,6 @@ const getDB = async () => {
               console.error('schema.sql failed:', e);
               return;
             }
-            console.log('schema.sql executed');
 
             // sanity check table, then push
             db.get(
@@ -761,9 +745,6 @@ const getDB = async () => {
 
     // Run migrations
     await runMigrations();
-
-    const migs = betterDb.prepare('SELECT * FROM migrations').all();
-    console.log('Applied migrations:', migs);
 
     return true;
   } catch (error) {

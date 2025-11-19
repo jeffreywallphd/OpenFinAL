@@ -21,22 +21,25 @@ class MigrationManager {
     }
 
     async runMigrations() {
-        try {
-            const migrationFiles = this.getMigrationFiles();
-            const executedMigrations = this.getExecutedMigrations();
+        const migrationFiles = this.getMigrationFiles();
+        const executedMigrations = this.getExecutedMigrations();
 
-            for (const filename of migrationFiles) {
-                if (!executedMigrations.includes(filename)) {
+        for (const filename of migrationFiles) {
+            if (!executedMigrations.includes(filename)) {
+                try {
                     await this.executeMigration(filename);
                     this.markMigrationAsExecuted(filename);
+                } catch (error) {
+                    // Ignore duplicate column errors - these are expected when schema already exists
+                    if (error.message && error.message.includes('duplicate column name')) {
+                        // Mark as executed even if it had duplicate columns
+                        this.markMigrationAsExecuted(filename);
+                        continue; // Continue to next migration
+                    }
+                    // Re-throw other errors
+                    throw error;
                 }
             }
-        } catch (error) {
-            // Ignore duplicate column errors - these are expected when schema already exists
-            if (error.message && error.message.includes('duplicate column name')) {
-                return;
-            }
-            throw error;
         }
     }
 
