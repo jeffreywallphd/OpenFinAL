@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS FinancialData (
 
     -- Foreign Key to the PublicCompany table
     company_id INTEGER NOT NULL,
-    FOREIGN KEY (company_id) REFERENCES PublicCompany(id),
+    FOREIGN KEY (company_id) REFERENCES PublicCompany(id)
 );
 
 
