@@ -12,16 +12,24 @@ import { FinancialRatioInteractor } from "../Interactor/FinancialRatioInteractor
 function StockAnalysisSearchBar(props) {
     //Gets SEC data for a ticker
     const fetchRatioData = async (newState) => {
+        // Safety check: ensure newState is defined
+        if (!newState) {
+            console.error('fetchRatioData called with undefined newState');
+            return null;
+        }
+
         try{
-            //TODO: we need to get the CIK from the database. If this is captured in the securitiesList, we don't need a database lookup                    
+            //TODO: we need to get the CIK from the database. If this is captured in the securitiesList, we don't need a database lookup
             //TODO: create a parent interactor that can send a single request and dispatch
             var cik = null;
 
-            newState.securitiesList.find((element) => {
-                if(element.symbol === newState.searchRef) {
-                    cik = element.cik;
-                }
-            });
+            if (newState.securitiesList) {
+                newState.securitiesList.find((element) => {
+                    if(element.symbol === newState.searchRef) {
+                        cik = element.cik;
+                    }
+                });
+            }
 
             if(cik) {
                 //get SEC data through SEC interactor
@@ -44,13 +52,16 @@ function StockAnalysisSearchBar(props) {
                 newState.cik = cik;
                 newState.comparisonData[newState.cik] = secResults;
                 newState.isFirstLoad = false;
-                
+
                 props.handleDataChange(newState);
 
                 return newState;
             }
         } catch(error) {
-            newState.isFirstLoad = false;
+            console.error('Error in fetchRatioData:', error);
+            if (newState) {
+                newState.isFirstLoad = false;
+            }
             return newState;
         }
     }
@@ -58,7 +69,7 @@ function StockAnalysisSearchBar(props) {
     const handleSymbolChange = (newState) => {
         props.handleDataChange(newState);
     };
-    
+
     return (
         <SymbolSearchBar fetchData={fetchRatioData} state={props.state} onSymbolChange={handleSymbolChange}/>
     );

@@ -7,7 +7,7 @@ import { JSONRequest } from "../../Request/JSONRequest";
 import { Asset } from "../../../Entity/Asset";
 
 declare global {
-    interface Window { 
+    interface Window {
         database: any,
         exApi: any
     }
@@ -36,7 +36,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
             return false;
         }
     }
-    
+
     async read(entity: IEntity, action: string): Promise<IEntity[]> {
         var query:string = "";
         var data;
@@ -52,7 +52,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                 if(keyword === null && companyName === null && ticker === null && cik === null) {
                     return [];
                 }
-                
+
                 query = "SELECT *";
 
                 // an array to contain the parameters for the parameterized query
@@ -79,7 +79,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                         parameterArray.push(keyword);
                     } else {
                         query = this.appendWhere(query, " symbol LIKE ? || '%' OR name LIKE ? || '%'", hasWhereCondition);
-                        
+
                         // Push twice to check in ticker and companyName
                         // TODO: create a text index with ticker and companyName data
                         parameterArray.push(keyword);
@@ -112,7 +112,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                 } else {
                     query += " ORDER BY symbol ASC LIMIT 10";
                 }
-                
+
                 data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });
             } catch(error) {
                 return [];
@@ -130,22 +130,22 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
             entities = this.formatLookupResponse(data);
         } else if(action === "getCashId") {
             entity.setFieldValue("id", data[0].id);
-            entities.push(entity);   
+            entities.push(entity);
         }
 
         return entities;
     }
-    
+
     private formatRandomData(data: any): any {
         var array: Array<IEntity> = [];
 
-        for (const match of data) {           
+        for (const match of data) {
             var entity = new StockRequest();
-            
+
             entity.setFieldValue("ticker", match.symbol.toUpperCase());
             entity.setFieldValue("companyName", match.name);
             entity.setFieldValue("cik", match.cik);
-            
+
             array.push(entity);
         }
 
@@ -155,14 +155,14 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
     private formatLookupResponse(data:any) {
         var array: Array<IEntity> = [];
 
-        for (const match of data) {           
+        for (const match of data) {
             var entity = new Asset();
-            
+
             entity.setFieldValue("id", match.id);
             entity.setFieldValue("symbol", match.symbol.toUpperCase());
             entity.setFieldValue("name", match.name);
             entity.setFieldValue("cik", match.cik);
-            
+
             array.push(entity);
         }
 
@@ -190,10 +190,10 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
             const query = "DELETE FROM Asset;";
             const args:any[]  = [];
             const result = await window.database.SQLiteDelete({ query: query, parameters: args });
-            
+
             const query2 = "UPDATE SQLITE_SEQUENCE SET SEQ=0 WHERE NAME='Asset'";
             await window.database.SQLiteUpdate({ query: query2, parameters: args });
-            
+
             return result;
         } catch(error) {
             return 0;
@@ -206,7 +206,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
             const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='Asset';"
             const args:any[]  = [];
             const rows = await window.database.SQLiteQuery({ query: query, parameters: args });
-            
+
             if(rows !== null && rows[0].name) {
                 return true;
             }
@@ -244,17 +244,17 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                         pathname: "files/company_tickers.json",
                         headers: {
                             "User-Agent": `Investor ${userEmail}`
-                        },               
+                        },
                     }
                 }
             }));
-            
+
             var endpoint = new APIEndpoint();
             endpoint.fillWithRequest(endpointRequest);
 
             //pass custom user-agent header through url query to avoid it being overriden
             const secData = await window.exApi.fetch(`https://www.sec.gov/files/company_tickers.json`, endpoint.toObject());
-            
+
             // Parse the SEC JSON file to extract ticker, CIK, and companyName
             for(var key in secData) {
                 var ticker = secData[key]["ticker"];
@@ -271,7 +271,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
 
                     cik = newCik + cik;
                 }
-                
+
                 try {
                     const query = "INSERT OR IGNORE INTO Asset (name, symbol, cik, type) VALUES(?,?,?,'Stock')";
                     const args  = [companyName, ticker, cik];
@@ -279,7 +279,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                 } catch(error) {
                     continue;
                 }
-            } 
+            }
 
             //update the S&P500 status of stock assets
             endpointRequest = new JSONRequest(JSON.stringify({
@@ -291,11 +291,11 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                         pathname: "wiki/List_of_S%26P_500_companies",
                         headers: {
                             "User-Agent": `Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36`
-                        },               
+                        },
                     }
                 }
             }));
-            
+
             endpoint = new APIEndpoint();
             endpoint.fillWithRequest(endpointRequest);
 
@@ -311,14 +311,14 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
                 //start by setting S&P500 to 0 for all stocks to reset
                 try {
                     const query = "UPDATE Asset SET isSP500=0";
-                    await window.database.SQLiteUpdate({ query: query, parameters: null });
+                    await window.database.SQLiteUpdate({ query: query, parameters: [] });
                 } catch(error) {
                     //do nothing
                 }
 
                 for(var row of rows) {
                     var tds = Array.from(row.querySelectorAll("td"));
-        
+
                     // for valid rows in the table, get the ticker from the first cell and update the database
                     if(tds.length > 0) {
                         var SP500ticker = tds[0].querySelector("a").innerText;
@@ -340,7 +340,7 @@ export class SQLiteAssetGateway implements ISqlDataGateway {
         const data = await window.database.SQLiteQuery({ query: query });
         if(data) {
             return data[0];
-        } 
+        }
         return data;
     }
 }

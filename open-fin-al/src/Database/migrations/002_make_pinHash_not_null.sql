@@ -3,5 +3,5 @@
 -- The NOT NULL constraint is enforced in schema.sql for new databases
 
 -- Ensure no users have NULL pinHash values
--- Delete users without pinHash (or update with a default if needed)
+-- Delete users without pinHash (they must re-register with PIN)
 DELETE FROM User WHERE pinHash IS NULL OR pinHash = '';

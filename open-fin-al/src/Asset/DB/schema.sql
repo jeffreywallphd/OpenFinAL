@@ -5,12 +5,13 @@ CREATE TABLE IF NOT EXISTS User (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   firstName TEXT,
   lastName TEXT,
+  email TEXT,
   username TEXT UNIQUE NOT NULL,
-  pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
+  pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN (required for authentication)
   lastLogin DATETIME,
-  dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
-  overallKnowledgeLevel TEXT
-  riskTolerance ENUM('low', 'low/mid', 'mid', 'mid/high', 'high') DEFAULT 'low'
+  dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+  overallKnowledgeLevel TEXT,
+  riskTolerance TEXT CHECK(riskTolerance IN ('low', 'low/mid', 'mid', 'mid/high', 'high')) DEFAULT 'low'
 );
 
 CREATE TABLE IF NOT EXISTS Portfolio (
@@ -44,13 +45,28 @@ END;
 CREATE TABLE IF NOT EXISTS PortfolioTransaction (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     portfolioId INTEGER NOT NULL,
-    assetType TEXT CHECK( assetType IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash') ) NOT NULL DEFAULT 'Stock',
-    transactionType TEXT CHECK(transactionType IN ('Buy','Sell')),
-    quantity INTEGER NOT NULL,
-    amount DECIMAL(10,2) NOT NULL,
     transactionDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    type TEXT CHECK(type IN ('Deposit','Withdraw','Buy','Sell','Dividend')) NOT NULL,
+    note TEXT,
+    isCanceled INTEGER DEFAULT 0,
     FOREIGN KEY (portfolioId) REFERENCES Portfolio(id)
 );
+
+CREATE TABLE IF NOT EXISTS PortfolioTransactionEntry (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    transactionId INTEGER NOT NULL,
+    assetId INTEGER NOT NULL,
+    side TEXT CHECK(side IN ('debit', 'credit')) NOT NULL,
+    quantity DECIMAL(12, 6) NOT NULL,
+    price DECIMAL(10,2) NOT NULL,
+    amount AS (quantity * price) STORED,
+    FOREIGN KEY (transactionId) REFERENCES PortfolioTransaction(id),
+    FOREIGN KEY (assetId) REFERENCES Asset(id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_transaction_portfolio ON PortfolioTransaction(portfolioId);
+CREATE INDEX IF NOT EXISTS idx_entry_transaction ON PortfolioTransactionEntry(transactionId);
+CREATE INDEX IF NOT EXISTS idx_entry_asset ON PortfolioTransactionEntry(assetId);
 
 CREATE TABLE IF NOT EXISTS PublicCompany (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -59,6 +75,23 @@ CREATE TABLE IF NOT EXISTS PublicCompany (
     cik TEXT NOT NULL,
     isSP500 INTEGER DEFAULT 0
 );
+
+/*Asset table for caching stock/asset data*/
+CREATE TABLE IF NOT EXISTS Asset (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT,
+    symbol TEXT NOT NULL,
+    cik TEXT,
+    type TEXT CHECK(type IN ('Stock','Bond','ETF','MutualFund','Commodity','Cash')) NOT NULL DEFAULT 'Stock',
+    isSP500 INTEGER DEFAULT 0,
+    UNIQUE(symbol, type)
+);
+
+/*create a trigger to update the modifications table when Delete occurs on Asset*/
+CREATE TRIGGER IF NOT EXISTS AssetOnDelete AFTER DELETE ON Asset
+BEGIN
+    INSERT INTO modifications (tableName, action) VALUES ('Asset','DELETE');
+END;
 
 /*create a table to track changes to some tables that act as cache*/
 CREATE TABLE IF NOT EXISTS modifications (

@@ -17,19 +17,33 @@ export class SQLiteUserGateway implements ISqlDataGateway {
     // used to create and periodically refresh the cache
     async create(entity: IEntity): Promise<Boolean> {
         try {
-            const query = "INSERT INTO User (firstName, lastName, email, username) VALUES (?, ?, ?, ?)";
-            const args  = [entity.getFieldValue("firstName"), entity.getFieldValue("lastName"), entity.getFieldValue("email"), entity.getFieldValue("username")];
+            const pinHash = entity.getFieldValue("pinHash");
+
+            // pinHash is required - if not provided, user should use UserAuthInteractor.register()
+            if (!pinHash) {
+                console.error("Cannot create user without pinHash. Use UserAuthInteractor.register() instead.");
+                return false;
+            }
+
+            const query = "INSERT INTO User (firstName, lastName, email, username, pinHash) VALUES (?, ?, ?, ?, ?)";
+            const args  = [
+                entity.getFieldValue("firstName"),
+                entity.getFieldValue("lastName"),
+                entity.getFieldValue("email"),
+                entity.getFieldValue("username"),
+                pinHash
+            ];
             const result = await window.database.SQLiteInsert({ query: query, parameters: args });
-            
+
             if(result && result.ok) {
                 return true;
-            } 
+            }
             return result;
         } catch(error) {
             return false;
         }
     }
-    
+
     async read(entity: IEntity): Promise<IEntity[]> {
         var query:string = "";
         var data;
@@ -44,7 +58,7 @@ export class SQLiteUserGateway implements ISqlDataGateway {
             if(username === null) {
                 return entities;
             }
-            
+
             query = "SELECT *";
 
             // an array to contain the parameters for the parameterized query
@@ -57,7 +71,7 @@ export class SQLiteUserGateway implements ISqlDataGateway {
             query = this.appendWhere(query, " username=?", hasWhereCondition, "AND");
             parameterArray.push(username);
 
-            data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });      
+            data = await window.database.SQLiteQuery({ query: query, parameters: parameterArray });
         } catch(error) {
             return entities;
         }
@@ -100,7 +114,7 @@ export class SQLiteUserGateway implements ISqlDataGateway {
         const query = "SELECT name FROM sqlite_master WHERE type='table' AND name='User';"
         const args:any[]  = [];
         const rows = await window.database.SQLiteQuery({ query: query, parameters: args });
-        
+
         if(rows !== null && rows[0].name) {
             return true;
         }

@@ -12,22 +12,30 @@ import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
 function NewsSearchBar(props) {
     //TODO: implement error handling
     const fetchNews = async (newState) => {
+        // Safety check: ensure newState is defined
+        if (!newState) {
+            console.error('fetchNews called with undefined newState');
+            return null;
+        }
+
         newState.isLoading = true;
         props.handleDataChange(newState);
 
         var companyName = "";
         var cik = "";
-        newState.securitiesList.find((element) => {
-            if(element.ticker === newState.searchRef) {
-                companyName = element.companyName;
-                cik = element.cik;
-            }
-        });
+        if (newState.securitiesList) {
+            newState.securitiesList.find((element) => {
+                if(element.ticker === newState.searchRef) {
+                    companyName = element.companyName;
+                    cik = element.cik;
+                }
+            });
+        }
 
         //get data through stock interactor
         var interactor = new NewsInteractor();
-        var requestObj = new JSONRequest(`{ 
-            "request": { 
+        var requestObj = new JSONRequest(`{
+            "request": {
                 "news": {
                     "action": "searchByTicker",
                     "ticker": "${newState.searchRef}",
@@ -66,7 +74,7 @@ function NewsSearchBar(props) {
         var newState = props.state;
 
         props.handleDataChange(newState);
-        
+
         if(props.state.searchRef) {
             newState.isLoading = true;
             fetchNews(props.state);
