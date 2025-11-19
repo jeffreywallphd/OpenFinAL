@@ -21,6 +21,7 @@ import { Analysis } from "../Analysis";
 import BuyReport from "../BuyReport";
 import { TimeSeries } from "../Stock";
 import { News } from "../News";
+import { Assessments } from "../Assessment/Assessments";
 import { Learn } from "../Learn";
 import { LearningModuleDetails } from "../LearningModule/LearningModuleDetails";
 import { LearningModulePage } from "../LearningModule/LearningModulePage";
@@ -36,6 +37,8 @@ import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
 import StockAnalysis from "../StockAnalysis";
 import ChatbotToggle from "../Chatbot/ChatbotToggle";
+import RiskAnalysis from "../RiskAnalysis/RiskAnalysis";
+import SurveyDemo from "../SurveyTemplate/SurveyDemo";
 import { UserInfo } from "./UserInfo";
 
 // Scrolls to the top of a page after every route change
@@ -55,7 +58,7 @@ class AppLoaded extends Component {
     super(props);
 
     this.props = props;
-    
+
     this.state = {
       menuCollapsed: false,
     };
@@ -65,17 +68,17 @@ class AppLoaded extends Component {
   }
 
   componentDidMount() {
-    this.checkDarkMode(); 
+    this.checkDarkMode();
   }
 
   toggleMenu() {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
   }
 
   handleClick = () => {
-    this.setState(prevState => ({   
+    this.setState(prevState => ({
       menuCollapsed: !prevState.menuCollapsed
     }));
     var img = document.getElementById("logo");
@@ -125,8 +128,10 @@ class AppLoaded extends Component {
                   <li><NavLink to="/snp500"><span className="material-icons">leaderboard</span> SNP 500 Analysis</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
+                  <li><NavLink to="/assessments"><span className="material-icons">assignment</span> Assessments</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
+                  {/* <li><NavLink to="/survey-demo"><span className="material-icons">assessment</span> Survey Demo</NavLink></li> */}
                 </ul>
               </nav>
             </aside>
@@ -136,7 +141,8 @@ class AppLoaded extends Component {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/analysis" element={<Analysis />} />
+                <Route path="/analysis" element={<RiskAnalysis />} />
+                <Route path="/analysis-bad" element={<Analysis />} />
                 <Route path="/buy-report" element={<BuyReport />} />
                 <Route path="/price" element={<TimeSeries />} />
                 <Route path="/news" element={<News />} />
@@ -145,18 +151,20 @@ class AppLoaded extends Component {
                 <Route path="/learningModulePage" element={<LearningModulePage />} />
                 <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
                 <Route path="/snp500" element={<SNP500 />} />
+                <Route path="/assessments" element={<Assessments />}></Route>
                 <Route path="/forecast" element={<Forecast />} />
                 <Route path="/forecast-features" element={<ForecastFeature />} />
                 <Route path="/forecast-models" element={<ForecastModel />} />
                 <Route path="/StockAnalysis" element={<StockAnalysis />} />
+                <Route path="/survey-demo" element={<SurveyDemo />} />
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
-              Licensed under GPL-3.0<br/>&copy;2023 All rights reserved
+              Licensed under GPL-3.0<br />&copy;2023 All rights reserved
             </footer>
           </div>
         </>
-        <ChatbotToggle/>
+        <ChatbotToggle />
 
       </HashRouter>
 

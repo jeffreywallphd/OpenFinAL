@@ -2,7 +2,11 @@
 // https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
 
 const { contextBridge, ipcRenderer } = require('electron');
-  
+
+contextBridge.exposeInMainWorld('api', {
+  post: (path, body) => ipcRenderer.invoke('api-post', { path, body }),
+});
+
 contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
 });

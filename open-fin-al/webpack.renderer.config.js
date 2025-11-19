@@ -1,6 +1,9 @@
 const rules = require('./webpack.rules');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+
+const rendererPort = Number(process.env.ELECTRON_RENDERER_PORT || 3001);
 
 rules.push({
   test: /\.css$/,
@@ -11,6 +14,14 @@ module.exports = {
   node: {
     __dirname: true,
   },
+
+  devServer: {
+    static: path.resolve(__dirname, 'public'), // serve /public during dev
+    devMiddleware: { writeToDisk: true },
+    port: rendererPort,
+    host: 'localhost',
+  },
+
   module: {
       rules: [
           {
@@ -40,14 +51,23 @@ module.exports = {
             test: /\.(mp3|wav)$/i, // Add a rule for audio files
             type: 'asset/resource', // This handles audio files
             generator: {
-              filename: 'assets/audio/[name][ext][query]' 
+              filename: 'assets/audio/[name][ext][query]'
             },
           },
       ],
   },
   plugins: [
-      new HtmlWebpackPlugin({
-          template: './src/index.html',
+      new HtmlWebpackPlugin({ template: './src/index.html' }),
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: path.resolve(__dirname, 'public'),
+            to: path.resolve(__dirname, '.webpack/renderer'),
+            globOptions: {
+              ignore: ['**/index.html'],
+            },
+          },
+        ],
       }),
   ],
   resolve: {
@@ -75,6 +95,7 @@ module.exports = {
   },
   output: {
     path: path.resolve(__dirname, '.webpack/renderer'),
-    filename: 'renderer.js'
+    filename: 'renderer.js',
+    publicPath: '/',
   }
 };

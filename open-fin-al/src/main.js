@@ -86,11 +86,11 @@ async function runMigrations() {
     if (!betterDb) {
       return;
     }
-    
+
     const migrationsPath = path.join(__dirname, 'Database', 'migrations');
     const { MigrationManager } = require('./Database/MigrationManager');
     const migrationManager = new MigrationManager(betterDb, migrationsPath);
-    
+
     await migrationManager.runMigrations();
   } catch (error) {
     throw error;
@@ -101,7 +101,7 @@ async function runMigrations() {
 
 let win;           // main window
 let urlWindow;     // url window
- 
+
 //change userData folder name from open-fin-al to OpenFinal and make folder
 app.setPath('userData', path.join(app.getPath('appData'), 'OpenFinAL'));
 if (!fs.existsSync(app.getPath('userData'))) {
@@ -127,14 +127,14 @@ ipcMain.handle('get-username', (event) => {
 
 // TODO: try to remove nodeIntegration, as it may create security vulnerabilities
 const createWindow = () => {
-  win = new BrowserWindow({ 
+  win = new BrowserWindow({
     show: false,
     webPreferences: {
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
       contextIsolation: true,
       nodeIntegration: false,
       webSecurity: true
-    } 
+    }
   });
 
   if (process.env.NODE_ENV === 'production') {
@@ -148,7 +148,7 @@ const createWindow = () => {
   //stop the main window from opening links to external sites
   win.webContents.setWindowOpenHandler(() => { return { action: 'deny' }; });
 
-  win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY); 
+  win.loadURL(MAIN_WINDOW_WEBPACK_ENTRY);
 };
 
 app.whenReady().then(() => {
@@ -158,10 +158,10 @@ app.whenReady().then(() => {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           `default-src 'self';
-          script-src 'self' 'unsafe-eval'; 
-          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
-          img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com; 
-          font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
+          script-src 'self' 'unsafe-eval';
+          style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com;
+          img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com;
+          font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com;
           connect-src 'self' http://localhost:3001;`
         ],
       },
@@ -191,11 +191,11 @@ const createUrlWindow = (url, { hidden = false } = {}) => {
     parent: hidden ? null : win,
     title: 'Open FinAL',
     webPreferences: {
-      nodeIntegration: false,     
-      contextIsolation: true,     
-      sandbox: true,              
-      enableRemoteModule: false,  
-      preload: path.join(app.getAppPath(), 'src/urlWindowPreload.js')      
+      nodeIntegration: false,
+      contextIsolation: true,
+      sandbox: true,
+      enableRemoteModule: false,
+      preload: path.join(app.getAppPath(), 'src/urlWindowPreload.js')
     }
   });
 
@@ -211,7 +211,7 @@ const createUrlWindow = (url, { hidden = false } = {}) => {
   });
 
   win2.loadURL(url);
-  
+
   win2.on('closed', () => {
     urlWindow = null;
   });
@@ -270,7 +270,7 @@ async function startAPIFetcher() {
 
   expressApp.all('/proxy', async (req, res) => {
     const targetUrl = req.query.url;
-    
+
     if (!targetUrl) {
       return res.status(400).send('A valid URL is required');
     }
@@ -303,7 +303,7 @@ async function startAPIFetcher() {
           }
         }
       }
-      
+
       var response;
 
       if(req.body.method === "POST") {
@@ -311,7 +311,7 @@ async function startAPIFetcher() {
 
         if(!req.body.headers && !req.body.body) {
           response = await axios.post(targetUrl);
-        } 
+        }
         else if(req.body.headers && !req.body.body) {
           response = await axios.post(targetUrl, null, postHeaders);
         }
@@ -329,7 +329,7 @@ async function startAPIFetcher() {
         url.port = req.body.port ? req.body.port : 443;
         url.pathname = req.body.pathname;
         url.search = req.body.search ? req.body.search : "";
-        
+
         if(!req.body.headers) {
           response = await axios.get(url.href);
         } else {
@@ -337,7 +337,7 @@ async function startAPIFetcher() {
           response = await axios.get(url.href, otherHeaders);
         }
       }
-      
+
       var cert = response.request.socket?.getPeerCertificate();
       if (!cert) {
         res.status(403).json({
@@ -403,7 +403,7 @@ async function getCertificateFingerprint(request) {
         console.error(`Error connecting to ${request.hostname}:`, err);
         reject(err);
       });
-    });    
+    });
   } catch (error) {
     console.error(`Error getting certificate fingerprint for ${request.hostname}:`, error);
     return null;
@@ -416,7 +416,7 @@ async function refreshCertificateFingerprint(hostname) {
     hostname: hostname
   };
 
-  try { 
+  try {
     const fingerprint = await getCertificateFingerprint(request);
     const storedFingerprint = await keytar.getPassword('OpenFinALCert', hostname);
 
@@ -514,7 +514,7 @@ function hasConfig() {
     } else {
       throw new Error("The config file does not exist");
     }
-  } catch(error) { 
+  } catch(error) {
     //console.error(error);
     return false;
   }
@@ -526,7 +526,7 @@ function loadConfig() {
     return JSON.parse(data);
   } catch (err) {
     console.error('Error loading config:', err);
-    return false; 
+    return false;
   }
 }
 
@@ -551,12 +551,12 @@ ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
 
   try {
     await page.goto(url, { waitUntil: 'networkidle2' });
-    
+
     if(url.includes("zacks.com")) {
       await page.waitForSelector('.show_article');
       await page.click('.show_article');
     }
-    
+
     const text = await page.evaluate(() => document.body.innerText);
     await browser.close();
     return text;
@@ -586,10 +586,111 @@ ipcMain.handle('read-file', async (event, file) => {
 });
 
 
-//////////////////////////// Database Section ////////////////////////////
+//////////////////////////// Sync SQLite → Django (Neo4j) ////////////////////////////
+
+const fetch = require('node-fetch');
+
 
 const dbFileName = 'OpenFinAL.sqlite';
 const dbPath = path.join(app.getPath('userData'), dbFileName);
+const API_BASE = 'http://127.0.0.1:8000'; // change if backend runs elsewhere
+
+async function pushSync() {
+  const db = new sqlite3.Database(dbPath, sqlite3.OPEN_READWRITE, err => {
+    if (err) console.error('Could not open SQLite DB', err);
+    else console.log('Connected to database for sync');
+  });
+
+  // helper to run SELECT and get all rows as Promise
+  const all = (sql) =>
+    new Promise((resolve, reject) => {
+      db.all(sql, [], (err, rows) => (err ? reject(err) : resolve(rows)));
+    });
+
+  try {
+    const user = (await all(`SELECT * FROM User LIMIT 1`))[0];
+    const modules = await all(`SELECT * FROM LearningModule`);
+    const modulePages = await all(`SELECT * FROM LearningModulePage`);
+
+    // optional helper tables (may be empty at first)
+    const concepts = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='Concept'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM Concept`) : []);
+    const moduleConcepts = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='LearningModuleConcept'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM LearningModuleConcept`) : []);
+    const userModules = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='UserModule'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM UserModule`) : []);
+    const userConcepts = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='UserConcept'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM UserConcept`) : []);
+    const modulePrereqs = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='ModulePrereq'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM ModulePrereq`) : []);
+    const meta = await all(`SELECT name FROM sqlite_master WHERE type='table' AND name='Meta'`)
+      .then(async rows => rows.length ? await all(`SELECT * FROM Meta WHERE key='lastSyncTs'`) : []);
+
+    const lastSyncTs = meta.length ? Number(meta[0].value) : 0;
+
+    const body = {
+      user,
+      modules,
+      modulePages,
+      concepts,
+      moduleConcepts,
+      userModules,
+      userConcepts,
+      modulePrereqs,
+      lastSyncTs
+    };
+
+    console.log("SYNC BODY COUNTS:", {
+      has_user: !!user,
+      modules: modules.length,
+      modulePages: modulePages.length,
+      concepts: concepts.length,
+      moduleConcepts: moduleConcepts.length,
+      userModules: userModules.length,
+      userConcepts: userConcepts.length,
+      modulePrereqs: modulePrereqs.length
+    });
+
+    const res = await fetch(`${API_BASE}/api/sync`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    }).then(r => r.json());
+
+    if (res.ok) {
+      console.log('Sync successful with Neo4j.');
+      db.run(
+        `INSERT INTO Meta(key,value) VALUES('lastSyncTs', ?)
+         ON CONFLICT(key) DO UPDATE SET value=excluded.value`,
+        [String(res.newLastSyncTs)]
+      );
+    } else {
+      console.error('Sync failed:', res);
+    }
+  } catch (err) {
+    console.error('Sync error:', err);
+  } finally {
+    db.close();
+  }
+}
+
+ipcMain.handle('api-post', async (_event, { path, body }) => {
+  try {
+    const res = await fetch(`${API_BASE}${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    });
+    const text = await res.text(); // don't assume JSON
+    return { ok: res.ok, status: res.status, text };
+  } catch (e) {
+    return { ok: false, status: 0, text: String(e) };
+  }
+});
+//////////////////////////// Database Section ////////////////////////////
+
+//const dbFileName = 'OpenFinAL.sqlite';
+//const dbPath = path.join(app.getPath('userData'), dbFileName);
 
 let db;
 let betterDb;
@@ -608,21 +709,69 @@ const getDB = async () => {
   try {
     db = new sqlite3.Database(dbPath, (err) => {
       if (err) {
-        // Database connection error
+        console.error('Could not connect to database', err);
+        return;
+      }
+
+      console.log('Connected to database');
+
+      // Resolve schema.sql path (dev vs packaged)
+      const schemaPath = app.isPackaged
+        ? path.join(process.resourcesPath, 'Asset', 'DB', 'schema.sql')
+        : path.join(app.getAppPath(), 'src', 'Asset', 'DB', 'schema.sql');
+
+      console.log('schema.sql path:', schemaPath);
+
+      try {
+        if (fs.existsSync(schemaPath)) {
+          const sql = fs.readFileSync(schemaPath, 'utf8');
+
+          // Execute schema, then sync
+          db.exec(sql, (e) => {
+            if (e) {
+              console.error('schema.sql failed:', e);
+              return;
+            }
+            console.log('schema.sql executed');
+
+            // sanity check table, then push
+            db.get(
+              `SELECT name FROM sqlite_master WHERE name='LearningModule'`,
+              [],
+              (checkErr, row) => {
+                if (checkErr) console.error('sqlite_master check error:', checkErr);
+                if (!row) console.warn('LearningModule table NOT found after schema.sql');
+                pushSync(); // run sync only after schema is done
+              }
+            );
+          });
+        } else {
+          console.warn('schema.sql not found at:', schemaPath);
+          pushSync(); // fallback so app continues
+        }
+      } catch (e) {
+        console.error('Could not execute schema.sql:', e);
+        pushSync(); // fallback
       }
     });
 
+
     // Also initialize better-sqlite3 for migrations
     betterDb = new Database(dbPath);
-    
+
     // Run migrations
     await runMigrations();
+
+    const migs = betterDb.prepare('SELECT * FROM migrations').all();
+    console.log('Applied migrations:', migs);
 
     return true;
   } catch (error) {
     return false;
   }
-}
+};
+
+
 
 const initDatabase = async (schema) => {
   try {
@@ -661,7 +810,7 @@ const selectFromDatabase = (query, dataArray) => {
       });
     } catch (err) {
       reject(err);
-    } 
+    }
   });
 };
 
@@ -687,7 +836,7 @@ const sqliteQuery = async (query, dataArray) => {
       });
     } catch (err) {
       reject(err);
-    } 
+    }
   });
 };
 
@@ -708,7 +857,7 @@ const sqliteGet = async (query, dataArray) => {
       });
     } catch (err) {
       reject(err);
-    } 
+    }
   });
 };
 
@@ -728,14 +877,14 @@ const sqliteRun = async (query, dataArray) => {
 
         //when inserting, return the last insert id
         if (query.toUpperCase().startsWith("INSERT")) {
-          resolve({ ok: true, lastID: this.lastID }); 
+          resolve({ ok: true, lastID: this.lastID });
         } else {
           resolve(true);
         }
       });
     } catch (err) {
       reject(err);
-    } 
+    }
   });
 };
 
