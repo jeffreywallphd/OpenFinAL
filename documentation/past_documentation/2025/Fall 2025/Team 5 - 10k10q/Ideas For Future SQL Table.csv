@@ -1,0 +1,28 @@
+﻿Column Name,SQL Data Type,Financial Statement,Purpose
+id,INTEGER,N/A,Primary Key
+company_id,INTEGER,N/A,Foreign Key to PublicCompany
+financial_year,INTEGER,N/A,Reporting year
+period_end_date,DATE,N/A,Specific quarter/period end date
+,,,
+INCOME STATEMENT,,,
+revenues,BIGINT,IS,Total Sales
+net_income_loss,BIGINT,IS,Bottom line profit
+eps_diluted,"NUMERIC(18, 4)",IS,Earnings per Share (diluted)
+,,,
+BALANCE SHEET,,,
+current_assets,BIGINT,BS,Short-term assets (liquidity)
+current_liabilities,BIGINT,BS,Short-term debts
+total_assets,BIGINT,BS,Total resources owned
+total_equity,BIGINT,BS,Shareholder investment
+long_term_debt,BIGINT,BS,Non-current debt (solvency)
+,,,
+CASH FLOW STATEMENT,,,
+cash_flow_operations,BIGINT,CFS,Cash from core business
+capital_expenditures,BIGINT,CFS,Money spent on fixed assets (CapEx)
+free_cash_flow,BIGINT,CFS,Cash available for shareholders/debt holders
+,,,
+KEY RATIOS,,,
+return_on_equity_roe,"NUMERIC(18, 4)",Ratio,Profitability of shareholder equity
+current_ratio,"NUMERIC(18, 4)",Ratio,Ability to pay short-term obligations
+debt_to_equity_ratio,"NUMERIC(18, 4)",Ratio,Company's leverage
+price_to_earnings_pe,"NUMERIC(18, 4)",Ratio,Market valuation relative to earnings
