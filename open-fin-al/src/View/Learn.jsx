@@ -24,7 +24,7 @@ export function Learn() {
 
     useEffect(() => {
         selectData();
-            
+
         // Fetch top recommended module from backend
         async function fetchTopRecommendation() {
         try {
@@ -48,8 +48,8 @@ export function Learn() {
         //fetch data when Enter key pressed
         if (e.key === "Enter"){
             await selectData();
-        } 
-    }    
+        }
+    }
 
     const selectData = async () => {
         try {
@@ -57,7 +57,7 @@ export function Learn() {
                 ...prevState,
                 searching: true
             }));
-            
+
             // TODO: move this query building to a Gateway implementation for SQLite
             // so that it can easily be configured with other databases later
             const inputData = [];
@@ -71,11 +71,11 @@ export function Learn() {
             }
 
             query += " ORDER BY dateCreated DESC, title ASC"
-            
+
             query += " LIMIT ?"
             const limit = 25;
             inputData.push(limit);
-            
+
             await window.database.SQLiteSelectData({ query, inputData }).then((data) => {
                 // Mock progress data - replace with real data from backend
                 const mockProgress = {
@@ -86,10 +86,10 @@ export function Learn() {
                     5: 5,   // ETF Fundamentals - 5% complete
                     6: 0    // Intro to Options - 0% complete
                 };
-                
+
                 // Set recommended module (e.g., first module in the list or based on user activity)
                 const recommended = data && data.length > 0 ? data[0] : null;
-                
+
                 setState({
                     modules: data,
                     isLoading: false,
@@ -112,33 +112,33 @@ export function Learn() {
         <div className="page">
             <div className="learning-modules-container">
                 <h1 className="learning-page-title">Financial Learning</h1>
-                
+
                 {/* Recommended Module Section */}
                 {state.recommendedModule && (
-                    <RecommendedModuleCard 
+                    <RecommendedModuleCard
                         module={state.recommendedModule}
                         reason="Recommended because you viewed stock analysis twice this week and started the module."
                         progress={state.moduleProgress[state.recommendedModule.id] || 0}
                     />
                 )}
-                
+
                 {/* Search Bar */}
-                <ModuleSearchBar 
+                <ModuleSearchBar
                     searchRef={searchRef}
                     onSearch={selectData}
                     onKeyUp={checkInput}
                     isSearching={state.searching}
                 />
-                
+
                 {/* All Learning Modules Section */}
                 <h2 className="modules-section-title">All Learning Modules</h2>
-                
+
                 {state.isLoading ? (
                     <div className="modules-loading">Loading modules...</div>
                 ) : state.modules && state.modules.length > 0 ? (
                     <div className="modules-grid">
                         {state.modules.map((module, index) => (
-                            <ModuleCard 
+                            <ModuleCard
                                 key={module.id || index}
                                 module={module}
                                 progress={state.moduleProgress[module.id] || 0}

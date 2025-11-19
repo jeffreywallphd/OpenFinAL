@@ -1,6 +1,15 @@
 import React, { useState } from 'react';
 import { Survey } from "../SurveyTemplate/Survey";
 
+// Helper function to convert normalized risk level to risk class
+const getRiskClassFromLevel = (level) => {
+    if (level < 0.2) return 'low';
+    else if (level < 0.4) return 'low/mid';
+    else if (level < 0.6) return 'mid';
+    else if (level < 0.8) return 'mid/high';
+    else return 'high';
+};
+
 // ancient question sets, saved but not currently in use
 const questionSet1 = [
     {
@@ -480,7 +489,7 @@ const currentQuestions = [
 ];
 
 const RiskSurvey = (props) => {
-    
+
     const setUserRiskTolerance = props.setUserRiskTolerance;
     const scoreSurvey = (answerList) => {
         const maxScore = currentQuestions.reduce((sum, q) => {
@@ -513,10 +522,10 @@ const RiskSurvey = (props) => {
                 scoringFunction={scoreSurvey}
                 questions={currentQuestions}
             />
-            
+
         </div>
     )
 }
-        
+
 
 export default RiskSurvey;

@@ -11,7 +11,7 @@ import { StockInteractor } from "../../Interactor/StockInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 import { UserInteractor } from "../../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../../Interactor/PortfolioInteractor";
-import { OrderInteractor } from "../../Interactor/OrderInteractor"; 
+import { OrderInteractor } from "../../Interactor/OrderInteractor";
 
 function TimeSeriesChart(props) {
     const [currentQuote, setCurrentQuote] = useState({});
@@ -66,13 +66,13 @@ function TimeSeriesChart(props) {
             console.error('No user found in session');
             return;
         }
-        
+
         const userData = JSON.parse(savedUser);
         if (!userData.id) {
             console.error('Invalid user session');
             return;
         }
-        
+
         const interactor = new PortfolioInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
@@ -81,7 +81,7 @@ function TimeSeriesChart(props) {
                 }
             }
         }));
-    
+
         const response = await interactor.get(requestObj);
 
         var defaultPortfolio = null;
@@ -93,8 +93,8 @@ function TimeSeriesChart(props) {
             }
         }
 
-        setCurrentPortfolio(defaultPortfolio); 
-        setPortfolios(response.response?.results || []); 
+        setCurrentPortfolio(defaultPortfolio);
+        setPortfolios(response.response?.results || []);
     };
 
     const getCashId = async() => {
@@ -104,14 +104,14 @@ function TimeSeriesChart(props) {
                 action: "getCashId"
             }
         }));
-    
+
         const response = await interactor.get(requestObj);
-        
+
         if(response?.response?.ok) {
             setCashId(response.response.results[0].id);
             return response.response.results[0].id;
         }
-        return null;        
+        return null;
     };
 
     const getCurrentPrice = async () => {
@@ -125,10 +125,16 @@ function TimeSeriesChart(props) {
                     }
                 }
             }));
-        
+
             const response = await interactor.get(requestObj);
             window.console.log(response.response);
-            setCurrentQuote(response.response.results[0]);
+
+            // Safety check: ensure response has the expected structure
+            if (response && response.response && response.response.results && response.response.results.length > 0) {
+                setCurrentQuote(response.response.results[0]);
+            } else {
+                console.error('Invalid response structure from getCurrentPrice:', response);
+            }
 
             if(isModalOpen) {
                 const id = setTimeout(getCurrentPrice, 60000);
@@ -231,7 +237,7 @@ function TimeSeriesChart(props) {
 
     var header = "Search for a Company";
     var data = null;
-    
+
     if(props.state.data) {
         header = `${props.state.data.response.results[0]["companyName"]} (${props.state.data.response.results[0]["ticker"]})`;
         data = props.state.data.response.results[0]["data"];
@@ -246,7 +252,7 @@ function TimeSeriesChart(props) {
             //set min to 0 if max-min is less than 0
             priceMinPadded = (Math.round((props.state.priceMin - ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100) > 0 ? Math.round((props.state.priceMin - ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100 : 0;
             priceMaxPadded = Math.round((props.state.priceMax + ((props.state.priceMax - props.state.priceMin) * 0.2)) * 100)/100;
-        }   
+        }
     }
 
     //evenly spaces the ticks of the time series chart by putting the ticks in a fixed intervall into Array "ticks" determined by tickCount
@@ -254,15 +260,15 @@ function TimeSeriesChart(props) {
     const tickInterval = (priceMaxPadded - priceMinPadded) / (tickCount - 1);
     const ticks = Array.from({ length: tickCount }, (_, index) => (priceMinPadded + tickInterval * index).toFixed(2));
 
-    //TODO: calculate a max value for the y-axis that adds a little padding to top of graph    
+    //TODO: calculate a max value for the y-axis that adds a little padding to top of graph
     //TODO: set the min value for the x-axis to 9:00 AM and the max value to 5:00 PM when intraday data
     return(<>
             <div className="chartContainer">
                 <h3>{header}</h3>
-                
+
                 {/* A button group that will eventually be clickable to change the chart timeframe. */}
                 <div className="btn-group">
-                    { props.state.data ? 
+                    { props.state.data ?
                         (<>
                             <button disabled={props.state.interval === "1D" ? true: false} onClick={(e) => setInterval("1D")}>1D</button>
                             <button disabled={props.state.interval === "5D" ? true: false} onClick={(e) => setInterval("5D")}>5D</button>
@@ -295,7 +301,7 @@ function TimeSeriesChart(props) {
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
                     <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks}/>
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>
-                    <Tooltip 
+                    <Tooltip
                         contentStyle={toolTipStyle.contentStyle}
                         labelStyle={toolTipStyle.labelStyle}
                         itemStyle={toolTipStyle.itemStyle}
@@ -306,7 +312,7 @@ function TimeSeriesChart(props) {
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
                     <YAxis domain={[0, props.state.maxVolume]} angle={-45} />
                     <CartesianGrid strokeDasharray="3 3" />
-                    <Tooltip 
+                    <Tooltip
                         contentStyle={toolTipStyle.contentStyle}
                         labelStyle={toolTipStyle.labelStyle}
                         itemStyle={toolTipStyle.itemStyle}
@@ -314,7 +320,7 @@ function TimeSeriesChart(props) {
                     <Bar type="monotone" dataKey="volume" fill={chartColor}/>
                 </BarChart>
 
-                {props.state.secData ? 
+                {props.state.secData ?
                     <>
                         <div className="stockOrder">
                             <p><button onClick={openModal}>Make a Trade</button></p>
@@ -324,7 +330,7 @@ function TimeSeriesChart(props) {
                                         closeModal();
                                         clearPriceTimeout();
                                         }}></div>
-                                    <div className="news-summary-modal">    
+                                    <div className="news-summary-modal">
                                         <div className="news-summary-content">
                                             <div className="news-summary-header">
                                                 <h2>{header}</h2>
@@ -334,18 +340,18 @@ function TimeSeriesChart(props) {
                                                     }}>Close</button>
                                             </div>
                                             <h3>Order Details</h3>
-                                            {createPortfolio ? 
-                                                <p>You must create at least one portfolio to place an order.</p> 
-                                                : 
+                                            {createPortfolio ?
+                                                <p>You must create at least one portfolio to place an order.</p>
+                                                :
                                                 null
                                             }
                                             <p>
-                                                Portfolio: 
+                                                Portfolio:
                                                 <select value={currentPortfolio || ""}
                                                     onChange={(e) => {
-                                                        setCreatePortfolio(false); 
+                                                        setCreatePortfolio(false);
                                                         setCurrentPortfolio(e.target.value);
-                                                    } 
+                                                    }
                                                 }>
                                                     {portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
                                                     {portfolios.map((portfolio) => (
@@ -359,13 +365,13 @@ function TimeSeriesChart(props) {
                                             <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
                                             <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
                                             {orderMessage ? <p>{orderMessage}</p> : null}
-                                            <button onClick={placeOrder} disabled={createPortfolio}>Place Order</button>  
+                                            <button onClick={placeOrder} disabled={createPortfolio}>Place Order</button>
                                         </div>
                                     </div>
                                 </>
                             )}
                          </div>
-                        { props.fundamentalAnalysis ? 
+                        { props.fundamentalAnalysis ?
                                 <>
                                     <h3>AI Fundamental Analysis</h3>
                                     <div className="stockDetails">{props.fundamentalAnalysis}</div>
@@ -382,7 +388,7 @@ function TimeSeriesChart(props) {
                             <div><span>Fiscal Yr End:</span> {props.state.secData.response.results[0].data.FiscalYearEnd}</div>
                             <div><span>Market Cap:</span> {formatter.format(props.state.secData.response.results[0].data.MarketCapitalization)}</div>
                             <div>
-                                { props.state && props.state.reportLinks ? 
+                                { props.state && props.state.reportLinks ?
                                     <>
                                         <h3>Financial Statements</h3>
                                         <button onClick={() => window.urlWindow.openUrlWindow(props.state.reportLinks.tenQ)}>
@@ -398,11 +404,11 @@ function TimeSeriesChart(props) {
                                 }
                             </div>
                         </div>
-                    </> 
-                    : null 
+                    </>
+                    : null
                 }
             </div>
     </>);
-} 
+}
 
 export { TimeSeriesChart }

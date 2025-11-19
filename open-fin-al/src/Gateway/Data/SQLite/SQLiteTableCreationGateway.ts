@@ -32,7 +32,7 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 lastLogin TIMESTAMP,
                 dateCreated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 overallKnowledgeLevel TEXT,
-                riskScore TEXT,
+                riskScore TEXT
             );
 
             CREATE TABLE IF NOT EXISTS CertAuthMetaData (
@@ -116,8 +116,8 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 assetId INTEGER NOT NULL,
                 portfolioId INTEGER NOT NULL,
-                orderType TEXT CHECK(orderType IN ('Buy','Sell')) DEFAULT Buy NOT NULL,
-                orderMethod TEXT CHECK(orderMethod IN ('Market','Limit','Stop','StopLimit')) DEFAULT Market NOT NULL,
+                orderType TEXT CHECK(orderType IN ('Buy','Sell')) DEFAULT 'Buy' NOT NULL,
+                orderMethod TEXT CHECK(orderMethod IN ('Market','Limit','Stop','StopLimit')) DEFAULT 'Market' NOT NULL,
                 orderDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 quantity DECIMAL(12, 6) NOT NULL,
                 lastPrice DECIMAL(10,2),
@@ -158,14 +158,6 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             CREATE INDEX IF NOT EXISTS idx_transaction_portfolio ON PortfolioTransaction(portfolioId);
             CREATE INDEX IF NOT EXISTS idx_entry_transaction ON PortfolioTransactionEntry(transactionId);
             CREATE INDEX IF NOT EXISTS idx_entry_asset ON PortfolioTransactionEntry(assetId);
-
-            CREATE TABLE IF NOT EXISTS PublicCompany (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                companyName TEXT,
-                ticker TEXT NOT NULL UNIQUE,
-                cik TEXT NOT NULL,
-                isSP500 INTEGER DEFAULT 0
-            );
 
             /*create a table to track changes to some tables that act as cache*/
             CREATE TABLE IF NOT EXISTS modifications (
@@ -256,8 +248,8 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
             CREATE TABLE IF NOT EXISTS LearningModuleQuizCompletion(
                 userId INTEGER NOT NULL,
                 moduleQuizId INTEGER NOT NULL,
-                PRIMARY KEY (userId, moduleQuizId)
-                FOREIGN KEY (moduleQuizId) REFERENCES LearningModuleQuiz(id)
+                PRIMARY KEY (userId, moduleQuizId),
+                FOREIGN KEY (moduleQuizId) REFERENCES LearningModuleQuiz(id),
                 FOREIGN KEY (userId) REFERENCES User(id)
             );
 
