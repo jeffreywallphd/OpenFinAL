@@ -11,9 +11,8 @@
 - [Libraries](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/backend/libraries)
 
 ### [1.3 Version Control](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/versioncontrol)
-- Version Control Practices
-- Branching Strategy
-- Commit and Pull Request Guidelines
+- [Version Control Breakdown]
+- [General Version Control Diagram]
 
 ### [1.4 Guides](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides)
 - [API](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/api)
