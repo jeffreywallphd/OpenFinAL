@@ -4,8 +4,6 @@ Oct 10, 2025 1:00 PM
 
 # BA5200 Setup Environment
 
-Attendees [Eric Fosu-Kwabi](mailto:efosukwa@mtu.edu) [Mary Nnipaa Meteku](mailto:mmeteku@mtu.edu) [Judy Long](mailto:jlong2@mtu.edu)
-
 # Agenda
 
 | Topic | Time |
