@@ -2,11 +2,9 @@ Oct 16, 2025 9:00 AM
 
 # BA5200 Setup Local LLM
 
-Attendees: Eric, Frank, Mary, Cole, Judy
-
 # 1\. Download the backend file and view file
 
-1. Download the two files shared by Cole
+1. Download the two files shared 
 
    * **chatbot\_backend.py**
 
@@ -32,7 +30,7 @@ Attendees: Eric, Frank, Mary, Cole, Judy
 
    * Drag the original “Chatbot.jsx” to \\backup to avoid overwriting
 
-   * Place Cole’s “Chatbot.jsx” in “.\\OpenFinAL\\open-fin-al\\src\\View”
+   * Place “Chatbot.jsx” in “.\\OpenFinAL\\open-fin-al\\src\\View”
 
 # 2\. Set up backend required packages
 
