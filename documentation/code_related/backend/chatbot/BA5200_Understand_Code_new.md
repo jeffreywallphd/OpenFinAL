@@ -2,8 +2,6 @@ Technical MeetingSep 19, 2025 10:30 AM
 
 # BA5200 Understanding Code
 
-Attendees [Judy Long](mailto:jlong2@mtu.edu) [Cole Kahrhoff](mailto:cakahrho@mtu.edu)[Eric Fosu-Kwabi](mailto:efosukwa@mtu.edu)
-
 Attachments [Jeff Reply-Computing Resources for the NLP Model.pdf](https://drive.google.com/open?id=1qdzZczQNfzd0G2rZrH6RXFHfhr8ylHZP)
 
 # Agenda
@@ -39,9 +37,5 @@ Attachments [Jeff Reply-Computing Resources for the NLP Model.pdf](https://drive
 * The software chatbot can respond to questions.  
 * Chat history.
 
-# 4\. Questions/Tasks for the Next Sprint
 
-- [ ] Management side: Interview, what questions are they most frequently asked in life, and GenAI?  
-- [ ] Technical side: Research, preselecting Hugging Face models (less than 3B). See the attachment for the computing resources Jeff provides [Jeff Reply-Computing Resources for the NLP Model.pdf](https://drive.google.com/open?id=1qdzZczQNfzd0G2rZrH6RXFHfhr8ylHZP).  
-- [ ] Technical aspect: Generate a universal public token for the entire software group. Some 3B model does not need a token.
 
