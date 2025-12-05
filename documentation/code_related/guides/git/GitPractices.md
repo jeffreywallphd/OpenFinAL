@@ -5,13 +5,13 @@
 * [Using Git with Visual Studio Code](https://youtu.be/i_23KUAEtUM?si=peF_blDt208dr8tu)
 
 ## Accepting a GitHub Invitation:
-To start working on the repository, you must accept an invitation to become a collaborator
+If you are a developer on your team, you must gain access to the repository first. Either by contacting the professor directly or by sending your GitHub username to an individual who is collecting them to be sent to the professor. 
 Important Note: Invitations will expire after 7 days, so accept them as soon as possible.
-There are two ways to accept the invitation: Email and GitHub Notifications.
+There are two ways to accept the invitation:
 #### Email: 
 * Check the email address that is associated with your GitHub account. There will be an email from noreply@github.com that will include an invitation link. 
 * Click on the invitation link that is provided in the email. It will direct you to GitHub, where you can review the invitation details. 
-    - If you are directed to a page that says 404, log in to the GitHub account that is associated with the same email address where you received the invitation. If you are not signed into the correct account, it will not work. 
+    - If you are directed to a page that displays a 404 message, log in to the GitHub account that is associated with the same email address where you received the invitation. If you are not signed into the correct account, it will not work. 
 * Click the accept button, and you will gain access.
 #### GitHub Notifications:
 * Go to https://github.com/dashboard and log in to the GitHub account that the invitation was sent to.
@@ -20,8 +20,6 @@ There are two ways to accept the invitation: Email and GitHub Notifications.
 * From there, you will be able to find the invitation to the repository. Click on the notification to view the invitation details, then click Accept Invitation.
 
 ## Branching
-If you are a developer on your team, you must have Jeff Wall give you access to the repository first.
-
 * We will be using branches to work on our coding tasks. These should be treated as short-lived branches following the trunk-based repository management approach.  
     - A branch in GitHub allows you to develop features, fix bugs, or safely experiment with new ideas in a contained area of your repository. 
     - You always create a branch from an existing branch. Typically, you might create a new branch from the default branch of your repository; our default branch is “main”. 
@@ -67,8 +65,6 @@ If you are a developer on your team, you must have Jeff Wall give you access to 
 
 ## Above methods are using modern IDE approach; however, if you want to work with the traditional command line approach:
 ## Branching
-If you are a developer on your team, you must have Jeff Wall give you access to the repository first.
-
 * We will be using branches to work on our coding tasks. These should be treated as short-lived branches following the trunk-based repository management approach.  
     - A branch in GitHub allows you to develop features, fix bugs, or safely experiment with new ideas in a contained area of your repository. 
     - You always create a branch from an existing branch. Typically, you might create a new branch from the default branch of your repository; our default branch is “main”. 
@@ -95,12 +91,12 @@ Once you have completed any work on your branch and have tested it on your local
     - Click “New Pull Request”. 
     - Always select “base: Main” on the left side.  On the right, select your branch for “compare: BRANCH_NAME”. 
     - Type a meaningful title and fill out the given template for your pull request.
-    - Assign reviewers from the infrastructure team to review your request.
+    - Assign reviewers who have been designated to review requests to review your request.
     - Submit the Pull Request. 
-* The infrastructure team will have to approve this push request, so please contact the team ASAP to get your branch approved and merged. 
-    - Assign anyone on the Infrastructure Team to do your review. 
-    - Once you have assigned them, send a message to them via Discord with a link to your pull request. 
-    - Pull Requests should be approved within 24 hours. If you have not received input or approval within that time frame, please contact your scrum master to escalate the request.
+* The appropriate individuals will have to approve this push request, so please contact the team ASAP to get your branch approved and merged. 
+    - Assign any one of the designated individuals to do your review. 
+    - Once you have assigned them, message the reviewer on the communication platform being utilized. 
+    - Pull Requests should be approved within 24 hours. If you have not received input or approval within that time frame, escalate to the appropriate leadership.
 * Once approved, the code changes you made will be merged into the “main” branch on the remote repository. 
     - In order to see your changes in the main branch on your local machine, run git pull after running git checkout main (if you are not already on the local main branch). 
 ### Merge Conflicts
