@@ -13,7 +13,7 @@ Please identify the particular changes that were made for this pull request:
 Please identify the semester and of what year this work was completed (ex., BA5200|Fall2025).
 * List the timeline here: 
 
-### Identify which team you are on (ex., Team 3|Risk Management) 
+### Identify which team you are on (ex., Team #|"team name") 
 * List the team here:
 
 ### Identify any tasks, stories, or GitHub issues associated with this work
@@ -31,7 +31,7 @@ Please identify the semester and of what year this work was completed (ex., BA52
 - [ ] My code follows the style guidelines of this project outlined [here](documentation/StyleGuide.md)
 - [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](BestCodingPractices.md)
 - [ ] I have commented my code, particularly in hard-to-understand areas. 
-- [ ] I have made corresponding changes to the documentation. 
+- [ ] I have updated my pull request so that it is up to date with the main branch.
 - [ ] My changes generate no new warnings. 
 - [ ] There are no API keys, passwords, usernames, or other secrets in the code. I am using .env files for all secrets.
 - [ ] I have added tests that prove my fix is effective or that my feature works. 
