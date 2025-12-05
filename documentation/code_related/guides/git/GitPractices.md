@@ -4,6 +4,21 @@
 * Here is a video tutorial for beginners on how to use Git with VS Code
 * [Using Git with Visual Studio Code](https://youtu.be/i_23KUAEtUM?si=peF_blDt208dr8tu)
 
+## Accepting a GitHub Invitation:
+To start working on the repository, you must accept an invitation to become a collaborator
+Important Note: Invitations will expire after 7 days, so accept them as soon as possible.
+There are two ways to accept the invitation: Email and GitHub Notifications.
+#### Email: 
+* Check the email address that is associated with your GitHub account. There will be an email from noreply@github.com that will include an invitation link. 
+* Click on the invitation link that is provided in the email. It will direct you to GitHub, where you can review the invitation details. 
+    - If you are directed to a page that says 404, log in to the GitHub account that is associated with the same email address where you received the invitation. If you are not signed into the correct account, it will not work. 
+* Click the accept button, and you will gain access.
+#### GitHub Notifications:
+* Go to https://github.com/dashboard and log in to the GitHub account that the invitation was sent to.
+* In the top right corner near your profile icon, there will be a notifications tray. Click on it to access your notifications.
+    - Linked directly to notifications github.com/notifications 
+* From there, you will be able to find the invitation to the repository. Click on the notification to view the invitation details, then click Accept Invitation.
+
 ## Branching
 If you are a developer on your team, you must have Jeff Wall give you access to the repository first.
 
@@ -12,19 +27,19 @@ If you are a developer on your team, you must have Jeff Wall give you access to 
     - You always create a branch from an existing branch. Typically, you might create a new branch from the default branch of your repository; our default branch is “main”. 
 
 * Once you have successfully cloned the repository in your system, you will be in the main branch by default. You can check it in the bottom left part of your VS Code window, as shown in the image below.
-![Check Main Branch](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/check_branch.png)
+![Check Main Branch](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/check_branch.png)
 * Moreover, it shows the name of the branch that is currently in use. If you click it, a pop-up will appear as shown in the image below, and you can choose any other branch from it.
-![Branch Options](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branch_options.png)
+![Branch Options](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/branch_options.png)
 
 ## Create a new branch:
 * You can always create a branch using the git checkout -b  NEW_BRANCH_NAME command; however, here is an alternative method:
 * Step - 1 : Click on the link below:
-* [Repository Link](https://github.com/jeffreywallphd/AutoProphet)
+* [Repository Link](https://github.com/jeffreywallphd/OpenFinAL)
 * Step - 2 : Click on the highlighted option (Branches) in the image below:
-![Branches](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branches.png)
+![Branches](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/branches.png)
 * Step - 3 : Now you will be redirected to the branches page, as shown in the image below. From here, select the new branch option; a pop-up will appear asking you to create a new branch. Always make sure the source branch is main (by default, it will always be main).
-![Branches Page](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branches_page.png)
-![Create Branch Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/create_branch.png)   
+![Branches Page](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/branches_page.png)
+![Create Branch Option](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/create_branch.png)   
 * This way, it will be ensured that you have created a new branch without having any issues with the main branch. 
 
 ## Changes from other teams:
@@ -32,23 +47,23 @@ If you are a developer on your team, you must have Jeff Wall give you access to 
 
 * Here is the way to do it using VS Code when you are already in the main branch:
 * Step - 1 : Click on the source control:
-![Source Control](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/Source_control.png)
+![Source Control](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/Source_control.png)
 * Step - 2 : Then you will be able to see the below option in your side panel; choose the highlighted option:
-![Three Dots](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/three_dots.png)  
+![Three Dots](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/three_dots.png)  
 * Step - 3 : Then you will be able to see a pop-up (just like shown in the image below). Then, select the pull option... You should now be good to go!
-![Pull Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull.png)
+![Pull Option](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/pull.png)
 
 * Now suppose that you are in your working branch and you want to pull from the main branch into your branch, or in other words, you want to merge changes from the main branch into your working branch to keep your working branch up to date... Follow the steps below:
 * Step - 1 : Click on the source control:
-![Source Control](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/Source_control.png)
+![Source Control](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/Source_control.png)
 * Step - 2 : Then you will be able to see the below option in your side panel; choose the highlighted option:
-![Three Dots](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/three_dots.png)  
+![Three Dots](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/three_dots.png)  
 * Step - 3 : Then you will be able to see a pop-up (just like shown in the image below). Select the pull or push option.
-![Pull Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull.png)
+![Pull Option](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/pull.png)
 * Step - 4 : Then you will be able to see a pop-up (just like shown in the image below). Then, select the pull option.
-![Pull,Push Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull_from.png)
+![Pull,Push Option](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/pull_from.png)
 * Step - 5 : Then there will be another pop-up (just like shown in the image below). Select the main branch over all branches. Then, you should be all done!
-![Branch Selection](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branch_select.png)
+![Branch Selection](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/past_documentation/2024/Fall%202024/MIS4000/images/directions/branch_select.png)
 
 ## Above methods are using modern IDE approach; however, if you want to work with the traditional command line approach:
 ## Branching
