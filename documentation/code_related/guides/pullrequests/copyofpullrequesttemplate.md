@@ -25,13 +25,27 @@ Please identify the semester and of what year this work was completed (ex., BA52
 - [ ] Breaking change (fix or feature that would cause existing functionality not to work as expected)
 - [ ] Documentation addition/update (non-breaking change that adds documentation to the system)
 
-## Checklist Before Review
-- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
-- [ ] I have followed the git practices outlined [here](GitPractices.md) to ensure code conflicts are minimized. 
-- [ ] My code follows the style guidelines of this project outlined [here](documentation/StyleGuide.md)
+## Coding Checklist
 - [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](BestCodingPractices.md)
-- [ ] I have commented my code, particularly in hard-to-understand areas. 
-- [ ] I have updated my pull request so that it is up to date with the main branch.
-- [ ] My changes generate no new warnings. 
+- [ ] My code follows the style guidelines of this project outlined [here](documentation/StyleGuide.md)
+- [ ] I have followed the git practices outlined [here](GitPractices.md) to ensure code conflicts are minimized.
 - [ ] There are no API keys, passwords, usernames, or other secrets in the code. I am using .env files for all secrets.
-- [ ] I have added tests that prove my fix is effective or that my feature works. 
+- [ ] I have commented my code, particularly in hard-to-understand areas.
+- [ ] I have updated my pull request so that it is up to date with the main branch.
+- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+
+## Testing Checklist
+- [ ] I have added tests that prove my fix is effective or that my feature works.
+- [ ] I have followed the development note for testing software [here](https://github.com/jeffreywallphd/OpenFinAL/wiki/Installation#%EF%B8%8Fdeveloper-note-testing-the-software)
+- [ ] I have updated my pull request so that it is up to date with the main branch 
+- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+
+## Documentation Checklist 
+- [ ] There is no personally identifiable information, such as real names, real email addresses, or real contact information
+- [ ] There are no responses to interview questions, only interview questions by themselves
+- [ ] I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on
+
+## GitHub’s platform
+- [ ] I have updated my pull request so that it is up to date with the main branch 
+- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+
