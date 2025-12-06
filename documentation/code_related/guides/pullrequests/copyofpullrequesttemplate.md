@@ -26,11 +26,10 @@ Please identify the semester and of what year this work was completed (ex., BA52
 - [ ] Documentation addition/update (non-breaking change that adds documentation to the system)
 
 ## Coding Checklist
-- [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](BestCodingPractices.md)
-- [ ] My code follows the style guidelines of this project outlined [here](documentation/StyleGuide.md)
-- [ ] I have followed the git practices outlined [here](GitPractices.md) to ensure code conflicts are minimized.
+- [ ] I have performed a self-review of my code. It runs without errors and follows the [Best Coding Practices](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/code_related/guides/codingpractices/BestCodingPractices.md)
+- [ ] My code follows the style guidelines of this project outlined [here](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/style%20guide/style_guide.md)
+- [ ] I have followed the git practices outlined [here](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/code_related/guides/git/GitPractices.md) to ensure code conflicts are minimized.
 - [ ] There are no API keys, passwords, usernames, or other secrets in the code. I am using .env files for all secrets.
-- [ ] I have commented my code, particularly in hard-to-understand areas.
 - [ ] I have updated my pull request so that it is up to date with the main branch.
 - [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
 
@@ -43,9 +42,7 @@ Please identify the semester and of what year this work was completed (ex., BA52
 ## Documentation Checklist 
 - [ ] There is no personally identifiable information, such as real names, real email addresses, or real contact information
 - [ ] There are no responses to interview questions, only interview questions by themselves
-- [ ] I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on
-
-## GitHub’s platform
+- [ ] I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on GitHub’s platform
 - [ ] I have updated my pull request so that it is up to date with the main branch 
 - [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
 
