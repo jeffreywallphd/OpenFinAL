@@ -8,7 +8,7 @@ To learn more about the project, visit the Wiki at: https://github.com/jeffreywa
 ## Start Collaborating and Contributing
 To begin contributing to the repository, please visit the Installation page of the repository Wiki for instructions on how to prepare the development environment: https://github.com/jeffreywallphd/OpenFinAL/wiki/Installation
 
-If you are working on this project as a part of a course project, you may also want to explore the Project Startup page of the Wiki: https://github.com/jeffreywallphd/OpenFinAL/wiki/Project-Startup
+If you are working on this project as a part of a course project, you may also want to explore the Project Startup page of the Wiki: https://github.com/jeffreywallphd/OpenFinAL/wiki/Project-Startup-Guide
 
 Please be sure to read through the [Best Coding Practices](BestCodingPractices.md) document before you start collaborating.
 
