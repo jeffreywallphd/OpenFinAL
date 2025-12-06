@@ -40,9 +40,9 @@ Please identify the semester and of what year this work was completed (ex., BA52
 - [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
 
 ## Documentation Checklist 
-- [ ]There is no personally identifiable information, such as real names, real email addresses, or real contact information
-- [ ]There are no responses to interview questions, only interview questions by themselves
-- [ ]I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on GitHub’s platform
-- [ ]I have updated my pull request so that it is up to date with the main branch 
-- [ ]Do you want to keep your branch for future changes or delete it once it is reviewed?
+- [ ] There is no personally identifiable information, such as real names, real email addresses, or real contact information
+- [ ] There are no responses to interview questions, only interview questions by themselves
+- [ ] I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on GitHub’s platform
+- [ ] I have updated my pull request so that it is up to date with the main branch 
+- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
 
