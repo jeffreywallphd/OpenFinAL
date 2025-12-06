@@ -1,11 +1,11 @@
 # Role Descriptions
 
 ## Table of Contents
-* [Product Manager](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management#product-manager-classecosystem-level)
-* [Release Train Engineer](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management#release-train-engineer-classecosystem-level)
-* [Systems Architect](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management#systems-architect-classecosystem-level)
-* [Product Owner](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management#product-owner-team-level)
-* [Scrum Master](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management#scrum-master-team-level)
+* [Product Manager](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project%20management/RoleDescriptions.md#product-manager-classecosystem-level)
+* [Release Train Engineer](https://github.com/jeffreywallphd/OpenFinAL/edit/main/documentation/non_technical/project%20management/RoleDescriptions.md#release-train-engineer-classecosystem-level)
+* [Systems Architect](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management/RoleDescriptions.md#systems-architect-classecosystem-level)
+* [Product Owner](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management/RoleDescriptions.md#product-owner-team-level)
+* [Scrum Master](https://github.com/jeffreywallphd/OpenFinAL/new/main/documentation/non_technical/project%20management/RoleDescriptions.md#scrum-master-team-level)
 
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
