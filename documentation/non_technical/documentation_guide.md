@@ -25,6 +25,6 @@ This guide explains how to convert certain file types so that they display prope
   You *can* include code examples inside Markdown (.md) documentation.
 
 - GitHub Markdown uses a specific syntax for code blocks.  
-  Learn more [here] https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks]
+  - Learn more [here](https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-and-highlighting-code-blocks)
 
-- If a file type is not viewable in GitHub, convert or export it to a supported format before uploading.
+- If a file type is not viewable in GitHub, **convert or export** it to a supported format **before** uploading and making a pull request.
