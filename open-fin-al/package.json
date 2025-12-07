@@ -82,6 +82,7 @@
     "keytar": "^7.9.0",
     "node-html-parser": "^7.0.1",
     "os-browserify": "^0.3.0",
+    "pptx-preview": "^1.0.7",
     "puppeteer": "^24.6.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

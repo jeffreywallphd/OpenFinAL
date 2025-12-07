@@ -65,6 +65,7 @@ export function Learn() {
             query += " LIMIT ?"
             const limit = 25;
             inputData.push(limit);
+            window.console.log(query);
             await window.database.SQLiteSelectData({ query, inputData }).then((data) => {
                 setState({
                     modules: data,
