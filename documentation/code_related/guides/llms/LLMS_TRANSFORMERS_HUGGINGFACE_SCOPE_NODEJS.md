@@ -92,3 +92,10 @@ Remember: you can use both tools as you build LLM-enabled software.
 ## Additional Comments:
 * Consider the computational cost of LLMs, especially for on-premise deployments. Particularly for consumer computing devices, you may need to consider the use of a Small Language Model (SLM), which is a LLM with far fewer parameters.
 * Implement proper data security and privacy practices when using LLMs with sensitive information.
+
+# 10 Model Update (Fall 2025)
+* The model used in the AI chatbot is TinyLama1.1.
+* The model was trained with public financial questions and answers
+* It was also trained with customer service responss
+  
+* Will need user interface and refined training moving forward. 
