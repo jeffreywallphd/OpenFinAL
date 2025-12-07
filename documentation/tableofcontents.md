@@ -46,6 +46,11 @@
 - [SCRUM Ceremonies](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management/scrum_ceremonies)
 
 ### [2.5 Project Startup](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project_startup)
+-[Talent Assessment Template](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/TalentAssessmentTemplate.xlsx)
+-[Project Charter Template](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/ProjectCharterTemplate.docx)
+-[Benchmarking Matrix](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/BenchmarkingMatrix.xlsx)
+-[RACI Matrix](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/RACI_Matrix.xlsx)
+
 
 ## [3. Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation)
 
