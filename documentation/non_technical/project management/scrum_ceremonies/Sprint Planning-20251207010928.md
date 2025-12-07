@@ -1,0 +1,48 @@
+# Sprint Planning
+
+> When do Sprint Planning meetings occur? At the beginning of every sprint
+Sprint Planning Meetings should only last **10-15 minutes.**
+* * *
+**Facilitator:** SCRUM Master
+**Backup-Facilitator:** Product Owner
+**Second Backup:** Team Lead
+* * *
+### Meeting Details
+**Date:** x/xx/xx
+**Cadence:** Every 2 Weeks
+**Time Taken:** X minutes
+*   Who led today's meeting?
+* * *
+### Team Sprint Goals
+*   What are the goals for this Sprint?
+
+* * *
+### Implementation Questions
+*       *   How will the work get done?
+    *   What can realistically get done during this Sprint?
+    *   Why is this sprint valuable or what will give it value?
+* * *
+### Upcoming Sprint
+*       *   What can be done during the next Sprint?
+    *   How will the work get done during the upcoming Sprint?
+    *   Why is the next sprint valuable or what will give it value?
+* * *
+### Other Things Discussed
+*   
+* * *
+### Who Attended?
+
+| Team Member |
+| --- |
+| 1. |
+| 2. |
+| 3. |
+| 4. |
+| 5. |
+| 6. |
+| 7. |
+| 8. |
+| 9. |
+| 10. |
+
+* * *
