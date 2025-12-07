@@ -1,7 +1,8 @@
 
 User Manual for Pushing Changes to `FALL2024-BA5200-TEAM#` Branch on GitHub
 
-0. Introduction to GitHub
+**Introduction to GitHub**
+
 GitHub is a platform that allows teams to collaborate on coding projects. It uses Git, a version control system, which helps you manage changes in your project over time.
 
 With GitHub, you can:
@@ -12,7 +13,7 @@ With GitHub, you can:
 
 This guide will walk you through the steps to push your code changes to the `FALL2024-BA5200-TEAM#` branch.
 
-1. Setting Up Git on Your Computer
+**1. Setting Up Git on Your Computer**
 Step 1: Install Git
 If you don’t have Git installed:
 - Windows: Download Git from https://git-scm.com/downloads and install it.
@@ -26,7 +27,7 @@ git config --global user.name "Your Name"
 git config --global user.email "youremail@example.com"
 ```
 
-2. Cloning the Repository
+**2. Cloning the Repository**
 Step 1: Open Terminal or Command Prompt
 Use the command line to interact with Git. If you’re using:
 - Windows: Open Command Prompt or Git Bash.
@@ -38,7 +39,7 @@ To start working on a project, you need to clone (download) the project from Git
 git clone https://github.com/jeffreywallphd/AutoProphet.git
 ```
 
-3. Working on the `FALL2024-BA5200-TEAM#` Branch
+**3. Working on the `FALL2024-BA5200-TEAM#` Branch**
 Step 1: Check Out the `FALL2024-BA5200-TEAM#` Branch
 By default, you might be on the `main` or `master` branch. To switch to the `FALL2024-BA5200-TEAM#` branch, use:
 ```bash
@@ -53,7 +54,8 @@ which should give you FALL2024-BA5200-TEAM# as response
 
 Step 2: Make Your Changes
 Now that you're on the `FALL2024-BA5200-TEAM#` branch, make your changes to the project files on your computer.
-4. Protecting Your Email Privacy on GitHub
+
+**4. Protecting Your Email Privacy on GitHub**
 
 When you contribute to projects on GitHub, you might not want to expose your personal email in commit logs. GitHub offers a private email option to keep your personal email address private. Here's how you can set this up:
 
@@ -83,7 +85,7 @@ i. To check if your email has been set correctly in Git, you can use:
 
 By following these steps, you can contribute to projects without exposing your personal email address in commit logs.
 
-5. Committing and Pushing Changes to GitHub
+**5. Committing and Pushing Changes to GitHub**
 Once your changes are done, you need to save them to the GitHub repository by following these steps:
 
 Step 1: Stage Your Changes
@@ -108,7 +110,7 @@ git push origin FALL2024-BA5200-TEAM#
 ```
 This uploads the changes to the `FALL2024-BA5200-TEAM#` branch on GitHub.
 
-6. Pulling Changes from GitHub
+**6. Pulling Changes from GitHub**
 Before you start working on new changes, it’s a good practice to pull the latest changes from the repository to make sure you're working on the most recent version of the project.
 
 Use this command to pull updates:
@@ -116,7 +118,7 @@ Use this command to pull updates:
 git pull origin FALL2024-BA5200-TEAM#
 ```
 
-7. Common Git Commands Cheat Sheet
+**7. Common Git Commands Cheat Sheet**
 Here are some common commands you’ll use while working with Git:
 
 | Command                             | What It Does                                       |
@@ -129,10 +131,10 @@ Here are some common commands you’ll use while working with Git:
 | `git pull origin <branch-name>`     | Pull the latest changes from GitHub                |
 | `git status`                        | Check the current status of your files             |
 
-8. Troubleshooting
+**8. Troubleshooting**
 - "Permission denied" errors: If you encounter permission issues while pushing changes, you might need to set up SSH keys or authenticate using a personal access token. Refer to GitHub's documentation for guidance.
 - Merge conflicts: Sometimes you might encounter a merge conflict when pushing or pulling. This happens if there are conflicting changes. Git will notify you, and you’ll need to resolve the conflict by choosing which changes to keep.
 
 
-9. Conclusion
+**9. Conclusion**
 Now you’re ready to push your changes to the `FALL2024-BA5200-TEAM#` branch on GitHub! With GitHub and Git, you can easily collaborate with our team, track progress, and manage code changes efficiently.
