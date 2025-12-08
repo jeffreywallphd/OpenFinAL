@@ -21,7 +21,11 @@ module.exports = {
         },
         {
           from: path.resolve(__dirname, 'src/Asset/DB/schema.sql'),
-          to: path.resolve(__dirname, '.webpack/Asset/DB/schema.sql'),
+          to: path.resolve(__dirname, '.webpack/renderer/Asset/DB/schema.sql'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/Asset/Slideshows'),
+          to: path.resolve(__dirname, '.webpack/renderer/Asset/Slideshows'),
         },
         {
           from: path.resolve(__dirname, 'src/Database/migrations'),

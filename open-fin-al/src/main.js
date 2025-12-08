@@ -496,6 +496,28 @@ ipcMain.handle('yahoo-historical', async (event, ticker, options) => {
 const configFileName = 'default.config.json';
 const configPath = path.join(app.getPath('userData'), configFileName);
 
+function getAppPath() {
+  return app.getAppPath('userData');
+}
+
+function getAssetPath() {
+  const isDev = !app.isPackaged;
+  const assetPath = isDev
+    ? path.join(__dirname, '../renderer/Asset/Slideshows')
+    : path.join(process.resourcesPath, 'Asset/Slideshows');
+
+  return assetPath;
+}
+
+ipcMain.handle('get-user-path', (event) => {
+  return getAppPath();
+});
+
+ipcMain.handle('get-asset-path', (event) => {
+  return getAssetPath();
+});
+
+
 function saveConfig(config) {
   try {
     fs.openSync(configPath, 'w');
@@ -568,6 +590,7 @@ ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
 
 //////////////////////////// File Management Section ////////////////////////////
 
+// UTF-8 read
 async function readFromFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf8', (err, data) => {
@@ -585,6 +608,23 @@ ipcMain.handle('read-file', async (event, file) => {
   return data;
 });
 
+// Binary-safe read (no encoding argument)
+async function readFromFileBinary(file) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (err, data) => {   //returns a Buffer
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data); // Buffer
+      }
+    });
+  });
+}
+
+ipcMain.handle('read-binary', async (_event, file) => {
+  const data = await readFromFileBinary(file); // Buffer
+  return data; 
+});
 
 //////////////////////////// Database Section ////////////////////////////
 
@@ -613,10 +653,10 @@ const getDB = async () => {
     });
 
     // Also initialize better-sqlite3 for migrations
-    betterDb = new Database(dbPath);
+    //betterDb = new Database(dbPath);
     
     // Run migrations
-    await runMigrations();
+    //await runMigrations();
 
     return true;
   } catch (error) {

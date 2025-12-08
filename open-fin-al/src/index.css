@@ -362,10 +362,15 @@ code {
 .slideshowWindow {
   height: 500px;
   width: auto;
-  margin: 30px;
-  padding: 20px;
-  border: 25px solid var(--secondary-color);
+  margin: 10px;
+  padding: 10px;
   background-color: var(--background-color);
+}
+
+.pptx-preview-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .slide {

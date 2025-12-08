@@ -7,8 +7,14 @@ contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
 });
 
+contextBridge.exposeInMainWorld('electronApp', {
+    getUserPath: () => ipcRenderer.invoke('get-user-path'),
+    getAssetPath: async () => ipcRenderer.invoke('get-asset-path')    
+});
+
 contextBridge.exposeInMainWorld('file', {
     read: (file) => ipcRenderer.invoke('read-file', file),
+    readBinary: (file) => ipcRenderer.invoke('read-binary', file),
 });
 
 contextBridge.exposeInMainWorld('exApi', {

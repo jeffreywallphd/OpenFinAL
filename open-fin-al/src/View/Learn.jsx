@@ -78,6 +78,8 @@ export function Learn() {
         }
     };
 
+    window.console.log(window.electronApp.getAssetPath());
+
     return (
         <div className="page">
             <h2><span className="material-icons">school</span> Financial Learning Modules</h2>
@@ -116,6 +118,7 @@ export function Learn() {
                             description: module.description,
                             timeEstimate: module.timeEstimate,
                             dateCreated: module.dateCreated,
+                            fileName: module.fileName,
                             pages: null}}>View Module</NavLink>
                     </div>)))
                 : state.isLoading === true ? 

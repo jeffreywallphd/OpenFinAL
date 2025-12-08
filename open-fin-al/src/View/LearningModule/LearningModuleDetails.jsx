@@ -7,16 +7,18 @@
 import React, { useState, useEffect } from "react";
 import {
     NavLink,
-    useLocation 
+    useLocation,
+    useNavigate 
 } from "react-router-dom";
 
 export function LearningModuleDetails(props) {
     const location = useLocation();
+    const navigate = useNavigate();
+
     const [state, setState] = useState({
         pages: null,
         isLoading: true
     });
-
 
     useEffect(() => {
         selectPageData();
@@ -41,6 +43,26 @@ export function LearningModuleDetails(props) {
         }
     };
 
+    const handleStartModule = async () => {
+        try {
+            // get base asset path from Electron (async)
+            const assetPath = await window.electronApp.getAssetPath();
+
+            // TODO: handle different OS path separators
+            const filePath = `${assetPath}\\${location.state.fileName}`;
+
+            // navigate to the learningModulePage route with the full path
+            navigate("/learningModulePage", {
+                state: {
+                    fileName: filePath,
+                    moduleId: location.state.moduleId
+                },
+            });
+        } catch (err) {
+            console.error("Error starting module:", err);
+        }
+    };
+
     return (
         <div className="page">
             <div>
@@ -53,10 +75,9 @@ export function LearningModuleDetails(props) {
                     (<div>Loading...</div>) :
                     (
                         <div>
-                            <NavLink to="/learningModulePage" state={{
-                                "pages": state.pages,
-                                "currentPageIndex": 0,
-                            }}>Start Module</NavLink>
+                            <button onClick={handleStartModule}>
+                                Start Module
+                            </button>
                         </div>
                     )
                 }
