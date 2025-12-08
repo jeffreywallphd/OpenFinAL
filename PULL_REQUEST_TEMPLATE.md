@@ -31,18 +31,18 @@ Please identify the semester and of what year this work was completed (ex., BA52
 - [ ] I have followed the git practices outlined [here](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/code_related/guides/git/GitPractices.md) to ensure code conflicts are minimized.
 - [ ] There are no API keys, passwords, usernames, or other secrets in the code. I am using .env files for all secrets.
 - [ ] I have updated my pull request so that it is up to date with the main branch.
-- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+- [ ] Check this box if you would like your branch NOT to be deleted
 
 ## Testing Checklist
 - [ ] I have added tests that prove my fix is effective or that my feature works.
 - [ ] I have followed the development note for testing software [here](https://github.com/jeffreywallphd/OpenFinAL/wiki/Installation#%EF%B8%8Fdeveloper-note-testing-the-software)
 - [ ] I have updated my pull request so that it is up to date with the main branch 
-- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+- [ ] Check this box if you would like your branch NOT to be deleted
 
 ## Documentation Checklist 
 - [ ] There is no personally identifiable information, such as real names, real email addresses, or real contact information
 - [ ] There are no responses to interview questions, only interview questions by themselves
-- [ ] I have checked the document conversion guide (I am going to create this and put the link in later) and double-checked that my file will be visible on GitHub’s platform
+- [ ] I have checked the [document conversion guide](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/documentation%20key/documentation_guide.md) and double-checked that my file will be visible on GitHub’s platform
 - [ ] I have updated my pull request so that it is up to date with the main branch 
-- [ ] Do you want to keep your branch for future changes or delete it once it is reviewed?
+- [ ] Check this box if you would like your branch NOT to be deleted
 
