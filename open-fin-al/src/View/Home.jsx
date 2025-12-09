@@ -15,6 +15,7 @@ import { MarketStatusInteractor } from "../Interactor/MarketStatusInteractor";
 import {EconomicIndicatorInteractor} from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
 import { EconomicChart } from './Dashboard/EconomicChart';
+import { HeaderContext } from "./App/LoadedLayout";
 
 const withNavigation = (Component) => {
   return function WrappedComponent(props) {
@@ -24,6 +25,8 @@ const withNavigation = (Component) => {
 };
 
 class Home extends Component {
+  static contextType = HeaderContext;
+
   formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
@@ -74,6 +77,13 @@ class Home extends Component {
   }
 
   async componentDidMount() {
+    const { setHeader } = this.context;
+
+    setHeader({
+      title: "Dashboard",
+      icon: "dashboard", 
+    });
+
     this.getEconomicNews();
     this.getPortfolioValue();
     this.getEconomicData();
@@ -293,10 +303,7 @@ class Home extends Component {
 
   render() {
     return (
-      <main>
-        <div className="dashboardTitleContainer">
-          <h2 style={{margin: "0px"}}><span className="material-icons dashboardIcon">dashboard</span> Dashboard</h2>
-        </div>
+      <div className="page">
         <section className="content-grid">
           <div className="stats">
             <div className="current-month">
@@ -365,7 +372,7 @@ class Home extends Component {
             }
           </div>
         </section>
-      </main>
+      </div>
     );
   }
 }

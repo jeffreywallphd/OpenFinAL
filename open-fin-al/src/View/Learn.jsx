@@ -10,8 +10,18 @@ import {
     useLocation
 } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useHeader } from "./App/LoadedLayout";
 
 export function Learn() {
+    const { setHeader } = useHeader();
+          
+    useEffect(() => {
+        setHeader({
+        title: "Learning Modules",
+        icon: "school", // Material icon name, or whatever you're using
+        });
+    }, [setHeader]);
+
     const location = useLocation();
     const [state, setState] = useState({
         modules: null,
@@ -82,7 +92,6 @@ export function Learn() {
 
     return (
         <div className="page">
-            <h2><span className="material-icons">school</span> Financial Learning Modules</h2>
             <form onSubmit={async (e) => {
                 e.preventDefault();
                 await selectData();

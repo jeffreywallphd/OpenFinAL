@@ -15,6 +15,7 @@ import {
 import { DataContext } from "../App";
 
 // Imports for react pages and assets
+import { AppLoadedLayout } from "./LoadedLayout"
 import Home from "../Home";
 import Portfolio from "../Portfolio";
 import { Analysis } from "../Analysis";
@@ -100,25 +101,19 @@ class AppLoaded extends Component {
         <>
           <div className="main">
           <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
-            {/* Top Header Bar */}
-            <header className="top-header">
-              <div className="header-left">
-                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
-                <div className="header-logo">
-                  <img src={this.state.logo} alt="OpenFinAL Logo" className="header-logo-img" />
-                </div>
-              </div>
-              <div className="header-right">
-                <UserInfo onLogout={this.props.onLogout} />
-              </div>
-            </header>
-
             <aside className={`sidebar ${menuCollapsed ? 'collapsed' : ''}`}>
+              <div className="logo sidebar-padding">
+                <img src={this.state.logo} alt="OpenFinAL Logo" className={`logo ${menuCollapsed ? 'hidden' : ''}`} />
+                <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
+              </div>
+              <div className="sidebar-padding">
+                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
+              </div>
               <nav className="sidebar-padding">
                 <ul>
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
-                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Stock Trends</NavLink></li>
+                  <li><NavLink to="/price"><span className="material-icons">attach_money</span> Trade</NavLink></li>
                   <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
@@ -132,20 +127,22 @@ class AppLoaded extends Component {
               <ScrollToTop  onRouteChange={this.checkDarkMode}/>
 
               <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/portfolio" element={<Portfolio />} />
-                <Route path="/analysis" element={<Analysis />} />
-                <Route path="/buy-report" element={<BuyReport />} />
-                <Route path="/price" element={<TimeSeries />} />
-                <Route path="/news" element={<News />} />
-                <Route path="/learn" element={<Learn />} />
-                <Route path="/learningModule" element={<LearningModuleDetails />} />
-                <Route path="/learningModulePage" element={<LearningModulePage />} />
-                <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
-                <Route path="/forecast" element={<Forecast />} />
-                <Route path="/forecast-features" element={<ForecastFeature />} />
-                <Route path="/forecast-models" element={<ForecastModel />} />
-                <Route path="/StockAnalysis" element={<StockAnalysis />} />
+                <Route element={<AppLoadedLayout  onLogout={this.props.onLogout}/>}>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/portfolio" element={<Portfolio />} />
+                  <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/buy-report" element={<BuyReport />} />
+                  <Route path="/price" element={<TimeSeries />} />
+                  <Route path="/news" element={<News />} />
+                  <Route path="/learn" element={<Learn />} />
+                  <Route path="/learningModule" element={<LearningModuleDetails />} />
+                  <Route path="/learningModulePage" element={<LearningModulePage />} />
+                  <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
+                  <Route path="/forecast" element={<Forecast />} />
+                  <Route path="/forecast-features" element={<ForecastFeature />} />
+                  <Route path="/forecast-models" element={<ForecastModel />} />
+                  <Route path="/StockAnalysis" element={<StockAnalysis />} />
+                </Route>
               </Routes>
             </div>
             <footer className={`footer ${menuCollapsed ? 'collapsed' : ''}`}>
@@ -153,7 +150,7 @@ class AppLoaded extends Component {
             </footer>
           </div>
         </>
-        <ChatbotToggle/>
+        
 
       </HashRouter>
 

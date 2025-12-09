@@ -14,6 +14,8 @@ import { DataContext } from "./App";
 import { SecInteractor } from "../Interactor/SecInteractor";
 import { LanguageModelInteractor } from "../Interactor/LanguageModelInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { useHeader } from "./App/LoadedLayout";
+
 
 function Stock(props) {
     const location = useLocation();
@@ -21,6 +23,15 @@ function Stock(props) {
     const [ fundamentalAnalysis, setFundamentalAnalysis ] = useState(null);
     const [ fundamentalAnalysisDisabled, setFundamentalAnalysisDisabled ] = useState(false);
     const [ analysisLoading, setAnalysisLoading ] = useState(false);
+
+    const { setHeader } = useHeader();
+
+    useEffect(() => {
+        setHeader({
+        title: "Trade",
+        icon: "attach_money", // Material icon name, or whatever you're using
+        });
+    }, [setHeader]);
     
     //ensure that the state changes
     useEffect(() => {
@@ -143,7 +154,6 @@ function Stock(props) {
 
     return (
         <div className="page">
-            <h2><span className="material-icons">attach_money</span> Stock Trends</h2>
             <div className="flex">
                 <div>
                     {state ?
