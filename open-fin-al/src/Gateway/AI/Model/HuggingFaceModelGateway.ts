@@ -47,7 +47,7 @@ export class HuggingFaceModelGateway implements IKeyedModelGateway{
                 // do_sample: temperature > 0,
             };
 
-            // 3) Build a simple prompt inline (no separate helper)
+            // Build a simple prompt inline (no separate helper)
             // Format: optional System, then alternating User/Assistant turns, end with "Assistant:" cue.
             // Choose a default system prompt if none provided
             let defaultSystemPrompt = "You are a helpful, concise AI assistant.";
@@ -76,21 +76,21 @@ export class HuggingFaceModelGateway implements IKeyedModelGateway{
             const prompt = `${systemText ? `System: ${systemText}\n\n` : ""}${convo}\nAssistant:`;
             window.console.log(prompt);
             
-            //const pipe = await pipeline("text-generation", model); 
-            //const result = (await pipe(prompt, params)) as HFGen;
+            // moved pipeline to main.js to allow for larger models
+            // renderer process has limited memory and cannot load large models
+            const result = await window.transformers.runTextGeneration(model, prompt, params) as HFGen;
 
-            const result = await window.transformers.run(model, prompt, params) as HFGen;
-
-            // 5) Extract text and strip echoed prompt if present
+            // Extract text and strip echoed prompt if present
             const generated = Array.isArray(result)
                 ? result[0]?.generated_text ?? ""
                 : (result as any)?.generated_text ?? "";
+            
             let completion = generated.startsWith(prompt) ? generated.slice(prompt.length) : generated;
             completion = completion.replace(/^\s+/, ""); // trim leading whitespace
 
             window.console.log(completion);
 
-            message.content = completion || "(no content)";
+            message.content = completion || "Failed to generate a response";
             return message; 
 
         } catch (e) {

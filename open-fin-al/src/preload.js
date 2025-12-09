@@ -55,7 +55,7 @@ contextBridge.exposeInMainWorld('vault', {
 });
 
 contextBridge.exposeInMainWorld('transformers', {
-    run: (model, prompt, params) => ipcRenderer.invoke('run-transformers', model, prompt, params)
+    runTextGeneration: (model, prompt, params) => ipcRenderer.invoke('run-transformers', model, prompt, params)
 });
 
 contextBridge.exposeInMainWorld('config', {
