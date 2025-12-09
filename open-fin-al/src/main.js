@@ -465,6 +465,42 @@ ipcMain.handle('set-secret', async (event, key, value) => {
   return await setSecret(key, value);
 });
 
+//////////////////////////// Transformers.js Section ////////////////////////////
+
+const { pipeline, env } = require('@xenova/transformers');
+
+env.allowLocalModels = false;
+env.localModelPath = '/models'; // resolves to http://localhost:3000/models
+
+let localModel = null;
+
+async function getPipeline(model) {
+  if (model !== localModel) {
+    localModel = pipeline("text-generation", model);
+  }
+
+  return localModel;
+}
+
+ipcMain.handle('run-transformers', async (event, model, prompt, params) => {
+  if (!model) {
+    throw new Error('An model must be specified');
+  }
+  if (!prompt) {
+    throw new Error('A prompt must be provided');
+  }
+
+  try {
+    const pipe = await getPipeline(model);
+    const output = await pipe(prompt, params);
+    return output;
+  } catch (err) {
+    // Re-throw so renderer sees a rejected promise
+    throw err;
+  }
+});
+
+
 //////////////////////////// Yahoo Finance Section ////////////////////////////
 async function yahooChart(ticker, options) {
  return await yf.chart(ticker, options);

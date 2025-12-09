@@ -23,7 +23,6 @@ export class HuggingFaceModelGateway implements IKeyedModelGateway{
     }
 
     async create(model: string, messages: any[]): Promise<any> {
-        window.console.log(model);
         const message = { role: "assistant", content: "" as string };
 
         try {
@@ -44,25 +43,43 @@ export class HuggingFaceModelGateway implements IKeyedModelGateway{
                 max_new_tokens: maxTokens,
                 temperature,
                 top_p: topP,
-                // repetition_penalty: 1.05,
+                repetition_penalty: 1.15,
                 // do_sample: temperature > 0,
             };
 
             // 3) Build a simple prompt inline (no separate helper)
-            //    Format: optional System, then alternating User/Assistant turns, end with "Assistant:" cue.
+            // Format: optional System, then alternating User/Assistant turns, end with "Assistant:" cue.
+            // Choose a default system prompt if none provided
+            let defaultSystemPrompt = "You are a helpful, concise AI assistant.";
+            
+            if (this.purpose === "NewsSummaryModel") {
+                defaultSystemPrompt =
+                "You summarize news articles in simple, neutral language. Focus on the key facts and avoid speculation.";
+            } else if (this.purpose === "ChatbotModel") {
+                defaultSystemPrompt =
+                "You are a friendly financial chatbot. Respond to the user in plain language.";
+            }
+
             const sys = (messages as ChatMessage[])
                 .filter(m => m.role === "system")
                 .map(m => m.content?.trim())
                 .filter(Boolean)
                 .join("\n");
+
+            const systemText = sys.length > 0 ? sys : defaultSystemPrompt;
+
             const convo = (messages as ChatMessage[])
                 .filter(m => m.role !== "system")
                 .map(m => `${m.role === "user" ? "User" : "Assistant"}: ${m.content?.trim() ?? ""}`)
                 .join("\n");
-            const prompt = `${sys ? `System: ${sys}\n\n` : ""}${convo}\nAssistant:`;
+
+            const prompt = `${systemText ? `System: ${systemText}\n\n` : ""}${convo}\nAssistant:`;
             window.console.log(prompt);
-            const pipe = await pipeline("text-generation", model); 
-            const result = (await pipe(prompt, params)) as HFGen;
+            
+            //const pipe = await pipeline("text-generation", model); 
+            //const result = (await pipe(prompt, params)) as HFGen;
+
+            const result = await window.transformers.run(model, prompt, params) as HFGen;
 
             // 5) Extract text and strip echoed prompt if present
             const generated = Array.isArray(result)
@@ -77,7 +94,12 @@ export class HuggingFaceModelGateway implements IKeyedModelGateway{
             return message; 
 
         } catch (e) {
-            window.console.error(e);
+            window.console.error("HuggingFaceModelGateway error:", e);
+            if (e?.cause) {
+                window.console.error("Inner cause:", e.cause);
+            }
+            message.content = "Sorry, there was a problem running the local model.";
+            return message;
         }
     }
     

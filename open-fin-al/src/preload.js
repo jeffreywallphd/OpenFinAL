@@ -54,6 +54,10 @@ contextBridge.exposeInMainWorld('vault', {
     refreshCert: (hostname) => ipcRenderer.invoke('refresh-cert', hostname)
 });
 
+contextBridge.exposeInMainWorld('transformers', {
+    run: (model, prompt, params) => ipcRenderer.invoke('run-transformers', model, prompt, params)
+});
+
 contextBridge.exposeInMainWorld('config', {
     exists: () => ipcRenderer.invoke('has-config'),
     save: (config) => ipcRenderer.invoke('save-config', config),
