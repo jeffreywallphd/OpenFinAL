@@ -77,6 +77,8 @@ export class InitializationInteractor implements IInputBoundary {
             }
             
             //load the user table with the OS username
+            /* don't want to create user automatically during data initialization
+            TODO: remove user from settings area now that a seaparate user area exists
             try {
                 const username = await window.config.getUsername();
                 var firstName;
@@ -109,15 +111,17 @@ export class InitializationInteractor implements IInputBoundary {
                 }}));
                 return response;
             }
+            */
 
             //return the response based on the outcomes of initialization
-            if(publicCompaniesResponse.response.ok && userResponse.response.ok) {
+            // removed userReponse if(publicCompaniesResponse.response.ok && userResponse.response.ok) {
+            if(publicCompaniesResponse.response.ok) {
                 response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
             } else {
                 response = new JSONResponse(JSON.stringify({
                     status: 400, 
                     data: {
-                        error: `The app data table initialization failed. Company lookup data loaded: ${publicCompaniesResponse.response.ok}. User data loaded: ${userResponse.response.ok}.`
+                        error: `The app data table initialization failed. Company lookup data loaded: ${publicCompaniesResponse.response.ok}.`
                 }}));
             }
 

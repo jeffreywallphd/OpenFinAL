@@ -123,7 +123,7 @@ function App(props) {
             } else {
                 //tables may have been deleted and need to be recreated
                 const configurationResponse = await interactor.post(requestObj,"createConfig");
-                
+                window.console.log(configurationResponse);
                 if(configurationResponse.response.ok) {
                     return await executeDataInitialization();
                 } else {

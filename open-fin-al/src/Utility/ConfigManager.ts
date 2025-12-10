@@ -69,6 +69,8 @@ class ConfigUpdater {
                 const result = await window.config.save(defaultConfig);
                 return result;
             }
+
+            return true;
         } catch(e) {
             console.error("Unable to save the configuration file: ", e);
             return false;
