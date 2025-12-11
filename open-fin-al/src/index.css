@@ -322,6 +322,23 @@ code {
   /*position: static;*/
 }
 
+.pageHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0px 20px;
+}
+
+.pageHeader h2 {
+  margin: 0; 
+  align-items: center;
+}
+
+.pageHeader .toolset {
+  display: flex;
+  align-items: center;
+}
+
 .page.only {
   height: 100vh;
    overflow-y: auto;
@@ -362,10 +379,15 @@ code {
 .slideshowWindow {
   height: 500px;
   width: auto;
-  margin: 30px;
-  padding: 20px;
-  border: 25px solid var(--secondary-color);
+  margin: 10px;
+  padding: 10px;
   background-color: var(--background-color);
+}
+
+.pptx-preview-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
 }
 
 .slide {
@@ -2214,18 +2236,15 @@ nav ul li a:hover {
 /* Chatbot and Toggle Icon*/
 
 .chatBotToggle {
-  position: relative;
-  height: 0;
+  padding: 0px; 
+  margin: 0px;
 }
 
 .circle {
-  width: 55px;
-  height: 55px;
+  width: 40px;
+  height: 40px;
   background-color: var(--accent-color); /* Blue color */
   border-radius: 50%;
-  position: fixed;
-  bottom: 20px; /* 20px from the bottom */
-  left: 95%; /* Position the circle 95% from the left of the screen */
   transform: translateX(-50%); /* Center the circle horizontally */
   cursor: pointer;
   transition: background-color 0.3s;
@@ -2240,8 +2259,8 @@ nav ul li a:hover {
 }
 
 .chatbotIcon {
-  width: 30px; /* Image size inside the circle */
-  height: 30px; /* Image size inside the circle */
+  width: 20px; /* Image size inside the circle */
+  height: 20px; /* Image size inside the circle */
   object-fit: cover; /* Ensures the image fits within the circle without distortion */
   filter: invert(1);
 }
@@ -3101,6 +3120,7 @@ body.dark-mode .pin-login-error {
   padding: 8px;
   border-radius: 4px;
   transition: background-color 0.2s ease;
+  margin: 20px 0px 0px 20px;
 }
 
 .top-header .HamburgerMenu:hover {
@@ -3108,14 +3128,12 @@ body.dark-mode .pin-login-error {
 }
 
 /* Adjust main content for header */
-.content.with-header {
-  padding-top: 60px;
-}
+.content.with-header {}
 
 .sidebar {
-  top: 60px;
-  height: calc(100vh - 60px);
-  padding-top: 40px;
+  /*top: 60px;*/
+  /*height: calc(100vh - 60px);*/
+  height: 100vh;
 }
 
 /* User Bubble Menu Styles */

@@ -11,6 +11,7 @@ import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
+import { HeaderContext } from "./App/LoadedLayout";
 
 import { PieChart, Pie, Sector, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
 
@@ -68,6 +69,33 @@ const renderActiveShape = (props) => {
 };
 
 class Portfolio extends Component {
+    static contextType = HeaderContext;
+    
+    async componentDidMount() {
+        window.console.log("Portfolio context in componentDidMount:", this.context);
+        const { setHeader } = this.context || {};
+        
+        if (setHeader) {
+            setHeader({
+                title: "Portfolio",
+                icon: "pie_chart",
+            });
+        }
+        
+        await this.fetchPortfolios();
+        const cashId = await this.getCashId();
+        
+        // Only fetch portfolio data if a portfolio is selected
+        if(this.state.currentPortfolio) {
+            await this.getPortfolioValue();
+            await this.getPortfolioChartData();
+
+            if(cashId) {
+                await this.getBuyingPower(cashId);
+            }
+        }
+    }
+
     formatter = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
@@ -352,21 +380,6 @@ class Portfolio extends Component {
         this.setState({ activeIndex: index });
     }
 
-    async componentDidMount() {
-        await this.fetchPortfolios();
-        const cashId = await this.getCashId();
-        
-        // Only fetch portfolio data if a portfolio is selected
-        if(this.state.currentPortfolio) {
-            await this.getPortfolioValue();
-            await this.getPortfolioChartData();
-
-            if(cashId) {
-                await this.getBuyingPower(cashId);
-            }
-        }
-    }
-
     async sleep(ms) { 
        return new Promise(resolve => setTimeout(resolve, ms));
     }
@@ -374,7 +387,6 @@ class Portfolio extends Component {
     render() {
         return (
             <div className="page portfolioPage">
-                <h2><span className="material-icons">pie_chart</span> Portfolio</h2>
                 <div className="portfolio-controls">
                     <select value={this.state.currentPortfolio || ""}
                         onChange={(e) => this.changeCurrentPortfolio(e.target.value, e.target.selectedOptions[0].dataset.name)

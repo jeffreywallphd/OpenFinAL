@@ -9,17 +9,16 @@ import {
     useLocation
 } from "react-router-dom";
 
-import { SlideshowWindow } from "./Slideshow/SlideshowWindow";
+import { PowerPoint } from "./Slideshow/PowerPoint";
 
 export function LearningModulePage(props) {
     const location = useLocation();
 
-    const currentPageIndex = location.state.currentPageIndex;
-    const nextPageIndex = location.state.currentPageIndex + 1;
-
-    return (
+    const fileName = location.state.fileName;
+    window.console.log(location.state);
+    return ( 
         <div className="page">
-            <SlideshowWindow pages={location.state.pages} currentPageIndex={currentPageIndex}/>
+             <PowerPoint pptxPath={fileName}/>
         </div>
     );
 }

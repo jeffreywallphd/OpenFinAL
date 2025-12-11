@@ -71,9 +71,9 @@ class Chatbot extends Component {
                     </div>
                     <div className="chatBot">                        
                         <ul className="chatbox">
-                            {this.state.messages.map((msg, index) => (
-                                <li key={index} className={`chat ${msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
-                                    <p>{msg.content}</p>
+                            {this.state.messages && this.state.messages.map((msg, index) => (
+                                <li key={index} className={`chat ${msg && msg.role === "user" ? "chat-outgoing" : "chat-incoming"}`}>
+                                    <p>{msg ? msg.content : "No content was produced."}</p>
                                 </li>
                             ))}
                         </ul>

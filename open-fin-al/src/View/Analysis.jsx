@@ -5,11 +5,21 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 
-import React, { Component, useState, useRef} from "react";
+import React, { Component, useState, useRef, useEffect} from "react";
 import { Popover } from "react-tiny-popover";
+import { useHeader } from "./App/LoadedLayout";
 
 
 function Analysis(props) {
+    const { setHeader } = useHeader();
+    
+    useEffect(() => {
+        setHeader({
+        title: "Risk Analysis",
+        icon: "assessment", // Material icon name, or whatever you're using
+        });
+    }, [setHeader]);
+
     // Create references that will be used to take in user input
     const Revenue = useRef("Revenue");
     const CostOfRevenue = useRef("CostOfRevenue");
@@ -22,9 +32,7 @@ function Analysis(props) {
     const WANSOB = useRef("WANSOB");
     const SharePrice = useRef("SharePrice");
 
-
     const confInt = useRef("confInt");
-
 
     const largeCS = useRef("largeCS");
     const midCS = useRef("midCS");
@@ -371,9 +379,7 @@ function Analysis(props) {
    
     return (
             <div className="page riskPage">
-                <div className="riskTitleContainer">
-                    <h2 style={{margin: "0px"}}><span className="material-icons riskIcon">assessment</span> Risk Analysis</h2>
-                </div>
+
                 <div className='riskBody'>
                 <div className="riskContainer">
     

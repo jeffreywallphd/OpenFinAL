@@ -65,7 +65,6 @@ function App(props) {
 
     useEffect( () => {
         getDarkMode();
-        checkAuthenticationState();
     }, []);
 
     // Check if user is already authenticated from previous session
@@ -124,7 +123,7 @@ function App(props) {
             } else {
                 //tables may have been deleted and need to be recreated
                 const configurationResponse = await interactor.post(requestObj,"createConfig");
-                
+                window.console.log(configurationResponse);
                 if(configurationResponse.response.ok) {
                     return await executeDataInitialization();
                 } else {
@@ -132,6 +131,7 @@ function App(props) {
                 }
             }
         } catch(error) {
+            window.console.log(error);
             setPreparationError("Failed to initilize the software. Please contact the software administrator.");
             setLoading(true);
             return false;
@@ -150,6 +150,7 @@ function App(props) {
 
                 if(secureConnectionsValidated) {
                     setLoading(false);
+                    checkAuthenticationState();
                 } else {
                     const interactor = new InitializationInteractor();
                     const requestObj = new JSONRequest(`{}`);
@@ -194,24 +195,24 @@ function App(props) {
         checkIfFullyInitialized();
     }, []);
 
-    // If not authenticated, show authentication interface
-    if (!isAuthenticated) {
-        return <AuthContainer onAuthSuccess={handleAuthSuccess} />;
-    }
-
     return (
         configured ?
             (
                 loading ?
-                        <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
-                    :
-                        <DataContext.Provider value={value}>
-                            <AppLoaded 
-                                checkIfConfigured={checkIfFullyInitialized} 
-                                handleConfigured={handleConfigured}
-                                onLogout={handleLogout}
-                            />
-                        </DataContext.Provider>            
+                    <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
+                :
+                    (
+                        !isAuthenticated ?
+                            <AuthContainer onAuthSuccess={handleAuthSuccess}/>
+                        :
+                            <DataContext.Provider value={value}>
+                                <AppLoaded 
+                                    checkIfConfigured={checkIfFullyInitialized} 
+                                    handleConfigured={handleConfigured}
+                                    onLogout={handleLogout}
+                                />
+                            </DataContext.Provider>
+                    )                        
             )        
         : 
             <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>

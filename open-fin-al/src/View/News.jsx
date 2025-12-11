@@ -8,9 +8,20 @@ import React, { useContext, useEffect } from "react";
 import { NewsSearchBar } from "./News/SearchBar";
 import { NewsListing } from "./News/Listing";
 import { DataContext } from "./App";
+import { useHeader } from "./App/LoadedLayout";
+
 
 function NewsPage(props) {
     const { state, setState } = useContext(DataContext);
+
+    const { setHeader } = useHeader();
+    
+    useEffect(() => {
+        setHeader({
+        title: "Investment News",
+        icon: "article", 
+        });
+    }, [setHeader]);
     
     //ensure that the state changes
     useEffect(() => {
@@ -30,9 +41,7 @@ function NewsPage(props) {
     };
 
     return (
-        <div className="page">
-            <h2><span className="material-icons">article</span> Investment News </h2>
-            
+        <div className="page">            
             {state ?
             (
                 <>
