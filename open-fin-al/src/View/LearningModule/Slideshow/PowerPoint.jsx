@@ -12,14 +12,14 @@ function PowerPoint(props) {
     const navigate = useNavigate();
     const [isDisabled, setIsDisabled] = useState(false);
 
-    const containerRef = useRef(null);
+    const slideshowContainerRef = useRef(null);
     const viewerRef = useRef(null);
 
     const [currentSlide, setCurrentSlide] = useState(0);
     const [totalSlides, setTotalSlides] = useState(0);
 
+    const naturalSizeRef = useRef({ width: 0, height: 0 });
     const pptxPath = props.pptxPath;
-
     window.console.log(pptxPath);
      
     //navigate to the learn base page
@@ -31,14 +31,55 @@ function PowerPoint(props) {
     // Initialize pptx-preview
     // -----------------------------
     useEffect(() => {
-        if (!containerRef.current) return;
+        window.console.log(props.width, props.height);
+        if (!slideshowContainerRef.current) return;
+
         if (!viewerRef.current) {
-            viewerRef.current = initPptxPreview(containerRef.current, {
-                width: 900,
-                height: 506,
+            viewerRef.current = initPptxPreview(slideshowContainerRef.current, {
+                width: props.width,
+                height: props.height,
             });
+
+            naturalSizeRef.current = {
+                width: props.width,
+                height: props.height,
+            };
         }
     }, []);
+
+     useEffect(() => {
+        window.console.log(props.width, props.height);
+        /*const container = slideshowContainerRef.current;
+
+        // Grab *one* slide's inner content (canvas/svg/img)
+        const inner = container.querySelector(
+            ".pptx-preview-slide-wrapper > *"
+        );
+        if (!inner) return;*/
+
+        const { width: baseW, height: baseH } = naturalSizeRef.current;
+        if (!baseW || !baseH) return;
+
+        /*const rect = inner.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;*/
+
+        const containerWidth = props.width;
+        const containerHeight = props.height;
+
+        const scale = Math.min(
+            containerWidth / baseW,
+            containerHeight / baseH
+        );
+
+        window.console.log("Calculated scale:", scale);
+
+        // Expose scale as a CSS variable on the container
+        //container.style.setProperty("--pptx-scale", String(scale));
+        slideshowContainerRef.current.style.setProperty(
+            "--pptx-scale",
+            String(scale)
+        );
+    }, [props.width, props.height]);
 
     useEffect(() => {
         if (!viewerRef.current || !pptxPath) return;
@@ -59,8 +100,8 @@ function PowerPoint(props) {
                 
                 await viewerRef.current.preview(arrayBuffer);
 
-                if (containerRef.current) {
-                    const slides = containerRef.current.querySelectorAll(
+                if (slideshowContainerRef.current) {
+                    const slides = slideshowContainerRef.current.querySelectorAll(
                         ".pptx-preview-slide-wrapper"
                     );
                     setTotalSlides(slides.length);
@@ -77,9 +118,9 @@ function PowerPoint(props) {
     }, [pptxPath]);
 
     const showSlide = (index) => {
-        if (!containerRef.current) return;
+        if (!slideshowContainerRef.current) return;
 
-        const slides = containerRef.current.querySelectorAll(
+        const slides = slideshowContainerRef.current.querySelectorAll(
         ".pptx-preview-slide-wrapper"
         );
 
@@ -110,10 +151,10 @@ function PowerPoint(props) {
             <div className="slideshowWindow">
                 {/* pptx-preview will render into this div */}
                 <div
-                    ref={containerRef}
+                    ref={slideshowContainerRef}
                     style={{
-                        width: "900px",
-                        height: "506px",
+                        width: `${props.width || 900}px`,
+                        height: `${props.height|| 506}px`,
                         border: "1px solid #ccc",
                         overflow: "hidden",
                         backgroundColor: "#000", // optional

@@ -21,6 +21,7 @@
   --footer-height: 90px;
   --sidebar-width: 220px;
   --sidebar-footer-width: 190px;
+  --pptx-scale: 1;
 }
 
 body.dark-mode {
@@ -384,7 +385,18 @@ code {
   background-color: var(--background-color);
 }
 
+/* The slide wrapper */
+.pptx-preview-slide-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transform-origin: top left;       
+  transform: scale(var(--pptx-scale, 1));
+}
+
 .pptx-preview-wrapper {
+  width: 100% !important;
+  height: 100% !important;
   margin: 0 !important;
   padding: 0 !important;
   overflow: hidden !important;

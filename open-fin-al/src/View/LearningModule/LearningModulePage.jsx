@@ -10,6 +10,7 @@ import {
 } from "react-router-dom";
 
 import { PowerPoint } from "./Slideshow/PowerPoint";
+import { PowerPointComponent } from "../Component/Learn/PowerPointComponent";
 
 export function LearningModulePage(props) {
     const location = useLocation();
@@ -18,7 +19,7 @@ export function LearningModulePage(props) {
     window.console.log(location.state);
     return ( 
         <div className="page">
-             <PowerPoint pptxPath={fileName}/>
+             <PowerPointComponent pptxPath={fileName}/>
         </div>
     );
 }
