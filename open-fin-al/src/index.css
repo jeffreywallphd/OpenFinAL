@@ -385,21 +385,17 @@ code {
   background-color: var(--background-color);
 }
 
-/* The slide wrapper */
-.pptx-preview-slide-wrapper {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  transform-origin: top left;       
-  transform: scale(var(--pptx-scale, 1));
+.slideshowContainer {
+  margin: 0 !important;
+  padding: 0 !important;
+  position: relative;
+  overflow: hidden;
 }
 
 .pptx-preview-wrapper {
-  width: 100% !important;
-  height: 100% !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  overflow: hidden !important;
+  transform-origin: top left;       
+  transform: scale(var(--pptx-scale, 1));
+  overflow: hidden;
 }
 
 .slide {

@@ -49,8 +49,8 @@ function PowerPoint(props) {
 
      useEffect(() => {
         window.console.log(props.width, props.height);
-        /*const container = slideshowContainerRef.current;
-
+        const container = slideshowContainerRef.current;
+        /*
         // Grab *one* slide's inner content (canvas/svg/img)
         const inner = container.querySelector(
             ".pptx-preview-slide-wrapper > *"
@@ -79,6 +79,20 @@ function PowerPoint(props) {
             "--pptx-scale",
             String(scale)
         );
+
+        slideshowContainerRef.current.style.width = `${containerWidth}px`;
+        slideshowContainerRef.current.style.height = `${containerHeight}px`;
+        slideshowContainerRef.current.style.position = "relative";
+
+        const inner = container.querySelector(
+            ".pptx-preview-wrapper"
+        );
+        if (!inner) return;
+
+        inner.style.position = 'absolute';
+        inner.style.left = `0`;
+        inner.style.overflow = `hidden`;
+        
     }, [props.width, props.height]);
 
     useEffect(() => {
@@ -150,7 +164,7 @@ function PowerPoint(props) {
             {/* Fixed-Size Slide Window */}
             <div className="slideshowWindow">
                 {/* pptx-preview will render into this div */}
-                <div
+                <div className="slideshowContainer"
                     ref={slideshowContainerRef}
                     style={{
                         width: `${props.width || 900}px`,
