@@ -70,6 +70,8 @@ const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
+const neo4j = require('neo4j-driver');
+const { spawn } = require("child_process");
 //const yf = require("yahoo-finance2").default; //causing a module load error. Using code below to dynamically import yahoo-finance2
 
 let yf;
@@ -855,4 +857,142 @@ ipcMain.handle('sqlite-delete', async (event, args) => {
   const data = await sqliteRun(args["query"], args["parameters"]);
   return data;
 });
+
+//////////////////////////// Neo4j Section ////////////////////////////
+
+let neo4jProcess = null;
+
+function getNeo4jHome() {
+  return path.join(app.getPath('userData'), 'neo4j');
+}
+
+function getNeo4jBundle() {
+  const base = process.resourcesPath;
+
+  if(os.platform() === 'win32') {
+    return path.join(base, "neorj4-win");
+  }
+}
+
+function getNeo4jExecutable() {
+  const binPath = path.join(getNeo4jHome(), 'bin');
+
+  if(os.platform() === 'win32') {
+    return path.join(binPath, 'neo4j.bat');
+  }
+  return path.join(binPath, 'neo4j');
+}
+
+function verifyNeo4jInstall() {
+  if(!fs.existsSync(getNeo4jHome())) {
+    fs.cpSync(getNeo4jBundle(), getNeo4jHome(), { recursive: true });
+  }
+}
+
+function startNeo4jServer() {
+  if(neo4jProcess) {
+    return neo4jProcess;
+  }
+
+  verifyNeo4jInstall();
+
+  const neo4jHome = getNeo4jHome();
+  const neo4jBin = getNeo4jExecutable();
+
+  neo4jProcess = spawn(
+    neo4jBin, 
+    ['console'], 
+    { 
+      cwd: neo4jHome,
+      env: {
+        ...process.env,
+
+        // Lock Neo4j to localhost only
+        NEO4J_dbms_default_listen_address: "127.0.0.1",
+
+        // Bolt (used by neo4j-driver)
+        NEO4J_dbms_connector_bolt_enabled: "true",
+        NEO4J_dbms_connector_bolt_listen__address: "127.0.0.1:7687",
+
+        // HTTP UI (optional)
+        NEO4J_dbms_connector_http_enabled: "true",
+        NEO4J_dbms_connector_http_listen__address: "127.0.0.1:7474",
+
+        // Disable HTTPS unless you really need it
+        NEO4J_dbms_connector_https_enabled: "false",
+      },
+      stdio: "pipe", 
+    });
+
+  neo4jProcess.stdout.on('data', (data) => {
+    console.log(`Neo4j: ${data}`);
+  });
+
+  neo4jProcess.on("exit", (code) => {
+    console.log("Neo4j exited with code", code);
+    neo4jProcess = null;
+  });
+}
+
+async function stopNeo4jServer() {
+  if (neo4jProcess) {
+    await neo4jProcess.kill();
+    neo4jProcess = null;
+  }
+}
+
+async function getNeo4jDriver() {
+  if(!neo4jProcess) {
+    return null;
+  }
+
+  const driver = neo4j.driver(
+    'bolt://localhost:7687', 
+    neo4j.auth.basic('neo4j', 'password'), {
+      disableLosslessIntegers: true,
+  });
+  
+  return driver;
+}
+
+ipcMain.handle('neo4j-start', async (event, args) => {
+  try {
+    await startNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error starting Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-stop', async (event, args) => {
+  try {
+    await stopNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error stopping Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-restart', async (event, args) => {
+  try {
+    await stopNeo4jServer();
+    await startNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error stopping Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-core', (event, args) => {
+  return neo4j;
+});
+
+ipcMain.handle('neo4j-driver', async (event, args) => {
+  const neo4jDriver = await getNeo4jDriver();
+  return neo4jDriver;
+});
+
 
