@@ -1090,7 +1090,7 @@ function setNeo4jDriver() {
 
 const net = require("net");
 
-async function waitForTcpPort(host, port, timeoutMs = 30000) {
+async function waitForTcpPort(host, port, timeoutMs = 40000) {
   const start = Date.now();
 
   return new Promise((resolve, reject) => {
@@ -1227,20 +1227,54 @@ async function executeNeo4jQuery(mode, query, params) {
     neo4jReadyPromise = waitForNeo4jReady(30000);
   }
   await neo4jReadyPromise;
-  
-  let neo4jSession = openNeo4jSession(mode); 
 
-  let result;
-  if(params) {
-    result = await neo4jSession.run(query, params);
-    return result;
+  const neo4jSession = openNeo4jSession(mode); 
+  let result = null;
+
+  if(mode === "write") {
+    // allow write to run multiple queries as a transaction
+    const isMultipleQueries = Array.isArray(query);
+    const queries = [];
+
+    if(!isMultipleQueries) {
+      queries.push(query);
+    } else {
+      queries.push(...query);
+    }
+
+    try {
+       result = await neo4jSession.executeWrite(async (tx) => {
+        for (const query of queries) {
+          if(params) {
+            await tx.run(query, params)
+          } else {
+            await tx.run(query);
+          }
+        }
+        return true;
+      });
+    } catch(error) {
+      console.log(error);
+      return false;
+    } finally {
+      await closeNeo4jSession(neo4jSession);
+    }
   } else {
-    result = await neo4jSession.run(query);
+    // read can only read one query at a time
+    try {
+      if(params) {
+        result = await neo4jSession.run(query, params)
+      } else {
+        result = await neo4jSession.run(query);
+      }
+      return result;
+    } catch(error) {
+      console.log(error);
+      return false;
+    } finally {
+      await closeNeo4jSession(neo4jSession);
+    }
   }
-
-  await closeNeo4jSession(neo4jSession);
-  
-  return result;
 }
 
 ipcMain.handle('neo4j-start', async (event, args) => {

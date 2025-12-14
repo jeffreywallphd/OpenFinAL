@@ -210,7 +210,7 @@ function App(props) {
                     const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
                     
                     if(graphInitializedResponse.response.ok) {
-                        setStatusMessage("Graph initialized. Checking if systems is fully initialized...");
+                        setStatusMessage("Graph initialized. Checking if system is fully initialized...");
                         setSidecarLoading(false);
                         await checkIfFullyInitialized();
                         return true;
