@@ -19,7 +19,12 @@ export function AppPreparing(props) {
                         <p className="error">{props.preparationError}</p>
                     ) : (
                         <>
-                            <p>Downloading data resources...</p>
+                            {props.statusMessage ? 
+                                (
+                                    <p>{props.statusMessage}</p>
+                                ) : (
+                                    <p>Starting system resources...</p>
+                            )}
                             <p>This may take a few minutes</p>
                             <div className="loader"></div>
                         </>

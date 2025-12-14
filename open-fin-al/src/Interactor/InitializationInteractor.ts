@@ -12,6 +12,10 @@ import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompany
 import { SettingsInteractor } from "./SettingsInteractor";
 import { SQLiteAssetGateway } from "../Gateway/Data/SQLite/SQLiteAssetGateway";
 
+declare global {
+    interface Window { slideshow: any; }
+}
+
 export class InitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
@@ -22,7 +26,21 @@ export class InitializationInteractor implements IInputBoundary {
         const configManager = new ConfigUpdater();
         var configCreated;
 
-        if(action === "createConfig") {
+        if(action === "bundelSlideshows") {
+            try {
+                window.slideshow.verifyBundle();
+                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                return response;
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500, 
+                    data: {
+                        error: `An unknown erorr occurred while trying to bundel the slideshows.}`
+                }}));
+                
+                return response;
+            }
+        } else if(action === "createConfig") {
             try {
                 //create the SQLite database    
                 const gateway = new SQLiteTableCreationGateway();

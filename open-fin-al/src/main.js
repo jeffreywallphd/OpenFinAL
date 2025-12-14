@@ -1324,7 +1324,47 @@ ipcMain.handle('neo4j-execute', async(event, args) => {
   return results;
 });
 
+//////////////////////////// Slideshow Section ////////////////////////////
 
+function getSlideshowHome() {
+  return path.join(app.getPath('userData'), 'slideshows');
+}
 
+function getSlideshowBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  fullPath = path.join(base, "slideshows");  
+  return fullPath;
+}
+
+function verifySlideshowInstall() {
+  try {
+    if(!fs.existsSync(getSlideshowHome())) {
+      console.log("the slideshow directory doesn't exist ", getSlideshowHome(), getSlideshowBundle());
+      fs.cpSync(getSlideshowBundle(), getSlideshowHome(), { recursive: true });
+      console.log("copied slideshow bundle")
+    }
+    return true;
+  } catch(error) {
+    return false;
+  }
+}
+
+ipcMain.handle('slideshow-bundle', (event) => {
+  const results = verifySlideshowInstall();
+  return results;
+});
+
+ipcMain.handle('slideshow-path', (event, filename) => {
+  const slideshowPath = path.join(getSlideshowHome(), filename);
+  return slideshowPath;
+});
 
 

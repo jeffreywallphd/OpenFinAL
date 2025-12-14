@@ -118,14 +118,18 @@ function App(props) {
 
     const executeDataInitialization = async() => {
         try {
+            setStatusMessage("Checking if system data is initialized...");
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj,"initializeData");
+            const response = await interactor.post(requestObj,"initializeData"); 
+
+            let slideshowBundleReponse; 
 
             if(response.response.ok) {
                 setLoading(false);
                 return true;
             } else {
+                setStatusMessage("Retreiving data resources for system use...");
                 //tables may have been deleted and need to be recreated
                 const configurationResponse = await interactor.post(requestObj,"createConfig");
                 window.console.log(configurationResponse);
@@ -145,6 +149,7 @@ function App(props) {
 
     const checkIfFullyInitialized = async () => {
         try {
+            setStatusMessage("Checking if the system is ready to start...");
             //determine if application is fully configured and data initialized
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
@@ -154,19 +159,28 @@ function App(props) {
                 setConfigured(true);
 
                 if(secureConnectionsValidated) {
-                    setLoading(false);
                     checkAuthenticationState();
                 } else {
+                    setStatusMessage("Updating security certificates...");
                     const interactor = new InitializationInteractor();
                     const requestObj = new JSONRequest(`{}`);
                     const response = await interactor.post(requestObj,"refreshPinnedCertificates");
                     setSecureConnectionsValidated(true);
+                }
+
+                setStatusMessage("Verifying learning modules are bundled...");
+                const slideshowBundleReponse = await interactor.post(requestObj,"bundelSlideshows");
+
+                if(slideshowBundleReponse.response.ok) {
                     setLoading(false);
+                } else {
+                    throw new Error("The slideshow bundle did not configure properly");
                 }
 
                 return true;
             } else {
                 //check if the site is uninitialized but configured
+                setStatusMessage("Checking if the system is configured...");
                 const configurationResponse = await interactor.get(requestObj,"isConfigured");
 
                 if(configurationResponse.response.ok) {
@@ -183,6 +197,7 @@ function App(props) {
                         return false;
                     }
                 } else {
+                    setStatusMessage("Creating initial configuration...");
                     await interactor.post(requestObj,"createConfig");
                     setConfigured(false);
                     setLoading(true);
@@ -220,7 +235,6 @@ function App(props) {
                         const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
                         
                         if(graphInitializedResponse.response.ok) {
-                            setStatusMessage("Graph initialized. Checking if system is fully initialized...");
                             setSidecarLoading(false);
                             await checkIfFullyInitialized();
                             return true;
@@ -250,12 +264,10 @@ function App(props) {
             <AppSidecarPreparing handleLoading={setSidecarLoading} statusMessage={statusMessage} sidecarPreparationError={sidecarPreparationError}/>
         :
             configured ?
-                (
-                    loading ?
-                        <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
+                ( loading ?
+                        <AppPreparing handleLoading={handleLoading} statusMessage={statusMessage} preparationError={preparationError}/>
                     :
-                        (
-                            !isAuthenticated ?
+                        ( !isAuthenticated ?
                                 <AuthContainer onAuthSuccess={handleAuthSuccess}/>
                             :
                                 <DataContext.Provider value={value}>
