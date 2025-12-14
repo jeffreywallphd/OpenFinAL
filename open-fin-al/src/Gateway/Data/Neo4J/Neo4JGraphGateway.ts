@@ -1,6 +1,6 @@
-import {Record, Node} from "neo4j-driver";
+import neo4j, {Record, Node} from "neo4j-driver";
 import {IEntity} from "../../../Entity/IEntity";
-import {IKeylessDataGateway} from "../IKeylessDataGateway";
+import {ICredentialedDataGateway} from "../ICredentialedDataGateway";
 
 declare global {
     interface Window { 
@@ -8,9 +8,10 @@ declare global {
     }
 }
 
-export class Neo4JGraphGateway implements IKeylessDataGateway {
+export class Neo4JGraphGateway implements ICredentialedDataGateway {
+    user: string = "";
+    key: string = "";
     sourceName: string = "Neo4j Local Database";
-    driver: any = null;
 
     async connect(): Promise<boolean> {
         try {
@@ -37,29 +38,21 @@ export class Neo4JGraphGateway implements IKeylessDataGateway {
 
     async read(entity: IEntity, action: string): Promise<IEntity[]> {      
         const id:any = null;
-
-        const neo4j = window.neo4j.core();
-        
-        this.driver = await window.neo4j.driver();
-        const session = this.driver.session({
-            defaultAccessMode: neo4j.session.READ,
-        });
-
         try {
-            const result = await session.run(
+            const query = 
                 `
                 MATCH (u:User { id: $id })
                 RETURN u
-                `,
-                { id }
-            );
+                `
+            ;
 
-            // Extract nodes from records
+            const results = await window.neo4j.executeQuery(query, {id: id});
+            return results;
+        } catch (error) {
+            window.console.error("Error reading from Neo4j server:", error);
             return null;
-        } finally {
-            await session.close();
         }
-    }
+    } 
 
     update(entity: IEntity, action: string): Promise<number> {
         //at the moment, users will not be permitted to update graphs;

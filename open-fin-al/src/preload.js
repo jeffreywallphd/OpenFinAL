@@ -77,12 +77,12 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)
 });
 
-contextBridge.executeInMainWorld('neo4j', {
+contextBridge.exposeInMainWorld('neo4j', {
     start: async () => ipcRenderer.invoke('neo4j-start'),
     stop: async () => ipcRenderer.invoke('neo4j-stop'),
     restart: async () => ipcRenderer.invoke('neo4j-restart'),
-    driver: async() => ipcRenderer.invoke('neo4j-driver'),
-    core: () => ipcRenderer.invoke('neo4j-core'),
+    isConnected: async () => ipcRenderer.invoke('neo4j-is-connected'),
+    executeQuery: async (mode="read", query, params=null) => ipcRenderer.invoke('neo4j-execute', {mode, query, params})
 });
 
 /*
