@@ -176,21 +176,21 @@ export class Neo4JGraphCreationGateway implements INeo4JGraphGateway {
     async checkGraphExists(): Promise<Boolean> {
         try {
             const query = 
-                `
-                MATCH (n)
-                RETURN count(n) AS count
-                `
+                `MATCH (n)
+                RETURN count(n) AS count`
             ;
 
-            const result = window.neo4j.executeQuery("read", query);
-            const count = result.records[0].get("count").toNumber();
-
+            const result = await window.neo4j.executeQuery("read", query);
+            window.console.log(result);
+            const count = result.records[0].count;
+            window.console.log(count);
             if(count > 0) {
                 return true;
             } else {
                 return false;
             }
         } catch(error) {
+            window.console.log(error);
             return false;
         }
     }

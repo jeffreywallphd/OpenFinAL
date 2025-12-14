@@ -3,6 +3,7 @@ import {IRequestModel} from "../Gateway/Request/IRequestModel";
 import {IResponseModel} from "../Gateway/Response/IResponseModel";
 import {JSONResponse} from "../Gateway/Response/JSONResponse";
 import { Neo4JGraphCreationGateway } from "../Gateway/Data/Neo4J/Neo4JGraphCreationGateway";
+import { graph } from "neo4j-driver";
 
 export class SidecarInitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
@@ -68,6 +69,21 @@ export class SidecarInitializationInteractor implements IInputBoundary {
                         status: 404, 
                         data: {
                             error: `The graph is not connected.`
+                    }}));
+                    return response;
+                }
+
+                //return success if other tests passed
+                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
+                return response;
+            } else if(action==="isGraphInitialized") {
+                const graphExists = await graphGateway.checkGraphExists();
+                
+                if(!graphExists) {
+                    response = new JSONResponse(JSON.stringify({
+                        status: 404, 
+                        data: {
+                            error: `The graph doesn't exist.`
                     }}));
                     return response;
                 }

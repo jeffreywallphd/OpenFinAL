@@ -23,7 +23,7 @@ export function AppSidecarPreparing(props) {
                                 (
                                     <p>{props.statusMessage}</p>
                                 ) : (
-                                    <p>Loading system resources...</p>
+                                    <p>Starting system resources...</p>
                             )}
                             <p>This may take a few minutes</p>
                             <div className="loader"></div>

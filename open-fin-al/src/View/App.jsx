@@ -201,21 +201,32 @@ function App(props) {
             const interactor = new SidecarInitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
             const response = await interactor.post(requestObj,"loadSidecar");
+            
             setStatusMessage("Starting the graph database...");
 
             if(response.response.ok) {
                 const loadedResponse = await interactor.get(requestObj,"isLoaded");
                 if(loadedResponse.response.ok) {
-                    setStatusMessage("Graph database started. Initializing knowledge graph...");
-                    const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
+                    setStatusMessage("Graph database started. Checking if knowledge graph is set up...");
+                    const graphExistsResponse = await interactor.get(requestObj,"isGraphInitialized");
                     
-                    if(graphInitializedResponse.response.ok) {
-                        setStatusMessage("Graph initialized. Checking if system is fully initialized...");
+                    if(graphExistsResponse.response.ok) {
+                        setStatusMessage("Knowledge graph is set up. Checking if system is fully initialized...");
                         setSidecarLoading(false);
                         await checkIfFullyInitialized();
-                        return true;
+                        return true;    
                     } else {
-                        throw new Error();
+                        setStatusMessage("Graph database started. Initializing knowledge graph...");
+                        const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
+                        
+                        if(graphInitializedResponse.response.ok) {
+                            setStatusMessage("Graph initialized. Checking if system is fully initialized...");
+                            setSidecarLoading(false);
+                            await checkIfFullyInitialized();
+                            return true;
+                        } else {
+                            throw new Error();
+                        }
                     }
                 } else {
                     throw new Error();

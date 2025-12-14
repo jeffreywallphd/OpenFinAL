@@ -1267,7 +1267,13 @@ async function executeNeo4jQuery(mode, query, params) {
       } else {
         result = await neo4jSession.run(query);
       }
-      return result;
+
+      return {
+        records: result.records.map(r => r.toObject()),
+        summary: {
+          counters: result.summary.counters.updates(),
+        },
+      };
     } catch(error) {
       console.log(error);
       return false;
