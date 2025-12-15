@@ -18,7 +18,7 @@ import { DataContext } from "../App";
 import { AppLoadedLayout } from "./LoadedLayout"
 import Home from "../Home";
 import Portfolio from "../Portfolio";
-import { Analysis } from "../Analysis";
+import RiskAnalysis from "../RiskAnalysis";
 import BuyReport from "../BuyReport";
 import { TimeSeries } from "../Stock";
 import { News } from "../News";
@@ -114,7 +114,7 @@ class AppLoaded extends Component {
                   <li><NavLink to="/"><span className="material-icons">dashboard</span> Dashboard</NavLink></li>
                   <li><NavLink to="/portfolio"><span className="material-icons">pie_chart</span> Portfolio</NavLink></li>
                   <li><NavLink to="/price"><span className="material-icons">attach_money</span> Trade</NavLink></li>
-                  <li><NavLink to="/analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
+                  <li><NavLink to="/risk-analysis"><span className="material-icons">assessment</span> Risk Analysis</NavLink></li>
                   <li><NavLink to="/StockAnalysis"><span className="material-icons">compare</span> Stock Comparison</NavLink></li>
                   <li><NavLink to="/forecast"><span className="material-icons">timeline</span> Forecast</NavLink></li>
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
@@ -130,7 +130,7 @@ class AppLoaded extends Component {
                 <Route element={<AppLoadedLayout  onLogout={this.props.onLogout}/>}>
                   <Route path="/" element={<Home />} />
                   <Route path="/portfolio" element={<Portfolio />} />
-                  <Route path="/analysis" element={<Analysis />} />
+                  <Route path="/risk-analysis" element={<RiskAnalysis />} />
                   <Route path="/buy-report" element={<BuyReport />} />
                   <Route path="/price" element={<TimeSeries />} />
                   <Route path="/news" element={<News />} />
