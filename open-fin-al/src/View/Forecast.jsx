@@ -8,8 +8,23 @@ import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
 import binaryHeader from "../Asset/Image/binary_header.jpg";
 import aiHeader from "../Asset/Image/ai_header.jpg";
+import { HeaderContext } from "./App/LoadedLayout";
 
 class Forecast extends Component {
+    static contextType = HeaderContext;
+        
+    async componentDidMount() {
+        window.console.log("Portfolio context in componentDidMount:", this.context);
+        const { setHeader } = this.context || {};
+        
+        if (setHeader) {
+            setHeader({
+                title: "Forecast",
+                icon: "timeline",
+            });
+        }
+    }
+
     dataFeatureCardStyle = {
       backgroundImage: `url(${binaryHeader})`
     }
@@ -21,7 +36,6 @@ class Forecast extends Component {
     render() {
         return (
             <div className="page">
-                <h2><span className="material-icons">timeline</span> Forecast</h2>
                 <p>
                     There are many different models that can be used to forecast movements in the market.
                 </p>

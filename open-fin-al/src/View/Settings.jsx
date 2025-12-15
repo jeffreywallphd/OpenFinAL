@@ -4,8 +4,18 @@ import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { SettingsRow } from "./Settings/Row";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
+import { useHeader } from "./App/LoadedLayout";
 
 function Settings(props) {
+    const { setHeader } = useHeader();
+          
+    useEffect(() => {
+        setHeader({
+        title: "Settings",
+        icon: "settings", 
+        });
+    }, [setHeader]);
+
     const [sections, setSections] = useState([]);
     const [settings, setSettings] = useState({});
     const [message, setMessage] = useState(null);
@@ -139,7 +149,6 @@ function Settings(props) {
     return (
         <div className={`page ${props.initialConfiguration ? 'only' : ''}`}>
             <header>
-                <h2 className="settings-title"><span className="material-icons">settings</span> Settings</h2>
                 {/* Application Style Card */}
                 <div className="settings-card">
                     <div className="style-options">

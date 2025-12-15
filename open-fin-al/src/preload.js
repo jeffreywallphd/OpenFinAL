@@ -7,8 +7,14 @@ contextBridge.exposeInMainWorld('electron', {
   ipcRenderer: require('electron').ipcRenderer,
 });
 
+contextBridge.exposeInMainWorld('electronApp', {
+    getUserPath: () => ipcRenderer.invoke('get-user-path'),
+    getAssetPath: async () => ipcRenderer.invoke('get-asset-path')    
+});
+
 contextBridge.exposeInMainWorld('file', {
     read: (file) => ipcRenderer.invoke('read-file', file),
+    readBinary: (file) => ipcRenderer.invoke('read-binary', file),
 });
 
 contextBridge.exposeInMainWorld('exApi', {
@@ -46,6 +52,10 @@ contextBridge.exposeInMainWorld('vault', {
     getSecret: (key) => ipcRenderer.invoke('get-secret', key),
     setSecret: (key, value) => ipcRenderer.invoke('set-secret', key, value),
     refreshCert: (hostname) => ipcRenderer.invoke('refresh-cert', hostname)
+});
+
+contextBridge.exposeInMainWorld('transformers', {
+    runTextGeneration: (model, prompt, params) => ipcRenderer.invoke('run-transformers', model, prompt, params)
 });
 
 contextBridge.exposeInMainWorld('config', {

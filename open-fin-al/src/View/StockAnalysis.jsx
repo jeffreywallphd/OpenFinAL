@@ -3,12 +3,22 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import '../index.css';
 import { StockAnalysisSearchBar } from './StockAnalysisSearchBar';
 import { DataContext } from "./App";
+import { useHeader } from "./App/LoadedLayout";
 
 import { saveAs } from 'file-saver';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from "recharts";
 
 const StockAnalysis = () => {
   const { state, setState } = useContext(DataContext);
+
+  const { setHeader } = useHeader();
+      
+  useEffect(() => {
+      setHeader({
+      title: "Stock Comparison",
+      icon: "compare", // Material icon name, or whatever you're using
+      });
+  }, [setHeader]);
   
   const selectedMetrics = {
     "50DayMovingAverage": {
@@ -179,7 +189,6 @@ const StockAnalysis = () => {
 
   return (
     <div className="page">
-      <h2><span className="material-icons">compare</span> Stock Comparison</h2>
       <div>
           <StockAnalysisSearchBar state={state} handleDataChange={handleDataChange} />
       </div>

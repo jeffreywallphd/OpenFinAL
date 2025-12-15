@@ -160,9 +160,9 @@ app.whenReady().then(() => {
           `default-src 'self';
           script-src 'self' 'unsafe-eval'; 
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
-          img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com; 
+          img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com https://www.marketbeat.com; 
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
-          connect-src 'self' http://localhost:3001;`
+          connect-src 'self' http://localhost:3001 https://cdn.jsdelivr.net https://huggingface.co https://*.huggingface.co https://*.hf.co https://*.xethub.hf.co https://cdn-lfs.huggingface.co;`
         ],
       },
     });
@@ -465,6 +465,42 @@ ipcMain.handle('set-secret', async (event, key, value) => {
   return await setSecret(key, value);
 });
 
+//////////////////////////// Transformers.js Section ////////////////////////////
+
+const { pipeline, env } = require('@xenova/transformers');
+
+env.allowLocalModels = false;
+env.localModelPath = '/models'; // resolves to http://localhost:3000/models
+
+let localModel = null;
+
+async function getPipeline(model) {
+  if (model !== localModel) {
+    localModel = pipeline("text-generation", model);
+  }
+
+  return localModel;
+}
+
+ipcMain.handle('run-transformers', async (event, model, prompt, params) => {
+  if (!model) {
+    throw new Error('An model must be specified');
+  }
+  if (!prompt) {
+    throw new Error('A prompt must be provided');
+  }
+
+  try {
+    const pipe = await getPipeline(model);
+    const output = await pipe(prompt, params);
+    return output;
+  } catch (err) {
+    // Re-throw so renderer sees a rejected promise
+    throw err;
+  }
+});
+
+
 //////////////////////////// Yahoo Finance Section ////////////////////////////
 async function yahooChart(ticker, options) {
  return await yf.chart(ticker, options);
@@ -495,6 +531,28 @@ ipcMain.handle('yahoo-historical', async (event, ticker, options) => {
 //use fs to save config files user userData folder
 const configFileName = 'default.config.json';
 const configPath = path.join(app.getPath('userData'), configFileName);
+
+function getAppPath() {
+  return app.getAppPath('userData');
+}
+
+function getAssetPath() {
+  const isDev = !app.isPackaged;
+  const assetPath = isDev
+    ? path.join(__dirname, '../renderer/Asset/Slideshows')
+    : path.join(process.resourcesPath, 'Asset/Slideshows');
+
+  return assetPath;
+}
+
+ipcMain.handle('get-user-path', (event) => {
+  return getAppPath();
+});
+
+ipcMain.handle('get-asset-path', (event) => {
+  return getAssetPath();
+});
+
 
 function saveConfig(config) {
   try {
@@ -568,6 +626,7 @@ ipcMain.handle('puppeteer:get-page-text', async (event, url) => {
 
 //////////////////////////// File Management Section ////////////////////////////
 
+// UTF-8 read
 async function readFromFile(file) {
   return new Promise((resolve, reject) => {
     fs.readFile(file, 'utf8', (err, data) => {
@@ -585,6 +644,23 @@ ipcMain.handle('read-file', async (event, file) => {
   return data;
 });
 
+// Binary-safe read (no encoding argument)
+async function readFromFileBinary(file) {
+  return new Promise((resolve, reject) => {
+    fs.readFile(file, (err, data) => {   //returns a Buffer
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data); // Buffer
+      }
+    });
+  });
+}
+
+ipcMain.handle('read-binary', async (_event, file) => {
+  const data = await readFromFileBinary(file); // Buffer
+  return data; 
+});
 
 //////////////////////////// Database Section ////////////////////////////
 
@@ -613,10 +689,10 @@ const getDB = async () => {
     });
 
     // Also initialize better-sqlite3 for migrations
-    betterDb = new Database(dbPath);
+    //betterDb = new Database(dbPath);
     
     // Run migrations
-    await runMigrations();
+    //await runMigrations();
 
     return true;
   } catch (error) {
@@ -770,6 +846,7 @@ ipcMain.handle('sqlite-insert', async (event, args) => {
 });
 
 ipcMain.handle('sqlite-update', async (event, args) => {
+  console.log("Executing query:", args["query"], "with parameters:", args["parameters"]);
   const data = await sqliteRun(args["query"], args["parameters"]);
   return data;
 });

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+
+{% block title %} LMForge: Add Documents to Your Dataset {% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container mt-4">
+    <h1>Dataset Workflow</h1>
+    <div>
+        <p>Add new documents (ex. PDFs, websites, plain text, etc.) to include in your dataset. Once all of the desired
+            documents are uploaded, select those you wish to include in the dataset and move to the next step.</p>
+    </div>
+
+    {% if messages %}
+    <div class="alert alert-warning alert-dismissible fade show">
+        <ul class="mb-0">
+            {% for message in messages %}
+            <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <h2>Processed Documents</h2>
+    <div class="row">
+        <div class="col-2">
+            <a href="{% url 'document-processor' %}" class="button success">+ New Document</a>
+        </div>
+        <div class="col-2">
+            <form method="POST" action="{% url 'delete_document_mul' %}" id="deleteForm">
+                {% csrf_token %}
+                <a type="button" class="btn btn-danger" onclick="submitDeleteForm()">Delete Selected</a>
+            </form>
+        </div>
+    </div>
+    <form id="documentSelectionForm">
+        {% csrf_token %}
+        {% include "document_list.html" %}
+    </form>
+
+    <div class="row">
+        <div class="col-2">
+            <form method="POST" action="{% url 'document_detail' %}" id="process_selected">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-success mt-3" style="margin-bottom: 1vh;"
+                    onclick="ProcessSelected()">
+                    Proceed with Selected
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination">
+            {% if documents.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page=1">First</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ documents.previous_page_number }}">Previous</a>
+            </li>
+            {% endif %}
+
+            <li class="page-item disabled">
+                <span class="page-link">Page {{ documents.number }} of {{ documents.paginator.num_pages }}</span>
+            </li>
+
+            {% if documents.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ documents.next_page_number }}">Next</a>
+            </li>
+            <li class="page-item">
+                <a class="page-link" href="?page={{ documents.paginator.num_pages }}">Last</a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+
+
+</div>
+
+
+<!-- Hidden delete form outside the main form -->
+<form id="deleteForm" method="POST" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="redirect" value="dataset-workflow">
+</form>
+
+<!-- JavaScript for handling delete action -->
+<script>
+    function deleteDocument(documentId) {
+        if (confirm("Are you sure you want to delete this document?")) {
+            var form = document.getElementById("deleteForm");
+            form.action = "{% url 'delete_document' 0 'redirect_url' %}".replace("0", documentId).replace("redirect_url", encodeURIComponent('dataset-workflow'));
+            form.submit();
+        }
+    }
+</script>
+
+<script>
+    function submitDeleteForm() {
+        let selectionForm = document.getElementById('documentSelectionForm');
+        let deleteForm = document.getElementById('deleteForm');
+
+        // Copy selected checkboxes into delete form
+        let checkboxes = selectionForm.querySelectorAll('input[name="selected_documents"]:checked');
+        checkboxes.forEach(checkbox => {
+            let hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_documents';
+            hiddenInput.value = checkbox.value;
+            deleteForm.appendChild(hiddenInput);
+        });
+
+        // Submit delete form
+        deleteForm.submit();
+    }
+</script>
+
+<script>
+    function ProcessSelected() {
+        let selectionForm = document.getElementById('documentSelectionForm');
+        let process_selected = document.getElementById('process_selected');
+
+        // Copy selected checkboxes into delete form
+        let checkboxes = selectionForm.querySelectorAll('input[name="selected_documents"]:checked');
+        
+        checkboxes.forEach(checkbox => {
+            let hiddenInput = document.createElement('input');
+            hiddenInput.type = 'hidden';
+            hiddenInput.name = 'selected_documents';
+            hiddenInput.value = checkbox.value;
+            process_selected.appendChild(hiddenInput);
+        });
+
+        // Submit delete form
+        process_selected.submit();
+    }
+</script>
+{% endblock %}

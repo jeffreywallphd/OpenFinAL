@@ -10,8 +10,18 @@ import {
     useLocation
 } from "react-router-dom";
 import { FaSearch } from "react-icons/fa";
+import { useHeader } from "./App/LoadedLayout";
 
 export function Learn() {
+    const { setHeader } = useHeader();
+          
+    useEffect(() => {
+        setHeader({
+        title: "Learning Modules",
+        icon: "school", // Material icon name, or whatever you're using
+        });
+    }, [setHeader]);
+
     const location = useLocation();
     const [state, setState] = useState({
         modules: null,
@@ -65,6 +75,7 @@ export function Learn() {
             query += " LIMIT ?"
             const limit = 25;
             inputData.push(limit);
+            window.console.log(query);
             await window.database.SQLiteSelectData({ query, inputData }).then((data) => {
                 setState({
                     modules: data,
@@ -77,9 +88,10 @@ export function Learn() {
         }
     };
 
+    window.console.log(window.electronApp.getAssetPath());
+
     return (
         <div className="page">
-            <h2><span className="material-icons">school</span> Financial Learning Modules</h2>
             <form onSubmit={async (e) => {
                 e.preventDefault();
                 await selectData();
@@ -115,6 +127,7 @@ export function Learn() {
                             description: module.description,
                             timeEstimate: module.timeEstimate,
                             dateCreated: module.dateCreated,
+                            fileName: module.fileName,
                             pages: null}}>View Module</NavLink>
                     </div>)))
                 : state.isLoading === true ? 

@@ -1,62 +1,72 @@
-# Documentation — Table of Contents
+# Documentation — [Table of Contents](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/tableofcontents.md)
 
-## 1. Code-Related
+## [1. Code-Related](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related)
 
-### 1.1 Front-End
-- Chatbot Interface 
-- Survey Design and Implementation
-- UI/UX Notes and Components
+### [1.1 Front-End](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/frontend)
+- [Dark Mode](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/frontend/darkmode)
+- [Style_Guide](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/frontend)
 
-### 1.2 Back-End
-- ERD (Entity Relationship Diagrams)
-- API Design and Data Flow
-- Integration Notes (Chatbot, Database etc)
+### [1.2 Back-End](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/backend)
+- [ERDS (Entity Relationship Diagrams)](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/backend/erds)
+- [Chatbot](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/backend/chatbot)
+- [Libraries](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/backend/libraries)
 
-### 1.3 GitHub Management
-- Version Control Practices
-- Branching Strategy
-- Commit and Pull Request Guidelines
+### [1.3 Version Control](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/versioncontrol)
+- [Version Control Breakdown](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/code_related/versioncontrol/breakdown/General%20VC%20Breakdown.md)
+- [General Version Control Diagram](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/code_related/versioncontrol/diagrams/PNG%20General%20Version%20Control%20Diagram%20(2).png)
+- [Branch Management](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/versioncontrol/branches)
 
-### 1.4 Development Guides
-- Setup & Installation
-- Coding Standards
-- Other Guides
+### [1.4 Guides](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides)
+- [API](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/api)
+- [Coding Practices](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/codingpractices)
+- [Git](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/git)
+- [Graph Database](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/graphdatabase)
+- [LLMS](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/llms)
+- [Pull Requests](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/code_related/guides/pullrequests)
 
 ---
 
-## 2. Non-Technical
+## [2. Non-Technical](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical)
 
-### 2.1 Current View
-- Visual of Current Product
-- Video Walkthrough
+### [2.1 Current View](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/current%20view)
+- [Visuals of Current Product](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/current%20view/screenshots)
+- [Video Walkthrough](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/current%20view/videowalkthrough)
+- [Important Backend Notes](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/current%20view/backendnotes)
 
-### 2.2 Style Guide
-- [Style guide](https://github.com/jeffreywallphd/OpenFinAL/blob/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/documentation/design/style_guide.md)
+### [2.2 Documentation Key](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/documentation%20key)
+- [Documentation File Guide](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/documentation%20key/documentation_guide.md)
 
-### 2.3 Project Management
-- Product Roadmap
-- Business Infrastructure Plan
-- PI (Program Increment) Plan
+### [2.3 Style Guide](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/style%20guide)
+- [Style guide](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/style%20guide/style_guide.md)
 
-### 2.4 Past Documentation
+### [2.4 Project Management](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management)
+- [Product Roadmap](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management/product%20roadmap)
+- [Business Infrastructure Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management/businessplan)
+- [PI (Program Increment) Plan](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management/product%20roadmap)
+- [SCRUM Ceremonies](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project%20management/scrum_ceremonies)
 
-#### 2.4.1 2023
-- Fall 2023
-- Spring 2023
+### [2.5 Project Startup](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/non_technical/project_startup)
+-[Talent Assessment Template](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/TalentAssessmentTemplate.xlsx)
+-[Project Charter Template](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/ProjectCharterTemplate.docx)
+-[Benchmarking Matrix](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/BenchmarkingMatrix.xlsx)
+-[RACI Matrix](https://github.com/jeffreywallphd/OpenFinAL/blob/main/documentation/non_technical/project_startup/RACI_Matrix.xlsx)
 
-#### 2.4.2 2024
-- Fall 2024
-- Spring 2024
 
-#### 2.4.3 2025
-- [Fall 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025)
-  - [Team 1 (AI Chatbot)](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025/Team%201)
-  - [Team 2 (Adaptive Learning)](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025/Team%202)
-  - [Team 3 (Risk Management)](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025/Team%203)
-  - [Team 4 (Financial Streamlining)](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025/Team%204)
-  - [Team 5 (10k/10q)](https://github.com/jeffreywallphd/OpenFinAL/tree/75ad7fab7bce92f724a23e0d0e39e8212037c8c8/fall2025/Team%205)
-- Spring 2025
+## [3. Past Documentation](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation)
 
-#### 2.4.4 2026
-- Fall 2026
-- Spring 2026
+### [3.1 2023](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2023)
+- [Spring 2023](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2023/Spring%202023)
+
+### [3.2 2024](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2024)
+- [Fall 2024](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2024/Fall%202024)
+  - [BA5200](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2024/Fall%202024/BA5200)
+  - [MIS4000](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2024/Fall%202024/MIS4000)
+
+### [3.3 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2025)
+- [Fall 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2025/Fall%202025)
+ 
+- [Spring 2025](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2025/Spring%202025)
+
+### [3.4 2026](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2026)
+- [Fall 2026](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2026/Fall%202026)
+- [Spring 2026](https://github.com/jeffreywallphd/OpenFinAL/tree/main/documentation/past_documentation/2026/Spring%202026)

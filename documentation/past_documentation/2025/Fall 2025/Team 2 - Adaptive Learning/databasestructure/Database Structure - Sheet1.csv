@@ -1,0 +1,38 @@
+,,,,,,,,,
+,Node,Properties,,,,,,,Other Possibilities?
+,Financial Concept,Name,Knowledge Rating - user's proficiency?,,,,,,category
+,Topic,,,,,,,,
+,User,ID,First Name,Last Name,Email Address,Learning Status Score,Risk Score,,
+,Learning Module,Module Name,topic,difficulty,prerequisites,module type,,,
+,Stock,ticker,sector,volatility,,,,,Risk Score
+,Portfolio,Name,Value,Performance (?),Investment Amount,Stock Composition,,,
+,Knowledge Assessment,Knowledge rating,,,,,,,Timestamp?
+,Risk Assessment,Risk rating,,,,,,,Timestamp?
+,,,,,,,,,
+,Nodes,EDGES,,,,,,,
+,User - Portfolio,OWNS,,,,,,,
+,User - Financial Concept,DOESN'T UNDERSTAND,STRUGGLED WITH,FAMILIAR WITH,UNDERSTANDS,MASTERED,,,
+,User - Learning Module,HASN'T STARTED,STARTED,COMPLETED,,,,,
+,User - Stock,CLICKED ON,DOESN'T OWN,OWNS,,,,,
+,User - Knowledge Assesment,HASN'T STARTED,STARTED,COMPLETED,,,,,
+,User - Risk Assessment,HASN'T STARTED,STARTED,COMPLETED,,,,,
+,,,,,,,,,
+,Financial Concept - Financial Concept,RELATES TO,,,,,,,
+,Financial Concept - Stock,RELATES TO,,,,,,,
+,Financial Concept - Portfolio,RELATES TO,,,,,,,
+,,,,,,,,,
+,Learning Module - Financial Concept,RELATES TO,,,,,,,
+,Learning Module - Stock,RELATES TO,,,,,,,
+,Learning Module - Portfolio,RELATES TO,,,,,,,
+,Learning Module - Financial Concept,TEACHES,,,,,,,
+,Learning Module - User,RECOMMENDED,,,,,,,
+,,,,,,,,,
+,Portfolio - Stock,CONTAINS,,,,,,,
+,,,,,,,,,
+,Knowledge Assessment - Financial Concept,ASSESS UNDERSTANDING,,,,,,,
+,Knowledge Assessment - User,RATES,,,,,,,
+,,,,,,,,,
+,Risk Assessment - User,RATES,,,,,,,
+,Risk Assessment - Stock,RECCOMENDS,,,,,,,
+,Risk Assessment - Portfolio,RECCOMENDS,,,,,,,
+
