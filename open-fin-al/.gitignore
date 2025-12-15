@@ -14,6 +14,8 @@ package-lock.json
 /public
 /out
 /.webpack
+/open-fin-al/resources/neo_4j-win
+/open-fin-al/resources/jre-win
 
 #configuration
 /config

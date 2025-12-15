@@ -14,6 +14,8 @@
 /public
 /dist
 /.webpack
+/open-fin-al/resources/neo_4j-win
+/open-fin-al/resources/jre-win
 
 # misc
 .DS_Store
