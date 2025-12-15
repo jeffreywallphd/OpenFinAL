@@ -134,7 +134,7 @@ function Stock(props) {
 
             const reportResults10K = await secInteractor.get(req10K);
             const reportResults10Q = await secInteractor.get(req10Q);
-            
+            window.console.log(reportResults10K, reportResults10Q);
             if(reportResults10K && reportResults10Q) {
                 // Update the DataContext state to include reportLinks if they exist
                 setState((prevState) => ({

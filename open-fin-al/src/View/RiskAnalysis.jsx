@@ -6,7 +6,6 @@
 
 import React, { Component } from "react";
 import { PortfolioCreation } from "./Portfolio/Creation";
-import {UserInteractor} from "../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
@@ -93,6 +92,8 @@ class RiskAnalysis extends Component {
             if(cashId) {
                 await this.getBuyingPower(cashId);
             }
+
+            await this.fetchDailyHistoricalReturnsData();
         }
     }
 
@@ -122,6 +123,8 @@ class RiskAnalysis extends Component {
             portfolioValue: 0,
             assetData: [],
             chartData: [],
+            assetReturnsTimeSeries: {},
+            assetReturnsDates: [],
             buyingPower: 0,
             buyingPowerLoaded: false,
             activeIndex: 0,
@@ -130,7 +133,6 @@ class RiskAnalysis extends Component {
 
         //Bind methods for element events
         this.openModal = this.openModal.bind(this);
-        this.makeDeposit = this.makeDeposit.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
         this.onPieEnter = this.onPieEnter.bind(this);
     }
@@ -185,6 +187,73 @@ class RiskAnalysis extends Component {
         });
     }
 
+    async fetchDailyHistoricalReturnsData() {
+        if(!this.state.currentPortfolio || !this.state.assetData) {
+            return;
+        }
+
+        let dates = [];
+        const assetReturnTimeseries = {};
+
+        for(var asset of this.state.assetData) {
+            window.console.log(asset);
+            if(asset.type==="Stock") {
+                window.console.log(asset["symbol"]);
+                const interactor = new StockInteractor();
+                const request = new JSONRequest(JSON.stringify({
+                    request: {
+                        stock: {
+                            action: "interday",
+                            ticker: asset["symbol"],
+                            interval: "5Y"
+                        }
+                    }
+                }));
+
+                const response = await interactor.get(request);
+
+                if(response?.response?.ok) {
+                    let series = [];
+                    let recordDates = false;
+
+                    if(dates.length < response.response.results[0].data.length) {
+                        recordDates = true;
+                        dates = [];
+                    }
+
+                    for(var i in response.response.results[0].data) {
+                        var datum = response.response.results[0].data[i];
+                        var datumMinus1 = i > 0 ? response.response.results[0].data[i-1] : null;
+
+                        // don't keep item 0 because there is no t-1 data point for item 0
+                        if(recordDates && i > 0) {
+                            dates.push(datum.date);
+                        }
+
+                        if(i > 0) {
+                            let returnValue = this.calculateReturn(datum.price, datumMinus1.price);
+                            series.push(returnValue);
+                        }
+                    }
+                    
+                    assetReturnTimeseries[asset.symbol] = series;
+                }
+            }
+        }
+
+        window.console.log(assetReturnTimeseries);
+        window.console.log(dates);
+
+        this.setState({
+            assetReturnsTimeSeries: assetReturnTimeseries,
+            assetReturnsDates: dates
+        });
+    }
+
+    calculateReturn(priceT, priceTMinus1) {
+        return (priceT - priceTMinus1) / priceTMinus1;
+    }
+
     async changeCurrentPortfolio(portfolioId, portfolioName) {
         this.setState({currentPortfolio: portfolioId, portfolioName: portfolioName});
         await this.getBuyingPower(null, portfolioId);
@@ -207,40 +276,6 @@ class RiskAnalysis extends Component {
             return response.response.results[0].id;
         }
         return null;        
-    }
-
-    async makeDeposit() {
-        const interactor = new PortfolioTransactionInteractor();
-        const requestObj = new JSONRequest(JSON.stringify({
-            request: {
-                action: "deposit",
-                transaction: {
-                    portfolioId: this.state.currentPortfolio,
-                    type: "Deposit",
-                    debitEntry: {
-                        assetId: this.state.cashId,
-                        transactionId: -1,
-                        side: "debit",
-                        quantity: 1,
-                        price: this.state.depositAmount
-                    }
-                }
-            }
-        }));
-    
-        const response = await interactor.post(requestObj);
-
-        if(response?.response?.ok) {
-            this.setState({depositMessage: "Successfully deposited the funds!"});
-            this.sleep(2000);
-            this.setState({isModalOpen: false});
-            this.setState({depositMessage: null});
-            await this.getBuyingPower(this.state.cashId);
-            await this.getPortfolioValue();
-            await this.getPortfolioChartData();
-        } else {
-            this.setState({depositMessage: "The deposit failed. If the problem persists, please notify the software provider."});
-        }
     }
 
     async getBuyingPower(cashId=null, portfolioId=null) {
