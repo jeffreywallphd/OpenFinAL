@@ -647,49 +647,56 @@ class RiskAnalysis extends Component {
                                     </div>
                                 </div>
                             </div>
-                            <h3>Portfolio Volatility</h3>
+                            <h2>Portfolio Volatility</h2>
                             <div className="portfolio-overview">
                                 <div>
                                     <h3>1-Year Volatility</h3>
                                     <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.oneYearRisk.volAnnual)})</p>
+                                    <p className="portfolio-value">
+                                        {this.state.oneYearRisk?.volDaily
+                                            ? `${this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.oneYearRisk.volAnnual)}`
+                                            : "Calculating..."}
+                                    </p>
                                 </div>
                                 <div>
                                     <h3>2-Year Volatility</h3>
                                     <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.twoYearRisk.volAnnual)})</p>
+                                    <p className="portfolio-value">
+                                        {this.state.twoYearRisk?.volDaily
+                                            ? `${this.percentFormatter.format(this.state.twoYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.twoYearRisk.volAnnual)}`
+                                            : "Calculating..."}
+                                    </p>
                                 </div>
                                 <div>
                                     <h3>3-Year Volatility</h3>
                                     <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.threeYearRisk.volAnnual)})</p>
+                                    <p className="portfolio-value">
+                                        {this.state.threeYearRisk?.volDaily
+                                            ? `${this.percentFormatter.format(this.state.threeYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.threeYearRisk.volAnnual)}`
+                                            : "Calculating..."}
+                                    </p>
                                 </div>
                             </div>
                             <div>
-                                <h3>Contributions to Risk</h3>
+                                <h3>Two-year Contributions to Risk</h3>
                                 <div className="table-header">
                                     <div className="table-cell">Symbol</div>
                                     <div className="table-cell">Portfolio Weight</div>
-                                    <div className="table-cell">1-Year (MCR/Risk %)</div>
-                                    <div className="table-cell">2-Year (MCR/Risk %)</div>
-                                    <div className="table-cell">3-Year (MCR/Risk %)</div>
+                                    <div className="table-cell">MCR</div>
+                                    <div className="table-cell">Risk %</div>
                                 </div>
-                                {this.state.assetData ?
-                                    this.state.assetData.map((asset, index) => (
-                                         asset.type==="Stock" ?
-                                            <div className="table-row">
-                                                <div className="table-cell">{asset.symbol}</div>
-                                                <div className="table-cell">{this.percentFormatter.format(asset.currentValue/this.state.portfolioValue)}</div>
-                                                <div className="table-cell">(12/{this.percentFormatter.format(0.13)})</div>
-                                                <div className="table-cell">(12/{this.percentFormatter.format(0.13)})</div>
-                                                <div className="table-cell">(12/{this.percentFormatter.format(0.13)})</div>
-                                            </div>
-                                            : 
-                                            null
+                               
+                                {this.state.twoYearRisk?.rows ?
+                                    this.state.twoYearRisk.rows.map((asset, index) => (
+                                        <div className="table-row">
+                                            <div className="table-cell">{asset.ticker}</div>
+                                            <div className="table-cell">{this.percentFormatter.format(asset.weight)}</div>
+                                            <div className="table-cell">{this.percentFormatter.format(asset.mcr)}</div>
+                                            <div className="table-cell">{this.percentFormatter.format(asset.pctRc)}</div>
+                                        </div>
                                     )) :
                                     null
-                                }
-                                
+                                }    
                             </div>
                             </>
                         }
