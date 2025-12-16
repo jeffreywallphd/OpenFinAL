@@ -125,6 +125,9 @@ class RiskAnalysis extends Component {
             chartData: [],
             assetReturnsTimeSeries: {},
             assetReturnsDates: [],
+            oneYearRisk: {},
+            twoYearRisk: {},
+            threeYearRisk: {},
             buyingPower: 0,
             buyingPowerLoaded: false,
             activeIndex: 0,
@@ -244,14 +247,194 @@ class RiskAnalysis extends Component {
         window.console.log(assetReturnTimeseries);
         window.console.log(dates);
 
+        const df = this.returnsToDataFrame(assetReturnTimeseries, dates);
+        const weights = this.computeWeights(this.state.assetData, this.state.portfolioValue);
+
+        const oneYear = this.computeRiskBundle(df, weights, 252);
+        const twoYear = this.computeRiskBundle(df, weights, 504);
+        const threeYear = this.computeRiskBundle(df, weights, 756);
+
         this.setState({
-            assetReturnsTimeSeries: assetReturnTimeseries,
-            assetReturnsDates: dates
+            oneYearRisk: oneYear,
+            twoYearRisk: twoYear,
+            threeYearRisk: threeYear
         });
+
+        window.console.log(oneYear, twoYear, threeYear);
+    }
+
+    computeRiskBundle(dfAll, weightsByTicker, windowDays) {
+        const tickers = Object.keys(weightsByTicker);
+
+        const df = this.sliceLookback(dfAll, tickers, windowDays);
+
+        const cov = this.covarianceDaily(df, tickers);
+        const { volDaily, volAnnual } = this.portfolioVolFromCov(cov, weightsByTicker);
+
+        const { rows } = this.riskContributionsFromCov(cov, weightsByTicker);
+
+        // annualize MCR/RC consistently if you want annual outputs:
+        // multiply mcr and rc by sqrt(252) (because they are volatility-like units)
+        const annualFactor = Math.sqrt(252);
+        const rowsAnnual = rows.map(r => ({
+            ...r,
+            mcrAnnual: r.mcr * annualFactor,
+            rcAnnual: r.rc * annualFactor
+        }));
+
+        return { cov, volDaily, volAnnual, rows: rowsAnnual };
+    }
+
+    computeWeights(assetData, portfolioValue) {
+        const w = {};
+        for (const a of assetData) {
+            if (a.type === "Stock" && a.symbol && a.currentValue != null) {
+                w[a.symbol] = a.currentValue / portfolioValue;
+            }
+        }
+        return w;
     }
 
     calculateReturn(priceT, priceTMinus1) {
         return (priceT - priceTMinus1) / priceTMinus1;
+    }
+
+    returnsToDataFrame(returnsByTicker, dates) {
+        window.console.log(returnsByTicker, dates);
+
+        const dfd = window.dfd;
+
+        const df = new dfd.DataFrame(returnsByTicker);
+
+        // Attach dates (as a normal column; safest across Danfo versions)
+        df.addColumn("date", dates, { inplace: true });
+
+        // Reorder to put date first (optional)
+        const cols = ["date", ...Object.keys(returnsByTicker)];
+        window.console.log(df.loc({ columns: cols }));
+        return df.loc({ columns: cols });
+    }
+
+    covarianceDaily(df, tickers) {
+        const dfd = window.dfd;
+
+        // r: DataFrame with only return columns
+        const r = df.loc({ columns: tickers });
+
+        // values: rows x cols (T x N)
+        const Xraw = r.values;
+
+        // Convert to numeric and drop any rows with non-finite values (NaN/undefined)
+        const X = [];
+        for (let i = 0; i < Xraw.length; i++) {
+            const row = Xraw[i].map(v => Number(v));
+            if (row.every(v => Number.isFinite(v))) X.push(row);
+        }
+
+        const T = X.length;
+        const N = tickers.length;
+
+        if (T < 2) {
+            // Not enough data; return zeros
+            const zero = Array.from({ length: N }, () => Array(N).fill(0));
+            return new dfd.DataFrame(zero, { columns: tickers, index: tickers });
+        }
+
+        // Column means
+        const means = Array(N).fill(0);
+        for (let t = 0; t < T; t++) {
+            for (let j = 0; j < N; j++) means[j] += X[t][j];
+        }
+        for (let j = 0; j < N; j++) means[j] /= T;
+
+        // Covariance (sample covariance, divide by T-1)
+        const cov = Array.from({ length: N }, () => Array(N).fill(0));
+        for (let t = 0; t < T; t++) {
+            for (let i = 0; i < N; i++) {
+            const di = X[t][i] - means[i];
+            for (let j = 0; j < N; j++) {
+                cov[i][j] += di * (X[t][j] - means[j]);
+            }
+            }
+        }
+        const denom = T - 1;
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) cov[i][j] /= denom;
+        }
+
+        return new dfd.DataFrame(cov, { columns: tickers, index: tickers });
+    }
+
+    /*covarianceDaily(df, tickers) {
+        const r = df.loc({ columns: tickers });
+        return r.cov(); // daily covariance
+    }*/
+
+    portfolioVolFromCov(covDf, weightsByTicker, tradingDays = 252) {
+        const tickers = covDf.columns;
+        const cov = covDf.values; // 2D array
+
+        // aligned weight vector
+        const w = tickers.map(t => weightsByTicker[t] ?? 0);
+
+        // variance = wᵀ Σ w
+        let varP = 0;
+        for (let i = 0; i < tickers.length; i++) {
+            for (let j = 0; j < tickers.length; j++) {
+            varP += w[i] * cov[i][j] * w[j];
+            }
+        }
+
+        const volDaily = Math.sqrt(varP);
+        const volAnnual = volDaily * Math.sqrt(tradingDays);
+
+        return { varP, volDaily, volAnnual };
+    }
+
+    riskContributionsFromCov(covDf, weightsByTicker) {
+        const tickers = covDf.columns;
+        const cov = covDf.values;
+
+        const w = tickers.map(t => weightsByTicker[t] ?? 0);
+
+        // compute sigma_p
+        let varP = 0;
+        for (let i = 0; i < tickers.length; i++) {
+            for (let j = 0; j < tickers.length; j++) {
+            varP += w[i] * cov[i][j] * w[j];
+            }
+        }
+        const sigmaP = Math.sqrt(varP);
+        if (sigmaP === 0) {
+            return { sigmaP: 0, rows: tickers.map(t => ({ ticker: t, weight: weightsByTicker[t] ?? 0, mcr: 0, rc: 0, pctRc: 0 })) };
+        }
+
+        // compute Σw
+        const sigmaW = new Array(tickers.length).fill(0);
+        for (let i = 0; i < tickers.length; i++) {
+            for (let j = 0; j < tickers.length; j++) {
+            sigmaW[i] += cov[i][j] * w[j];
+            }
+        }
+
+        // MCR, RC, %RC
+        const rows = tickers.map((t, i) => {
+            const mcr = sigmaW[i] / sigmaP;
+            const rc = w[i] * mcr;
+            const pctRc = rc / sigmaP;
+            return { ticker: t, weight: w[i], mcr, rc, pctRc };
+        });
+
+        return { sigmaP, rows };
+    }
+
+    sliceLookback(df, tickers, windowDays) {
+        const r = df.loc({ columns: ["date", ...tickers] });
+
+        const n = r.shape[0];
+        const start = Math.max(0, n - windowDays);
+
+        return r.iloc({ rows: [`${start}:`] });
     }
 
     async changeCurrentPortfolio(portfolioId, portfolioName) {
@@ -468,15 +651,18 @@ class RiskAnalysis extends Component {
                             <div className="portfolio-overview">
                                 <div>
                                     <h3>1-Year Volatility</h3>
-                                    <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                    <h3>(Daily/Annualized)</h3>
+                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.oneYearRisk.volAnnual)})</p>
                                 </div>
                                 <div>
                                     <h3>2-Year Volatility</h3>
-                                    <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                    <h3>(Daily/Annualized)</h3>
+                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.twoYearRisk.volAnnual)})</p>
                                 </div>
                                 <div>
                                     <h3>3-Year Volatility</h3>
-                                    <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                    <h3>(Daily/Annualized)</h3>
+                                    <p className="portfolio-value">({this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / {this.percentFormatter.format(this.state.threeYearRisk.volAnnual)})</p>
                                 </div>
                             </div>
                             <div>
