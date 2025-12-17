@@ -18,6 +18,7 @@
   --text-color-medium-dark: #333333;
   --row-primary-color: #FFFFFF;
   --row-alternating-color: #c1c9ff;
+  --always-black: #000000;
   --footer-height: 90px;
   --sidebar-width: 220px;
   --sidebar-footer-width: 190px;
@@ -42,6 +43,7 @@ body.dark-mode {
   --text-color-medium-dark: #BBBBBB;
   --row-primary-color: #2d3748;
   --row-alternating-color: #4a5568;
+  --always-black: #000000;
 }
 
 body {
@@ -666,7 +668,7 @@ code {
 
 .popoverContent {
   max-width: 200px;
-  padding: 5px;
+  padding: 15px;
   border-radius: 10px;
   background-color: rgba(29, 32, 40, 0.9);
   color: var(--text-color-light)
@@ -839,8 +841,12 @@ code {
   text-align: center;
 }
 
+.portfolio-card h3 {
+  margin: 0px;
+}
+
 .portfolio-value, .buying-power {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
 }
 

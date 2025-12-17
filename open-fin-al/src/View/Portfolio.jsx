@@ -433,7 +433,7 @@ class Portfolio extends Component {
                                 </>
                             )}
                          </div>
-                        {this.state.buyingPowerLoaded && 
+                        {this.state.buyingPowerLoaded ? 
                             <>
                             <div className="portfolio-overview">
                                 <div className="portfolio-card">
@@ -461,6 +461,14 @@ class Portfolio extends Component {
                                     <p className="buying-power">{this.formatter.format(this.state.buyingPower)}</p>
                                 </div>
                             </div>
+                            </>
+                        :
+                            <div style={{ height: 300 }}>
+                                <div>Loading Portfolio Data...</div>
+                                <div className="loader"></div>
+                            </div>
+                        }
+                        <>
                             <div>
                                 <h3>Stock Assets</h3>
                                 <div className="table-header">
@@ -490,7 +498,7 @@ class Portfolio extends Component {
                                 
                             </div>
                             </>
-                        }
+                        
                     </div>
                 :
                     <> 

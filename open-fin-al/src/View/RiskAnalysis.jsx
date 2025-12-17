@@ -12,6 +12,7 @@ import { StockInteractor } from "../Interactor/StockInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 import { HeaderContext } from "./App/LoadedLayout";
 
+import { Popover } from "react-tiny-popover";
 import { PieChart, Pie, Sector, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
 
 const formatter = new Intl.NumberFormat('en-US', {
@@ -131,13 +132,16 @@ class RiskAnalysis extends Component {
             buyingPower: 0,
             buyingPowerLoaded: false,
             activeIndex: 0,
-            portfolioName: null
+            portfolioName: null,
+            hoveredInfo: null
         };
 
         //Bind methods for element events
         this.openModal = this.openModal.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
         this.onPieEnter = this.onPieEnter.bind(this);
+        this.handleInfoHover = this.handleInfoHover.bind(this);
+        this.handleInfoLeave = this.handleInfoLeave.bind(this);
     }
 
     async openModal() {
@@ -145,6 +149,13 @@ class RiskAnalysis extends Component {
             depositMessage: null,
             isModalOpen: true
         });
+    }
+    handleInfoHover(metric) {
+        this.setState({hoveredInfo: metric});
+    }
+
+    handleInfoLeave() {
+        this.setState({hoveredInfo: null});
     }
 
     async fetchPortfolios() {    
@@ -269,6 +280,7 @@ class RiskAnalysis extends Component {
         const df = this.sliceLookback(dfAll, tickers, windowDays);
 
         const cov = this.covarianceDaily(df, tickers);
+        const corr = this.correlationFromCov(cov);
         const { volDaily, volAnnual } = this.portfolioVolFromCov(cov, weightsByTicker);
 
         const { rows } = this.riskContributionsFromCov(cov, weightsByTicker);
@@ -287,7 +299,7 @@ class RiskAnalysis extends Component {
         const maxDrawdown = this.maxDrawdownFromReturns(rp);
         const { var: var95, cvar: cvar95 } = this.varCvarFromReturns(rp, 0.95);
 
-        return { cov, volDaily, volAnnual, maxDrawdown, var95, cvar95, rows: rowsAnnual };
+        return { cov, corr, volDaily, volAnnual, maxDrawdown, var95, cvar95, rows: rowsAnnual };
     }
 
     computeWeights(assetData, portfolioValue) {
@@ -386,10 +398,30 @@ class RiskAnalysis extends Component {
         return new dfd.DataFrame(cov, { columns: tickers, index: tickers });
     }
 
-    /*covarianceDaily(df, tickers) {
-        const r = df.loc({ columns: tickers });
-        return r.cov(); // daily covariance
-    }*/
+    correlationFromCov(covDf) {
+        const dfd = window.dfd;
+
+        const cov = covDf.values;          // NxN
+        const cols = covDf.columns;        // tickers
+        const N = cols.length;
+
+        // std devs = sqrt(diagonal)
+        const std = new Array(N).fill(0);
+        for (let i = 0; i < N; i++) {
+            const v = Number(cov[i][i]);
+            std[i] = v > 0 ? Math.sqrt(v) : 0;
+        }
+
+        const corr = Array.from({ length: N }, () => Array(N).fill(0));
+        for (let i = 0; i < N; i++) {
+            for (let j = 0; j < N; j++) {
+            const denom = std[i] * std[j];
+            corr[i][j] = denom ? cov[i][j] / denom : 0;
+            }
+        }
+
+        return new dfd.DataFrame(corr, { columns: cols, index: cols });
+    }
 
     portfolioVolFromCov(covDf, weightsByTicker, tradingDays = 252) {
         const tickers = covDf.columns;
@@ -661,6 +693,23 @@ class RiskAnalysis extends Component {
        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    corrDfToHeatmapCells(corrDf) {
+        const tickers = corrDf.columns;
+        const M = corrDf.values;
+
+        const cells = [];
+        for (let r = 0; r < tickers.length; r++) {
+            for (let c = 0; c < tickers.length; c++) {
+            cells.push({
+                row: tickers[r],
+                col: tickers[c],
+                value: Number(M[r][c])
+            });
+            }
+        }
+        return { tickers, cells };
+    }
+
     render() {
         return (
             <div className="page portfolioPage">
@@ -680,64 +729,177 @@ class RiskAnalysis extends Component {
                 {!this.state.createPortfolio && this.state.currentPortfolio ?
                     <div>
                         {/* Portfolio Value and Buying Power Section */}
-                        {this.state.buyingPowerLoaded && 
+                        {this.state.buyingPowerLoaded ? 
                             <>
-                            <div className="portfolio-overview">
-                                <div>
-                                    <PieChart width={500} height={300}>
-                                        <Pie
-                                        activeIndex={this.state.activeIndex}
-                                        activeShape={renderActiveShape}
-                                        data={this.state.chartData}
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={60}
-                                        outerRadius={80}
-                                        fill="#5A67D8"
-                                        dataKey="value"
-                                        onMouseEnter={this.onPieEnter}
-                                        />
-                                    </PieChart>
-                                </div>
-                                <div className="portfolio-card">
+                                <div className="portfolio-overview">
                                     <div>
-                                        <h3>Portfolio Value</h3>
-                                        <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                        <PieChart width={500} height={300}>
+                                            <Pie
+                                            activeIndex={this.state.activeIndex}
+                                            activeShape={renderActiveShape}
+                                            data={this.state.chartData}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={80}
+                                            fill="#5A67D8"
+                                            dataKey="value"
+                                            onMouseEnter={this.onPieEnter}
+                                            />
+                                        </PieChart>
+                                    </div>
+                                    <div className="portfolio-card">
+                                        <div>
+                                            <h3>Portfolio Value</h3>
+                                            <p className="portfolio-value">{this.formatter.format(this.state.portfolioValue)}</p>
+                                        </div>
                                     </div>
                                 </div>
+                            </>
+                            :
+                            <div style={{ height: 300 }}>
+                                <div>Loading Portfolio Data...</div>
+                                <div className="loader"></div>
                             </div>
-                            <h2>Portfolio Volatility</h2>
+                        }
+                        <>
+                            <h2>
+                                {
+                                    this.state.threeYearRisk?.var95 ? "Portfolio Risk" :
+
+                                    (this.state.buyingPowerLoaded ?
+                                        <>
+                                            Calculating Portfolio Risk... 
+                                            <div>
+                                                <div className="loader"></div>
+                                            </div>
+                                        </> 
+                                    : "Portfolio Risk")
+                                }
+                            </h2>
                             <div className="table-header">
-                                <div className="table-cell">Risk Horizon</div>
-                                <div className="table-cell">Daily Volatility</div>
-                                <div className="table-cell">Annual Volatility</div>
-                                <div className="table-cell">Max Drawdown</div>
-                                <div className="table-cell">VaR(95)</div>
-                                <div className="table-cell">CVaR(95)</div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "Risk Horizon"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Risk horizon is the length of time over which risk metrics are calculated. Short-term horizons capture short-term risks, while longer-term horizons capture longer-term risks. 
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("Risk Horizon")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            Risk Horizon 🛈
+                                        </label>
+                                    </Popover>
+                                </div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "Daily Volatility"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Daily Volatility is a measure of how much a portfolio’s returns typically move up or down in a single day. For example, a daily volatility of 1% means that on a typical day, the portfolio’s value moves up or down by about 1%.
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("Daily Volatility")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            Volatility (Day) 🛈
+                                        </label>
+                                    </Popover>
+                                </div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "Annual Volatility"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Annual Volatility estimates how much a portfolio’s returns are expected to fluctuate over a full year. For example, an annual volatility of 16% means that over a full year, the portfolio’s return typically varies up or down by about 16%.
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("Annual Volatility")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            Volatility (Year) 🛈
+                                        </label>
+                                    </Popover>
+                                </div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "Max Drawdown"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Maximum Drawdown measures the biggest loss an investment has had from its highest point to its lowest point before recovering to a new high point. For example, a maximum drawdown of 15% means that at some point during the period, the portfolio fell 15% from its highest value to its lowest value before recovering.
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("Max Drawdown")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            Max Drawdown 🛈
+                                        </label>
+                                    </Popover>
+                                </div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "VaR(95)"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Value at Risk (VaR), estimates the worst expected loss over a given period 95% of the time. For example, a VaR(95) of 2% means that on 95 out of 100 days, losses should not exceed 2%.
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("VaR(95)")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            VaR(95) 🛈
+                                        </label>
+                                    </Popover>
+                                </div>
+                                <div className="table-cell">
+                                    <Popover
+                                        isOpen={this.state.hoveredInfo === "CVaR(95)"}
+                                            positions={["bottom"]}
+                                            content={
+                                                <div className="popoverContent">
+                                                    Conditional Value at Risk (CVaR) measures the average loss on the worst 5% of days, focusing on how bad losses are when things go wrong. A CVaR(95%) of 4% means that on the worst 5 out of 100 days, the portfolio loses about 4% on average.
+                                                </div>}>
+                                        <label
+                                        className="inputLabel"
+                                        onMouseEnter={() => this.handleInfoHover("CVaR(95)")}
+                                        onMouseLeave={this.handleInfoLeave} >
+                                            CVaR(95) 🛈
+                                        </label>
+                                    </Popover>      
+                                </div>
                             </div>
                             {[
                             { label: "1-Year", risk: this.state.oneYearRisk },  
                             { label: "2-Year", risk: this.state.twoYearRisk },
                             { label: "3-Year", risk: this.state.threeYearRisk },
                             ].map(({ label, risk }) => (
-                            <div className="table-row" key={label}>
-                                <div className="table-cell">{label}</div>
-                                <div className="table-cell">
-                                    {risk?.volDaily != null ? this.percentFormatter.format(risk.volDaily) : "Calculating..."}
-                                </div>
-                                <div className="table-cell">
-                                    {risk?.volAnnual != null ? this.percentFormatter.format(risk.volAnnual) : "Calculating..."}
-                                </div>
-                                <div className="table-cell">
-                                    {risk?.maxDrawdown != null ? this.percentFormatter.format(Math.abs(risk.maxDrawdown)) : "Calculating..."}
-                                </div>
-                                <div className="table-cell">
-                                    {risk?.var95 != null ? this.percentFormatter.format(risk.var95) : "Calculating..."}
-                                </div>
-                                <div className="table-cell">
-                                    {risk?.cvar95 != null ? this.percentFormatter.format(risk.cvar95) : "Calculating..."}
-                                </div>
-                            </div>
+                                ( this.state.threeYearRisk?.cvar95 &&
+                                    <div className="table-row" key={label}>
+                                        <div className="table-cell">{label}</div>
+                                        <div className="table-cell">
+                                            {risk?.volDaily != null ? this.percentFormatter.format(risk.volDaily) : "Calculating..."}
+                                        </div>
+                                        <div className="table-cell">
+                                            {risk?.volAnnual != null ? this.percentFormatter.format(risk.volAnnual) : "Calculating..."}
+                                        </div>
+                                        <div className="table-cell">
+                                            {risk?.maxDrawdown != null ? this.percentFormatter.format(Math.abs(risk.maxDrawdown)) : "Calculating..."}
+                                        </div>
+                                        <div className="table-cell">
+                                            {risk?.var95 != null ? this.percentFormatter.format(risk.var95) : "Calculating..."}
+                                        </div>
+                                        <div className="table-cell">
+                                            {risk?.cvar95 != null ? this.percentFormatter.format(risk.cvar95) : "Calculating..."}
+                                        </div>
+                                    </div>
+                                )
                             ))}
                             <div>
                                 <h3>Two-year Contributions to Risk</h3>
@@ -760,14 +922,83 @@ class RiskAnalysis extends Component {
                                     null
                                 }    
                             </div>
-                            </>
-                        }
+                            <div>
+                                {this.state.twoYearRisk?.corr ? this.renderCorrHeatmap(this.state.twoYearRisk.corr) : null}
+                            </div>
+                        </>
+                        
                     </div>
                 :
                     <> 
                         {<PortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio}/>    }
                     </>
                 }
+            </div>
+        );
+    }
+
+    renderCorrHeatmap(corrDf, title = "Correlation Heatmap") {
+        if (!corrDf) return null;
+
+        const { tickers, cells } = this.corrDfToHeatmapCells(corrDf);
+
+        // Map correlation [-1,1] to 0..100 for CSS lightness
+        const colorFor = (v) => {
+            // clamp
+            const x = Math.max(-1, Math.min(1, v));
+            // 0 => neutral, -1 => one extreme, +1 => other extreme
+            // Use HSL: red-ish for negative, green-ish for positive
+            const hue = x >= 0 ? 120 : 0;                 // green or red
+            const sat = 55;
+            const light = 92 - Math.abs(x) * 45;          // stronger corr => darker
+            return `hsl(${hue} ${sat}% ${light}%)`;
+        };
+
+        return (
+            <div style={{ marginTop: 20 }}>
+            <h3>{title}</h3>
+            <div style={{ overflowX: "auto" }}>
+                <div style={{ display: "grid", gridTemplateColumns: `50px repeat(${tickers.length}, 50px)` }}>
+                <div />
+                {tickers.map(t => (
+                    <div key={`col-${t}`} style={{ fontSize: 12, padding: 6, textAlign: "center", fontWeight: 600 }}>
+                    {t}
+                    </div>
+                ))}
+
+                {tickers.map(r => (
+                    <React.Fragment key={`row-${r}`}>
+                    <div style={{ fontSize: 12, padding: 6, fontWeight: 600 }}>{r}</div>
+                    {tickers.map(c => {
+                        const cell = cells.find(x => x.row === r && x.col === c);
+                        const v = cell?.value ?? 0;
+                        return (
+                        <div
+                            key={`${r}-${c}`}
+                            title={`${r} vs ${c}: ${v.toFixed(2)}`}
+                            style={{
+                                height: 50,
+                                width: 50,
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                background: colorFor(v),
+                                border: "1px solid rgba(0,0,0,0.06)",
+                                fontSize: 12,
+                                color: "var(--always-black)"
+                            }}
+                        >
+                            {v.toFixed(2)}
+                        </div>
+                        );
+                    })}
+                    </React.Fragment>
+                ))}
+                </div>
+            </div>
+            <div style={{ fontSize: 12, color: "#555", marginTop: 6 }}>
+                Values near +1 move together; values near -1 move opposite; values near 0 are weakly related.
+            </div>
             </div>
         );
     }
