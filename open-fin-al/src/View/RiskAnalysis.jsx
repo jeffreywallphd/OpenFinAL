@@ -275,14 +275,19 @@ class RiskAnalysis extends Component {
 
         // annualize MCR/RC consistently if you want annual outputs:
         // multiply mcr and rc by sqrt(252) (because they are volatility-like units)
-        const annualFactor = Math.sqrt(252);
+        const annualFactor = Math.sqrt(windowDays);
         const rowsAnnual = rows.map(r => ({
             ...r,
             mcrAnnual: r.mcr * annualFactor,
-            rcAnnual: r.rc * annualFactor
+            rcAnnual: r.nrc * annualFactor
         }));
 
-        return { cov, volDaily, volAnnual, rows: rowsAnnual };
+        // Max Drawdown (computed from portfolio daily returns in the same lookback window)
+        const rp = this.portfolioReturnsSeries(df, weightsByTicker, tickers);
+        const maxDrawdown = this.maxDrawdownFromReturns(rp);
+        const { var: var95, cvar: cvar95 } = this.varCvarFromReturns(rp, 0.95);
+
+        return { cov, volDaily, volAnnual, maxDrawdown, var95, cvar95, rows: rowsAnnual };
     }
 
     computeWeights(assetData, portfolioValue) {
@@ -297,6 +302,22 @@ class RiskAnalysis extends Component {
 
     calculateReturn(priceT, priceTMinus1) {
         return (priceT - priceTMinus1) / priceTMinus1;
+    }
+
+    // alpha=0.95 => 95% VaR/CVaR (worst 5% tail)
+    varCvarFromReturns(rp, alpha = 0.95) {
+        const clean = rp.filter(x => Number.isFinite(x)).slice().sort((a, b) => a - b); // ascending
+        if (clean.length < 10) return { var: null, cvar: null };
+
+        const tailProb = 1 - alpha; // 0.05
+        const idx = Math.max(0, Math.floor(tailProb * clean.length));
+
+        const varReturn = clean[idx];            // typically negative
+        const tail = clean.slice(0, idx + 1);    // worst tail
+        const cvarReturn = tail.reduce((s, x) => s + x, 0) / tail.length;
+
+        // Return as positive loss magnitudes (more intuitive for UI)
+        return { var: -varReturn, cvar: -cvarReturn };
     }
 
     returnsToDataFrame(returnsByTicker, dates) {
@@ -435,6 +456,44 @@ class RiskAnalysis extends Component {
         const start = Math.max(0, n - windowDays);
 
         return r.iloc({ rows: [`${start}:`] });
+    }
+
+    portfolioReturnsSeries(df, weightsByTicker, tickers) {
+        // df contains date + tickers columns; returns are decimals
+        const r = df.loc({ columns: tickers });
+        const Xraw = r.values; // rows x cols
+        const w = tickers.map(t => Number(weightsByTicker[t] ?? 0));
+
+        // build portfolio daily returns rp[t] = sum_i w_i * r_{t,i}
+        const rp = new Array(Xraw.length).fill(0);
+
+        for (let t = 0; t < Xraw.length; t++) {
+            let sum = 0;
+            for (let j = 0; j < tickers.length; j++) {
+                const v = Number(Xraw[t][j]);
+                // treat non-finite as 0 to avoid poisoning the series
+                sum += (Number.isFinite(v) ? v : 0) * w[j];
+            }
+            rp[t] = sum;
+        }
+        return rp;
+    }
+
+    maxDrawdownFromReturns(portfolioReturns) {
+        // returns decimal negative number (e.g., -0.28 for -28%)
+        let wealth = 1.0;
+        let peak = 1.0;
+        let maxDD = 0; // most negative drawdown
+
+        for (const r of portfolioReturns) {
+            const rr = Number(r);
+            wealth *= (1 + (Number.isFinite(rr) ? rr : 0));
+            if (wealth > peak) peak = wealth;
+            const dd = (wealth / peak) - 1;
+            if (dd < maxDD) maxDD = dd;
+        }
+
+        return maxDD;
     }
 
     async changeCurrentPortfolio(portfolioId, portfolioName) {
@@ -648,35 +707,38 @@ class RiskAnalysis extends Component {
                                 </div>
                             </div>
                             <h2>Portfolio Volatility</h2>
-                            <div className="portfolio-overview">
-                                <div>
-                                    <h3>1-Year Volatility</h3>
-                                    <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">
-                                        {this.state.oneYearRisk?.volDaily
-                                            ? `${this.percentFormatter.format(this.state.oneYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.oneYearRisk.volAnnual)}`
-                                            : "Calculating..."}
-                                    </p>
+                            <div className="table-header">
+                                <div className="table-cell">Risk Horizon</div>
+                                <div className="table-cell">Daily Volatility</div>
+                                <div className="table-cell">Annual Volatility</div>
+                                <div className="table-cell">Max Drawdown</div>
+                                <div className="table-cell">VaR(95)</div>
+                                <div className="table-cell">CVaR(95)</div>
+                            </div>
+                            {[
+                            { label: "1-Year", risk: this.state.oneYearRisk },  
+                            { label: "2-Year", risk: this.state.twoYearRisk },
+                            { label: "3-Year", risk: this.state.threeYearRisk },
+                            ].map(({ label, risk }) => (
+                            <div className="table-row" key={label}>
+                                <div className="table-cell">{label}</div>
+                                <div className="table-cell">
+                                    {risk?.volDaily != null ? this.percentFormatter.format(risk.volDaily) : "Calculating..."}
                                 </div>
-                                <div>
-                                    <h3>2-Year Volatility</h3>
-                                    <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">
-                                        {this.state.twoYearRisk?.volDaily
-                                            ? `${this.percentFormatter.format(this.state.twoYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.twoYearRisk.volAnnual)}`
-                                            : "Calculating..."}
-                                    </p>
+                                <div className="table-cell">
+                                    {risk?.volAnnual != null ? this.percentFormatter.format(risk.volAnnual) : "Calculating..."}
                                 </div>
-                                <div>
-                                    <h3>3-Year Volatility</h3>
-                                    <h3>(Daily/Annualized)</h3>
-                                    <p className="portfolio-value">
-                                        {this.state.threeYearRisk?.volDaily
-                                            ? `${this.percentFormatter.format(this.state.threeYearRisk.volDaily)} / ${this.percentFormatter.format(this.state.threeYearRisk.volAnnual)}`
-                                            : "Calculating..."}
-                                    </p>
+                                <div className="table-cell">
+                                    {risk?.maxDrawdown != null ? this.percentFormatter.format(Math.abs(risk.maxDrawdown)) : "Calculating..."}
+                                </div>
+                                <div className="table-cell">
+                                    {risk?.var95 != null ? this.percentFormatter.format(risk.var95) : "Calculating..."}
+                                </div>
+                                <div className="table-cell">
+                                    {risk?.cvar95 != null ? this.percentFormatter.format(risk.cvar95) : "Calculating..."}
                                 </div>
                             </div>
+                            ))}
                             <div>
                                 <h3>Two-year Contributions to Risk</h3>
                                 <div className="table-header">
