@@ -351,11 +351,14 @@ class Home extends Component {
             </div>
             <div className="earnings">
               <h3><span className="material-icons">trending_up</span> Total Value</h3>
-              <p>{this.formatter.format(this.state.portfolioValue)} <span style={this.calculatePercentChange()>=0 ? {color:"green"}: {color:"red"}}>{this.calculatePercentChange()>0 ? "+" : ""}{this.percentFormatter.format(this.calculatePercentChange())}</span></p>
+              <p>
+                {this.formatter.format(this.state.portfolioValue)}
+                {(this.state.portfolioValue ? <span style={this.calculatePercentChange()>=0 ? {color:"green"}: {color:"red"}}> {this.calculatePercentChange()>0 ? "+" : ""}{this.percentFormatter.format(this.calculatePercentChange())}</span> : <span className="tiny-loader"></span>)} 
+              </p>
             </div>
             <div className="invested">
               <h3><span className="material-icons">account_balance_wallet</span> Total Buying Power</h3>
-              <p>{this.formatter.format(this.state.buyingPower)} ({this.percentFormatter.format(this.state.buyingPower/this.state.portfolioValue)} cash)</p>
+              <p>{this.formatter.format(this.state.buyingPower)}</p>
             </div>
             <div className="promo">
               <div className="promo-text">

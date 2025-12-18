@@ -85,13 +85,19 @@ class Portfolio extends Component {
         await this.fetchPortfolios();
         const cashId = await this.getCashId();
         
+        await this.getPortfolioData();
+    }
+
+    async getPortfolioData() {
+        window.console.log("Portfolio id:", this.state.currentPortfolio);
+
         // Only fetch portfolio data if a portfolio is selected
         if(this.state.currentPortfolio) {
             await this.getPortfolioValue();
             await this.getPortfolioChartData();
 
-            if(cashId) {
-                await this.getBuyingPower(cashId);
+            if(this.state.cashId) {
+                await this.getBuyingPower(this.state.cashId);
             }
         }
     }
@@ -186,10 +192,18 @@ class Portfolio extends Component {
     }
 
     async changeCurrentPortfolio(portfolioId, portfolioName) {
-        this.setState({currentPortfolio: portfolioId, portfolioName: portfolioName});
-        await this.getBuyingPower(null, portfolioId);
-        await this.getPortfolioValue(portfolioId);
-        await this.getPortfolioChartData(portfolioId);
+        window.console.log("Portfolio id changed to:", portfolioId);
+        this.setState({
+            currentPortfolio: portfolioId, 
+            portfolioName: portfolioName,
+            portfolioValue: 0,
+            assetData: [],
+            chartData: [],
+            buyingPower: 0,
+            buyingPowerLoaded: false,
+        });
+        await this.sleep(1000); // allow time for state to set
+        await this.getPortfolioData();
     }
 
     async getCashId() {
@@ -464,8 +478,7 @@ class Portfolio extends Component {
                             </>
                         :
                             <div style={{ height: 300 }}>
-                                <div>Loading Portfolio Data...</div>
-                                <div className="loader"></div>
+                                <div className="loader-container">Retrieving portfolio data... <div className="small-loader"></div></div>
                             </div>
                         }
                         <>

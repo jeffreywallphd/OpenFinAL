@@ -23,6 +23,7 @@ const formatter = new Intl.NumberFormat('en-US', {
 });
 
 const renderActiveShape = (props) => {
+    window.console.log(props);
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
     const sin = Math.sin(-RADIAN * midAngle);
@@ -34,7 +35,7 @@ const renderActiveShape = (props) => {
     const ex = mx + (cos >= 0 ? 1 : -1) * 22;
     const ey = my;
     const textAnchor = cos >= 0 ? 'start' : 'end';
-  
+    window.console.log(payload);
     return (
       <g>
         <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
@@ -85,13 +86,19 @@ class RiskAnalysis extends Component {
         await this.fetchPortfolios();
         const cashId = await this.getCashId();
         
+        await this.getPortfolioData();
+    }
+
+    async getPortfolioData() {
+        window.console.log("Portfolio id:", this.state.currentPortfolio);
+
         // Only fetch portfolio data if a portfolio is selected
         if(this.state.currentPortfolio) {
             await this.getPortfolioValue();
             await this.getPortfolioChartData();
 
-            if(cashId) {
-                await this.getBuyingPower(cashId);
+            if(this.state.cashId) {
+                await this.getBuyingPower(this.state.cashId);
             }
 
             await this.fetchDailyHistoricalReturnsData();
@@ -529,10 +536,22 @@ class RiskAnalysis extends Component {
     }
 
     async changeCurrentPortfolio(portfolioId, portfolioName) {
-        this.setState({currentPortfolio: portfolioId, portfolioName: portfolioName});
-        await this.getBuyingPower(null, portfolioId);
-        await this.getPortfolioValue(portfolioId);
-        await this.getPortfolioChartData(portfolioId);
+        this.setState({
+            currentPortfolio: portfolioId, 
+            portfolioName: portfolioName,
+            portfolioValue: 0,
+            assetData: [],
+            chartData: [],
+            assetReturnsTimeSeries: {},
+            assetReturnsDates: [],
+            oneYearRisk: {},
+            twoYearRisk: {},
+            threeYearRisk: {},
+            buyingPower: 0,
+            buyingPowerLoaded: false,
+        });
+        await this.sleep(1000); // allow time for state to set
+        await this.getPortfolioData();
     }
 
     async getCashId() {
@@ -659,7 +678,7 @@ class RiskAnalysis extends Component {
         const interactor = new PortfolioTransactionInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
-                action: "getPortfolioValueByType",
+                action: "getPortfolioValue",
                 transaction: {
                     portfolioId: portfolioId
                 }
@@ -673,7 +692,7 @@ class RiskAnalysis extends Component {
             var chartData = [];
             for(var asset of response.response.results) {
                 var assetObj = {};
-                assetObj.name = asset.type;
+                assetObj.name = asset.symbol;
                 assetObj.value = asset.assetValue;
                 chartData.push(assetObj);
             }
@@ -758,8 +777,7 @@ class RiskAnalysis extends Component {
                             </>
                             :
                             <div style={{ height: 300 }}>
-                                <div>Loading Portfolio Data...</div>
-                                <div className="loader"></div>
+                                <div className="loader-container">Retrieving portfolio data... <div className="small-loader"></div></div> 
                             </div>
                         }
                         <>
@@ -769,9 +787,9 @@ class RiskAnalysis extends Component {
 
                                     (this.state.buyingPowerLoaded ?
                                         <>
-                                            Calculating Portfolio Risk... 
-                                            <div>
-                                                <div className="loader"></div>
+                                             
+                                            <div className="loader-container">
+                                                Calculating Portfolio Risk... <div className="small-loader"></div>
                                             </div>
                                         </> 
                                     : "Portfolio Risk")
@@ -902,12 +920,57 @@ class RiskAnalysis extends Component {
                                 )
                             ))}
                             <div>
-                                <h3>Two-year Contributions to Risk</h3>
+                                <h3>Contributions to Risk (2-Year Time Horizon)</h3>
                                 <div className="table-header">
                                     <div className="table-cell">Symbol</div>
-                                    <div className="table-cell">Portfolio Weight</div>
-                                    <div className="table-cell">MCR</div>
-                                    <div className="table-cell">Risk %</div>
+                                    <div className="table-cell">
+                                        <Popover
+                                            isOpen={this.state.hoveredInfo === "Portfolio Weight"}
+                                                positions={["bottom"]}
+                                                content={
+                                                    <div className="popoverContent">
+                                                        The portfolio weight of an asset is the percentage of the portfolio’s total value that is invested in the specific asset. For example, if a stock has a portfolio weight of 25%, that means 25% of the total portfolio value is invested in that stock.
+                                                    </div>}>
+                                            <label
+                                            className="inputLabel"
+                                            onMouseEnter={() => this.handleInfoHover("Portfolio Weight")}
+                                            onMouseLeave={this.handleInfoLeave} >
+                                                Portfolio Weight 🛈
+                                            </label>
+                                        </Popover>
+                                    </div>
+                                    <div className="table-cell">
+                                        <Popover
+                                            isOpen={this.state.hoveredInfo === "MCR"}
+                                                positions={["bottom"]}
+                                                content={
+                                                    <div className="popoverContent">
+                                                        Marginal Contribution to Risk (MCR) measures how much an individual asset adds to the portfolio’s overall risk if its weight increases slightly. For example, if a stock has an MCR of 1.5%, increasing that stock’s weight slightly would increase the portfolio’s total risk by about 1.5%, not considering its weight in the portfolio.
+                                                    </div>}>
+                                            <label
+                                            className="inputLabel"
+                                            onMouseEnter={() => this.handleInfoHover("MCR")}
+                                            onMouseLeave={this.handleInfoLeave} >
+                                                MCR 🛈
+                                            </label>
+                                        </Popover>
+                                    </div>
+                                    <div className="table-cell">
+                                        <Popover
+                                            isOpen={this.state.hoveredInfo === "Risk %"}
+                                                positions={["bottom"]}
+                                                content={
+                                                    <div className="popoverContent">
+                                                        Percentage Contribution to Risk (Risk %) shows how much of the portfolio’s total risk comes from a specific asset, taking into account both how risky the asset is (MCR) and how much of the portfolio it represents (weight). For example, if a stock has a Risk % of 35%, that means 35% of the portfolio’s total risk comes from that single stock.
+                                                    </div>}>
+                                            <label
+                                            className="inputLabel"
+                                            onMouseEnter={() => this.handleInfoHover("Risk %")}
+                                            onMouseLeave={this.handleInfoLeave} >
+                                                Risk % 🛈
+                                            </label>
+                                        </Popover>
+                                    </div>
                                 </div>
                                
                                 {this.state.twoYearRisk?.rows ?
@@ -937,7 +1000,7 @@ class RiskAnalysis extends Component {
         );
     }
 
-    renderCorrHeatmap(corrDf, title = "Correlation Heatmap") {
+    renderCorrHeatmap(corrDf, title = "Correlation Heatmap (2-Year Time Horizon)") {
         if (!corrDf) return null;
 
         const { tickers, cells } = this.corrDfToHeatmapCells(corrDf);

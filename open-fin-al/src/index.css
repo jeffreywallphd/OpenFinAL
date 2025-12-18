@@ -1323,6 +1323,11 @@ nav ul li a:hover {
   color: var(--text-color-medium-dark);
 }
 
+.loader-container {
+  display: flex;
+  align-items: center;
+}
+
 .small-loader {
   visibility: visible;
   border: 12px solid #f3f3f3;
@@ -1337,6 +1342,25 @@ nav ul li a:hover {
 }
 
 .small-loader.hidden {
+  display: none;
+}
+
+.tiny-loader {
+  visibility: visible;
+  border: 7px solid #f3f3f3;
+  border-top: 7px solid #3498db;
+  border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  animation: spin 2s linear infinite;
+  display: inline-block;
+}
+
+.tiny-loader.hidden {
   display: none;
 }
 

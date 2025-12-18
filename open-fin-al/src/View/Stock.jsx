@@ -163,7 +163,7 @@ function Stock(props) {
                             
                                 { state.isLoading === true ? (
                                     <>
-                                        <p>Loading...</p>
+                                        <div className="loader-container"><p>Retreiving data...</p> <div className="tiny-loader"></div></div>
                                     </>
                                 ) : state.error ? (
                                     <p className="error">The ticker you entered is not valid or no data is available for this stock.</p>
