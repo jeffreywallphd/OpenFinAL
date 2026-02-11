@@ -882,7 +882,7 @@ function getNeo4jHome() {
 function getJavaHome() {
   return path.join(app.getPath('userData'), 'java');
 }
-
+/*
 function getNeo4jBundle() {
   let base;
   let fullPath; 
@@ -898,6 +898,30 @@ function getNeo4jBundle() {
     return fullPath;
   }
 }
+  */
+ function getNeo4jBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "neo4j-win");
+  } else if(os.platform() === 'darwin') {
+    fullPath = path.join(base, "neo4j-mac");
+  } else {
+    // Linux
+    fullPath = path.join(base, "neo4j-linux");
+  }
+  
+  return fullPath;
+}
+
 
 function getNeo4jAdminExecutable() {
   const neo4jHome = getNeo4jHome();
@@ -907,7 +931,7 @@ function getNeo4jAdminExecutable() {
   }
   return path.join(neo4jHome, "bin", "neo4j-admin");
 }
-
+/*
 function getJavaBundle() {
   let base;
   let fullPath; 
@@ -923,6 +947,30 @@ function getJavaBundle() {
     return fullPath;
   }
 }
+*/
+function getJavaBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "jre-win");
+  } else if(os.platform() === 'darwin') {
+    fullPath = path.join(base, "jre-mac");
+  } else {
+    // Linux
+    fullPath = path.join(base, "jre-linux");
+  }
+  
+  return fullPath;
+}
+
 
 function getNeo4jExecutable() {
   const binPath = path.join(getNeo4jHome(), 'bin');
@@ -957,7 +1005,7 @@ async function setInitialNeo4jPassword() {
 
   const javaHome = getJavaHome(); // must be Java 21 now
 
-  return new Promise((resolve, reject) => {
+ /* return new Promise((resolve, reject) => {
     const cmd = "cmd.exe";
     const args = ["/c", neo4jAdminBat, "dbms", "set-initial-password", NEO4J_PASS];
 
@@ -981,6 +1029,48 @@ async function setInitialNeo4jPassword() {
     );
   });
 }
+  */
+  return new Promise((resolve, reject) => {
+    const neo4jAdminExe = getNeo4jAdminExecutable();
+    const javaHome = getJavaHome();
+    
+    let cmd;
+    let args;
+    let envPath;
+    
+    if (os.platform() === 'win32') {
+      // Windows
+      cmd = "cmd.exe";
+      args = ["/c", neo4jAdminExe, "dbms", "set-initial-password", NEO4J_PASS];
+      envPath = `${path.join(javaHome, "bin")};${process.env.PATH}`;
+    } else {
+      // Mac/Linux
+      cmd = neo4jAdminExe;
+      args = ["dbms", "set-initial-password", NEO4J_PASS];
+      envPath = `${path.join(javaHome, "bin")}:${process.env.PATH}`;
+    }
+
+    execFile(
+      cmd,
+      args,
+      {
+        windowsHide: true,
+        env: {
+          ...process.env,
+          JAVA_HOME: javaHome,
+          PATH: envPath,
+        },
+      },
+      (err, stdout, stderr) => {
+        if (stdout?.trim()) console.log("[neo4j-admin stdout]", stdout.trim());
+        if (stderr?.trim()) console.warn("[neo4j-admin stderr]", stderr.trim());
+        if (err) return reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
 
 function resetNeo4jAuthIfDev() {
   if (app.isPackaged) return; // only do this in dev
@@ -997,7 +1087,7 @@ function resetNeo4jAuthIfDev() {
     fs.rmSync(transactionPath, { recursive: true, force: true });
   }
 }
-
+/*
 async function startNeo4jServer() {
   if (neo4jProcess) {
     console.log("Neo4j already running, PID:", neo4jProcess.pid);
@@ -1029,6 +1119,67 @@ async function startNeo4jServer() {
       },
       stdio: "pipe", 
     });
+
+  neo4jProcess.stdout.on("data", (data) => {
+    const text = data.toString("utf8");
+    neo4jStdoutBuffer += text;
+    if (neo4jStdoutBuffer.length > MAX_BUF) {
+      neo4jStdoutBuffer = neo4jStdoutBuffer.slice(-MAX_BUF);
+    }
+    console.log(`Neo4j: ${text}`);
+  });
+
+  neo4jProcess.stderr.on('data', (data) => {
+    console.error(`Neo4j ERR: ${data}`);
+  });
+
+  neo4jProcess.on("exit", (code) => {
+    console.log("Neo4j exited with code", code);
+    neo4jProcess = null;
+  });
+}
+*/
+async function startNeo4jServer() {
+  if (neo4jProcess) {
+    console.log("Neo4j already running, PID:", neo4jProcess.pid);
+    return;
+  }
+
+  verifyNeo4jInstall();
+  verifyJavaInstall();
+  resetNeo4jAuthIfDev();
+  await setInitialNeo4jPassword();
+
+  const neo4jHome = getNeo4jHome();
+  const neo4jBin = getNeo4jExecutable();
+  const javaHome = getJavaHome();
+
+  // Use different settings for Windows vs Mac/Linux
+  const isWindows = os.platform() === 'win32';
+  const pathSeparator = isWindows ? ';' : ':';
+  const envPath = `${path.join(javaHome, "bin")}${pathSeparator}${process.env.PATH}`;
+
+  const spawnOptions = {
+    cwd: neo4jHome,
+    env: {
+      ...process.env,
+      JAVA_HOME: javaHome,
+      PATH: envPath,
+      NEO4J_AUTH: `neo4j/${NEO4J_PASS}`,
+    },
+    stdio: "pipe",
+  };
+
+  if (isWindows) {
+    // Windows: use shell
+    spawnOptions.shell = true;
+    spawnOptions.windowsHide = true;
+    neo4jProcess = spawn(neo4jBin, ['console'], spawnOptions);
+  } else {
+    // Mac/LinuxT: don't use shell (avoids space-in-path issues)
+    spawnOptions.shell = false;
+    neo4jProcess = spawn(neo4jBin, ['console'], spawnOptions);
+  }
 
   neo4jProcess.stdout.on("data", (data) => {
     const text = data.toString("utf8");
