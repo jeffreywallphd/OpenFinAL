@@ -31,6 +31,7 @@ import logoNoTextDark from "../../Asset/Image/openfinal_logo_dark_no_text.png";
 import logoDark from "../../Asset/Image/logo-dark.png";
 import navIcon from "../../Asset/Image/navIcon.png";
 import { Settings } from "../Settings";
+import AccessibilitySettings from "../AccessibilitySettings";
 import Forecast from "../Forecast";
 import { ForecastFeature } from "../ForecastFeature";
 import ForecastModel from "../ForecastModel";
@@ -107,7 +108,12 @@ class AppLoaded extends Component {
                 <img src={this.state.logoNoText} alt="OpenFinAL Logo" className={`logoNoText ${!menuCollapsed ? 'hidden' : ''}`} />
               </div>
               <div className="sidebar-padding">
-                <button onClick={this.handleClick} className="HamburgerMenu"><i className="fa fa-bars"></i></button>
+                <button
+                  onClick={this.handleClick}
+                  className="HamburgerMenu"
+                  aria-label="Toggle navigation"
+                  aria-expanded={!menuCollapsed}
+                ><i className="fa fa-bars"></i></button>
               </div>
               <nav className="sidebar-padding">
                 <ul>
@@ -120,6 +126,7 @@ class AppLoaded extends Component {
                   <li><NavLink to="/news"><span className="material-icons">article</span> News</NavLink></li>
                   <li><NavLink to="/learn"><span className="material-icons">school</span> Learn</NavLink></li>
                   <li><NavLink to="/settings"><span className="material-icons">settings</span> Settings</NavLink></li>
+                  <li><NavLink to="/accessibility"><span className="material-icons">accessibility</span> Accessibility</NavLink></li>
                 </ul>
               </nav>
             </aside>
@@ -138,6 +145,7 @@ class AppLoaded extends Component {
                   <Route path="/learningModule" element={<LearningModuleDetails />} />
                   <Route path="/learningModulePage" element={<LearningModulePage />} />
                   <Route path="/settings" element={<Settings initialConfiguration={false} checkIfConfigured={this.props.checkIfConfigured} handleConfigured={this.props.handleConfigured} />} />
+                  <Route path="/accessibility" element={<AccessibilitySettings />} />
                   <Route path="/forecast" element={<Forecast />} />
                   <Route path="/forecast-features" element={<ForecastFeature />} />
                   <Route path="/forecast-models" element={<ForecastModel />} />

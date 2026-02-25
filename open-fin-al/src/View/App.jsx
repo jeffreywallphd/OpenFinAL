@@ -63,8 +63,18 @@ function App(props) {
         }
     };
 
+    const applyAccessibilitySettings = async () => {
+        const config = await window.config.load();
+        const a = config?.AccessibilitySettings ?? {};
+        document.body.classList.toggle('high-contrast', !!a.HighContrast);
+        document.body.classList.toggle('reduce-motion', !!a.ReduceMotion);
+        document.body.classList.toggle('large-text', !!a.LargeText);
+        document.body.classList.toggle('enhanced-focus', !!a.EnhancedFocus);
+    };
+
     useEffect( () => {
         getDarkMode();
+        applyAccessibilitySettings();
     }, []);
 
     // Check if user is already authenticated from previous session
