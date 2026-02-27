@@ -1,4 +1,4 @@
-# Background Information
+## Background Information
 **Team**: Team #num
 
 **Documentation Link:** (link-to-document)[#]
