@@ -6,9 +6,9 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { TimeSeriesChart } from "./Stock/TimeSeriesChart";
-import { TickerSearchBar } from "./Stock/TickerSearchBar";
-import { TickerSidePanel } from "./Stock/TickerSidePanel";
+
+import { WrappedTickerSearchBar, WrappedTimeSeriesChart, WrappedTickerSidePanel } from "../hoc/WrappedComponents";
+
 import { DataContext } from "./App";
 
 import { SecInteractor } from "../Interactor/SecInteractor";
@@ -25,6 +25,9 @@ function Stock(props) {
     const [ analysisLoading, setAnalysisLoading ] = useState(false);
 
     const { setHeader } = useHeader();
+
+
+    
 
     useEffect(() => {
         setHeader({
@@ -152,44 +155,120 @@ function Stock(props) {
         }
     }, [state?.cik, state?.ticker, state?.data, setState]); // Added setState to dependency
 
-    return (
+    // ── ViewComponent configs — useMemo prevents recreation on every render ──
+    const tickerSearchConfig = useMemo(() => new ViewComponent({
+        height: 50,
+        width: 400,
+        isContainer: false,
+        resizable: false,
+        maintainAspectRatio: false,
+        heightRatio: 1,
+        widthRatio: 8,
+        heightWidthRatioMultiplier: 0.125,
+        visible: true,
+        enabled: true,
+        label: "Ticker Search Bar",
+        description: "Search bar for looking up stock ticker symbols",
+        tags: ["search", "ticker", "stock", "input"],
+        minimumProficiencyRequirements: { "basic": 1 },
+        requiresInternet: true,
+    }), []);
+
+    const timeSeriesConfig = useMemo(() => new ViewComponent({
+        height: 400,
+        width: 800,
+        isContainer: false,
+        resizable: true,
+        maintainAspectRatio: true,
+        heightRatio: 1,
+        widthRatio: 2,
+        heightWidthRatioMultiplier: 0.5,
+        visible: true,
+        enabled: true,
+        label: "Time Series Chart",
+        description: "Chart displaying stock price and volume over time",
+        tags: ["chart", "price", "volume", "stock"],
+        minimumProficiencyRequirements: { "basic": 1 },
+        requiresInternet: true,
+    }), []);
+
+    const sidePanelConfig = useMemo(() => new ViewComponent({
+        height: 600,
+        width: 300,
+        isContainer: true,
+        resizable: false,
+        maintainAspectRatio: false,
+        heightRatio: 1,
+        widthRatio: 1,
+        heightWidthRatioMultiplier: 1,
+        visible: true,
+        enabled: true,
+        label: "Ticker Side Panel",
+        description: "Side panel displaying SEC fundamental data and AI analysis",
+        tags: ["panel", "fundamentals", "sec", "analysis"],
+        minimumProficiencyRequirements: { "intermediate": 2 },
+        requiresInternet: true,
+    }), []);
+
+return (
         <div className="page">
             <div className="flex">
                 <div>
-                    {state ?
-                        ( 
-                            <>
-                                <TickerSearchBar state={state} handleDataChange={handleDataChange}/>
-                            
-                                { state.isLoading === true ? (
-                                    <>
-                                        <div className="loader-container"><p>Retreiving data...</p> <div className="tiny-loader"></div></div>
-                                    </>
-                                ) : state.error ? (
-                                    <p className="error">The ticker you entered is not valid or no data is available for this stock.</p>
-                                ) : (
-                                    <p>Data Source: {state.dataSource}</p>   
-                                )}
+                    {state ? (
+                        <>
+                            {/* WrappedTickerSearchBar replaces TickerSearchBar */}
+                            <WrappedTickerSearchBar
+                                state={state}
+                                handleDataChange={handleDataChange}
+                                viewConfig={tickerSearchConfig}
+                            />
 
-                                <TimeSeriesChart state={state} fundamentalAnalysis={fundamentalAnalysis} handleDataChange={handleDataChange} />
-                            </>
-                        ) :   
-                        (<p>Loading Context...</p>)
-                    }
+                            {state.isLoading === true ? (
+                                <>
+                                    <div className="loader-container">
+                                        <p>Retreiving data...</p>
+                                        <div className="tiny-loader"></div>
+                                    </div>
+                                </>
+                            ) : state.error ? (
+                                <p className="error">
+                                    The ticker you entered is not valid or no data is available for this stock.
+                                </p>
+                            ) : (
+                                <p>Data Source: {state.dataSource}</p>
+                            )}
+
+                            {/* WrappedTimeSeriesChart replaces TimeSeriesChart */}
+                            <WrappedTimeSeriesChart
+                                state={state}
+                                fundamentalAnalysis={fundamentalAnalysis}
+                                handleDataChange={handleDataChange}
+                                viewConfig={timeSeriesConfig}
+                            />
+                        </>
+                    ) : (
+                        <p>Loading Context...</p>
+                    )}
                 </div>
                 <div className="sidePanel">
-                    { state && state.secData ? (
+                    {state && state.secData ? (
                         <>
-                            <TickerSidePanel state={state} analysisLoading={analysisLoading} handleAIFundamentalAnalysis={handleAIFundamentalAnalysis} fundamentalAnalysisDisabled={fundamentalAnalysisDisabled} />
+                            {/* WrappedTickerSidePanel replaces TickerSidePanel */}
+                            <WrappedTickerSidePanel
+                                state={state}
+                                analysisLoading={analysisLoading}
+                                handleAIFundamentalAnalysis={handleAIFundamentalAnalysis}
+                                fundamentalAnalysisDisabled={fundamentalAnalysisDisabled}
+                                viewConfig={sidePanelConfig}
+                            />
                         </>
-                    ) : (null)}
+                    ) : null}
                 </div>
             </div>
         </div>
     );
 }
 
-// In case hooks are needed for this class. Can remove later if not necessary
 export function TimeSeries() {
-    return <Stock />
-};
+    return <Stock />;
+}

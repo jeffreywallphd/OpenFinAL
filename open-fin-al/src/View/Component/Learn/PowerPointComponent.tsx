@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { IViewComponent } from "../IViewComponent";
+import { IViewComponent } from "../types/IViewComponent";
 import { PowerPoint } from "../../LearningModule/Slideshow/PowerPoint.jsx";
 
 interface PowerPointComponentState {
@@ -20,7 +20,7 @@ export class PowerPointComponent extends Component<{}, PowerPointComponentState>
     label: string = "PowerPoint Learning Module";
     description: string = "Component for displaying PowerPoint presentations";
     tags: string[] = ["PowerPoint", "Presentation", "Slideshow", "Learning Module"];
-    minimumProficiencyRequirements: Map<string, number> = null;
+    minimumProficiencyRequirements: Record<string, number> = null;
     requiresInternet: boolean = true;
 
     containerRef: React.RefObject<HTMLDivElement>;
