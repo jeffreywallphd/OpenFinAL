@@ -32,4 +32,7 @@ export interface IViewComponent {
     setEnabled(value: boolean): void;
     addTag(tag: string): void;
     removeTag(tag: string): void;
+
+
+    
 }

@@ -9,3 +9,6 @@ import { TickerSidePanel } from "../View/Stock/TickerSidePanel";
 export const WrappedTickerSearchBar = withViewComponent(TickerSearchBar);
 export const WrappedTimeSeriesChart  = withViewComponent(TimeSeriesChart);
 export const WrappedTickerSidePanel  = withViewComponent(TickerSidePanel);
+
+
+

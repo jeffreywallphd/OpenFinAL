@@ -74,4 +74,8 @@ export class ViewComponent implements IViewComponent {
     removeTag(tag: string): void {
         this.tags = this.tags.filter(t => t !== tag);
     }
+
+
+
+    
 }

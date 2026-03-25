@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { IViewComponent } from "../types/IViewComponent";
+import { IViewComponent } from "../../../types/IViewComponent";
 import { PowerPoint } from "../../LearningModule/Slideshow/PowerPoint.jsx";
 
 interface PowerPointComponentState {
@@ -66,6 +66,35 @@ export class PowerPointComponent extends Component<{}, PowerPointComponentState>
         this.height = this.heightWidthRatioMultiplier * this.heightRatio;
 
         return this.heightWidthRatioMultiplier;
+    }
+
+    clone(): IViewComponent {
+        const clone = new PowerPointComponent({ pptxPath: this.pptxPath });
+        clone.height = this.height;
+        clone.width = this.width;
+        clone.visible = this.visible;
+        clone.enabled = this.enabled;
+        clone.tags = [...this.tags];
+        return clone;
+    }
+
+    getHeight(): number { return this.height; }
+    getWidth(): number { return this.width; }
+    getVisible(): boolean { return this.visible; }
+    getEnabled(): boolean { return this.enabled; }
+    getTags(): string[] { return [...this.tags]; }
+
+    setHeight(value: number): void { this.height = value; }
+    setWidth(value: number): void { this.width = value; }
+    setVisible(value: boolean): void { this.visible = value; }
+    setEnabled(value: boolean): void { this.enabled = value; }
+
+    addTag(tag: string): void {
+        if (!this.tags.includes(tag)) this.tags.push(tag);
+    }
+
+    removeTag(tag: string): void {
+        this.tags = this.tags.filter(t => t !== tag);
     }
 
     render(): React.ReactNode {

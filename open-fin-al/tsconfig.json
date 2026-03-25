@@ -5,7 +5,7 @@
       "skipLibCheck": true,
       "noImplicitAny": false,
       "noEmit": true,
-      "jsx": "react-jsx",
+      "jsx": "react",
       "module": "ESNext",
       "target": "ES2022",
       "removeComments": true,
