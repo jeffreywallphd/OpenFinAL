@@ -4,10 +4,11 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import { WrappedTickerSearchBar, WrappedTimeSeriesChart, WrappedTickerSidePanel } from "../hoc/WrappedComponents";
+import { ViewComponent } from "../types/ViewComponent";
 
 import { DataContext } from "./App";
 

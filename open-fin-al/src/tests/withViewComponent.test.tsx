@@ -1,6 +1,12 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom';
+// NOTE: ViewComponent is a plain mutable class.  The HOC is an unmemorised
+// functional component, so any parent re-render will pick up mutations made
+// to the same ViewComponent instance.  If the HOC is ever wrapped in
+// React.memo, callers will need to pass a new instance (config.clone()) to
+// trigger a re-render, since memo uses shallow prop equality.
+// Test 6 verifies that the DOM updates correctly when a new config is passed.
 import { withViewComponent, WithViewComponentProps } from '../hoc/withViewComponent';
 import { ViewComponent } from '../types/ViewComponent';
 import { IViewComponent } from '../types/IViewComponent';
@@ -100,7 +106,10 @@ describe('withViewComponent HOC', () => {
         });
     });
 
-    // ── Test 4: Aspect ratio lock ────────────────────────────────────────────
+    // ── Test 4: Aspect ratio lock (model only) ───────────────────────────────
+    // These tests verify that ViewComponent's internal math is correct.
+    // They do NOT re-render the HOC, so they only prove the model updates —
+    // not that the UI reflects the change.  See Test 6 for UI re-render coverage.
     // calculateRatioMultiplier() = heightRatio / widthRatio = 9/16 = 0.5625
     // setHeight(h): width = h / 0.5625
     // setWidth(w):  height = w * 0.5625
@@ -142,6 +151,56 @@ describe('withViewComponent HOC', () => {
             expect(config.getWidth()).toBe(300);
             expect(config.getHeight()).toBe(400);
         });
+    });
+
+    // ── Test 6: UI re-render on config change ────────────────────────────────
+    // Verifies that when the *caller* passes a new ViewComponent instance the
+    // HOC wrapper div actually reflects the updated values in the DOM.
+    // This catches the silent-update bug: mutating the same object in place
+    // does not re-render React, so callers must clone first (config.clone()).
+    describe('Test 6 — UI updates when a new config is passed via rerender', () => {
+        it('updates wrapper dimensions in the DOM after rerender with new config', () => {
+            const initial = makeConfig({ height: 400, width: 600 });
+            const { container, rerender } = render(<WrappedStub viewConfig={initial} />);
+            const wrapper = container.firstChild as HTMLElement;
+            expect(wrapper).toHaveStyle({ height: '400px', width: '600px' });
+
+            // Clone + mutate to get a new object reference — React detects the change
+            const updated = initial.clone();
+            updated.setHeight(200);
+            updated.setWidth(300);
+            rerender(<WrappedStub viewConfig={updated} />);
+
+            expect(wrapper).toHaveStyle({ height: '200px', width: '300px' });
+        });
+
+        it('hides the component in the DOM after rerender with visible:false', () => {
+            const initial = makeConfig({ visible: true });
+            const { container, rerender } = render(<WrappedStub viewConfig={initial} />);
+            expect(container.firstChild).not.toBeNull();
+
+            const updated = initial.clone();
+            updated.setVisible(false);
+            rerender(<WrappedStub viewConfig={updated} />);
+
+            expect(container.firstChild).toBeNull();
+        });
+
+        it('applies disabled styles in the DOM after rerender with enabled:false', () => {
+            const initial = makeConfig({ enabled: true });
+            const { container, rerender } = render(<WrappedStub viewConfig={initial} />);
+            expect(container.firstChild as HTMLElement).toHaveStyle({ pointerEvents: 'auto' });
+
+            const updated = initial.clone();
+            updated.setEnabled(false);
+            rerender(<WrappedStub viewConfig={updated} />);
+
+            expect(container.firstChild as HTMLElement).toHaveStyle({
+                pointerEvents: 'none',
+                opacity: '0.5',
+            });
+        });
+
     });
 
     // ── Test 5: Type safety ──────────────────────────────────────────────────
