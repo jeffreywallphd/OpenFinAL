@@ -3361,5 +3361,29 @@ body.dark-mode .logout-item:hover {
   background-color: rgba(220, 53, 69, 0.2);
 }
 
+/* Stock Mini Chart Section */
+.stock-mini {
+  flex-basis: 100%;
+  padding: 20px;
+  background-color: var(--background-color-highlight-light);
+  border-radius: 10px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  margin: 10px;
+  min-height: 400px;
+}
+
+.stock-mini h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  font-size: 18px;
+  color: var(--text-color-dark);
+}
+
+.stock-mini p {
+  padding: 10px;
+  text-align: center;
+  color: var(--text-color-medium);
+}
+
 
 

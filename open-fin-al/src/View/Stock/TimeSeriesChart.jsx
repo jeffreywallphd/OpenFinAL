@@ -258,9 +258,10 @@ function TimeSeriesChart(props) {
     //TODO: set the min value for the x-axis to 9:00 AM and the max value to 5:00 PM when intraday data
     return(<>
             <div className="chartContainer">
-                <h3>{header}</h3>
+                {!props.hideControls && <h3>{header}</h3>}
                 
                 {/* A button group that will eventually be clickable to change the chart timeframe. */}
+                {!props.hideControls && (
                 <div className="btn-group">
                     { props.state.data ? 
                         (<>
@@ -283,6 +284,7 @@ function TimeSeriesChart(props) {
                         </>)
                     }
                 </div>
+                )}
 
                 {/* The actual chart displaying the data from recharts */}
                 <AreaChart width={700} height={300} key="timeSeries" data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
