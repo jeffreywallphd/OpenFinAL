@@ -264,6 +264,7 @@ Body classes toggled by `App.jsx` on load and by `AccessibilitySettings.jsx` on 
 
 Skip link: `<a href="#main-content" class="skip-link">` in `LoadedLayout.jsx`.
 Screen-reader utility: `.sr-only` class in `index.css`.
+Toggle switch UI: `.toggle-switch` + `.toggle-slider` classes in `index.css` (used by `AccessibilitySettings.jsx`).
 
 ---
 
