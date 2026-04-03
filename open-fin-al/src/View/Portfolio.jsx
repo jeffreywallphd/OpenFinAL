@@ -12,8 +12,9 @@ import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransaction
 import { StockInteractor } from "../Interactor/StockInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 import { HeaderContext } from "./App/LoadedLayout";
+import { PriceChangeChart } from "./PriceChangeChart";
 
-import { PieChart, Pie, Sector, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'; // For adding charts
+import { PieChart, Pie, Sector } from 'recharts'; // For adding charts
 
 const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -89,6 +90,7 @@ class Portfolio extends Component {
         if(this.state.currentPortfolio) {
             await this.getPortfolioValue();
             await this.getPortfolioChartData();
+            await this.fetchBenchmarkData();
 
             if(cashId) {
                 await this.getBuyingPower(cashId);
@@ -125,7 +127,11 @@ class Portfolio extends Component {
             buyingPower: 0,
             buyingPowerLoaded: false,
             activeIndex: 0,
-            portfolioName: null
+            portfolioName: null,
+            benchmarkData: null,
+            benchmarkInterval: "1M",
+            benchmarkLoading: false,
+            benchmarkError: false
         };
 
         //Bind methods for element events
@@ -133,6 +139,7 @@ class Portfolio extends Component {
         this.makeDeposit = this.makeDeposit.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
         this.onPieEnter = this.onPieEnter.bind(this);
+        this.fetchBenchmarkData = this.fetchBenchmarkData.bind(this);
     }
 
     async openModal() {
@@ -190,6 +197,7 @@ class Portfolio extends Component {
         await this.getBuyingPower(null, portfolioId);
         await this.getPortfolioValue(portfolioId);
         await this.getPortfolioChartData(portfolioId);
+        await this.fetchBenchmarkData();
     }
 
     async getCashId() {
@@ -376,6 +384,54 @@ class Portfolio extends Component {
         }    
     }
 
+    async fetchBenchmarkData(interval = this.state.benchmarkInterval) {
+        this.setState({ benchmarkLoading: true, benchmarkError: false });
+
+        const interactor = new StockInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                stock: {
+                    action: "interday",
+                    ticker: "SPY",
+                    cik: "",
+                    companyName: "SPDR S&P 500 ETF Trust",
+                    interval: interval
+                }
+            }
+        }));
+
+        try {
+            const response = await interactor.get(requestObj);
+
+            if(response?.status === 400 || !response?.response?.results?.[0]?.data) {
+                this.setState({
+                    benchmarkLoading: false,
+                    benchmarkError: true,
+                    benchmarkData: null,
+                    benchmarkInterval: interval
+                });
+                return false;
+            }
+
+            this.setState({
+                benchmarkData: response,
+                benchmarkInterval: interval,
+                benchmarkLoading: false,
+                benchmarkError: false
+            });
+            return true;
+        } catch (error) {
+            console.error("Error fetching benchmark data:", error);
+            this.setState({
+                benchmarkLoading: false,
+                benchmarkError: true,
+                benchmarkData: null,
+                benchmarkInterval: interval
+            });
+            return false;
+        }
+    }
+
     onPieEnter(_, index) {
         this.setState({ activeIndex: index });
     }
@@ -460,6 +516,25 @@ class Portfolio extends Component {
                                     <h3>Buying Power</h3>
                                     <p className="buying-power">{this.formatter.format(this.state.buyingPower)}</p>
                                 </div>
+                            </div>
+                            <div className="portfolio-benchmark-section">
+                                <h3>SPY Benchmark Percent Change</h3>
+                                <div className="btn-group portfolio-benchmark-controls">
+                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1M"} onClick={() => this.fetchBenchmarkData("1M")}>1M</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "6M"} onClick={() => this.fetchBenchmarkData("6M")}>6M</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1Y"} onClick={() => this.fetchBenchmarkData("1Y")}>1Y</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "5Y"} onClick={() => this.fetchBenchmarkData("5Y")}>5Y</button>
+                                </div>
+                                {this.state.benchmarkLoading ? <p>Loading SPY benchmark data...</p> : null}
+                                {this.state.benchmarkError ? <p>Unable to load SPY benchmark data right now.</p> : null}
+                                {this.state.benchmarkData?.response?.results?.[0]?.data ? (
+                                    <PriceChangeChart
+                                        className="portfolio-benchmark-chart"
+                                        title={`SPY (${this.state.benchmarkInterval})`}
+                                        priceData={this.state.benchmarkData.response.results[0].data}
+                                        valueType="percent"
+                                    />
+                                ) : null}
                             </div>
                             <div>
                                 <h3>Stock Assets</h3>

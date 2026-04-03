@@ -819,6 +819,21 @@ code {
   margin-bottom: 20px;
 }
 
+.portfolio-benchmark-section {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.portfolio-benchmark-controls {
+  text-align: center;
+  padding-right: 0;
+}
+
+.portfolio-benchmark-chart {
+  width: min(700px, 100%);
+  margin: 0 auto;
+}
+
 .portfolio-card {
   background-color: var(--background-color);
   padding: 20px;
