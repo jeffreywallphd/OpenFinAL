@@ -75,7 +75,15 @@ export class ViewComponent implements IViewComponent {
         this.tags = this.tags.filter(t => t !== tag);
     }
 
+    getFinancialKnowledgeLevel(): number {
+        return this.minimumProficiencyRequirements['financial'] ?? 0;
+    }
+
+    setFinancialKnowledgeLevel(level: number): void {
+        this.minimumProficiencyRequirements['financial'] = level;
+    }
 
 
-    
+
+
 }

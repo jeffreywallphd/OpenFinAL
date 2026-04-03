@@ -33,6 +33,9 @@ export interface IViewComponent {
     addTag(tag: string): void;
     removeTag(tag: string): void;
 
+    getFinancialKnowledgeLevel(): number;
+    setFinancialKnowledgeLevel(level: number): void;
 
-    
+
+
 }
