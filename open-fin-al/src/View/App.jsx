@@ -16,15 +16,10 @@ import { InitializationInteractor } from "../Interactor/InitializationInteractor
 
 const DataContext = createContext();
 
-function App(props) {
+const createInitialAppState = () => {
     const currentDate = new Date();
-    const [loading, setLoading] = useState(true);
-    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
-    const [configured, setConfigured] = useState(false);
-    const [preparationError, setPreparationError] = useState(null);
-    const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [state, setState] = useState({ 
+
+    return {
         initializing: true,
         isFirstLoad: true,
         data: null,
@@ -49,7 +44,18 @@ function App(props) {
         maxVolume: 1000,
         yAxisStart: new Date(currentDate.getDate() - 5).toISOString().split('T')[0],
         yAxisEnd: new Date().toISOString().split('T')[0]
-    });
+    };
+};
+
+function App(props) {
+    const [loading, setLoading] = useState(true);
+    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
+    const [configured, setConfigured] = useState(false);
+    const [preparationError, setPreparationError] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authViewKey, setAuthViewKey] = useState(0);
+    const [state, setState] = useState(createInitialAppState);
 
     const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
@@ -85,8 +91,10 @@ function App(props) {
 
     // Handle successful authentication
     const handleAuthSuccess = (userData) => {
+        setState(createInitialAppState());
         setUser(userData);
         setIsAuthenticated(true);
+        setAuthViewKey(prev => prev + 1);
         
         // Save user session
         localStorage.setItem('openfinAL_user', JSON.stringify(userData));
@@ -96,9 +104,12 @@ function App(props) {
 
     // Handle user logout
     const handleLogout = () => {
+        setState(createInitialAppState());
         setUser(null);
         setIsAuthenticated(false);
+        setAuthViewKey(prev => prev + 1);
         localStorage.removeItem('openfinAL_user');
+        window.location.hash = '#/';
         console.log('User logged out');
     };
 
@@ -203,10 +214,11 @@ function App(props) {
                 :
                     (
                         !isAuthenticated ?
-                            <AuthContainer onAuthSuccess={handleAuthSuccess}/>
+                            <AuthContainer key={`auth-${authViewKey}`} onAuthSuccess={handleAuthSuccess}/>
                         :
                             <DataContext.Provider value={value}>
                                 <AppLoaded 
+                                    key={`app-${authViewKey}`}
                                     checkIfConfigured={checkIfFullyInitialized} 
                                     handleConfigured={handleConfigured}
                                     onLogout={handleLogout}

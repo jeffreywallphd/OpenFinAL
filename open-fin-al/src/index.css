@@ -3236,6 +3236,30 @@ body.dark-mode .pin-login-error {
   font-size: 18px;
 }
 
+.bubble-confirmation {
+  padding: 12px 0;
+}
+
+.bubble-confirmation-text {
+  margin: 0;
+  padding: 0 16px 12px;
+  font-size: 14px;
+  color: var(--text-color-dark);
+}
+
+.bubble-confirmation-actions {
+  display: flex;
+  flex-direction: column;
+}
+
+.bubble-confirm-button {
+  color: var(--error-color);
+}
+
+.bubble-cancel-button {
+  color: var(--text-color-medium);
+}
+
 /* User Info Dropdown Styles */
 .user-info-container {
   position: relative;
