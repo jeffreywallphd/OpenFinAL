@@ -23,6 +23,21 @@ const formatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 2,
 });
 
+const BENCHMARK_OPTIONS = {
+    SPY: {
+        label: "S&P 500",
+        companyName: "SPDR S&P 500 ETF Trust",
+    },
+    DIA: {
+        label: "DOW",
+        companyName: "SPDR Dow Jones Industrial Average ETF Trust",
+    },
+    QQQ: {
+        label: "NASDAQ",
+        companyName: "Invesco QQQ Trust",
+    },
+};
+
 const renderActiveShape = (props) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -129,6 +144,7 @@ class Portfolio extends Component {
             activeIndex: 0,
             portfolioName: null,
             benchmarkData: null,
+            selectedBenchmark: "SPY",
             benchmarkInterval: "1M",
             benchmarkLoading: false,
             benchmarkError: false
@@ -139,6 +155,7 @@ class Portfolio extends Component {
         this.makeDeposit = this.makeDeposit.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
         this.onPieEnter = this.onPieEnter.bind(this);
+        this.handleBenchmarkChange = this.handleBenchmarkChange.bind(this);
         this.fetchBenchmarkData = this.fetchBenchmarkData.bind(this);
     }
 
@@ -384,17 +401,31 @@ class Portfolio extends Component {
         }    
     }
 
-    async fetchBenchmarkData(interval = this.state.benchmarkInterval) {
-        this.setState({ benchmarkLoading: true, benchmarkError: false });
+    handleBenchmarkChange(e) {
+        const selectedBenchmark = e.target.value;
+        this.setState({ selectedBenchmark }, () => {
+            this.fetchBenchmarkData(this.state.benchmarkInterval, selectedBenchmark);
+        });
+    }
+
+    async fetchBenchmarkData(interval = this.state.benchmarkInterval, ticker = this.state.selectedBenchmark) {
+        const selectedBenchmark = ticker || this.state.selectedBenchmark;
+        const benchmarkConfig = BENCHMARK_OPTIONS[selectedBenchmark] || BENCHMARK_OPTIONS.SPY;
+
+        this.setState({
+            benchmarkLoading: true,
+            benchmarkError: false,
+            selectedBenchmark,
+        });
 
         const interactor = new StockInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
                 stock: {
                     action: "interday",
-                    ticker: "SPY",
+                    ticker: selectedBenchmark,
                     cik: "",
-                    companyName: "SPDR S&P 500 ETF Trust",
+                    companyName: benchmarkConfig.companyName,
                     interval: interval
                 }
             }
@@ -408,7 +439,8 @@ class Portfolio extends Component {
                     benchmarkLoading: false,
                     benchmarkError: true,
                     benchmarkData: null,
-                    benchmarkInterval: interval
+                    benchmarkInterval: interval,
+                    selectedBenchmark,
                 });
                 return false;
             }
@@ -417,7 +449,8 @@ class Portfolio extends Component {
                 benchmarkData: response,
                 benchmarkInterval: interval,
                 benchmarkLoading: false,
-                benchmarkError: false
+                benchmarkError: false,
+                selectedBenchmark,
             });
             return true;
         } catch (error) {
@@ -426,7 +459,8 @@ class Portfolio extends Component {
                 benchmarkLoading: false,
                 benchmarkError: true,
                 benchmarkData: null,
-                benchmarkInterval: interval
+                benchmarkInterval: interval,
+                selectedBenchmark,
             });
             return false;
         }
@@ -441,6 +475,8 @@ class Portfolio extends Component {
     }
 
     render() {
+        const selectedBenchmarkConfig = BENCHMARK_OPTIONS[this.state.selectedBenchmark] || BENCHMARK_OPTIONS.SPY;
+
         return (
             <div className="page portfolioPage">
                 <div className="portfolio-controls">
@@ -518,19 +554,31 @@ class Portfolio extends Component {
                                 </div>
                             </div>
                             <div className="portfolio-benchmark-section">
-                                <h3>SPY Benchmark Percent Change</h3>
+                                <div className="portfolio-benchmark-header">
+                                    <h3>{selectedBenchmarkConfig.label} Benchmark Percent Change</h3>
+                                    <select
+                                        className="portfolio-benchmark-select"
+                                        value={this.state.selectedBenchmark}
+                                        onChange={this.handleBenchmarkChange}
+                                        disabled={this.state.benchmarkLoading}
+                                    >
+                                        <option value="SPY">S&P 500 (SPY)</option>
+                                        <option value="DIA">DOW (DIA)</option>
+                                        <option value="QQQ">NASDAQ (QQQ)</option>
+                                    </select>
+                                </div>
                                 <div className="btn-group portfolio-benchmark-controls">
                                     <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1M"} onClick={() => this.fetchBenchmarkData("1M")}>1M</button>
                                     <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "6M"} onClick={() => this.fetchBenchmarkData("6M")}>6M</button>
                                     <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1Y"} onClick={() => this.fetchBenchmarkData("1Y")}>1Y</button>
                                     <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "5Y"} onClick={() => this.fetchBenchmarkData("5Y")}>5Y</button>
                                 </div>
-                                {this.state.benchmarkLoading ? <p>Loading SPY benchmark data...</p> : null}
-                                {this.state.benchmarkError ? <p>Unable to load SPY benchmark data right now.</p> : null}
+                                {this.state.benchmarkLoading ? <p>Loading {this.state.selectedBenchmark} benchmark data...</p> : null}
+                                {this.state.benchmarkError ? <p>Unable to load {this.state.selectedBenchmark} benchmark data right now.</p> : null}
                                 {this.state.benchmarkData?.response?.results?.[0]?.data ? (
                                     <PriceChangeChart
                                         className="portfolio-benchmark-chart"
-                                        title={`SPY (${this.state.benchmarkInterval})`}
+                                        title={`${selectedBenchmarkConfig.label} (${this.state.selectedBenchmark}) • ${this.state.benchmarkInterval}`}
                                         priceData={this.state.benchmarkData.response.results[0].data}
                                         valueType="percent"
                                     />

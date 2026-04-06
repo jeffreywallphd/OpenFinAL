@@ -402,6 +402,13 @@ class Home extends Component {
   }
 
   render() {
+    const benchmarkVisualMultipliers = {
+      SPY: 10,
+      DIA: 100,
+      QQQ: 37.35,
+    };
+    const benchmarkVisualMultiplier = benchmarkVisualMultipliers[this.state.selectedBenchmark] || 1;
+
     return (
       <div className="page">
         <section className="content-grid">
@@ -491,7 +498,12 @@ class Home extends Component {
                 <p className="error">Unable to load {this.state.selectedBenchmark} data.</p>
               ) : this.state.benchmarkState.data ? (
                 /* TimeSeriesChart with hideControls prop to suppress duplicate header/buttons */
-                <TimeSeriesChart state={this.state.benchmarkState} handleDataChange={this.handleBenchmarkIntervalChange} hideControls={true}/>
+                <TimeSeriesChart
+                  state={this.state.benchmarkState}
+                  handleDataChange={this.handleBenchmarkIntervalChange}
+                  hideControls={true}
+                  priceDisplayMultiplier={benchmarkVisualMultiplier}
+                />
               ) : (
                 <p>Loading benchmark data...</p>
               )}

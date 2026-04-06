@@ -225,6 +225,31 @@ function TimeSeriesChart(props) {
         maximumFractionDigits: 2,
     });
 
+    const priceDisplayMultiplier = props.priceDisplayMultiplier || 1;
+
+    const formatDisplayedPrice = (value) => {
+        const numericValue = Number(value);
+
+        if(!Number.isFinite(numericValue)) {
+            return value;
+        }
+
+        const displayValue = numericValue * priceDisplayMultiplier;
+        return Math.abs(displayValue) >= 1 ? formatter.format(displayValue) : formatterCent.format(displayValue);
+    };
+
+    const formatTooltipValue = (value, name) => {
+        if(name === "price") {
+            return [formatDisplayedPrice(value), "Price"];
+        }
+
+        if(name === "volume") {
+            return [Number(value).toLocaleString('en-US'), "Volume"];
+        }
+
+        return [value, name];
+    };
+
     var priceMinPadded;
     var priceMaxPadded;
     var volumeMax;
@@ -295,12 +320,13 @@ function TimeSeriesChart(props) {
                         </linearGradient>
                     </defs>
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
-                    <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks}/>
+                    <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks} tickFormatter={formatDisplayedPrice} width={90}/>
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>
                     <Tooltip 
                         contentStyle={toolTipStyle.contentStyle}
                         labelStyle={toolTipStyle.labelStyle}
                         itemStyle={toolTipStyle.itemStyle}
+                        formatter={formatTooltipValue}
                     />
                     <Area type="monotone" dataKey="price" stroke={chartColor} fillOpacity={1} fill="url(#colorArea)" dot={false}/>
                 </AreaChart>

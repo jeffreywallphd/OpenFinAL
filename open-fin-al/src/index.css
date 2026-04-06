@@ -824,6 +824,29 @@ code {
   margin-bottom: 24px;
 }
 
+.portfolio-benchmark-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+}
+
+.portfolio-benchmark-header h3 {
+  margin: 0;
+}
+
+.portfolio-benchmark-select {
+  padding: 8px 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  background-color: var(--background-color);
+  color: var(--text-color-dark);
+  cursor: pointer;
+}
+
 .portfolio-benchmark-controls {
   text-align: center;
   padding-right: 0;
