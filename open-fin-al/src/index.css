@@ -500,7 +500,10 @@ code {
   background-color: var(--secondary-color);
   color: var(--text-color-light);
   border-radius: 10px 10px 0px 0px;
-  height: 200px
+  height: 200px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .cardContainer {
