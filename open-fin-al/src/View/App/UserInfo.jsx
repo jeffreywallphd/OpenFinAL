@@ -5,7 +5,7 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React, { useContext, useState, useRef, useEffect } from 'react';
-import { DataContext } from '../App';
+import { DataContext } from './DataContext';
 
 function UserInfo({ onLogout }) {
     const { user } = useContext(DataContext);

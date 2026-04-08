@@ -1,13 +1,15 @@
-import React, { useRef, useEffect, useState, useLayoutEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { SettingsRow } from "./Settings/Row";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 import { useHeader } from "./App/LoadedLayout";
+import { DataContext } from "./App/DataContext";
 
 function Settings(props) {
     const { setHeader } = useHeader();
+    const { user } = useContext(DataContext);
           
     useEffect(() => {
         setHeader({
@@ -45,7 +47,30 @@ function Settings(props) {
         const settingRequest = new JSONRequest(JSON.stringify({action: "getCurrent"}));
         try {
             const response = await interactor.get(settingRequest);
-            setSettings(response.response.results[0]); // save to state or handle however needed
+            const currentSettings = response.response.results[0];
+
+            if (user) {
+                currentSettings.FirstName = {
+                    ...currentSettings.FirstName,
+                    value: user.firstName ?? ""
+                };
+                currentSettings.LastName = {
+                    ...currentSettings.LastName,
+                    value: user.lastName ?? ""
+                };
+                currentSettings.Username = {
+                    ...currentSettings.Username,
+                    value: user.username ?? ""
+                };
+                if (currentSettings.Email) {
+                    currentSettings.Email = {
+                        ...currentSettings.Email,
+                        value: user.email ?? ""
+                    };
+                }
+            }
+
+            setSettings(currentSettings);
         } catch (error) {
             console.error("Failed to fetch setting sections:", error);
         }
@@ -78,6 +103,40 @@ function Settings(props) {
     useEffect(() => {
         prepareConfiguration();
     }, []);
+
+    useEffect(() => {
+        if (!user) {
+            return;
+        }
+
+        setSettings((prev) => ({
+            ...prev,
+            ...(prev.FirstName ? {
+                FirstName: {
+                    ...prev.FirstName,
+                    value: user.firstName ?? ""
+                }
+            } : {}),
+            ...(prev.LastName ? {
+                LastName: {
+                    ...prev.LastName,
+                    value: user.lastName ?? ""
+                }
+            } : {}),
+            ...(prev.Username ? {
+                Username: {
+                    ...prev.Username,
+                    value: user.username ?? ""
+                }
+            } : {}),
+            ...(prev.Email ? {
+                Email: {
+                    ...prev.Email,
+                    value: user.email ?? ""
+                }
+            } : {})
+        }));
+    }, [user]);
 
     const setSharedValues = (valueName, value) => {
         for(var setting of Object.values(settings)) {

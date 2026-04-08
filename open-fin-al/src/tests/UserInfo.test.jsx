@@ -2,7 +2,7 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
-jest.mock('../View/App', () => {
+jest.mock('../View/App/DataContext', () => {
     const React = require('react');
     return {
         DataContext: React.createContext({ user: null })
@@ -10,7 +10,7 @@ jest.mock('../View/App', () => {
 });
 
 import { UserInfo } from '../View/App/UserInfo';
-import { DataContext } from '../View/App';
+import { DataContext } from '../View/App/DataContext';
 
 // Mock the DataContext
 const mockUser = {

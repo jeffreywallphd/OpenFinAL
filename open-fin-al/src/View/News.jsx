@@ -7,7 +7,7 @@
 import React, { useContext, useEffect } from "react";
 import { NewsSearchBar } from "./News/SearchBar";
 import { NewsListing } from "./News/Listing";
-import { DataContext } from "./App";
+import { DataContext } from "./App/DataContext";
 import { useHeader } from "./App/LoadedLayout";
 
 
