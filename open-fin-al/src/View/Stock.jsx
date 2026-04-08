@@ -217,29 +217,28 @@ return (
                 <div>
                     {state ? (
                         <>
-                            {/* WrappedTickerSearchBar replaces TickerSearchBar */}
-                            <WrappedTickerSearchBar
-                                state={state}
-                                handleDataChange={handleDataChange}
-                                viewConfig={tickerSearchConfig}
-                            />
-
-                            {state.isLoading === true ? (
-                                <>
-                                    <div className="loader-container">
-                                        <p>Retreiving data...</p>
+                            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                                <WrappedTickerSearchBar
+                                    state={state}
+                                    handleDataChange={handleDataChange}
+                                    viewConfig={tickerSearchConfig}
+                                />
+                                {state.isLoading === true ? (
+                                    <div className="loader-container" style={{ margin: 0 }}>
+                                        <p style={{ margin: 0 }}>Retreiving data...</p>
                                         <div className="tiny-loader"></div>
                                     </div>
-                                </>
-                            ) : state.error ? (
-                                <p className="error">
-                                    The ticker you entered is not valid or no data is available for this stock.
-                                </p>
-                            ) : (
-                                <p>Data Source: {state.dataSource}</p>
-                            )}
+                                ) : state.error ? (
+                                    <p className="error" style={{ margin: 0 }}>
+                                        The ticker you entered is not valid or no data is available for this stock.
+                                    </p>
+                                ) : state.dataSource ? (
+                                    <p style={{ margin: 0, color: "var(--text-muted, #666)", fontSize: "0.875rem" }}>
+                                        Data Source: {state.dataSource}
+                                    </p>
+                                ) : null}
+                            </div>
 
-                            {/* WrappedTimeSeriesChart replaces TimeSeriesChart */}
                             <WrappedTimeSeriesChart
                                 state={state}
                                 fundamentalAnalysis={fundamentalAnalysis}
@@ -253,16 +252,13 @@ return (
                 </div>
                 <div className="sidePanel">
                     {state && state.secData ? (
-                        <>
-                            {/* WrappedTickerSidePanel replaces TickerSidePanel */}
-                            <WrappedTickerSidePanel
-                                state={state}
-                                analysisLoading={analysisLoading}
-                                handleAIFundamentalAnalysis={handleAIFundamentalAnalysis}
-                                fundamentalAnalysisDisabled={fundamentalAnalysisDisabled}
-                                viewConfig={sidePanelConfig}
-                            />
-                        </>
+                        <WrappedTickerSidePanel
+                            state={state}
+                            analysisLoading={analysisLoading}
+                            handleAIFundamentalAnalysis={handleAIFundamentalAnalysis}
+                            fundamentalAnalysisDisabled={fundamentalAnalysisDisabled}
+                            viewConfig={sidePanelConfig}
+                        />
                     ) : null}
                 </div>
             </div>

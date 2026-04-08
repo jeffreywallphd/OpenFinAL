@@ -521,6 +521,7 @@ code {
 .chartContainer {
   width: 700px;
   margin-left: 10px;
+  margin-top: 20px;
 }
 
 .stockDetails {
@@ -562,13 +563,20 @@ code {
   padding: 0;
 }
 
+.priceSearchFormContainer form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .priceSearchBar {
   padding: 8px;
-  width: 400px;
+  flex: 1;
+  min-width: 200px;
   border: 1px solid black;
   height: 30px;
   border-radius: 4px;
-  margin-right: 8px;
+  margin-right: 0;
 }
 
 .priceSearchButton {
