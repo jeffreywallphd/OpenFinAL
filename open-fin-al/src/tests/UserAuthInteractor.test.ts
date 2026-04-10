@@ -21,17 +21,20 @@ const mockDatabase = {
     SQLiteInsert: jest.fn(),
     SQLiteUpdate: jest.fn(),
 };
+const mockVault = {
+    setSecret: jest.fn()
+};
 
 // Setup global window mock
 beforeAll(() => {
     // @ts-ignore
-    global.window = { database: mockDatabase };
+    global.window = { database: mockDatabase, vault: mockVault };
 });
 
 beforeEach(() => {
     // Ensure window.database is available for each test
     // @ts-ignore
-    global.window = { database: mockDatabase };
+    global.window = { database: mockDatabase, vault: mockVault };
 });
 
 describe('UserAuthInteractor', () => {
@@ -39,6 +42,7 @@ describe('UserAuthInteractor', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        mockVault.setSecret.mockResolvedValue(undefined);
         
         // Setup default mock implementations using jest.mocked
         jest.mocked(mockPinEncryption.validatePinFormat).mockReturnValue(true);
@@ -52,6 +56,7 @@ describe('UserAuthInteractor', () => {
         const validUserData = {
             firstName: 'John',
             lastName: 'Doe',
+            email: 'john@example.com',
             username: 'johndoe',
             pin: '12345678'
         };
@@ -59,6 +64,33 @@ describe('UserAuthInteractor', () => {
         test.skip('should register user successfully', async () => {
             // Skipping this test due to complex mocking issues
             // The functionality is tested in integration and other tests pass
+        });
+
+        test('should retry default portfolio creation when a legacy global name constraint conflicts', async () => {
+            (global as any).window.database = mockDatabase;
+            (global as any).window.vault = mockVault;
+            mockDatabase.SQLiteQuery.mockResolvedValue([]);
+            mockDatabase.SQLiteInsert
+                .mockResolvedValueOnce({ lastID: 42 })
+                .mockRejectedValueOnce(new Error('SQLITE_CONSTRAINT: UNIQUE constraint failed: Portfolio.name'))
+                .mockResolvedValueOnce({ lastID: 100 });
+
+            const result = await authInteractor.registerUser(validUserData);
+
+            expect(result).toEqual({ success: true, userId: 42 });
+            expect(mockDatabase.SQLiteInsert).toHaveBeenNthCalledWith(1, {
+                query: 'INSERT INTO User (firstName, lastName, email, username, pinHash) VALUES (?, ?, ?, ?, ?)',
+                parameters: ['John', 'Doe', 'john@example.com', 'johndoe', 'salt123:hash456']
+            });
+            expect(mockDatabase.SQLiteInsert).toHaveBeenNthCalledWith(2, {
+                query: 'INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)',
+                parameters: ["John's Portfolio", 42]
+            });
+            expect(mockDatabase.SQLiteInsert).toHaveBeenNthCalledWith(3, {
+                query: 'INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)',
+                parameters: ["John's Portfolio (2)", 42]
+            });
+            expect(mockVault.setSecret).toHaveBeenCalledWith('Email', 'john@example.com');
         });
 
         test('should fail when database is not available', async () => {
@@ -112,11 +144,13 @@ describe('UserAuthInteractor', () => {
             id: 1,
             firstName: 'John',
             lastName: 'Doe',
+            email: 'john@example.com',
             username: 'johndoe',
             pinHash: 'salt123:hash456'
         };
 
         test('should login user successfully', async () => {
+            (global as any).window.vault = mockVault;
             mockDatabase.SQLiteQuery.mockResolvedValue([mockUser]);
             mockDatabase.SQLiteUpdate.mockResolvedValue({});
 
@@ -127,6 +161,7 @@ describe('UserAuthInteractor', () => {
                 id: 1,
                 firstName: 'John',
                 lastName: 'Doe',
+                email: 'john@example.com',
                 username: 'johndoe'
             });
             expect(mockPinEncryption.verifyPin).toHaveBeenCalledWith(pin, 'salt123:hash456');
@@ -134,6 +169,7 @@ describe('UserAuthInteractor', () => {
                 query: 'UPDATE User SET lastLogin = CURRENT_TIMESTAMP WHERE id = ?',
                 parameters: [1]
             });
+            expect(mockVault.setSecret).toHaveBeenCalledWith('Email', 'john@example.com');
         });
 
         test('should fail with invalid PIN format', async () => {
@@ -379,6 +415,7 @@ describe('UserAuthInteractor', () => {
             const result = await authInteractor.registerUser({
                 firstName: 'John',
                 lastName: 'Doe',
+                email: 'john@example.com',
                 username: 'johndoe',
                 pin: '12345678'
             });
@@ -397,6 +434,7 @@ describe('UserAuthInteractor', () => {
             const result = await authInteractor.registerUser({
                 firstName: 'John',
                 lastName: 'Doe',
+                email: 'john@example.com',
                 username: 'johndoe',
                 pin: '12345678'
             });

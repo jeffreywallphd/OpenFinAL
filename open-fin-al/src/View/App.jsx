@@ -4,27 +4,20 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 // Imports for react pages and assets
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
-import { AppConfiguring } from "./App/Configuring";
+import { DataContext } from "./App/DataContext";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 
-const DataContext = createContext();
-
-function App(props) {
+const createInitialAppState = () => {
     const currentDate = new Date();
-    const [loading, setLoading] = useState(true);
-    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
-    const [configured, setConfigured] = useState(false);
-    const [preparationError, setPreparationError] = useState(null);
-    const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [state, setState] = useState({ 
+
+    return {
         initializing: true,
         isFirstLoad: true,
         data: null,
@@ -49,7 +42,19 @@ function App(props) {
         maxVolume: 1000,
         yAxisStart: new Date(currentDate.getDate() - 5).toISOString().split('T')[0],
         yAxisEnd: new Date().toISOString().split('T')[0]
-    });
+    };
+};
+
+function App(props) {
+    const [loading, setLoading] = useState(true);
+    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
+    const [configured, setConfigured] = useState(false);
+    const [needsConfiguration, setNeedsConfiguration] = useState(false);
+    const [preparationError, setPreparationError] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authViewKey, setAuthViewKey] = useState(0);
+    const [state, setState] = useState(createInitialAppState);
 
     const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
@@ -85,8 +90,10 @@ function App(props) {
 
     // Handle successful authentication
     const handleAuthSuccess = (userData) => {
+        setState(createInitialAppState());
         setUser(userData);
         setIsAuthenticated(true);
+        setAuthViewKey(prev => prev + 1);
         
         // Save user session
         localStorage.setItem('openfinAL_user', JSON.stringify(userData));
@@ -96,9 +103,12 @@ function App(props) {
 
     // Handle user logout
     const handleLogout = () => {
+        setState(createInitialAppState());
         setUser(null);
         setIsAuthenticated(false);
+        setAuthViewKey(prev => prev + 1);
         localStorage.removeItem('openfinAL_user');
+        window.location.hash = '#/';
         console.log('User logged out');
     };
 
@@ -108,6 +118,7 @@ function App(props) {
 
     const handleConfigured = async () => {
         setConfigured(true);
+        setNeedsConfiguration(false);
         await checkIfFullyInitialized(); 
     };
 
@@ -147,6 +158,7 @@ function App(props) {
             
             if(response.response.ok) {
                 setConfigured(true);
+                setNeedsConfiguration(false);
 
                 if(secureConnectionsValidated) {
                     setLoading(false);
@@ -166,6 +178,7 @@ function App(props) {
 
                 if(configurationResponse.response.ok) {
                     setConfigured(true);
+                    setNeedsConfiguration(false);
                     getDarkMode();
 
                     //app is not initialized, so start data initialization
@@ -179,8 +192,10 @@ function App(props) {
                     }
                 } else {
                     await interactor.post(requestObj,"createConfig");
-                    setConfigured(false);
-                    setLoading(true);
+                    setConfigured(true);
+                    setNeedsConfiguration(true);
+                    setLoading(false);
+                    checkAuthenticationState();
                     return false;
                 }
             }
@@ -203,10 +218,12 @@ function App(props) {
                 :
                     (
                         !isAuthenticated ?
-                            <AuthContainer onAuthSuccess={handleAuthSuccess}/>
+                            <AuthContainer key={`auth-${authViewKey}`} onAuthSuccess={handleAuthSuccess}/>
                         :
                             <DataContext.Provider value={value}>
                                 <AppLoaded 
+                                    key={`app-${authViewKey}`}
+                                    needsConfiguration={needsConfiguration}
                                     checkIfConfigured={checkIfFullyInitialized} 
                                     handleConfigured={handleConfigured}
                                     onLogout={handleLogout}
@@ -214,9 +231,9 @@ function App(props) {
                             </DataContext.Provider>
                     )                        
             )        
-        : 
-            <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>
+        :
+            <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
     );
 }
 
-export { App, DataContext };
+export { App };

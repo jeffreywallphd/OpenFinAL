@@ -9,7 +9,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { TimeSeriesChart } from "./Stock/TimeSeriesChart";
 import { TickerSearchBar } from "./Stock/TickerSearchBar";
 import { TickerSidePanel } from "./Stock/TickerSidePanel";
-import { DataContext } from "./App";
+import { DataContext } from "./App/DataContext";
 
 import { SecInteractor } from "../Interactor/SecInteractor";
 import { LanguageModelInteractor } from "../Interactor/LanguageModelInteractor";
