@@ -76,7 +76,7 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
       // Only keep data if the price is greater than $1.00
       if(item[closingPriceKey] > 1) {
         formattedData.push({
-          date: date.toLocaleDateString(),
+          date: date.toISOString().split("T")[0],
           time: action === "intraday" ? date.toLocaleTimeString() : "", // Only include time for intraday data
           price: item[closingPriceKey] ? Math.round(item[closingPriceKey]*100)/100: null,
           volume: item["volume"],

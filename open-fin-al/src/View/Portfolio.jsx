@@ -13,6 +13,7 @@ import { StockInteractor } from "../Interactor/StockInteractor";
 import {JSONRequest} from "../Gateway/Request/JSONRequest";
 import { HeaderContext } from "./App/LoadedLayout";
 import { PriceChangeChart } from "./PriceChangeChart";
+import { buildCumulativePriceSeries, buildPortfolioPerformanceResult } from "../Utility/PortfolioPerformanceCalculator";
 
 import { PieChart, Pie, Sector } from 'recharts'; // For adding charts
 
@@ -98,17 +99,16 @@ class Portfolio extends Component {
             });
         }
         
-        await this.fetchPortfolios();
+        const defaultPortfolioId = await this.fetchPortfolios();
         const cashId = await this.getCashId();
         
-        // Only fetch portfolio data if a portfolio is selected
-        if(this.state.currentPortfolio) {
-            await this.getPortfolioValue();
-            await this.getPortfolioChartData();
-            await this.fetchBenchmarkData();
+        if(defaultPortfolioId) {
+            await this.getPortfolioValue(defaultPortfolioId);
+            await this.getPortfolioChartData(defaultPortfolioId);
+            await this.refreshBenchmarkSection(this.state.benchmarkInterval, this.state.selectedBenchmark, defaultPortfolioId);
 
             if(cashId) {
-                await this.getBuyingPower(cashId);
+                await this.getBuyingPower(cashId, defaultPortfolioId);
             }
         }
     }
@@ -144,11 +144,18 @@ class Portfolio extends Component {
             activeIndex: 0,
             portfolioName: null,
             benchmarkData: null,
+            benchmarkPerformanceData: [],
+            portfolioPerformanceData: [],
+            portfolioPerformanceWarning: null,
             selectedBenchmark: "SPY",
             benchmarkInterval: "1M",
             benchmarkLoading: false,
-            benchmarkError: false
+            benchmarkError: false,
+            portfolioPerformanceLoading: false,
+            portfolioPerformanceError: false
         };
+
+        this.symbolHistoryCache = new Map();
 
         //Bind methods for element events
         this.openModal = this.openModal.bind(this);
@@ -157,6 +164,9 @@ class Portfolio extends Component {
         this.onPieEnter = this.onPieEnter.bind(this);
         this.handleBenchmarkChange = this.handleBenchmarkChange.bind(this);
         this.fetchBenchmarkData = this.fetchBenchmarkData.bind(this);
+        this.fetchPortfolioPerformanceData = this.fetchPortfolioPerformanceData.bind(this);
+        this.fetchHistoricalSeries = this.fetchHistoricalSeries.bind(this);
+        this.refreshBenchmarkSection = this.refreshBenchmarkSection.bind(this);
     }
 
     async openModal() {
@@ -207,6 +217,8 @@ class Portfolio extends Component {
             portfolioName: defaultPortfolioName, 
             portfolios: response.response?.results || [] 
         });
+
+        return defaultPortfolio;
     }
 
     async changeCurrentPortfolio(portfolioId, portfolioName) {
@@ -214,7 +226,7 @@ class Portfolio extends Component {
         await this.getBuyingPower(null, portfolioId);
         await this.getPortfolioValue(portfolioId);
         await this.getPortfolioChartData(portfolioId);
-        await this.fetchBenchmarkData();
+        await this.refreshBenchmarkSection(this.state.benchmarkInterval, this.state.selectedBenchmark, portfolioId);
     }
 
     async getCashId() {
@@ -263,6 +275,11 @@ class Portfolio extends Component {
             await this.getBuyingPower(this.state.cashId);
             await this.getPortfolioValue();
             await this.getPortfolioChartData();
+            await this.fetchPortfolioPerformanceData(
+                this.state.benchmarkInterval,
+                this.state.currentPortfolio,
+                this.state.benchmarkData?.response?.results?.[0]?.data || []
+            );
         } else {
             this.setState({depositMessage: "The deposit failed. If the problem persists, please notify the software provider."});
         }
@@ -404,8 +421,15 @@ class Portfolio extends Component {
     handleBenchmarkChange(e) {
         const selectedBenchmark = e.target.value;
         this.setState({ selectedBenchmark }, () => {
-            this.fetchBenchmarkData(this.state.benchmarkInterval, selectedBenchmark);
+            this.refreshBenchmarkSection(this.state.benchmarkInterval, selectedBenchmark, this.state.currentPortfolio);
         });
+    }
+
+    async refreshBenchmarkSection(interval = this.state.benchmarkInterval, ticker = this.state.selectedBenchmark, portfolioId = this.state.currentPortfolio) {
+        const benchmarkSeries = await this.fetchBenchmarkData(interval, ticker);
+        const benchmarkDates = benchmarkSeries || this.state.benchmarkData?.response?.results?.[0]?.data || [];
+
+        await this.fetchPortfolioPerformanceData(interval, portfolioId, benchmarkDates);
     }
 
     async fetchBenchmarkData(interval = this.state.benchmarkInterval, ticker = this.state.selectedBenchmark) {
@@ -439,28 +463,168 @@ class Portfolio extends Component {
                     benchmarkLoading: false,
                     benchmarkError: true,
                     benchmarkData: null,
+                    benchmarkPerformanceData: [],
                     benchmarkInterval: interval,
                     selectedBenchmark,
                 });
-                return false;
+                return null;
             }
 
+            const benchmarkSeries = response.response.results[0].data;
             this.setState({
                 benchmarkData: response,
+                benchmarkPerformanceData: buildCumulativePriceSeries(benchmarkSeries),
                 benchmarkInterval: interval,
                 benchmarkLoading: false,
                 benchmarkError: false,
                 selectedBenchmark,
             });
-            return true;
+            return benchmarkSeries;
         } catch (error) {
             console.error("Error fetching benchmark data:", error);
             this.setState({
                 benchmarkLoading: false,
                 benchmarkError: true,
                 benchmarkData: null,
+                benchmarkPerformanceData: [],
                 benchmarkInterval: interval,
                 selectedBenchmark,
+            });
+            return null;
+        }
+    }
+
+    async fetchHistoricalSeries(symbol, interval = this.state.benchmarkInterval) {
+        const cacheKey = `${interval}:${symbol}`;
+        if(this.symbolHistoryCache.has(cacheKey)) {
+            return this.symbolHistoryCache.get(cacheKey);
+        }
+
+        const historyPromise = (async () => {
+            const sessionCacheKey = `openfinal-price-history:${cacheKey}`;
+
+            try {
+                const cachedValue = window.sessionStorage?.getItem(sessionCacheKey);
+                if(cachedValue) {
+                    const parsedValue = JSON.parse(cachedValue);
+                    if(Array.isArray(parsedValue) && parsedValue.length > 0) {
+                        return parsedValue;
+                    }
+                }
+            } catch (cacheError) {
+                console.warn(`Unable to read cached history for ${symbol}:`, cacheError);
+            }
+
+            let lastError = null;
+            for(let attempt = 0; attempt < 2; attempt++) {
+                try {
+                    const interactor = new StockInteractor();
+                    const requestObj = new JSONRequest(JSON.stringify({
+                        request: {
+                            stock: {
+                                action: "interday",
+                                ticker: symbol,
+                                companyName: symbol,
+                                interval: interval
+                            }
+                        }
+                    }));
+
+                    const response = await interactor.get(requestObj);
+                    const historyData = response?.response?.results?.[0]?.data || [];
+                    if(Array.isArray(historyData) && historyData.length > 0) {
+                        try {
+                            window.sessionStorage?.setItem(sessionCacheKey, JSON.stringify(historyData));
+                        } catch (cacheWriteError) {
+                            console.warn(`Unable to cache history for ${symbol}:`, cacheWriteError);
+                        }
+                        return historyData;
+                    }
+                } catch (error) {
+                    lastError = error;
+                }
+            }
+
+            if(lastError) {
+                console.error(`Error fetching historical data for ${symbol}:`, lastError);
+            }
+
+            return [];
+        })();
+
+        this.symbolHistoryCache.set(cacheKey, historyPromise);
+        const history = await historyPromise;
+
+        if(!Array.isArray(history) || history.length === 0) {
+            this.symbolHistoryCache.delete(cacheKey);
+            return [];
+        }
+
+        this.symbolHistoryCache.set(cacheKey, history);
+        return history;
+    }
+
+    async fetchPortfolioPerformanceData(interval = this.state.benchmarkInterval, portfolioId = this.state.currentPortfolio, benchmarkDates = []) {
+        if(!portfolioId) {
+            this.setState({
+                portfolioPerformanceData: [],
+                portfolioPerformanceWarning: null,
+                portfolioPerformanceLoading: false,
+                portfolioPerformanceError: false,
+            });
+            return false;
+        }
+
+        this.setState({
+            portfolioPerformanceLoading: true,
+            portfolioPerformanceError: false,
+            portfolioPerformanceWarning: null,
+        });
+
+        const interactor = new PortfolioTransactionInteractor();
+        const requestObj = new JSONRequest(JSON.stringify({
+            request: {
+                action: "getPortfolioPerformanceHistory",
+                transaction: {
+                    portfolioId: portfolioId
+                }
+            }
+        }));
+
+        try {
+            const response = await interactor.get(requestObj);
+            const transactions = response?.response?.results || [];
+            const symbols = [...new Set(
+                transactions
+                    .filter((entry) => entry.symbol && entry.type !== "Cash")
+                    .map((entry) => entry.symbol)
+            )];
+
+            const historicalEntries = await Promise.all(symbols.map(async (symbol) => [
+                symbol,
+                await this.fetchHistoricalSeries(symbol, interval)
+            ]));
+
+            const { series, warning, degradedSymbols } = buildPortfolioPerformanceResult({
+                transactions,
+                benchmarkDates,
+                historicalDataBySymbol: new Map(historicalEntries),
+            });
+
+            this.setState({
+                portfolioPerformanceData: series,
+                portfolioPerformanceWarning: warning,
+                portfolioPerformanceLoading: false,
+                portfolioPerformanceError: symbols.length > 0 && series.length === 0 && degradedSymbols.length === symbols.length,
+            });
+            return true;
+        } catch (error) {
+            console.error("Error fetching portfolio performance data:", error);
+            this.setState({
+                portfolioPerformanceData: [],
+                portfolioPerformanceWarning: null,
+                portfolioPerformanceLoading: false,
+                portfolioPerformanceError: true,
             });
             return false;
         }
@@ -555,12 +719,12 @@ class Portfolio extends Component {
                             </div>
                             <div className="portfolio-benchmark-section">
                                 <div className="portfolio-benchmark-header">
-                                    <h3>{selectedBenchmarkConfig.label} Benchmark Percent Change</h3>
+                                    <h3>{selectedBenchmarkConfig.label} vs Your Portfolio Percent Change</h3>
                                     <select
                                         className="portfolio-benchmark-select"
                                         value={this.state.selectedBenchmark}
                                         onChange={this.handleBenchmarkChange}
-                                        disabled={this.state.benchmarkLoading}
+                                        disabled={this.state.benchmarkLoading || this.state.portfolioPerformanceLoading}
                                     >
                                         <option value="SPY">S&P 500 (SPY)</option>
                                         <option value="DIA">DOW (DIA)</option>
@@ -568,19 +732,37 @@ class Portfolio extends Component {
                                     </select>
                                 </div>
                                 <div className="btn-group portfolio-benchmark-controls">
-                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1M"} onClick={() => this.fetchBenchmarkData("1M")}>1M</button>
-                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "6M"} onClick={() => this.fetchBenchmarkData("6M")}>6M</button>
-                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "1Y"} onClick={() => this.fetchBenchmarkData("1Y")}>1Y</button>
-                                    <button disabled={this.state.benchmarkLoading || this.state.benchmarkInterval === "5Y"} onClick={() => this.fetchBenchmarkData("5Y")}>5Y</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.portfolioPerformanceLoading || this.state.benchmarkInterval === "1M"} onClick={() => this.refreshBenchmarkSection("1M")}>1M</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.portfolioPerformanceLoading || this.state.benchmarkInterval === "6M"} onClick={() => this.refreshBenchmarkSection("6M")}>6M</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.portfolioPerformanceLoading || this.state.benchmarkInterval === "1Y"} onClick={() => this.refreshBenchmarkSection("1Y")}>1Y</button>
+                                    <button disabled={this.state.benchmarkLoading || this.state.portfolioPerformanceLoading || this.state.benchmarkInterval === "5Y"} onClick={() => this.refreshBenchmarkSection("5Y")}>5Y</button>
                                 </div>
                                 {this.state.benchmarkLoading ? <p>Loading {this.state.selectedBenchmark} benchmark data...</p> : null}
+                                {this.state.portfolioPerformanceLoading ? <p>Calculating your portfolio performance...</p> : null}
                                 {this.state.benchmarkError ? <p>Unable to load {this.state.selectedBenchmark} benchmark data right now.</p> : null}
-                                {this.state.benchmarkData?.response?.results?.[0]?.data ? (
+                                {this.state.portfolioPerformanceError ? <p>Unable to calculate your portfolio performance right now.</p> : null}
+                                {this.state.portfolioPerformanceWarning ? <p>{this.state.portfolioPerformanceWarning}</p> : null}
+                                {this.state.benchmarkPerformanceData?.length ? (
                                     <PriceChangeChart
                                         className="portfolio-benchmark-chart"
-                                        title={`${selectedBenchmarkConfig.label} (${this.state.selectedBenchmark}) • ${this.state.benchmarkInterval}`}
-                                        priceData={this.state.benchmarkData.response.results[0].data}
+                                        title={`${selectedBenchmarkConfig.label} (${this.state.selectedBenchmark}) vs Your Portfolio • ${this.state.benchmarkInterval}`}
                                         valueType="percent"
+                                        series={[
+                                            {
+                                                key: "benchmark",
+                                                name: `${selectedBenchmarkConfig.label} (${this.state.selectedBenchmark})`,
+                                                data: this.state.benchmarkPerformanceData,
+                                                color: "#ff7300",
+                                                dataKey: "change"
+                                            },
+                                            {
+                                                key: "portfolio",
+                                                name: "Your Portfolio",
+                                                data: this.state.portfolioPerformanceData,
+                                                color: "#5A67D8",
+                                                dataKey: "change"
+                                            }
+                                        ]}
                                     />
                                 ) : null}
                             </div>
