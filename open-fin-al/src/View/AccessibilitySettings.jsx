@@ -25,7 +25,7 @@ function AccessibilitySettings() {
     const { setHeader } = useHeader();
 
     const [settings, setSettings] = useState({
-        LargeText: false,
+        LargeText: 100,
         HighContrast: false,
         ReduceMotion: false,
         EnhancedFocus: false,
@@ -41,8 +41,9 @@ function AccessibilitySettings() {
         const loadSettings = async () => {
             const config = await window.config.load();
             if (config) {
+                const largeTextVal = config.AccessibilitySettings?.LargeText;
                 setSettings({
-                    LargeText: !!(config.AccessibilitySettings?.LargeText),
+                    LargeText: typeof largeTextVal === "number" ? largeTextVal : (largeTextVal ? 120 : 100),
                     HighContrast: !!(config.AccessibilitySettings?.HighContrast),
                     ReduceMotion: !!(config.AccessibilitySettings?.ReduceMotion),
                     EnhancedFocus: !!(config.AccessibilitySettings?.EnhancedFocus),
@@ -60,7 +61,6 @@ function AccessibilitySettings() {
 
         // Apply body class immediately
         const classMap = {
-            LargeText: "large-text",
             HighContrast: "high-contrast",
             ReduceMotion: "reduce-motion",
             EnhancedFocus: "enhanced-focus",
@@ -85,6 +85,27 @@ function AccessibilitySettings() {
         }
     };
 
+    const handleTextSize = async (value) => {
+        const size = Number(value);
+        setSettings((prev) => ({ ...prev, LargeText: size }));
+
+        // Apply immediately
+        document.body.classList.toggle("large-text", size > 100);
+        document.documentElement.style.setProperty("--text-scale", size / 100);
+
+        // Save to config
+        const config = await window.config.load();
+        if (config) {
+            if (!config.AccessibilitySettings) {
+                config.AccessibilitySettings = {};
+            }
+            config.AccessibilitySettings.LargeText = size;
+            await window.config.save(config);
+            setStatusMsg(`Text size set to ${size}%.`);
+            setTimeout(() => setStatusMsg(""), 3000);
+        }
+    };
+
     return (
         <div className="accessibility-settings">
             <div aria-live="polite" aria-atomic="true" className="sr-only">
@@ -94,13 +115,24 @@ function AccessibilitySettings() {
             <section>
                 <div className="settings-card">
                     <h3>Display</h3>
-                    <ToggleRow
-                        id="toggle-large-text"
-                        label="Larger Text"
-                        description="Increases the base font size to 120% for improved readability."
-                        checked={settings.LargeText}
-                        onChange={() => handleToggle("LargeText")}
-                    />
+                    <div className="toggle-row">
+                        <div className="toggle-info">
+                            <h4>Text Size</h4>
+                            <p>Adjust the base font size ({settings.LargeText}%).</p>
+                        </div>
+                        <div className="text-size-slider">
+                            <input
+                                type="range"
+                                id="slider-text-size"
+                                min="80"
+                                max="150"
+                                step="5"
+                                value={settings.LargeText}
+                                onChange={(e) => handleTextSize(e.target.value)}
+                                aria-label={`Text size: ${settings.LargeText}%`}
+                            />
+                        </div>
+                    </div>
                     <ToggleRow
                         id="toggle-dark-mode"
                         label="Dark Mode"

@@ -68,7 +68,9 @@ function App(props) {
         const a = config?.AccessibilitySettings ?? {};
         document.body.classList.toggle('high-contrast', !!a.HighContrast);
         document.body.classList.toggle('reduce-motion', !!a.ReduceMotion);
-        document.body.classList.toggle('large-text', !!a.LargeText);
+        const textSize = typeof a.LargeText === 'number' ? a.LargeText : (a.LargeText ? 120 : 100);
+        document.body.classList.toggle('large-text', textSize > 100);
+        document.documentElement.style.setProperty('--text-scale', textSize / 100);
         document.body.classList.toggle('enhanced-focus', !!a.EnhancedFocus);
     };
 

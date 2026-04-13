@@ -3419,7 +3419,11 @@ body.high-contrast.dark-mode {
 }
 
 /* Large Text Mode */
-body.large-text { font-size: 120%; }
+body.large-text { zoom: var(--text-scale, 1.2); }
+
+/* Text size slider */
+.text-size-slider { display: flex; align-items: center; min-width: 140px; }
+.text-size-slider input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--primary-color); }
 
 /* Reduce Motion */
 @media (prefers-reduced-motion: reduce) {
