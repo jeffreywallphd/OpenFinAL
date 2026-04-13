@@ -13,6 +13,7 @@ import { AppConfiguring } from "./App/Configuring";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
+import { getThemeColors, injectColorStyles, applyColors } from "./themes";
 
 const DataContext = createContext();
 
@@ -53,30 +54,30 @@ function App(props) {
 
     const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
-    // Establish dark mode settings when loaded or refreshed
-    const getDarkMode = async () => {
+    // Establish dark mode and accessibility settings when loaded or refreshed
+    const applyAllSettings = async () => {
         const config = await window.config.load();
-        if(config && config.DarkMode) {
-            document.body.classList.add("dark-mode");
-        } else {
-            document.body.classList.remove("dark-mode");
-        }
-    };
+        if (!config) return;
 
-    const applyAccessibilitySettings = async () => {
-        const config = await window.config.load();
-        const a = config?.AccessibilitySettings ?? {};
+        // Dark mode (from DarkMode flag or theme IsDarkTheme)
+        const a = config.AccessibilitySettings ?? {};
+        const isDark = !!(config.DarkMode || a.IsDarkTheme);
+        document.body.classList.toggle('dark-mode', isDark);
+
+        // Accessibility body classes
         document.body.classList.toggle('high-contrast', !!a.HighContrast);
         document.body.classList.toggle('reduce-motion', !!a.ReduceMotion);
-        const textSize = typeof a.LargeText === 'number' ? a.LargeText : (a.LargeText ? 120 : 100);
-        document.body.classList.toggle('large-text', textSize > 100);
-        document.documentElement.style.setProperty('--text-scale', textSize / 100);
+        document.body.classList.toggle('large-text', !!a.LargeText);
         document.body.classList.toggle('enhanced-focus', !!a.EnhancedFocus);
+
+        // Color theme
+        const themeName = a.ColorTheme ?? 'default';
+        injectColorStyles();
+        applyColors(getThemeColors(themeName, isDark));
     };
 
     useEffect( () => {
-        getDarkMode();
-        applyAccessibilitySettings();
+        applyAllSettings();
     }, []);
 
     // Check if user is already authenticated from previous session
@@ -178,7 +179,7 @@ function App(props) {
 
                 if(configurationResponse.response.ok) {
                     setConfigured(true);
-                    getDarkMode();
+                    applyAllSettings();
 
                     //app is not initialized, so start data initialization
                     const initialized = await executeDataInitialization();

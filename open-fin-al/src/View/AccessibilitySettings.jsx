@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useHeader } from "./App/LoadedLayout";
+import { THEMES, getThemeColors, injectColorStyles, applyColors } from "./themes";
 
 function ToggleRow({ id, label, description, checked, onChange }) {
     return (
@@ -9,12 +10,7 @@ function ToggleRow({ id, label, description, checked, onChange }) {
                 <p>{description}</p>
             </div>
             <label className="toggle-switch" htmlFor={id}>
-                <input
-                    type="checkbox"
-                    id={id}
-                    checked={checked}
-                    onChange={onChange}
-                />
+                <input type="checkbox" id={id} checked={checked} onChange={onChange} />
                 <span className="toggle-slider"></span>
             </label>
         </div>
@@ -25,83 +21,99 @@ function AccessibilitySettings() {
     const { setHeader } = useHeader();
 
     const [settings, setSettings] = useState({
-        LargeText: 100,
+        LargeText: false,
         HighContrast: false,
         ReduceMotion: false,
         EnhancedFocus: false,
-        DarkMode: false,
     });
+
+    const [colorTheme, setColorTheme] = useState("default");
+    const [isDarkTheme, setIsDarkTheme] = useState(false);
     const [statusMsg, setStatusMsg] = useState("");
 
     useEffect(() => {
         setHeader({ title: "Accessibility", icon: "accessibility" });
+        injectColorStyles();
     }, [setHeader]);
 
     useEffect(() => {
         const loadSettings = async () => {
             const config = await window.config.load();
             if (config) {
-                const largeTextVal = config.AccessibilitySettings?.LargeText;
                 setSettings({
-                    LargeText: typeof largeTextVal === "number" ? largeTextVal : (largeTextVal ? 120 : 100),
-                    HighContrast: !!(config.AccessibilitySettings?.HighContrast),
-                    ReduceMotion: !!(config.AccessibilitySettings?.ReduceMotion),
-                    EnhancedFocus: !!(config.AccessibilitySettings?.EnhancedFocus),
-                    DarkMode: !!config.DarkMode,
+                    LargeText: !!config.AccessibilitySettings?.LargeText,
+                    HighContrast: !!config.AccessibilitySettings?.HighContrast,
+                    ReduceMotion: !!config.AccessibilitySettings?.ReduceMotion,
+                    EnhancedFocus: !!config.AccessibilitySettings?.EnhancedFocus,
                 });
+
+                const savedTheme = config.AccessibilitySettings?.ColorTheme ?? "default";
+                const savedIsDark = !!(config.AccessibilitySettings?.IsDarkTheme ?? config.DarkMode);
+
+                setColorTheme(savedTheme);
+                setIsDarkTheme(savedIsDark);
+
+                const colorsToApply = getThemeColors(savedTheme, savedIsDark);
+                applyColors(colorsToApply);
             }
         };
         loadSettings();
     }, []);
 
-    const handleToggle = async (key) => {
-        const newValue = !settings[key];
-        const newSettings = { ...settings, [key]: newValue };
-        setSettings(newSettings);
+    const handleThemeChange = async (e) => {
+        const theme = e.target.value;
+        setColorTheme(theme);
 
-        // Apply body class immediately
-        const classMap = {
-            HighContrast: "high-contrast",
-            ReduceMotion: "reduce-motion",
-            EnhancedFocus: "enhanced-focus",
-            DarkMode: "dark-mode",
-        };
-        document.body.classList.toggle(classMap[key], newValue);
+        const colorsToApply = getThemeColors(theme, isDarkTheme);
+        applyColors(colorsToApply);
 
-        // Save to config
         const config = await window.config.load();
         if (config) {
-            if (key === "DarkMode") {
-                config.DarkMode = newValue;
-            } else {
-                if (!config.AccessibilitySettings) {
-                    config.AccessibilitySettings = {};
-                }
-                config.AccessibilitySettings[key] = newValue;
-            }
+            if (!config.AccessibilitySettings) config.AccessibilitySettings = {};
+            config.AccessibilitySettings.ColorTheme = theme;
             await window.config.save(config);
-            setStatusMsg(`${key.replace(/([A-Z])/g, ' $1').trim()} ${newValue ? "enabled" : "disabled"}.`);
+            const label = THEMES[theme]?.label ?? theme;
+            setStatusMsg(`Color theme set to ${label}.`);
             setTimeout(() => setStatusMsg(""), 3000);
         }
     };
 
-    const handleTextSize = async (value) => {
-        const size = Number(value);
-        setSettings((prev) => ({ ...prev, LargeText: size }));
+    const handleDarkThemeToggle = async () => {
+        const newIsDark = !isDarkTheme;
+        setIsDarkTheme(newIsDark);
 
-        // Apply immediately
-        document.body.classList.toggle("large-text", size > 100);
-        document.documentElement.style.setProperty("--text-scale", size / 100);
+        document.body.classList.toggle("dark-mode", newIsDark);
+        applyColors(getThemeColors(colorTheme, newIsDark));
 
-        // Save to config
         const config = await window.config.load();
         if (config) {
-            if (!config.AccessibilitySettings) {
-                config.AccessibilitySettings = {};
-            }
-            config.AccessibilitySettings.LargeText = size;
+            if (!config.AccessibilitySettings) config.AccessibilitySettings = {};
+            config.AccessibilitySettings.IsDarkTheme = newIsDark;
+            config.DarkMode = newIsDark;
             await window.config.save(config);
-            setStatusMsg(`Text size set to ${size}%.`);
+            setStatusMsg(`Dark variant ${newIsDark ? "enabled" : "disabled"}.`);
+            setTimeout(() => setStatusMsg(""), 3000);
+        }
+    };
+
+    const handleToggle = async (key) => {
+        const newValue = !settings[key];
+        setSettings({ ...settings, [key]: newValue });
+
+        const classMap = {
+            LargeText: "large-text",
+            HighContrast: "high-contrast",
+            ReduceMotion: "reduce-motion",
+            EnhancedFocus: "enhanced-focus",
+        };
+        document.body.classList.toggle(classMap[key], newValue);
+
+        const config = await window.config.load();
+        if (config) {
+            if (!config.AccessibilitySettings) config.AccessibilitySettings = {};
+            config.AccessibilitySettings[key] = newValue;
+            await window.config.save(config);
+            setStatusMsg(`${key.replace(/([A-Z])/g, " $1").trim()} ${newValue ? "enabled" : "disabled"}.`);
             setTimeout(() => setStatusMsg(""), 3000);
         }
     };
@@ -115,30 +127,12 @@ function AccessibilitySettings() {
             <section>
                 <div className="settings-card">
                     <h3>Display</h3>
-                    <div className="toggle-row">
-                        <div className="toggle-info">
-                            <h4>Text Size</h4>
-                            <p>Adjust the base font size ({settings.LargeText}%).</p>
-                        </div>
-                        <div className="text-size-slider">
-                            <input
-                                type="range"
-                                id="slider-text-size"
-                                min="80"
-                                max="150"
-                                step="5"
-                                value={settings.LargeText}
-                                onChange={(e) => handleTextSize(e.target.value)}
-                                aria-label={`Text size: ${settings.LargeText}%`}
-                            />
-                        </div>
-                    </div>
                     <ToggleRow
-                        id="toggle-dark-mode"
-                        label="Dark Mode"
-                        description="Switches the app to a dark color scheme. Also available in Settings."
-                        checked={settings.DarkMode}
-                        onChange={() => handleToggle("DarkMode")}
+                        id="toggle-large-text"
+                        label="Larger Text"
+                        description="Increases the base font size to 120% for improved readability."
+                        checked={settings.LargeText}
+                        onChange={() => handleToggle("LargeText")}
                     />
                 </div>
             </section>
@@ -152,6 +146,31 @@ function AccessibilitySettings() {
                         description="Applies a high-contrast color palette for users with low vision or color sensitivity."
                         checked={settings.HighContrast}
                         onChange={() => handleToggle("HighContrast")}
+                    />
+
+                    <div className="toggle-row">
+                        <div className="toggle-info">
+                            <h4>Color Theme</h4>
+                            <p>Choose a preset color scheme.</p>
+                        </div>
+                        <select
+                            value={colorTheme}
+                            onChange={handleThemeChange}
+                            className="color-preset-select"
+                            aria-label="Color theme"
+                        >
+                            {Object.entries(THEMES).map(([key, theme]) => (
+                                <option key={key} value={key}>{theme.label}</option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <ToggleRow
+                        id="toggle-dark-theme"
+                        label="Dark Variant"
+                        description="Use the dark version of the selected color theme."
+                        checked={isDarkTheme}
+                        onChange={handleDarkThemeToggle}
                     />
                 </div>
             </section>

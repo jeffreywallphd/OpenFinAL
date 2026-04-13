@@ -3419,11 +3419,19 @@ body.high-contrast.dark-mode {
 }
 
 /* Large Text Mode */
-body.large-text { zoom: var(--text-scale, 1.2); }
+body.large-text { font-size: 120%; }
 
-/* Text size slider */
-.text-size-slider { display: flex; align-items: center; min-width: 140px; }
-.text-size-slider input[type="range"] { width: 100%; cursor: pointer; accent-color: var(--primary-color); }
+/* Color theme select */
+.color-preset-select {
+  padding: 8px 12px; border-radius: 6px; font-size: 0.9rem;
+  border: 1px solid var(--background-color-highlight);
+  background-color: var(--background-color);
+  color: var(--text-color-dark);
+  cursor: pointer; min-width: 140px;
+}
+.color-preset-select:focus-visible {
+  outline: 2px solid var(--primary-color); outline-offset: 2px;
+}
 
 /* Reduce Motion */
 @media (prefers-reduced-motion: reduce) {
