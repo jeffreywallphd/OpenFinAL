@@ -4,6 +4,20 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
+/**
+ * Portfolio Component
+ * 
+ * Main React component for displaying and managing a user's investment portfolio.
+ * Features include:
+ * - Portfolio value tracking and overview with pie chart visualization
+ * - Stock asset holdings table with gains/losses
+ * - Buying power display
+ * - Deposit functionality
+ * - Portfolio performance comparison against market benchmarks (S&P 500, DOW, NASDAQ)
+ * - Historical performance charting with multiple time intervals (1M, 6M, 1Y, 5Y)
+ * - Price history caching for performance optimization
+ */
+
 import React, { Component } from "react";
 import { PortfolioCreation } from "./Portfolio/Creation";
 import {UserInteractor} from "../Interactor/UserInteractor";
@@ -24,6 +38,11 @@ const formatter = new Intl.NumberFormat('en-US', {
     maximumFractionDigits: 2,
 });
 
+/**
+ * BENCHMARK_OPTIONS
+ * Configuration for available market benchmark indices
+ * Used for comparing portfolio performance against major market indices
+ */
 const BENCHMARK_OPTIONS = {
     SPY: {
         label: "S&P 500",
@@ -39,6 +58,13 @@ const BENCHMARK_OPTIONS = {
     },
 };
 
+/**
+ * renderActiveShape
+ * Custom render function for the active pie slice in the portfolio pie chart
+ * Displays label, value, and percentage when a pie slice is hovered/active
+ * @param {Object} props - Recharts pie shape properties
+ * @returns {JSX} Rendered active pie shape with data labels and leader lines
+ */
 const renderActiveShape = (props) => {
     const RADIAN = Math.PI / 180;
     const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -85,6 +111,28 @@ const renderActiveShape = (props) => {
     );
 };
 
+/**
+ * Portfolio Class Component
+ * 
+ * Manages portfolio display and interactions including:
+ * - Loading portfolio data from backend
+ * - Calculating and displaying portfolio values
+ * - Fetching benchmark and performance data
+ * - Handling deposits and fund management
+ * - Price history caching for optimal performance
+ * 
+ * State Properties:
+ * - currentPortfolio: Currently selected portfolio ID
+ * - portfolios: Array of user's portfolios
+ * - portfolioValue: Total current value of portfolio
+ * - assetData: Array of holdings in portfolio
+ * - chartData: Portfolio composition data for pie chart
+ * - buyingPower: Available cash for trading
+ * - selectedBenchmark: Currently selected benchmark ticker (SPY, DIA, QQQ)
+ * - benchmarkInterval: Time interval for charts (1M, 6M, 1Y, 5Y)
+ * - benchmarkPerformanceData: Benchmark historical performance data
+ * - portfolioPerformanceData: Portfolio historical performance data
+ */
 class Portfolio extends Component {
     static contextType = HeaderContext;
     
@@ -99,9 +147,12 @@ class Portfolio extends Component {
             });
         }
         
+        // Fetch all user portfolios and set default portfolio
         const defaultPortfolioId = await this.fetchPortfolios();
+        // Get the cash asset ID used for deposits/withdrawals
         const cashId = await this.getCashId();
         
+        // If valid portfolio exists, load all portfolio data
         if(defaultPortfolioId) {
             await this.getPortfolioValue(defaultPortfolioId);
             await this.getPortfolioChartData(defaultPortfolioId);
@@ -126,38 +177,44 @@ class Portfolio extends Component {
         maximumFractionDigits: 2,
     });
 
+    /**
+     * Constructor
+     * Initializes component state and binds event handler methods
+     */
     constructor(props) {
         super(props);
+        // Initialize component state with default values
         this.state = {
-            createPortfolio: true,
-            currentPortfolio: null,
-            portfolios: [],
-            isModalOpen: false,
-            depositAmount: 0,
-            cashId: null,
-            depositMessage: null,
-            portfolioValue: 0,
-            assetData: [],
-            chartData: [],
-            buyingPower: 0,
-            buyingPowerLoaded: false,
-            activeIndex: 0,
-            portfolioName: null,
-            benchmarkData: null,
-            benchmarkPerformanceData: [],
-            portfolioPerformanceData: [],
-            portfolioPerformanceWarning: null,
-            selectedBenchmark: "SPY",
-            benchmarkInterval: "1M",
-            benchmarkLoading: false,
-            benchmarkError: false,
-            portfolioPerformanceLoading: false,
-            portfolioPerformanceError: false
+            createPortfolio: true,                          // Flag for portfolio creation UI
+            currentPortfolio: null,                         // ID of currently selected portfolio
+            portfolios: [],                                 // Array of all user portfolios
+            isModalOpen: false,                             // Flag for deposit modal visibility
+            depositAmount: 0,                               // Amount to deposit
+            cashId: null,                                   // ID of cash asset
+            depositMessage: null,                           // Message displayed after deposit attempt
+            portfolioValue: 0,                              // Total current value of portfolio
+            assetData: [],                                  // Array of asset holdings in portfolio
+            chartData: [],                                  // Data for portfolio composition pie chart
+            buyingPower: 0,                                 // Available cash for trading
+            buyingPowerLoaded: false,                       // Flag indicating if buying power is loaded
+            activeIndex: 0,                                 // Currently active pie chart slice
+            portfolioName: null,                            // Name of current portfolio
+            benchmarkData: null,                            // Raw benchmark data from API
+            benchmarkPerformanceData: [],                   // Processed benchmark performance series
+            portfolioPerformanceData: [],                   // Processed portfolio performance series
+            portfolioPerformanceWarning: null,              // Warning messages about performance data
+            selectedBenchmark: "SPY",                       // Selected benchmark (SPY, DIA, QQQ)
+            benchmarkInterval: "1M",                        // Time interval for charts (1M, 6M, 1Y, 5Y)
+            benchmarkLoading: false,                        // Flag for benchmark data loading state
+            benchmarkError: false,                          // Flag for benchmark fetch errors
+            portfolioPerformanceLoading: false,             // Flag for portfolio performance loading
+            portfolioPerformanceError: false                // Flag for portfolio performance errors
         };
 
+        // Cache for storing fetched stock price history to reduce API calls
         this.symbolHistoryCache = new Map();
 
-        //Bind methods for element events
+        // Bind methods for element events
         this.openModal = this.openModal.bind(this);
         this.makeDeposit = this.makeDeposit.bind(this);
         this.getBuyingPower = this.getBuyingPower.bind(this);
@@ -169,6 +226,10 @@ class Portfolio extends Component {
         this.refreshBenchmarkSection = this.refreshBenchmarkSection.bind(this);
     }
 
+    /**
+     * openModal
+     * Opens the deposit funds modal dialog
+     */
     async openModal() {
         this.setState({
             depositMessage: null,
@@ -176,6 +237,12 @@ class Portfolio extends Component {
         });
     }
 
+    /**
+     * fetchPortfolios
+     * Retrieves all portfolios for the current user from the backend
+     * Sets the default portfolio as the currently selected portfolio
+     * @returns {string|null} ID of the default portfolio, or null if none found
+     */
     async fetchPortfolios() {    
         // Get user from localStorage (auth system)
         const savedUser = localStorage.getItem('openfinAL_user');
@@ -221,6 +288,12 @@ class Portfolio extends Component {
         return defaultPortfolio;
     }
 
+    /**
+     * changeCurrentPortfolio
+     * Switches to a different portfolio and reloads all portfolio data
+     * @param {string} portfolioId - ID of the portfolio to switch to
+     * @param {string} portfolioName - Display name of the portfolio
+     */
     async changeCurrentPortfolio(portfolioId, portfolioName) {
         this.setState({currentPortfolio: portfolioId, portfolioName: portfolioName});
         await this.getBuyingPower(null, portfolioId);
@@ -229,6 +302,12 @@ class Portfolio extends Component {
         await this.refreshBenchmarkSection(this.state.benchmarkInterval, this.state.selectedBenchmark, portfolioId);
     }
 
+    /**
+     * getCashId
+     * Fetches the ID of the cash asset from the backend
+     * The cash asset is used to track available buying power
+     * @returns {string|null} ID of the cash asset, or null if fetch fails
+     */
     async getCashId() {
         const interactor = new PortfolioInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
@@ -246,6 +325,12 @@ class Portfolio extends Component {
         return null;        
     }
 
+    /**
+     * makeDeposit
+     * Processes a deposit of funds into the portfolio
+     * Updates portfolio value and buying power after successful deposit
+     * Displays success/failure message to user
+     */
     async makeDeposit() {
         const interactor = new PortfolioTransactionInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
@@ -285,6 +370,14 @@ class Portfolio extends Component {
         }
     }
 
+    /**
+     * getBuyingPower
+     * Fetches the available buying power (cash) for a portfolio
+     * Buying power is the amount of cash available to trade with
+     * @param {string|null} cashId - ID of cash asset (uses state value if not provided)
+     * @param {string|null} portfolioId - ID of portfolio (uses state value if not provided)
+     * @returns {boolean} True if successful, false otherwise
+     */
     async getBuyingPower(cashId=null, portfolioId=null) {
         try {
             if(!cashId) {
@@ -325,6 +418,13 @@ class Portfolio extends Component {
         }    
     }
 
+    /**
+     * getPortfolioValue
+     * Fetches and calculates the current total value of all assets in the portfolio
+     * Gets current stock prices and multiplies by quantity held
+     * @param {string|null} portfolioId - ID of portfolio (uses state value if not provided)
+     * @returns {boolean} True if successful, false otherwise
+     */
     async getPortfolioValue(portfolioId=null) {
         if(!portfolioId) {
             portfolioId = this.state.currentPortfolio;
@@ -384,6 +484,13 @@ class Portfolio extends Component {
         }    
     }
 
+    /**
+     * getPortfolioChartData
+     * Fetches portfolio composition data grouped by asset type
+     * Used to populate the pie chart showing portfolio allocation
+     * @param {string|null} portfolioId - ID of portfolio (uses state value if not provided)
+     * @returns {boolean} True if successful, false otherwise
+     */
     async getPortfolioChartData(portfolioId=null) {
         if(!portfolioId) {
             portfolioId = this.state.currentPortfolio;
@@ -418,6 +525,12 @@ class Portfolio extends Component {
         }    
     }
 
+    /**
+     * handleBenchmarkChange
+     * Handles selection change for benchmark dropdown
+     * Refreshes benchmark and portfolio performance data
+     * @param {Event} e - Change event from benchmark select dropdown
+     */
     handleBenchmarkChange(e) {
         const selectedBenchmark = e.target.value;
         this.setState({ selectedBenchmark }, () => {
@@ -425,13 +538,31 @@ class Portfolio extends Component {
         });
     }
 
+    /**
+     * refreshBenchmarkSection
+     * Fetches both benchmark data and portfolio performance data
+     * Called when time interval or benchmark selection changes
+     * @param {string} interval - Time interval for data (1M, 6M, 1Y, 5Y)
+     * @param {string} ticker - Benchmark ticker symbol (SPY, DIA, QQQ)
+     * @param {string} portfolioId - ID of portfolio to calculate performance for
+     */
     async refreshBenchmarkSection(interval = this.state.benchmarkInterval, ticker = this.state.selectedBenchmark, portfolioId = this.state.currentPortfolio) {
+        
+
         const benchmarkSeries = await this.fetchBenchmarkData(interval, ticker);
         const benchmarkDates = benchmarkSeries || this.state.benchmarkData?.response?.results?.[0]?.data || [];
 
         await this.fetchPortfolioPerformanceData(interval, portfolioId, benchmarkDates);
     }
 
+    /**
+     * fetchBenchmarkData
+     * Fetches historical price data for a market benchmark index
+     * Converts raw data to cumulative price series for charting
+     * @param {string} interval - Time interval for data (1M, 6M, 1Y, 5Y)
+     * @param {string} ticker - Benchmark ticker symbol (SPY, DIA, QQQ)
+     * @returns {Array|null} Raw benchmark price data series, or null if fetch fails
+     */
     async fetchBenchmarkData(interval = this.state.benchmarkInterval, ticker = this.state.selectedBenchmark) {
         const selectedBenchmark = ticker || this.state.selectedBenchmark;
         const benchmarkConfig = BENCHMARK_OPTIONS[selectedBenchmark] || BENCHMARK_OPTIONS.SPY;
@@ -494,6 +625,15 @@ class Portfolio extends Component {
         }
     }
 
+    /**
+     * fetchHistoricalSeries
+     * Fetches historical price data for a specific stock symbol
+     * Implements multi-level caching (memory and session storage) for performance
+     * Retries once on failure before returning empty array
+     * @param {string} symbol - Stock ticker symbol to fetch history for
+     * @param {string} interval - Time interval for data (1M, 6M, 1Y, 5Y)
+     * @returns {Array} Historical price data, or empty array if unavailable
+     */
     async fetchHistoricalSeries(symbol, interval = this.state.benchmarkInterval) {
         const cacheKey = `${interval}:${symbol}`;
         if(this.symbolHistoryCache.has(cacheKey)) {
@@ -564,6 +704,16 @@ class Portfolio extends Component {
         return history;
     }
 
+    /**
+     * fetchPortfolioPerformanceData
+     * Calculates and stores portfolio performance compared to benchmark
+     * Fetches all portfolio transactions and historical prices
+     * Uses PortfolioPerformanceCalculator to build performance data
+     * @param {string} interval - Time interval for data (1M, 6M, 1Y, 5Y)
+     * @param {string} portfolioId - ID of portfolio to calculate performance for
+     * @param {Array} benchmarkDates - Benchmark date points for alignment
+     * @returns {boolean} True if successful, false otherwise
+     */
     async fetchPortfolioPerformanceData(interval = this.state.benchmarkInterval, portfolioId = this.state.currentPortfolio, benchmarkDates = []) {
         if(!portfolioId) {
             this.setState({
@@ -630,14 +780,34 @@ class Portfolio extends Component {
         }
     }
 
+    /**
+     * onPieEnter
+     * Callback for when a pie chart slice is hovered/entered
+     * Updates active index to highlight the hovered slice
+     * @param {Object} _ - Unused pie data parameter
+     * @param {number} index - Index of the entered pie slice
+     */
     onPieEnter(_, index) {
         this.setState({ activeIndex: index });
     }
 
+    /**
+     * sleep
+     * Utility function to pause execution for a specified duration
+     * Used for delays between state updates (e.g., showing success messages)
+     * @param {number} ms - Duration to sleep in milliseconds
+     * @returns {Promise} Promise that resolves after the specified delay
+     */
     async sleep(ms) { 
        return new Promise(resolve => setTimeout(resolve, ms));
     }
 
+    /**
+     * render
+     * Renders the portfolio view with all components
+     * Displays portfolio overview, charts, benchmark comparison, and asset holdings
+     * Shows different content based on portfolio creation state
+     */
     render() {
         const selectedBenchmarkConfig = BENCHMARK_OPTIONS[this.state.selectedBenchmark] || BENCHMARK_OPTIONS.SPY;
 
@@ -806,6 +976,19 @@ class Portfolio extends Component {
         );
     }
 
+    /**
+     * renderStockCard
+     * Renders an individual stock card with details (price, purchase price, gains, etc.)
+     * Currently unused but available for alternative portfolio display format
+     * @param {string} company - Company name
+     * @param {string} symbol - Stock ticker symbol
+     * @param {number} currentPrice - Current stock price
+     * @param {number} purchasePrice - Price at which stock was purchased
+     * @param {number} quantity - Number of shares held
+     * @param {number} gains - Dollar amount of gains/losses
+     * @param {number} percentGain - Percentage gain/loss
+     * @returns {JSX} Rendered stock card component
+     */
     renderStockCard(company, symbol, currentPrice, purchasePrice, quantity, gains, percentGain) {
         return (
             <div className="stock-card" key={symbol}>

@@ -202,14 +202,24 @@ export class YFinanceStockGateway implements IKeylessDataGateway {
   private async getInterdayData(entity: IEntity) {
     var period1;
     const currentDate = new Date();
-    const previousDate = new Date();
 
-    const fiveDaysAgo = new Date(previousDate.setDate(currentDate.getDate() - 5));
-    const oneMonthAgo = new Date(previousDate.setDate(currentDate.getDate() - 30));
-    const sixMonthsAgo = new Date(previousDate.setDate(currentDate.getDate() - 180));
-    const oneYearAgo = new Date(previousDate.setDate(currentDate.getDate() - 365));
-    const fiveYearsAgo = new Date(previousDate.setDate(currentDate.getDate() - 2190));
-    const twentyYearsAgo = new Date(previousDate.setDate(currentDate.getDate() - 7300));
+    const fiveDaysAgo = new Date(currentDate);
+    fiveDaysAgo.setDate(fiveDaysAgo.getDate() - 5);
+
+    const oneMonthAgo = new Date(currentDate);
+    oneMonthAgo.setDate(oneMonthAgo.getDate() - 30);
+
+    const sixMonthsAgo = new Date(currentDate);
+    sixMonthsAgo.setDate(sixMonthsAgo.getDate() - 180);
+
+    const oneYearAgo = new Date(currentDate);
+    oneYearAgo.setDate(oneYearAgo.getDate() - 365);
+
+    const fiveYearsAgo = new Date(currentDate);
+    fiveYearsAgo.setDate(fiveYearsAgo.getDate() - 2190);
+
+    const twentyYearsAgo = new Date(currentDate);
+    twentyYearsAgo.setDate(twentyYearsAgo.getDate() - 7300);
 
     const period1Map: { [key: string]: any } = { 
         "5D": fiveDaysAgo,
