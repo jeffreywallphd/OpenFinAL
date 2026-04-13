@@ -1,25 +1,26 @@
 # Feature Documentation Template
 
 ## Feature Name
-<!-- Enter the name of the feature -->
+<!-- Stock Benchmark Graphs -->
 
 ## Feature Type
-_Core Feature / Peripheral Feature / Integration / UI Feature_
+_Peripheral Feature
 
 ## Description
-A short explanation of what the feature does and why it exists.
+This feature allows the user to track the overall market using the top three metrics: S&P 500, NASDAQ, and the DOW. There are two graphs. One graph is located on the dashboard and shows overall market trends. The other graph is located in the portfolio tab and allows the user to compare the percent change of the overall market against the percent change of their portfolio.
 
 ## User Problem Solved
 High-level explanation of the problem this feature addresses.
 
 ## How It Works
-High-level explanation of how the feature operates.
+The feature uses and AplhaVantage API key that utilizes ETFs to track the price of the S&P 500, NASDAQ, and DOW. When the percent change is needed, code is used to calculate the percent change of each benchmark's stock price using the same API key and ETF.
 
 ## Inputs
-What data or actions trigger the feature.
+In order to trigger the overall market graph, the user will navigate to the dashboard and select their desired benchmark from a dropdown menu. The graph on the dashboard willl then update. The user can also choose to view data from various windows of time.
+In order to trigger the percent change graphs, the user will navigate to their portfolio and select their desired benchmark from a dropdown menu. The corresponding graph will then update and display the percent change of whatever benchmarks they select and compare it to the percent change of their portfolio.
 
 ## Outputs
-What the system produces (UI change, data output, API response).
+This feature produces an API response and data output.
 
 ## Dependencies
 Libraries, APIs, or components required.
