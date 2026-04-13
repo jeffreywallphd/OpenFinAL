@@ -134,7 +134,7 @@ function Stock(props) {
 
             const reportResults10K = await secInteractor.get(req10K);
             const reportResults10Q = await secInteractor.get(req10Q);
-            
+            window.console.log(reportResults10K, reportResults10Q);
             if(reportResults10K && reportResults10Q) {
                 // Update the DataContext state to include reportLinks if they exist
                 setState((prevState) => ({
@@ -163,7 +163,7 @@ function Stock(props) {
                             
                                 { state.isLoading === true ? (
                                     <>
-                                        <p>Loading...</p>
+                                        <div className="loader-container"><p>Retreiving data...</p> <div className="tiny-loader"></div></div>
                                     </>
                                 ) : state.error ? (
                                     <p className="error">The ticker you entered is not valid or no data is available for this stock.</p>

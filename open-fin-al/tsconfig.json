@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "jsx": "react",
       "module": "ESNext",
       "target": "ES2022",
       "noImplicitAny": true,

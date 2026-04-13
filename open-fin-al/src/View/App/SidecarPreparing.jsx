@@ -9,14 +9,14 @@ import React, { useEffect } from "react";
 //Imports for react pages and assets
 import logo from "../../Asset/Image/logo-dark.png";
 
-export function AppPreparing(props) {
+export function AppSidecarPreparing(props) {
     return (
         <div className="loadingContainer">
             <div className="loadingContent">
                 <div><img src={logo} alt="Logo" width="150" /></div>
                 <div className="loadingText">
-                    {props.preparationError ? (
-                        <p className="error">{props.preparationError}</p>
+                    {props.sidecarPreparationError ? (
+                        <p className="error">{props.sidecarPreparationError}</p>
                     ) : (
                         <>
                             {props.statusMessage ? 

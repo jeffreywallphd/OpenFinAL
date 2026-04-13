@@ -28,6 +28,9 @@ export class AlphaVantageNewsGateway implements IKeyedDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
+        const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+        await sleep(1001);
+        
         var url = `${this.baseURL}?function=NEWS_SENTIMENT&apikey=${entity.getFieldValue("key")}`;
         
         if(entity.getFieldValue("ticker") !== null) {

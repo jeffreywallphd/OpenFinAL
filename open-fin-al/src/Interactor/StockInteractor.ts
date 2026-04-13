@@ -96,10 +96,10 @@ export class StockInteractor implements IInputBoundary {
             //add the API key to the stock request object
             stock.setFieldValue("key", stockGateway.key);
         } 
-
+        
         //search for the requested information via the API gateway
         var results = await stockGateway.read(stock, requestModel.request.request.stock.action);
-
+        window.console.log(results);
         if(results) {
             //convert the API gateway response to a JSON reponse object
             response = new JSONResponse();
