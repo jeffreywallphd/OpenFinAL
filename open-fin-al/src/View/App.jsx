@@ -49,6 +49,9 @@ function App(props) {
     const [loading, setLoading] = useState(true);
     const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
     const [configured, setConfigured] = useState(false);
+    // ## Recent change
+    // Track whether setup still needs user-specific API/email configuration
+    // so we can authenticate first and defer Settings until after login.
     const [needsConfiguration, setNeedsConfiguration] = useState(false);
     const [preparationError, setPreparationError] = useState(null);
     const [user, setUser] = useState(null);
@@ -117,6 +120,8 @@ function App(props) {
     };
 
     const handleConfigured = async () => {
+        // ## Recent change
+        // Completing Settings should clear the post-login setup gate.
         setConfigured(true);
         setNeedsConfiguration(false);
         await checkIfFullyInitialized(); 
@@ -157,6 +162,9 @@ function App(props) {
             const response = await interactor.get(requestObj,"isInitialized");
             
             if(response.response.ok) {
+                // ## Recent change
+                // Fully initialized means the normal app shell can load
+                // without forcing the user through Settings.
                 setConfigured(true);
                 setNeedsConfiguration(false);
 
@@ -177,6 +185,8 @@ function App(props) {
                 const configurationResponse = await interactor.get(requestObj,"isConfigured");
 
                 if(configurationResponse.response.ok) {
+                    // ## Recent change
+                    // Config is complete, so proceed with data initialization.
                     setConfigured(true);
                     setNeedsConfiguration(false);
                     getDarkMode();
@@ -191,6 +201,9 @@ function App(props) {
                         return false;
                     }
                 } else {
+                    // ## Recent change
+                    // Create the base config and let the user authenticate first.
+                    // The authenticated shell will redirect them to Settings.
                     await interactor.post(requestObj,"createConfig");
                     setConfigured(true);
                     setNeedsConfiguration(true);
@@ -221,6 +234,9 @@ function App(props) {
                             <AuthContainer key={`auth-${authViewKey}`} onAuthSuccess={handleAuthSuccess}/>
                         :
                             <DataContext.Provider value={value}>
+                                {/* ## Recent change
+                                    Pass the deferred-setup flag into the shell so
+                                    signed-in users land in Settings when required. */}
                                 <AppLoaded 
                                     key={`app-${authViewKey}`}
                                     needsConfiguration={needsConfiguration}

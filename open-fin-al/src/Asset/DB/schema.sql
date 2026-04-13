@@ -5,6 +5,8 @@ CREATE TABLE IF NOT EXISTS User (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   firstName TEXT,
   lastName TEXT,
+  -- ## Recent change
+  -- Store email per account so SEC/API identity can follow the active user.
   email TEXT,
   username TEXT UNIQUE NOT NULL,
   pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN

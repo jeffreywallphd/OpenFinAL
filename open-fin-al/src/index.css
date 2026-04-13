@@ -2593,6 +2593,9 @@ nav ul li a:hover {
 }
 
 /* PIN Login Styles */
+/* ## Recent change
+   Allow the auth screen to scroll vertically when the registration form
+   becomes taller than the viewport, instead of clipping the submit button. */
 .pin-login-container {
   position: fixed;
   top: 0;
@@ -2600,10 +2603,14 @@ nav ul li a:hover {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   z-index: 10000;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 24px 0;
+  box-sizing: border-box;
 }
 
 .pin-login-background {
@@ -2630,6 +2637,9 @@ nav ul li a:hover {
   50% { transform: translateY(-10px); }
 }
 
+/* ## Recent change
+   Keep the auth card naturally sized inside the new scrollable container so
+   longer forms stay reachable on smaller screens. */
 .pin-login-card {
   background: var(--background-color);
   border-radius: 16px;
@@ -2855,6 +2865,13 @@ body.dark-mode .pin-login-error {
 
 /* Responsive Design */
 @media (max-width: 480px) {
+  /* ## Recent change
+     Tighten the auth shell spacing on narrow screens so users reach the
+     "Create Account" button sooner while preserving page scrolling. */
+  .pin-login-container {
+    padding: 16px 0;
+  }
+
   .pin-login-card {
     padding: 24px;
     margin: 16px;

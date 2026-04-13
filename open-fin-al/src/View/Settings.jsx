@@ -9,6 +9,9 @@ import { DataContext } from "./App/DataContext";
 
 function Settings(props) {
     const { setHeader } = useHeader();
+    // ## Recent change
+    // Read the authenticated user so the User Profile section reflects the
+    // current account instead of shared config defaults.
     const { user } = useContext(DataContext);
           
     useEffect(() => {
@@ -49,6 +52,9 @@ function Settings(props) {
             const response = await interactor.get(settingRequest);
             const currentSettings = response.response.results[0];
 
+            // ## Recent change
+            // Override profile fields with the active authenticated user,
+            // including email, so Settings no longer shows stale account data.
             if (user) {
                 currentSettings.FirstName = {
                     ...currentSettings.FirstName,
@@ -109,6 +115,9 @@ function Settings(props) {
             return;
         }
 
+        // ## Recent change
+        // Keep the Settings form synchronized if the authenticated user
+        // changes after the initial settings payload loads.
         setSettings((prev) => ({
             ...prev,
             ...(prev.FirstName ? {

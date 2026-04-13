@@ -26,10 +26,16 @@ export class UserAuthInteractor {
         // No database parameter needed - uses window.database like other gateways
     }
 
+    // ## Recent change
+    // Support both legacy and current insert result shapes returned by the
+    // renderer database bridge.
     private getInsertedId(result: { lastID?: number; lastInsertRowid?: number }): number | undefined {
         return result?.lastID ?? result?.lastInsertRowid;
     }
 
+    // ## Recent change
+    // Older databases may not have the per-user email column yet, so add it
+    // lazily to keep login and registration backward compatible.
     private async ensureUserEmailColumn(): Promise<void> {
         try {
             await window.database.SQLiteUpdate({
@@ -44,6 +50,8 @@ export class UserAuthInteractor {
         }
     }
 
+    // ## Recent change
+    // Keep the SEC/API user-agent email aligned with the active account.
     private async syncSessionEmail(email?: string | null): Promise<void> {
         try {
             await window.vault?.setSecret?.('Email', email ?? '');
@@ -52,6 +60,9 @@ export class UserAuthInteractor {
         }
     }
 
+    // ## Recent change
+    // Preserve registration success on legacy portfolio schemas by retrying
+    // the default portfolio name when a global uniqueness constraint exists.
     private buildDefaultPortfolioName(firstName: string, attempt: number): string {
         const trimmedFirstName = firstName?.trim();
         const baseName = trimmedFirstName ? `${trimmedFirstName}'s Portfolio` : 'My Portfolio';
@@ -119,6 +130,9 @@ export class UserAuthInteractor {
             // Hash the PIN
             const pinHash = await PinEncryption.hashPin(userData.pin);
 
+            // ## Recent change
+            // Store email with the account so each user has their own identity
+            // instead of reusing the machine-wide setup email.
             // Insert new user
             const result = await window.database.SQLiteInsert({
                 query: `INSERT INTO User (firstName, lastName, email, username, pinHash) VALUES (?, ?, ?, ?, ?)`,
@@ -130,6 +144,9 @@ export class UserAuthInteractor {
                 return { success: false, error: 'Registration failed: Could not determine the new user ID' };
             }
 
+            // ## Recent change
+            // Create the default portfolio and sync the account email into the
+            // current secure session values used by external requests.
             // Create default portfolio for the user
             await this.createDefaultPortfolio(userId, userData.firstName);
             await this.syncSessionEmail(userData.email);
@@ -159,6 +176,9 @@ export class UserAuthInteractor {
                 return { success: false, error: 'Invalid PIN format' };
             }
 
+            // ## Recent change
+            // Load email during login so the active session can use the
+            // logged-in account's SEC/API identity.
             // Get user from database
             const users = await window.database.SQLiteQuery({
                 query: `SELECT id, firstName, lastName, email, username, pinHash FROM User WHERE username = ?`,
@@ -178,6 +198,8 @@ export class UserAuthInteractor {
                 return { success: false, error: 'Invalid PIN' };
             }
 
+            // ## Recent change
+            // Refresh the active email secret after a successful login.
             // Update last login timestamp
             await window.database.SQLiteUpdate({
                 query: `UPDATE User SET lastLogin = CURRENT_TIMESTAMP WHERE id = ?`,

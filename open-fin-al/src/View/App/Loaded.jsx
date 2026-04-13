@@ -128,6 +128,9 @@ class AppLoaded extends Component {
 
               <Routes>
                 <Route element={<AppLoadedLayout  onLogout={this.props.onLogout}/>}>
+                  {/* ## Recent change
+                      If the app still needs user-specific setup, send the
+                      authenticated user straight to Settings instead of Home. */}
                   <Route path="/" element={this.props.needsConfiguration ? <Navigate to="/settings" replace /> : <Home />} />
                   <Route path="/portfolio" element={<Portfolio />} />
                   <Route path="/analysis" element={<Analysis />} />

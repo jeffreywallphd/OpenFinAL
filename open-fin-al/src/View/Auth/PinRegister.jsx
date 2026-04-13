@@ -12,6 +12,8 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
+        // ## Recent change
+        // Capture a user-specific email during account creation.
         email: '',
         username: '',
         pin: '',
@@ -45,6 +47,8 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
         
         if (!firstName.trim()) return 'First name is required';
         if (!lastName.trim()) return 'Last name is required';
+        // ## Recent change
+        // Require a valid email so the account owns its SEC/API identity.
         if (!email.trim()) return 'Email is required';
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return 'Enter a valid email address';
         if (!username.trim()) return 'Username is required';
@@ -77,6 +81,9 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
                 pin: '****' // Don't log actual PIN
             });
 
+            // ## Recent change
+            // Pass email through registration and store it in the authenticated
+            // user session returned to the app shell.
             const result = await authInteractor.registerUser({
                 firstName: formData.firstName.trim(),
                 lastName: formData.lastName.trim(),
@@ -160,6 +167,9 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
                         />
                     </div>
 
+                    {/* ## Recent change
+                        Ask for email during sign-up instead of inheriting the
+                        machine-wide setup email from first-run configuration. */}
                     <div className="pin-login-field">
                         <label htmlFor="email" className="pin-login-label">
                             Email
