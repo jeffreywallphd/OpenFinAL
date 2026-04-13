@@ -11,89 +11,112 @@ import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 import { SymbolSearchBar } from "../Shared/SymbolSearchBar";
 
 function  TickerSearchBar(props) {
-    //TODO: implement error handling
+    const handleError = (state, error) => {
+        window.console.error("TickerSearchBar error:", error);
+
+        const updatedState = {
+            ...state,
+            error: true,
+            initializing: true,
+            isLoading: false,
+            ticker: state?.searchRef || state?.ticker || null
+        };
+
+        props.handleDataChange(updatedState);
+        return updatedState;
+    };
 
     //Gets all data for a ticker and updates the props with the data
     const fetchAllData = async (newState, fetchSec=true) => {
+        if(!newState) return;
+
         newState.isLoading = true;
         props.handleDataChange(newState);
 
-        if(newState.securitiesList) {
-            for(var security of newState.securitiesList) {
-                if(security.symbol === newState.searchRef) {
-                    newState.assetId = security.id;
-                    break;                    
+        try {
+            if(newState.securitiesList) {
+                for(var security of newState.securitiesList) {
+                    if(security.symbol === newState.searchRef) {
+                        newState.assetId = security.id;
+                        break;                    
+                    }
                 }
             }
-        }
 
-        //Get Price Data
-        newState = await fetchPriceVolumeData(newState);
+            //Get Price Data
+            newState = await fetchPriceVolumeData(newState);
 
-        //Get SEC Data
-        if(fetchSec && newState.error === false) {
-            newState = await fetchRatioData(newState);
+            //Get SEC Data
+            if(fetchSec && newState.error === false) {
+                newState = await fetchRatioData(newState);
+            }
+            
+            props.handleDataChange(newState);
+        } catch(error) {
+            handleError(newState, error);
         }
-        
-        props.handleDataChange(newState);
     }
 
     //Gets price and volume data for a ticker
     const fetchPriceVolumeData = async (newState) => {
-        // TODO: can we store cik in the securities list as well? 
-        // get company name from securities list data
-        var companyName = "";
-        var cik = "";
-        newState.securitiesList.find((element) => {
-            if(element.ticker === newState.searchRef) {
-                companyName = element.companyName;
-                cik = element.cik;
-            }
-        });
-        
-        //get price and volume data through stock interactor
-        var interactor = new StockInteractor();
-        var requestObj = new JSONRequest(`{ 
-            "request": { 
-                "stock": {
-                    "action": "${newState.type}",
-                    "ticker": "${newState.searchRef}",
-                    "cik": "${cik}",
-                    "companyName": "${companyName}",
-                    "interval": "${newState.interval}"
+        try {
+            // TODO: can we store cik in the securities list as well? 
+            // get company name from securities list data
+            var companyName = "";
+            var cik = "";
+            newState.securitiesList.find((element) => {
+                if(element.ticker === newState.searchRef) {
+                    companyName = element.companyName;
+                    cik = element.cik;
                 }
+            });
+            
+            //get price and volume data through stock interactor
+            var interactor = new StockInteractor();
+            var requestObj = new JSONRequest(`{ 
+                "request": { 
+                    "stock": {
+                        "action": "${newState.type}",
+                        "ticker": "${newState.searchRef}",
+                        "cik": "${cik}",
+                        "companyName": "${companyName}",
+                        "interval": "${newState.interval}"
+                    }
+                }
+            }`);
+
+            const results = await interactor.get(requestObj);
+
+            //if the results come back with a status of 400, set error.
+            if(!results || (results.status && results.status >= 400)) {
+                newState.error = true;
+                newState.initializing = true;
+                newState.ticker = newState.searchRef;
+                newState.cik = cik;
+                newState.isLoading = false;
+                return newState;
             }
-        }`);
 
-        const results = await interactor.get(requestObj);
+            var priceData = results;
 
-        //if the results come back with a status of 400, set error.
-        if(results.status && results.status === 400) {
-            newState.error = true;
+            //Update the state
+            newState.error = false;
             newState.initializing = true;
+            newState.data = priceData;
+            newState.dataSource = results.source;
             newState.ticker = newState.searchRef;
             newState.cik = cik;
             newState.isLoading = false;
+            newState.priceMin = Math.min(...priceData.response.results[0]["data"].map(data => data.price));
+            newState.priceMax = Math.max(...priceData.response.results[0]["data"].map(data => data.price));
+            newState.maxVolume = Math.max(...priceData.response.results[0]["data"].map(data => data.volume));
+            newState.yAxisStart = dateTimeFormatter(priceData.response.results[0]["data"][0]);
+            newState.yAxisEnd = dateTimeFormatter(priceData.response.results[0]["data"][-1]);
+
             return newState;
+        } catch(error) {
+            return handleError(newState, error);
         }
-
-        var priceData = results;
-
-        //Update the state
-        newState.error = false;
-        newState.initializing = true;
-        newState.data = priceData;
-        newState.dataSource = results.source;
-        newState.ticker = newState.searchRef;
-        newState.cik = cik;
-        newState.isLoading = false;
-        newState.priceMin = Math.min(...priceData.response.results[0]["data"].map(data => data.price));
-        newState.priceMax = Math.max(...priceData.response.results[0]["data"].map(data => data.price));
-        newState.maxVolume = Math.max(...priceData.response.results[0]["data"].map(data => data.volume));
-        newState.yAxisStart = dateTimeFormatter(priceData.response.results[0]["data"][0]);
-        newState.yAxisEnd = dateTimeFormatter(priceData.response.results[0]["data"][-1]);
-
-        return newState;
     }
 
     //Gets SEC data for a ticker

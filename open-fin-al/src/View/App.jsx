@@ -14,7 +14,8 @@ import { AppConfiguring } from "./App/Configuring";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
-import { SidecarInitializationInteractor } from "../Interactor/SidecarInitializationInteractor";    
+import { SidecarInitializationInteractor } from "../Interactor/SidecarInitializationInteractor";
+import { registerAllComponents } from "../hoc/registerComponents";
 
 const DataContext = createContext();
 
@@ -70,6 +71,10 @@ function App(props) {
 
     useEffect( () => {
         getDarkMode();
+    }, []);
+
+    useEffect(() => {
+        registerAllComponents();
     }, []);
 
     // Check if user is already authenticated from previous session
