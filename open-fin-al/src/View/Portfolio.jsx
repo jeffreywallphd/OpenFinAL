@@ -5,7 +5,11 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React, { Component } from "react";
+import { withViewComponent } from "../hoc/withViewComponent";
+import { ViewComponent } from "../types/ViewComponent";
 import { PortfolioCreation } from "./Portfolio/Creation";
+
+const WrappedPortfolioCreation = withViewComponent(PortfolioCreation);
 import {UserInteractor} from "../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
@@ -70,6 +74,14 @@ const renderActiveShape = (props) => {
 
 class Portfolio extends Component {
     static contextType = HeaderContext;
+
+    portfolioCreationConfig = new ViewComponent({
+        height: 600, width: 800, isContainer: false, resizable: true,
+        maintainAspectRatio: false, widthRatio: 4, heightRatio: 3,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "Portfolio Creation", description: "Interface for creating and managing investment portfolios",
+        tags: ["portfolio", "creation", "investment"], minimumProficiencyRequirements: {}, requiresInternet: true,
+    });
     
     async componentDidMount() {
         window.console.log("Portfolio context in componentDidMount:", this.context);
@@ -515,7 +527,7 @@ class Portfolio extends Component {
                     </div>
                 :
                     <> 
-                        {<PortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio}/>    }
+                        {<WrappedPortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio} viewConfig={this.portfolioCreationConfig}/>    }
                     </>
                 }
             </div>

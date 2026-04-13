@@ -14,8 +14,28 @@ export interface IViewComponent {
     description: string; // for natural language processing search
     tags: string[]; // for natural language processing search
 
-    minimumProficiencyRequirements: Map<string, number>; // Map of <requirementLabel, requirementLevel>
+    minimumProficiencyRequirements: Record<string, number>; // Map of <requirementLabel, requirementLevel>
     requiresInternet: boolean;
 
     calculateRatioMultiplier(): number;
+    clone(): IViewComponent;
+
+    getHeight(): number;
+    getWidth(): number;
+    getVisible(): boolean;
+    getEnabled(): boolean;
+    getTags(): string[];
+
+    setHeight(value: number): void;
+    setWidth(value: number): void;
+    setVisible(value: boolean): void;
+    setEnabled(value: boolean): void;
+    addTag(tag: string): void;
+    removeTag(tag: string): void;
+
+    getFinancialKnowledgeLevel(): number;
+    setFinancialKnowledgeLevel(level: number): void;
+
+
+
 }
