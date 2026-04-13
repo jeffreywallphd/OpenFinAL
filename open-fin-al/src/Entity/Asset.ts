@@ -40,6 +40,21 @@ export class Asset implements IEntity {
 
         var quantity = new Field("quantity", "float", null);
         this.fields.set("quantity", quantity);
+
+        var price = new Field("price", "float", null);
+        this.fields.set("price", price);
+
+        var amount = new Field("amount", "float", null);
+        this.fields.set("amount", amount);
+
+        var side = new Field("side", "string", null);
+        this.fields.set("side", side);
+
+        var transactionDate = new Field("transactionDate", "datetime", null);
+        this.fields.set("transactionDate", transactionDate);
+
+        var transactionType = new Field("transactionType", "string", null);
+        this.fields.set("transactionType", transactionType);
     }
 
     fillWithRequest(requestModel: IRequestModel) {
