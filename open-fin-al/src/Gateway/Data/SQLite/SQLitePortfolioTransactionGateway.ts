@@ -198,7 +198,42 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                         ${group};`;
 
                 data = await window.database.SQLiteSelect({ query: query, parameters: args });
+            } else if(action === "getPortfolioPerformanceHistory") {
+                const portfolioId = entity.getFieldValue("portfolioId");
+
+                if(portfolioId === null) {
+                    return entities;
+                }
+
+                query = `
+                    SELECT
+                        a.id AS id,
+                        a.symbol AS symbol,
+                        a.name AS name,
+                        a.type AS type,
+                        pt.transactionDate AS transactionDate,
+                        pt.type AS transactionType,
+                        pte.side AS side,
+                        pte.quantity AS quantity,
+                        pte.price AS price,
+                        (pte.quantity * pte.price) AS amount
+                    FROM
+                        PortfolioTransactionEntry AS pte
+                    INNER JOIN
+                        PortfolioTransaction AS pt ON (pte.transactionId = pt.id)
+                    INNER JOIN
+                        Asset AS a ON (pte.assetId = a.id)
+                    WHERE
+                        pt.isCanceled = 0
+                        AND pt.portfolioId = ?
+                    ORDER BY
+                        datetime(pt.transactionDate) ASC,
+                        pt.id ASC,
+                        pte.id ASC;`;
+
+                data = await window.database.SQLiteSelect({ query: query, parameters: [portfolioId] });
             }
+
         } catch(error) {
             return entities;
         } 
@@ -219,6 +254,22 @@ export class SQLitePortfolioTransactionGateway implements ISqlDataGateway {
                     entity.setFieldValue("quantity", row.quantity);
                 }
                 
+                entities.push(entity);
+            }
+        } else if(action === "getPortfolioPerformanceHistory" && data) {
+            for(var row of data) {
+                var entity = new Asset();
+                entity.setFieldValue("id", row.id);
+                entity.setFieldValue("name", row.name);
+                entity.setFieldValue("symbol", row.symbol);
+                entity.setFieldValue("type", row.type);
+                entity.setFieldValue("quantity", row.quantity);
+                entity.setFieldValue("price", row.price);
+                entity.setFieldValue("amount", row.amount);
+                entity.setFieldValue("side", row.side);
+                entity.setFieldValue("transactionDate", row.transactionDate);
+                entity.setFieldValue("transactionType", row.transactionType);
+
                 entities.push(entity);
             }
         }
