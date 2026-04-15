@@ -373,7 +373,7 @@ function TimeSeriesChart(props) {
                     <Bar type="monotone" dataKey="volume" fill={chartColor}/>
                 </BarChart>
 
-                {data && 
+                {data && !props.hideControls &&
                     <div className="stockOrder">
                             <p>
                                 <button onClick={() => {
