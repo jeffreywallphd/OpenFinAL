@@ -70,6 +70,8 @@ const axios = require('axios');
 const cors = require('cors');
 const crypto = require("crypto");
 const tls = require("tls");
+const neo4j = require('neo4j-driver');
+const { spawn, exec, execFile } = require("child_process");
 //const yf = require("yahoo-finance2").default; //causing a module load error. Using code below to dynamically import yahoo-finance2
 
 let yf;
@@ -158,7 +160,7 @@ app.whenReady().then(() => {
         ...details.responseHeaders,
         'Content-Security-Policy': [
           `default-src 'self';
-          script-src 'self' 'unsafe-eval'; 
+          script-src 'self' 'unsafe-eval' https://cdn.jsdelivr.net;
           style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://*.gstatic.com https://cdnjs.cloudflare.com; 
           img-src 'self' data: https://*.gstatic.com https://www.investors.com https://imageio.forbes.com https://www.reuters.com https://image.cnbcfm.com https://ml-eu.globenewswire.com https://mma.prnewswire.com https://cdn.benzinga.com https://www.benzinga.com https://editorial-assets.benzinga.com https://contributor-assets.benzinga.com https://staticx-tuner.zacks.com https://media.ycharts.com https://g.foolcdn.com https://ml.globenewswire.com https://images.cointelegraph.com https://s3.cointelegraph.com https://cdn.i-scmp.com https://smallfarmtoday.com/ https://thearorareport.com https://cdn.content.foolcdn.com https://www.marketbeat.com; 
           font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; 
@@ -256,8 +258,15 @@ ipcMain.on('open-url-window', (event, url) => {
   }
 });
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
+  await stopNeo4jServer();
   if (process.platform !== 'darwin') app.quit()
+});
+
+app.on('before-quit', async (event) => {
+  event.preventDefault(); // Prevent default quitting behavior  
+  await stopNeo4jServer();
+  app.exit(0);
 });
 
 //////////////////////////// Express Server for API Access Section ////////////////////////////
@@ -855,4 +864,658 @@ ipcMain.handle('sqlite-delete', async (event, args) => {
   const data = await sqliteRun(args["query"], args["parameters"]);
   return data;
 });
+
+//////////////////////////// Neo4j Section ////////////////////////////
+
+let neo4jProcess = null;
+let neo4jDriver = null;
+let neo4jReadyPromise = null;
+let NEO4J_PASS = "password";
+
+let neo4jStdoutBuffer = "";
+const MAX_BUF = 200_000; // keep last ~200KB
+
+function getNeo4jHome() {
+  return path.join(app.getPath('userData'), 'neo4j');
+}
+
+function getJavaHome() {
+  return path.join(app.getPath('userData'), 'java');
+}
+/*
+function getNeo4jBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "neo4j-win");
+    return fullPath;
+  }
+}
+  */
+ function getNeo4jBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "neo4j-win");
+  } else if(os.platform() === 'darwin') {
+    fullPath = path.join(base, "neo4j-mac");
+  } else {
+    // Linux
+    fullPath = path.join(base, "neo4j-linux");
+  }
+  
+  return fullPath;
+}
+
+
+function getNeo4jAdminExecutable() {
+  const neo4jHome = getNeo4jHome();
+  // Windows distributions ship .bat under bin
+  if (os.platform() === "win32") {
+    return path.join(neo4jHome, "bin", "neo4j-admin.bat");
+  }
+  return path.join(neo4jHome, "bin", "neo4j-admin");
+}
+/*
+function getJavaBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "jre-win");
+    return fullPath;
+  }
+}
+*/
+function getJavaBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  if(os.platform() === 'win32') {
+    fullPath = path.join(base, "jre-win");
+  } else if(os.platform() === 'darwin') {
+    fullPath = path.join(base, "jre-mac");
+  } else {
+    // Linux
+    fullPath = path.join(base, "jre-linux");
+  }
+  
+  return fullPath;
+}
+
+
+function getNeo4jExecutable() {
+  const binPath = path.join(getNeo4jHome(), 'bin');
+
+  if(os.platform() === 'win32') {
+    return path.join(binPath, 'neo4j.bat');
+  }
+  return path.join(binPath, 'neo4j');
+}
+
+function verifyNeo4jInstall() {
+  if(!fs.existsSync(getNeo4jHome())) {
+    console.log("the directory doesn't exist ", getNeo4jHome(), getNeo4jBundle());
+    fs.cpSync(getNeo4jBundle(), getNeo4jHome(), { recursive: true });
+    console.log("copied bundle")
+  }
+}
+
+function verifyJavaInstall() {
+  if(!fs.existsSync(getJavaHome())) {
+    console.log("the directory doesn't exist ", getJavaHome(), getJavaBundle());
+    fs.cpSync(getJavaBundle(), getJavaHome(), { recursive: true });
+    console.log("copied bundle")
+  }
+}
+
+async function setInitialNeo4jPassword() {
+  const neo4jAdminBat = getNeo4jAdminExecutable();
+  if (!fs.existsSync(neo4jAdminBat)) {
+    throw new Error(`neo4j-admin not found at: ${neo4jAdminBat}`);
+  }
+
+  const javaHome = getJavaHome(); // must be Java 21 now
+
+ /* return new Promise((resolve, reject) => {
+    const cmd = "cmd.exe";
+    const args = ["/c", neo4jAdminBat, "dbms", "set-initial-password", NEO4J_PASS];
+
+    execFile(
+      cmd,
+      args,
+      {
+        windowsHide: true,
+        env: {
+          ...process.env,
+          JAVA_HOME: javaHome,
+          PATH: `${path.join(javaHome, "bin")};${process.env.PATH}`,
+        },
+      },
+      (err, stdout, stderr) => {
+        if (stdout?.trim()) console.log("[neo4j-admin stdout]", stdout.trim());
+        if (stderr?.trim()) console.warn("[neo4j-admin stderr]", stderr.trim());
+        if (err) return reject(err);
+        resolve();
+      }
+    );
+  });
+}
+  */
+  return new Promise((resolve, reject) => {
+    const neo4jAdminExe = getNeo4jAdminExecutable();
+    const javaHome = getJavaHome();
+    
+    let cmd;
+    let args;
+    let envPath;
+    
+    if (os.platform() === 'win32') {
+      // Windows
+      cmd = "cmd.exe";
+      args = ["/c", neo4jAdminExe, "dbms", "set-initial-password", NEO4J_PASS];
+      envPath = `${path.join(javaHome, "bin")};${process.env.PATH}`;
+    } else {
+      // Mac/Linux
+      cmd = neo4jAdminExe;
+      args = ["dbms", "set-initial-password", NEO4J_PASS];
+      envPath = `${path.join(javaHome, "bin")}:${process.env.PATH}`;
+    }
+
+    execFile(
+      cmd,
+      args,
+      {
+        windowsHide: true,
+        env: {
+          ...process.env,
+          JAVA_HOME: javaHome,
+          PATH: envPath,
+        },
+      },
+      (err, stdout, stderr) => {
+        if (stdout?.trim()) console.log("[neo4j-admin stdout]", stdout.trim());
+        if (stderr?.trim()) console.warn("[neo4j-admin stderr]", stderr.trim());
+        if (err) return reject(err);
+        resolve();
+      }
+    );
+  });
+}
+
+
+function resetNeo4jAuthIfDev() {
+  if (app.isPackaged) return; // only do this in dev
+
+  const databasesPath = path.join(getNeo4jHome(), "data", "databases", "system");
+  if (fs.existsSync(databasesPath)) {
+    console.log("Dev reset: deleting Neo4j auth file:", databasesPath);
+    fs.rmSync(databasesPath, { recursive: true, force: true });
+  }
+
+  const transactionPath = path.join(getNeo4jHome(), "data", "transactions", "system");
+  if (fs.existsSync(transactionPath)) {
+    console.log("Dev reset: deleting Neo4j auth file:", transactionPath);
+    fs.rmSync(transactionPath, { recursive: true, force: true });
+  }
+}
+/*
+async function startNeo4jServer() {
+  if (neo4jProcess) {
+    console.log("Neo4j already running, PID:", neo4jProcess.pid);
+    return;
+  }
+
+  verifyNeo4jInstall();
+  verifyJavaInstall();
+  resetNeo4jAuthIfDev()
+  await setInitialNeo4jPassword();
+  //resetNeo4jAuthIfDev();
+
+  const neo4jHome = getNeo4jHome();
+  const neo4jBin = getNeo4jExecutable();
+
+  const javaHome = getJavaHome();
+
+  neo4jProcess = spawn(
+    neo4jBin, 
+    ['console'], 
+    { 
+      cwd: neo4jHome,
+      shell: true, 
+      env: {
+        ...process.env,
+        JAVA_HOME: javaHome,
+        PATH: `${path.join(javaHome, "bin")};${process.env.PATH}`,
+        NEO4J_AUTH: `neo4j/${NEO4J_PASS}`,
+      },
+      stdio: "pipe", 
+    });
+
+  neo4jProcess.stdout.on("data", (data) => {
+    const text = data.toString("utf8");
+    neo4jStdoutBuffer += text;
+    if (neo4jStdoutBuffer.length > MAX_BUF) {
+      neo4jStdoutBuffer = neo4jStdoutBuffer.slice(-MAX_BUF);
+    }
+    console.log(`Neo4j: ${text}`);
+  });
+
+  neo4jProcess.stderr.on('data', (data) => {
+    console.error(`Neo4j ERR: ${data}`);
+  });
+
+  neo4jProcess.on("exit", (code) => {
+    console.log("Neo4j exited with code", code);
+    neo4jProcess = null;
+  });
+}
+*/
+async function startNeo4jServer() {
+  if (neo4jProcess) {
+    console.log("Neo4j already running, PID:", neo4jProcess.pid);
+    return;
+  }
+
+  verifyNeo4jInstall();
+  verifyJavaInstall();
+  resetNeo4jAuthIfDev();
+  await setInitialNeo4jPassword();
+
+  const neo4jHome = getNeo4jHome();
+  const neo4jBin = getNeo4jExecutable();
+  const javaHome = getJavaHome();
+
+  // Use different settings for Windows vs Mac/Linux
+  const isWindows = os.platform() === 'win32';
+  const pathSeparator = isWindows ? ';' : ':';
+  const envPath = `${path.join(javaHome, "bin")}${pathSeparator}${process.env.PATH}`;
+
+  const spawnOptions = {
+    cwd: neo4jHome,
+    env: {
+      ...process.env,
+      JAVA_HOME: javaHome,
+      PATH: envPath,
+      NEO4J_AUTH: `neo4j/${NEO4J_PASS}`,
+    },
+    stdio: "pipe",
+  };
+
+  if (isWindows) {
+    // Windows: use shell
+    spawnOptions.shell = true;
+    spawnOptions.windowsHide = true;
+    neo4jProcess = spawn(neo4jBin, ['console'], spawnOptions);
+  } else {
+    // Mac/LinuxT: don't use shell (avoids space-in-path issues)
+    spawnOptions.shell = false;
+    neo4jProcess = spawn(neo4jBin, ['console'], spawnOptions);
+  }
+
+  neo4jProcess.stdout.on("data", (data) => {
+    const text = data.toString("utf8");
+    neo4jStdoutBuffer += text;
+    if (neo4jStdoutBuffer.length > MAX_BUF) {
+      neo4jStdoutBuffer = neo4jStdoutBuffer.slice(-MAX_BUF);
+    }
+    console.log(`Neo4j: ${text}`);
+  });
+
+  neo4jProcess.stderr.on('data', (data) => {
+    console.error(`Neo4j ERR: ${data}`);
+  });
+
+  neo4jProcess.on("exit", (code) => {
+    console.log("Neo4j exited with code", code);
+    neo4jProcess = null;
+  });
+}
+
+async function stopNeo4jServer() {
+  if (!neo4jProcess) return;
+
+  const pid = neo4jProcess.pid;
+  console.log("Stopping Neo4j process tree, PID:", pid);
+
+  await new Promise((resolve) => {
+    exec(`taskkill /PID ${pid} /T /F`, (err) => {
+      if (err) {
+        console.warn("taskkill error (may already be stopped):", err.message);
+      }
+      resolve();
+    });
+  });
+
+  neo4jProcess = null;
+  neo4jReadyPromise = null;
+
+  try {
+    await neo4jDriver?.close();
+  } catch {}
+  neo4jDriver = null;
+
+  console.log("Neo4j fully stopped");
+}
+
+function setNeo4jDriver() {
+  if(!neo4jProcess) {
+    return null;
+  }
+
+  neo4jDriver = neo4j.driver(
+    'bolt://127.0.0.1:7687', 
+    neo4j.auth.basic('neo4j', NEO4J_PASS), {
+      encrypted: "ENCRYPTION_OFF",
+      disableLosslessIntegers: true,
+  });
+}
+
+const net = require("net");
+
+async function waitForTcpPort(host, port, timeoutMs = 40000) {
+  const start = Date.now();
+
+  return new Promise((resolve, reject) => {
+    const tick = () => {
+      const socket = net.createConnection({ host, port });
+
+      socket.once("connect", () => {
+        socket.destroy();
+        resolve(true);
+      });
+
+      socket.once("error", () => {
+        socket.destroy();
+        if (Date.now() - start > timeoutMs) {
+          reject(new Error(`Timeout waiting for ${host}:${port}`));
+        } else {
+          setTimeout(tick, 500);
+        }
+      });
+    };
+
+    tick();
+  });
+}
+
+function readLastBytes(filePath, maxBytes = 64 * 1024) {
+  const stats = fs.statSync(filePath);
+  const size = stats.size;
+  const start = Math.max(0, size - maxBytes);
+
+  const fd = fs.openSync(filePath, "r");
+  const buffer = Buffer.alloc(size - start);
+  fs.readSync(fd, buffer, 0, buffer.length, start);
+  fs.closeSync(fd);
+
+  return buffer.toString("utf8");
+}
+
+async function waitForNeo4jLogLine(regex, timeoutMs = 30000) {
+  const logPath = path.join(getNeo4jHome(), "logs", "neo4j.log");
+
+  const start = Date.now();
+
+  while (Date.now() - start < timeoutMs) {
+    try {
+      if (fs.existsSync(logPath)) {
+        const tail = readLastBytes(logPath, 64 * 1024);
+        if (regex.test(tail)) {
+          return true;
+        }
+      }
+    } catch {
+      // file may not exist yet
+    }
+
+    await new Promise(r => setTimeout(r, 500));
+  }
+
+  throw new Error("Timed out waiting for Neo4j Started.");
+}
+
+async function checkNeo4jConnection() {
+  if (!neo4jDriver) {
+    setNeo4jDriver();
+  }
+
+  try {
+    console.log("Checking Neo4j connection...");
+    await waitForTcpPort("127.0.0.1", 7687);
+    console.log("Neo4j is listening on port 7687");
+    await waitForNeo4jLogLine(/\bINFO\s+Started\.\s*$/m);
+    console.log("Neo4j started successfully");
+    await neo4jDriver.verifyConnectivity();
+    console.log("Verified Neo4j is connected");
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function waitForNeo4jReady(timeoutMs = 30000) {
+  if (!neo4jDriver) {
+    setNeo4jDriver();
+  }
+
+  const start = Date.now();
+  let lastErr = null;
+
+  while (Date.now() - start < timeoutMs) {
+    try {
+      await neo4jDriver.verifyConnectivity();
+      return;
+    } catch (e) {
+      lastErr = e;
+      await new Promise((r) => setTimeout(r, 500));
+    }
+  }
+
+  throw lastErr || new Error("Neo4j did not become ready before timeout.");
+}
+
+function openNeo4jSession(type) {
+  if(!neo4jDriver) {
+    setNeo4jDriver();
+  }
+
+  let neo4jSession;
+
+  if(type==="write") {
+    neo4jSession = neo4jDriver.session({
+      defaultAccessMode: neo4j.session.WRITE
+    });
+  } else {
+    neo4jSession = neo4jDriver.session({
+      defaultAccessMode: neo4j.session.READ
+    });
+  }
+
+  return neo4jSession;
+}
+
+async function closeNeo4jSession(neo4jSession) {
+  if(neo4jSession) {
+    await neo4jSession.close();
+  }
+}
+
+async function executeNeo4jQuery(mode, query, params) {
+  if(!neo4jDriver) {
+    setNeo4jDriver();
+  }
+
+  if (!neo4jReadyPromise) {
+    neo4jReadyPromise = waitForNeo4jReady(30000);
+  }
+  await neo4jReadyPromise;
+
+  const neo4jSession = openNeo4jSession(mode); 
+  let result = null;
+
+  if(mode === "write") {
+    // allow write to run multiple queries as a transaction
+    const isMultipleQueries = Array.isArray(query);
+    const queries = [];
+
+    if(!isMultipleQueries) {
+      queries.push(query);
+    } else {
+      queries.push(...query);
+    }
+
+    try {
+       result = await neo4jSession.executeWrite(async (tx) => {
+        for (const query of queries) {
+          if(params) {
+            await tx.run(query, params)
+          } else {
+            await tx.run(query);
+          }
+        }
+        return true;
+      });
+    } catch(error) {
+      console.log(error);
+      return false;
+    } finally {
+      await closeNeo4jSession(neo4jSession);
+    }
+  } else {
+    // read can only read one query at a time
+    try {
+      if(params) {
+        result = await neo4jSession.run(query, params)
+      } else {
+        result = await neo4jSession.run(query);
+      }
+
+      return {
+        records: result.records.map(r => r.toObject()),
+        summary: {
+          counters: result.summary.counters.updates(),
+        },
+      };
+    } catch(error) {
+      console.log(error);
+      return false;
+    } finally {
+      await closeNeo4jSession(neo4jSession);
+    }
+  }
+}
+
+ipcMain.handle('neo4j-start', async (event, args) => {
+  try {
+    await startNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error starting Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-stop', async (event, args) => {
+  try {
+    await stopNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error stopping Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-restart', async (event, args) => {
+  try {
+    await stopNeo4jServer();
+    startNeo4jServer();
+    return true;
+  } catch (error) {
+    console.error("Error stopping Neo4j server:", error);
+    return false;
+  }
+});
+
+ipcMain.handle('neo4j-is-connected', async(event, args) => {
+  const results = await checkNeo4jConnection();
+  return results;
+});
+
+ipcMain.handle('neo4j-execute', async(event, args) => {
+  const results = await executeNeo4jQuery(args["mode"], args["query"], args["params"]);
+  return results;
+});
+
+//////////////////////////// Slideshow Section ////////////////////////////
+
+function getSlideshowHome() {
+  return path.join(app.getPath('userData'), 'slideshows');
+}
+
+function getSlideshowBundle() {
+  let base;
+  let fullPath; 
+  console.log("app is packaged ", app.getAppPath());
+  if(app.isPackaged) {
+    base = process.resourcesPath;
+  } else {
+    base = path.join(app.getAppPath(), "resources");
+  }
+
+  fullPath = path.join(base, "slideshows");  
+  return fullPath;
+}
+
+function verifySlideshowInstall() {
+  try {
+    if(!fs.existsSync(getSlideshowHome())) {
+      console.log("the slideshow directory doesn't exist ", getSlideshowHome(), getSlideshowBundle());
+      fs.cpSync(getSlideshowBundle(), getSlideshowHome(), { recursive: true });
+      console.log("copied slideshow bundle")
+    }
+    return true;
+  } catch(error) {
+    return false;
+  }
+}
+
+ipcMain.handle('slideshow-bundle', (event) => {
+  const results = verifySlideshowInstall();
+  return results;
+});
+
+ipcMain.handle('slideshow-path', (event, filename) => {
+  const slideshowPath = path.join(getSlideshowHome(), filename);
+  return slideshowPath;
+});
+
 

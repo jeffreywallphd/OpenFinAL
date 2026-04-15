@@ -11,6 +11,7 @@ import { StockInteractor } from "../../Interactor/StockInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
 import { UserInteractor } from "../../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../../Interactor/PortfolioInteractor";
+import {PortfolioTransactionInteractor} from "../../Interactor/PortfolioTransactionInteractor";
 import { OrderInteractor } from "../../Interactor/OrderInteractor"; 
 
 function TimeSeriesChart(props) {
@@ -26,6 +27,8 @@ function TimeSeriesChart(props) {
     const [orderQuantity, setOrderQuantity] = useState(0);
     const [timeoutId, setTimeoutId] = useState(null);
     const [cashId, setCashId] = useState(null);
+    const [buyingPower, setBuyingPower] = useState(0);
+    const [buyingPowerLoaded, setBuyingPowerLoaded] = useState(false);
 
     const openModal = async () => {
         setIsModalOpen(true);
@@ -114,6 +117,48 @@ function TimeSeriesChart(props) {
         return null;        
     };
 
+    const getBuyingPower = async(cashIdP=null, portfolioId=null) => {
+        try {
+            if(!cashIdP) {
+                cashIdP = cashId;
+            }
+
+            if(!portfolioId) {
+                portfolioId = currentPortfolio;
+            }
+
+            const interactor = new PortfolioTransactionInteractor();
+            const requestObj = new JSONRequest(JSON.stringify({
+                request: {
+                    action: "getBuyingPower",
+                    transaction: {
+                        portfolioId: portfolioId,
+                        entry: {
+                            assetId: cashIdP
+                        }
+                    } 
+                }
+            }));
+
+            const response = await interactor.get(requestObj);
+            if(response && response.response && response.response.ok && response.response.results && response.response.results[0]) {
+                setBuyingPowerLoaded(true);
+                setBuyingPower(response.response.results[0].buyingPower);
+                return true;
+            } else {
+                console.error('Buying power API response error:', response);
+                setBuyingPowerLoaded(true);
+                setBuyingPower(0);
+                return false;
+            }
+        } catch (error) {
+            console.error('Error fetching buying power:', error);
+            setBuyingPowerLoaded(true);
+            setBuyingPower(0);
+            return false;
+        }    
+    };
+
     const getCurrentPrice = async () => {
         if(props.state.data) {
             const interactor = new StockInteractor();
@@ -141,6 +186,8 @@ function TimeSeriesChart(props) {
 
     const placeOrder = async () => {
         //TODO: check to make sure the order and pending orders don't exceed buying power
+        getBuyingPower();
+
         const interactor = new OrderInteractor();
         const requestObj = new JSONRequest(JSON.stringify({
             request: {
@@ -314,10 +361,16 @@ function TimeSeriesChart(props) {
                     <Bar type="monotone" dataKey="volume" fill={chartColor}/>
                 </BarChart>
 
-                {props.state.secData ? 
-                    <>
-                        <div className="stockOrder">
-                            <p><button onClick={openModal}>Make a Trade</button></p>
+                {data && 
+                    <div className="stockOrder">
+                            <p>
+                                <button onClick={() => {
+                                    openModal();
+                                    getBuyingPower();
+                                }}>
+                                    Make a Trade
+                                </button>
+                            </p>
                             {isModalOpen && (
                                 <>
                                     <div className="modal-backdrop" onClick={() => {
@@ -327,7 +380,7 @@ function TimeSeriesChart(props) {
                                     <div className="news-summary-modal">    
                                         <div className="news-summary-content">
                                             <div className="news-summary-header">
-                                                <h2>{header}</h2>
+                                                <h2>Purchase {header}</h2>
                                                 <button onClick={() => {
                                                     closeModal();
                                                     clearPriceTimeout();
@@ -345,6 +398,7 @@ function TimeSeriesChart(props) {
                                                     onChange={(e) => {
                                                         setCreatePortfolio(false); 
                                                         setCurrentPortfolio(e.target.value);
+                                                        getBuyingPower(cashId, e.target.value);
                                                     } 
                                                 }>
                                                     {portfolios.length === 0 && <option key="" value="">Select a Portfolio...</option>}
@@ -355,16 +409,34 @@ function TimeSeriesChart(props) {
                                                     ))}
                                                 </select>
                                             </p>
-                                            <p>Price: {formatterCent.format(currentQuote.quotePrice)}</p>
-                                            <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
-                                            <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
-                                            {orderMessage ? <p>{orderMessage}</p> : null}
-                                            <button onClick={placeOrder} disabled={createPortfolio}>Place Order</button>  
+                                            { buyingPowerLoaded && currentQuote.quotePrice ?
+                                                <>
+                                                    <p>Price: {formatterCent.format(currentQuote.quotePrice)}</p>
+                                                    <p>Quantity: <input type="text" value={orderQuantity} onChange={(e) => setOrderQuantity(e.target.value)} /></p>
+                                                    <p>Buying Power: {formatterCent.format(buyingPower)}</p>
+                                                    <p>Total: {formatterCent.format(currentQuote.quotePrice * orderQuantity)}</p>
+                                                    {orderMessage ? <p>{orderMessage}</p> : null}
+
+                                                    {(currentQuote.quotePrice * orderQuantity) <= buyingPower ? 
+                                                        <button onClick={placeOrder} disabled={createPortfolio}>Place Order</button>
+                                                    : 
+                                                        <p className="error">The order total may not exceed your buying power</p> }   
+                                                </>
+                                                :
+                                                <div className="loader-container">
+                                                    Retrieving current quote... <div className="small-loader"></div>
+                                                </div>
+                                            }
+                                             
                                         </div>
                                     </div>
                                 </>
                             )}
                          </div>
+                }
+
+                {props.state.secData ? 
+                    <>
                         { props.fundamentalAnalysis ? 
                                 <>
                                     <h3>AI Fundamental Analysis</h3>

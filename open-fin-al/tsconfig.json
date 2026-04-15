@@ -1,8 +1,13 @@
 {
     "compilerOptions": {
+      "allowJs": true,
+      "checkJs": false,
+      "skipLibCheck": true,
+      "noImplicitAny": false,
+      "noEmit": true,
+      "jsx": "react",
       "module": "ESNext",
       "target": "ES2022",
-      "noImplicitAny": true,
       "removeComments": true,
       "preserveConstEnums": true,
       "sourceMap": true,
@@ -18,5 +23,7 @@
         "@Interactor/*": ["Interactor/*"],
         "@View/*": ["View/*"]
       }
-    }
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules"]
 }

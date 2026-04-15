@@ -18,9 +18,11 @@
   --text-color-medium-dark: #333333;
   --row-primary-color: #FFFFFF;
   --row-alternating-color: #c1c9ff;
+  --always-black: #000000;
   --footer-height: 90px;
   --sidebar-width: 220px;
   --sidebar-footer-width: 190px;
+  --pptx-scale: 1;
 }
 
 body.dark-mode {
@@ -41,6 +43,7 @@ body.dark-mode {
   --text-color-medium-dark: #BBBBBB;
   --row-primary-color: #2d3748;
   --row-alternating-color: #4a5568;
+  --always-black: #000000;
 }
 
 body {
@@ -388,10 +391,17 @@ code {
   background-color: var(--background-color);
 }
 
-.pptx-preview-wrapper {
+.slideshowContainer {
   margin: 0 !important;
   padding: 0 !important;
-  overflow: hidden !important;
+  position: relative;
+  overflow: hidden;
+}
+
+.pptx-preview-wrapper {
+  transform-origin: top left;       
+  transform: scale(var(--pptx-scale, 1));
+  overflow: hidden;
 }
 
 .slide {
@@ -494,7 +504,10 @@ code {
   background-color: var(--secondary-color);
   color: var(--text-color-light);
   border-radius: 10px 10px 0px 0px;
-  height: 200px
+  height: 200px;
+  background-size: contain;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .cardContainer {
@@ -515,6 +528,7 @@ code {
 .chartContainer {
   width: 700px;
   margin-left: 10px;
+  margin-top: 20px;
 }
 
 .stockDetails {
@@ -556,13 +570,20 @@ code {
   padding: 0;
 }
 
+.priceSearchFormContainer form {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .priceSearchBar {
   padding: 8px;
-  width: 400px;
+  flex: 1;
+  min-width: 200px;
   border: 1px solid black;
   height: 30px;
   border-radius: 4px;
-  margin-right: 8px;
+  margin-right: 0;
 }
 
 .priceSearchButton {
@@ -662,7 +683,7 @@ code {
 
 .popoverContent {
   max-width: 200px;
-  padding: 5px;
+  padding: 15px;
   border-radius: 10px;
   background-color: rgba(29, 32, 40, 0.9);
   color: var(--text-color-light)
@@ -824,6 +845,10 @@ code {
 }
 
 .portfolio-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   background-color: var(--background-color);
   padding: 20px;
   border-radius: 5px;
@@ -831,8 +856,12 @@ code {
   text-align: center;
 }
 
+.portfolio-card h3 {
+  margin: 0px;
+}
+
 .portfolio-value, .buying-power {
-  font-size: 24px;
+  font-size: 20px;
   font-weight: bold;
 }
 
@@ -1309,6 +1338,11 @@ nav ul li a:hover {
   color: var(--text-color-medium-dark);
 }
 
+.loader-container {
+  display: flex;
+  align-items: center;
+}
+
 .small-loader {
   visibility: visible;
   border: 12px solid #f3f3f3;
@@ -1323,6 +1357,25 @@ nav ul li a:hover {
 }
 
 .small-loader.hidden {
+  display: none;
+}
+
+.tiny-loader {
+  visibility: visible;
+  border: 7px solid #f3f3f3;
+  border-top: 7px solid #3498db;
+  border-radius: 50%;
+  width: 7px;
+  height: 7px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  animation: spin 2s linear infinite;
+  display: inline-block;
+}
+
+.tiny-loader.hidden {
   display: none;
 }
 
