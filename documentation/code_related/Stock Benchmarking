@@ -1,34 +1,41 @@
 # Feature Documentation Template
 
 ## Feature Name
-<!-- Enter the name of the feature -->
+<!Stock Tracking Benchmark Graphs>
 
 ## Feature Type
-_Core Feature / Peripheral Feature / Integration / UI Feature_
+_Peripheral Feature_
 
 ## Description
-A short explanation of what the feature does and why it exists.
+This feature allows the user to quickly compare the return on their portfolio against that of the overall market using the top three most common benchmarks: the S&P 500, NASDAQ and DOW. There are two graphs. The first graph is located on the dashboard and shows overall market trends. The second graph is located in the portfolio tab and compares the percent change of each benchmark against the percent change of the user’s portfolio.
 
 ## User Problem Solved
-High-level explanation of the problem this feature addresses.
+While the user can invest in various stocks and see how much they are gaining or losing, there is no real indication of how well they are doing. By tracking the percentage change of each benchmark, the user can compare the changes in their portfolio to see what improvements can be made.
 
 ## How It Works
-High-level explanation of how the feature operates.
+This feature uses an API key from Alphavantage to grab ETFs that track the stock price of each benchmark. That data is then graphed using code. On the dashboard, only the price of each benchmark is shown. However, on the portfolio page, the percent change is calculated using the same data and then graphed against the percent change of the user’s portfolio.
 
 ## Inputs
-What data or actions trigger the feature.
+To use the graph on the dashboard, the user will navigate to the correct tab and select the stock benchmark they prefer from a drop down menu. The graph will then adjust accordingly. The user can also choose how far back they want the data to release.  
+To use the graph in the portfolio, the user will navigate to the correct tab and select the stock benchmark they prefer from a drop down menu. The graph will then adjust accordingly. The user can also choose how far back they want the data to release.
 
 ## Outputs
-What the system produces (UI change, data output, API response).
+This system produces an API response and a data output.
 
 ## Dependencies
-Libraries, APIs, or components required.
+This feature depends on having proper API keys to function. Additionally, comparing the percent change of the overall market against the percent change of the user’s portfolio requires the user to have a portfolio. 
 
 ## Configuration / Setup
-Steps required to enable or configure the feature.
+This feature is automatically enabled upon installation. However, the user must have a portfolio if they wish to compare a percent change against the overall market. Thus, in order to fully utilize this feature, the user has to invest and have a portfolio. 
 
 ## Example Usage
-Example scenario or workflow demonstrating the feature.
+If the user has a portfolio that is growing or decreasing its value, but doesn’t really know how well they are doing, then they can use this feature to compare their return against the overall market. Then, if the user is not performing to their standards, they can adjust accordingly.
+
+## Files Changed
+Home.jsx - Added graph for common stock benchmarks. Was able to reuse graphs from the trade page, and make a few changes to fit the dashboard.
+Portfolio.jsx - Added rate of change graph, was able to reuse parts of the ROC Chart from the models page. With a few changes to fit the portfolio and user data. 
+PortfolioPerformanceCalculator.js - Created a file to calculate users' rate of change data for the graph in the portfolio. 
+TimeSeriesChart.jsx - Made small changes so that the graph in the dashboard can more closely match the price of the real stock benchmarks.
 
 ## Future Improvements
-Known limitations or possible enhancements.
+There are other stock benchmarks that could be added, such as international stock metrics. Additionally, features can be added that explain exactly what each benchmark (S&P 500, NASDAQ, and DOW) specifically measure. Work can also be done on the way the user data is stored for a more accurate percent change graph.
