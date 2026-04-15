@@ -1,34 +1,333 @@
+mac adapter
 # Feature Documentation Template
 
 ## Feature Name
-<!-- Enter the name of the feature -->
+<!-- Allowing Other devices besides Windows Machines ->
 
 ## Feature Type
-_Core Feature / Peripheral Feature / Integration / UI Feature_
+_Core Feature
 
 ## Description
-A short explanation of what the feature does and why it exists.
+This feature allows anyone on any laptop/PC to access the application. I tested it for mac and windows(don’t have access to a linux machine). So linux integration still needs to be tested but doesn’t risk the others
 
 ## User Problem Solved
-High-level explanation of the problem this feature addresses.
-
+The problem that was solved was that the application was only limited to Windows users which isn’t the goal of the application. It is very important  that anyone on any system should be able to access the application. Not just the one that the majority of people have.
 ## How It Works
-High-level explanation of how the feature operates.
+This feature works by checking the operating system of the user using the application on startup. This was already done; only windows were implemented prior. Then I added branches to the if statement to allow it to run. There were some syntax differences between OS’s. For example windows use backslashes while mac/linux use forward slashes to navigate files which was what was preventing mac systems from working. Also some things with the console are different between the systems so added checking there.
 
 ## Inputs
-What data or actions trigger the feature.
+This just auto fires up when the program is launching no outside inputs required.
 
 ## Outputs
 What the system produces (UI change, data output, API response).
+The system actually loads for  Macs and Windows machines(linux still unknown)
+
+## Dependencies
+No needed dependencies just the side car card dependencies.
+
+## Configuration / Setup
+	During the setup for side car
+Download the 2025 Windows Community Neo4j binaries at: https://neo4j.com/deployment-center/?gdb-selfmanaged&community
+Download the JDK 25 compressed archive version of Java at: https://www.oracle.com/java/technologies/downloads/#jdk25-windows
+Unzip the binaries.
+Move the contents of the binaries (i.e., the bin folder and all other folders and files) into OpenFinAL/open-fin-al/resources/neo4j-win and OpenFinAL/open-fin-al/resources/jre-win
+With the binaries in place, you can move to the next step and start the application.
+But for other systems make sure to download the respective ver+sions for your OS.
+Then do jre-mac and neo4j-mac and for jre-linux and neo4j-linux
+
+
+## Example Usage
+The usage of this feature just allows anyone to access the system. So someone owning a mac or linux machine would follow the new steps when installing the application 
+## Future Improvements
+Possible improvements could be containerizing the application so users can just download the image and have all the required dependencies.
+And testing on a linux machine to ensure functionality.
+UI Componentizing
+## Feature Name
+<!-- UI Componentizing -->
+
+## Feature Type
+UI Feature
+
+## Description
+This feature allows certain sections of the application to be hidden, resized and be modified by the in system chat bot. Also allows there to be a set learning level, to not overwhelm new users with all the features.
+
+## User Problem Solved
+Helps users ease into the interface more easily with different finance experience levels, as well as giving users the ability to make components larger to see things more easily, or hiding components if they do not want to see them.
+
+## How It Works
+High-level explanation of how the feature operates.
+## Part 1: Creating a JSX Component
+
+### Step 1 — Create the component file
+
+Place the file in the appropriate subdirectory under `open-fin-al/src/View/`.
+
+**Example:** `open-fin-al/src/View/Dashboard/MyWidget.jsx`
+
+```jsx
+import React from "react";
+
+// The component receives viewConfig automatically from the HOC wrapper.
+// You do not need to use viewConfig inside the component unless you need
+// to read dimension or ratio values (e.g. for canvas sizing).
+export function MyWidget({ viewConfig, someOtherProp }) {
+    return (
+        <div className="my-widget">
+            <p>{someOtherProp}</p>
+        </div>
+    );
+}
+```
+
+> **Note:** Do not call `withViewComponent` inside this file if this component will be exported from `WrappedComponents.ts`. Doing so creates a circular dependency. See the circular dependency warning below.
+
+---
+
+### Step 2 — Add to `WrappedComponents.ts`
+
+Open `open-fin-al/src/hoc/WrappedComponents.ts` and add an import and a wrapped export under the appropriate section comment.
+
+```ts
+// Dashboard
+import { MyWidget } from "../View/Dashboard/MyWidget";
+
+export const WrappedMyWidget = withViewComponent(MyWidget);
+```
+
+---
+
+### Step 3 — Register in `registerComponents.ts`
+
+Open `open-fin-al/src/hoc/registerComponents.ts` and add an entry to the `componentConfigs` array. This registers the component in the `ComponentRegistry` so the AI chatbot can find it.
+
+```ts
+{
+    id: "my-widget",
+    config: {
+        label: "My Widget",
+        description: "Short description of what the widget does — used by AI search",
+        tags: ["widget", "dashboard", "relevant-keyword"],
+        height: 200,
+        width: 400,
+        isContainer: false,
+        resizable: true,
+        maintainAspectRatio: false,   // true = fixed pixel dims; false = auto/100%
+        widthRatio: 2,
+        heightRatio: 1,
+        heightWidthRatioMultiplier: 0,
+        visible: true,
+        enabled: true,
+        minimumProficiencyRequirements: {},
+        requiresInternet: false,
+    },
+},
+```
+
+**`maintainAspectRatio` guide:**
+- `true` — the HOC sets explicit `height` and `width` in pixels. Use this for charts, slideshows, and any component where pixel dimensions matter.
+- `false` — the HOC sets `height: "auto"` and `width: "100%"`. Use this for lists, rows, forms, and anything that should flow with its content.
+
+---
+
+### Step 4 — Use the wrapped component
+
+Import the wrapped version from `WrappedComponents.ts` in any page file that is **not itself exported from `WrappedComponents.ts`**.
+
+```jsx
+import { WrappedMyWidget } from "../hoc/WrappedComponents";
+import { useMemo } from "react";
+import { ViewComponent } from "../types/ViewComponent";
+
+function SomePage() {
+    const myWidgetConfig = useMemo(() => new ViewComponent({
+        height: 200, width: 400, isContainer: false, resizable: true,
+        maintainAspectRatio: false, widthRatio: 2, heightRatio: 1,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "My Widget", description: "...",
+        tags: ["widget"], minimumProficiencyRequirements: {}, requiresInternet: false,
+    }), []);
+
+    return <WrappedMyWidget someOtherProp="hello" viewConfig={myWidgetConfig} />;
+}
+```
+
+> Use `useMemo` for the config in functional components so a new `ViewComponent` instance is not created on every render. For class components, define the config as a class property instead (see the circular dependency section below).
+
+---
+
+## Part 2: Creating a TSX Component
+
+TSX components work exactly the same way as JSX, but you define a TypeScript interface for the props. This ensures callers pass the correct props at compile time.
+
+### Step 1 — Create the component file
+
+Place it under `open-fin-al/src/View/Component/<Section>/` for sub-components, or directly in `open-fin-al/src/View/<Section>/` for page-level components.
+
+**Example:** `open-fin-al/src/View/Component/Dashboard/MyChart.tsx`
+
+```tsx
+import React from "react";
+import { withViewComponent, WithViewComponentProps } from "../../../hoc/withViewComponent";
+
+// 1. Declare your own props and extend WithViewComponentProps.
+//    WithViewComponentProps contributes: viewConfig: ViewComponent
+interface MyChartProps extends WithViewComponentProps {
+    data: number[];
+    label: string;
+}
+
+// 2. Write the inner component (not exported directly).
+function MyChartInner({ data, label, viewConfig }: MyChartProps) {
+    return (
+        <div>
+            <h4>{label}</h4>
+            {/* use data to render chart */}
+        </div>
+    );
+}
+
+// 3. Export the wrapped version.
+export const MyChart = withViewComponent(MyChartInner);
+```
+
+> The inner function is **not** exported. Only the wrapped export is public. This prevents accidental use of the unwrapped version.
+
+---
+
+### Step 2 — Add to `WrappedComponents.ts`
+
+```ts
+// Dashboard
+import { MyChart } from "../View/Component/Dashboard/MyChart";
+
+export const WrappedMyChart = withViewComponent(MyChart);
+```
+
+Wait — `MyChart` is already wrapped inside its `.tsx` file. **Do not double-wrap it.** Instead, just re-export it with the `Wrapped` naming convention for consistency:
+
+```ts
+// Dashboard
+export { MyChart as WrappedMyChart } from "../View/Component/Dashboard/MyChart";
+```
+
+Or skip `WrappedComponents.ts` entirely for TSX components and import directly from the source file:
+
+```tsx
+import { MyChart } from "../View/Component/Dashboard/MyChart";
+```
+
+---
+
+### Step 3 — Register in `registerComponents.ts`
+
+Same as JSX — add an entry to `componentConfigs` in `open-fin-al/src/hoc/registerComponents.ts`.
+
+```ts
+{
+    id: "my-chart",
+    config: {
+        label: "My Chart",
+        description: "Displays data as a chart",
+        tags: ["chart", "dashboard", "data"],
+        height: 300,
+        width: 700,
+        isContainer: false,
+        resizable: true,
+        maintainAspectRatio: true,
+        widthRatio: 16,
+        heightRatio: 9,
+        heightWidthRatioMultiplier: 0,
+        visible: true,
+        enabled: true,
+        minimumProficiencyRequirements: {},
+        requiresInternet: false,
+    },
+},
+```
+
+---
+
+### Step 4 — Use the component
+
+```tsx
+import { MyChart } from "../View/Component/Dashboard/MyChart";
+import { useMemo } from "react";
+import { ViewComponent } from "../types/ViewComponent";
+
+function SomePage() {
+    const chartConfig = useMemo(() => new ViewComponent({
+        height: 300, width: 700, isContainer: false, resizable: true,
+        maintainAspectRatio: true, widthRatio: 16, heightRatio: 9,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "My Chart", description: "...",
+        tags: ["chart"], minimumProficiencyRequirements: {}, requiresInternet: false,
+    }), []);
+
+    return <MyChart data={[1, 2, 3]} label="Revenue" viewConfig={chartConfig} />;
+}
+```
+
+TypeScript will error at compile time if you forget `data`, `label`, or `viewConfig`, or if you pass the wrong type.
+
+---
+
+## Circular Dependency Warning
+
+**Rule:** Any file that is exported from `WrappedComponents.ts` must NOT import from `WrappedComponents.ts`.
+
+If a page-level component (e.g. `Home.jsx`, `Settings.jsx`) is listed in `WrappedComponents.ts` AND also needs to render a wrapped sub-component, it cannot use `WrappedComponents.ts` as the import source. Instead, wrap locally inside that file:
+
+```jsx
+// At the top of Home.jsx — wrap locally instead of importing from WrappedComponents
+import { withViewComponent } from "../hoc/withViewComponent";
+import { NewsBrowser } from "./News/Browser";
+
+const WrappedNewsBrowser = withViewComponent(NewsBrowser);
+```
+
+For class components that cannot use `useMemo`, define the config as a class property:
+
+```jsx
+class Home extends Component {
+    newsBrowserConfig = new ViewComponent({
+        height: 300, width: 400, isContainer: false, resizable: true,
+        maintainAspectRatio: false, widthRatio: 4, heightRatio: 3,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "News Browser", description: "...",
+        tags: ["news"], minimumProficiencyRequirements: {}, requiresInternet: true,
+    });
+
+    render() {
+        return <WrappedNewsBrowser viewConfig={this.newsBrowserConfig} />;
+    }
+}
+```
+
+---
+
+
+## Inputs
+What data or actions trigger the feature.
+When you are creating a new feature of any kind that needs to be imported into another page, They should follow the documentation/code_related/guides/creating-a-new-component.md  when creating their feature to ensure it will work with the chatbot and that it uses the type script requirements.
+
+## Outputs
+What the system produces (UI change, data output, API response).
+The feature doesn’t make a direct change to the UI but it allows the user to modify the the UI in the way they want it.
 
 ## Dependencies
 Libraries, APIs, or components required.
+Requires the AI api to allow the chatbot feature to work
 
 ## Configuration / Setup
 Steps required to enable or configure the feature.
+Follow the documentation located in documentation/code_related/guides/creating-a-new-component.md on how to go about creating a component with respect to the UI wrapper classes.
 
 ## Example Usage
 Example scenario or workflow demonstrating the feature.
+When creating a new component, they need to follow the provided structure and variables in the wrapper class representing all UI components, particularly visibility, financial level, and ensuring the AI chatbot in the software has access to component metadata(i.e., title, description, tags)
 
 ## Future Improvements
 Known limitations or possible enhancements.
+The chatbot feature isn't fully tested, because we didn't have access to an api key. 
+
+
