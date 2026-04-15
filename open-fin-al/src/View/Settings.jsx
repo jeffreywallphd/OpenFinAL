@@ -1,23 +1,24 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useMemo } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { withViewComponent } from "../hoc/withViewComponent";
+import { ViewComponent } from "../types/ViewComponent";
 import { SettingsRow } from "./Settings/Row";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 import { useHeader } from "./App/LoadedLayout";
 import { DataContext } from "./App/DataContext";
 
+const WrappedSettingsRow = withViewComponent(SettingsRow);
+
 function Settings(props) {
     const { setHeader } = useHeader();
-    // ## Recent change
-    // Read the authenticated user so the User Profile section reflects the
-    // current account instead of shared config defaults.
     const { user } = useContext(DataContext);
-          
+
     useEffect(() => {
         setHeader({
         title: "Settings",
-        icon: "settings", 
+        icon: "settings",
         });
     }, [setHeader]);
 
@@ -34,27 +35,22 @@ function Settings(props) {
 
     const interactor = new SettingsInteractor();
 
-    // Function to get setting sections from interactor
     const fetchSettingSections = async () => {
         const settingSectionRequest = new JSONRequest(JSON.stringify({}));
         try {
             const response = await interactor.get(settingSectionRequest);
-            setSections(response); // save to state or handle however needed
+            setSections(response);
         } catch (error) {
             console.error("Failed to fetch setting sections:", error);
         }
     };
 
-    // Function to get setting sections from interactor
     const fetchCurrentSettings = async () => {
         const settingRequest = new JSONRequest(JSON.stringify({action: "getCurrent"}));
         try {
             const response = await interactor.get(settingRequest);
             const currentSettings = response.response.results[0];
 
-            // ## Recent change
-            // Override profile fields with the active authenticated user,
-            // including email, so Settings no longer shows stale account data.
             if (user) {
                 currentSettings.FirstName = {
                     ...currentSettings.FirstName,
@@ -115,9 +111,6 @@ function Settings(props) {
             return;
         }
 
-        // ## Recent change
-        // Keep the Settings form synchronized if the authenticated user
-        // changes after the initial settings payload loads.
         setSettings((prev) => ({
             ...prev,
             ...(prev.FirstName ? {
@@ -169,14 +162,14 @@ function Settings(props) {
             await sleep(1000);
             setMessage(null);
 
-            const isConfigured = props.checkIfConfigured();
+            props.checkIfConfigured();
 
             setTimeout(() => {
-                navigate('/refresh', { replace: true }); // dummy path
+                navigate('/refresh', { replace: true });
                 setTimeout(() => {
-                    navigate(location.pathname, { replace: true }); // go back
+                    navigate(location.pathname, { replace: true });
                 }, 100);
-            }, 500); // slight delay to allow config update
+            }, 500);
         } else {
             setMessage("Failed to save the configuration");
         }
@@ -211,13 +204,20 @@ function Settings(props) {
         getDarkMode();
     }, []);
 
+    const settingsRowConfig = useMemo(() => new ViewComponent({
+        height: 48, width: 600, isContainer: false, resizable: true,
+        maintainAspectRatio: false, widthRatio: 1, heightRatio: 1,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "Settings Row", description: "A single row in the settings panel",
+        tags: ["settings", "row", "configuration"], minimumProficiencyRequirements: {}, requiresInternet: false,
+    }), []);
+
     const navigate = useNavigate();
     const location = useLocation();
 
     return (
         <div className={`page ${props.initialConfiguration ? 'only' : ''}`}>
             <header>
-                {/* Application Style Card */}
                 <div className="settings-card">
                     <div className="style-options">
                         <button
@@ -225,13 +225,12 @@ function Settings(props) {
                             onClick={() => {
                                 toggleDarkMode();
 
-                                // Force refresh of the route after state change
                                 setTimeout(() => {
-                                    navigate('/refresh', { replace: true }); // dummy path
+                                    navigate('/refresh', { replace: true });
                                     setTimeout(() => {
-                                        navigate(location.pathname, { replace: true }); // go back
+                                        navigate(location.pathname, { replace: true });
                                     }, 10);
-                                }, 50); // slight delay to allow config update
+                                }, 50);
                             }}
                             >
                                 {darkMode ? "Light Mode" : "Dark Mode"}
@@ -240,7 +239,7 @@ function Settings(props) {
                 </div>
             </header>
             {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
-                <div className="settings-card">
+                <div key={section.label} className="settings-card">
                     <h3 className="card-title">{section.label}</h3>
                     <div className="api-config-table">
                         <div className="table-header">
@@ -248,9 +247,7 @@ function Settings(props) {
                             <div className="header-cell">Value</div>
                         </div>
                         {section.configurations.map((configuration) => (
-                            <>
-                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} />
-                            </>
+                            <WrappedSettingsRow key={configuration.valueName ?? configuration.label} settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} viewConfig={settingsRowConfig}/>
                         ))}
                     </div>
                     <div className="save-button-container">

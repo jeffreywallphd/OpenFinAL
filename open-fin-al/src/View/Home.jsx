@@ -8,15 +8,19 @@ import React, { Component } from 'react';
 import profileIcon from "../Asset/Image/profile.jpg";
 import { NewsInteractor } from "../Interactor/NewsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { withViewComponent } from "../hoc/withViewComponent";
+import { ViewComponent } from "../types/ViewComponent";
 import { NewsBrowser } from "./News/Browser";
+import { EconomicChart } from './Dashboard/EconomicChart';
+
+const WrappedNewsBrowser = withViewComponent(NewsBrowser);
+const WrappedEconomicChart = withViewComponent(EconomicChart);
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
 import { StockInteractor } from "../Interactor/StockInteractor";
 import { MarketStatusInteractor } from "../Interactor/MarketStatusInteractor";
 import {EconomicIndicatorInteractor} from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
-import { EconomicChart } from './Dashboard/EconomicChart';
 import { TimeSeriesChart } from './Stock/TimeSeriesChart';
-import { TickerSearchBar } from './Stock/TickerSearchBar';
 import { HeaderContext } from "./App/LoadedLayout";
 
 const withNavigation = (Component) => {
@@ -28,6 +32,22 @@ const withNavigation = (Component) => {
 
 class Home extends Component {
   static contextType = HeaderContext;
+
+  economicChartConfig = new ViewComponent({
+    height: 200, width: 400, isContainer: false, resizable: true,
+    maintainAspectRatio: true, widthRatio: 2, heightRatio: 1,
+    heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+    label: "Economic Chart", description: "Displays macroeconomic data as a chart",
+    tags: ["chart", "economic", "macro"], minimumProficiencyRequirements: {}, requiresInternet: true,
+  });
+
+  newsBrowserConfig = new ViewComponent({
+    height: 300, width: 400, isContainer: false, resizable: true,
+    maintainAspectRatio: false, widthRatio: 4, heightRatio: 3,
+    heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+    label: "News Browser", description: "Browser for viewing and navigating news articles",
+    tags: ["news", "browser", "articles"], minimumProficiencyRequirements: {}, requiresInternet: true,
+  });
 
   formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -415,9 +435,9 @@ class Home extends Component {
           <div className="stats">
             <div className="current-month">
               {this.state.marketData ? 
-                  this.state.marketData.map((market) => {
+                  this.state.marketData.map((market, index) => {
                     return (
-                      <p>
+                      <p key={market.type ?? index}>
                         The {market.type} Market is:&nbsp; {market.status.toUpperCase()}
                       </p>)
                   })
@@ -458,16 +478,19 @@ class Home extends Component {
             </div>
             <div className="earnings">
               <h3><span className="material-icons">trending_up</span> Total Value</h3>
-              <p>{this.formatter.format(this.state.portfolioValue)} <span style={this.calculatePercentChange()>=0 ? {color:"green"}: {color:"red"}}>{this.calculatePercentChange()>0 ? "+" : ""}{this.percentFormatter.format(this.calculatePercentChange())}</span></p>
+              <p>
+                {this.formatter.format(this.state.portfolioValue)}
+                {(this.state.portfolioValue ? <span style={this.calculatePercentChange()>=0 ? {color:"green"}: {color:"red"}}> {this.calculatePercentChange()>0 ? "+" : ""}{this.percentFormatter.format(this.calculatePercentChange())}</span> : <span className="tiny-loader"></span>)} 
+              </p>
             </div>
             <div className="invested">
               <h3><span className="material-icons">account_balance_wallet</span> Total Buying Power</h3>
-              <p>{this.formatter.format(this.state.buyingPower)} ({this.percentFormatter.format(this.state.buyingPower/this.state.portfolioValue)} cash)</p>
+              <p>{this.formatter.format(this.state.buyingPower)}</p>
             </div>
             <div className="promo">
               <div className="promo-text">
                 <h3>{this.state.name ? this.state.name : "Economic Data"}</h3>
-                <EconomicChart state={this.state}/>
+                <WrappedEconomicChart state={this.state} viewConfig={this.economicChartConfig}/>
               </div>
             </div>
             {/* Market Benchmarks Section - displays comparison charts for major indices */}
@@ -511,7 +534,7 @@ class Home extends Component {
           </div>
           <div className="news-updates">
             {this.state.newsData ?
-                <NewsBrowser handlePrevious={this.handlePrevious} handleNext={this.handleNext} listingData={this.state.currentListing}/>
+                <WrappedNewsBrowser handlePrevious={this.handlePrevious} handleNext={this.handleNext} listingData={this.state.currentListing} viewConfig={this.newsBrowserConfig}/>
                  :
                 null
             }

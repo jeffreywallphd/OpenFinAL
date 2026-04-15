@@ -1,0 +1,56 @@
+# Feature Documentation Template
+
+## Feature Name
+<!-- Enter the name of the feature -->
+
+## Feature Type
+_Core Feature / Peripheral Feature / Integration / UI Feature_
+UI Features surrouding settings page
+
+## Description
+A short explanation of what the feature does and why it exists.
+UI Features provide users with options on how they want their own page to look like, to their preferences. 
+These can help users who may be color blind, sensitive to light, or motion sickness to reduce affects some of these additions would cause.
+Providing more people with comfortable access. 
+
+## User Problem Solved
+High-level explanation of the problem this feature addresses.
+
+## How It Works
+High-level explanation of how the feature operates.
+
+## Inputs
+What data or actions trigger the feature.
+
+## Outputs
+What the system produces (UI change, data output, API response).
+Overall Consistent Colors:
+1 - changed colors that didn't match the theme
+2 - provided more options for colors, such as themes as well as color slides where they could pick their own
+
+Accessibility Additions ( toggle switches on or off)
+1 - Higher contrast overall
+2 - Larger Text
+3 - Reduced Motion 
+4 - Dark Mode
+5 - Made dropdown for overall settings
+
+## Dependencies
+Libraries, APIs, or components required.
+
+## Configuration / Setup
+Steps required to enable or configure the feature.
+
+## Example Usage
+Example scenario or workflow demonstrating the feature.
+
+## Future Improvements
+Known limitations or possible enhancements.
+Risk Analysis Page: 
+1 - Work on circles properly being spaced when scrolling
+2 - Work on differentiating without color within the chart 
+  ( put connecting explaination within chart not just color)
+
+Software Installation: 
+1 - Create a guide on how to download, or even an app making the process more simple
+  ( this took up way too much time from each team)

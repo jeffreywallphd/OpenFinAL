@@ -29,6 +29,9 @@ export class AlphaVantageMarketGateway implements IKeyedDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
+        const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+        await sleep(1001);
+        
         var url = `${this.baseURL}?function=MARKET_STATUS&apikey=${entity.getFieldValue("key")}`;
         const urlObject = new URL(url);
         
