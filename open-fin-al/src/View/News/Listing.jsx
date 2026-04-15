@@ -8,6 +8,7 @@ import React, {useState} from "react";
 import {NewsListingSummary} from "./Listing/Summary";
 import { LanguageModelInteractor } from "../../Interactor/LanguageModelInteractor";
 import { JSONRequest } from "../../Gateway/Request/JSONRequest";
+import defaultThumbnail from "../../Asset/Image/thumbnail_unavailable.png";
 
 function NewsListing({ listingData, state }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -41,7 +42,12 @@ function NewsListing({ listingData, state }) {
   return (
     <div className="news-item">
       <div className="news-item-image" style={{ marginRight: '10px' }}>
-        <img src={listingData.thumbnail} alt="Thumbnail" style={{ width: '200px', height: 'auto', borderRadius: '4px' }} />
+        <img src={listingData.thumbnail && listingData.thumbnail.trim() ? listingData.thumbnail: defaultThumbnail} alt="Thumbnail" style={{ width: '200px', height: 'auto', borderRadius: '4px' }} 
+          onError={(e) => {
+            // prevent infinite loop if fallback is missing
+            e.currentTarget.onerror = null;
+            e.currentTarget.src = defaultThumbnail;
+        }} />
       </div>
       <div style={{ flex: 1 }}>
         <h4 className="news-item-link" style={{ margin: '0' }} onClick={

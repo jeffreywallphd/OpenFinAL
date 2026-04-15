@@ -1,8 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, useLayoutEffect, useMemo } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
+import { withViewComponent } from "../hoc/withViewComponent";
+import { ViewComponent } from "../types/ViewComponent";
 import { SettingsRow } from "./Settings/Row";
+
+const WrappedSettingsRow = withViewComponent(SettingsRow);
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
 import { useHeader } from "./App/LoadedLayout";
 import { DataContext } from "./App/DataContext";
@@ -211,6 +216,14 @@ function Settings(props) {
         getDarkMode();
     }, []);
 
+    const settingsRowConfig = useMemo(() => new ViewComponent({
+        height: 48, width: 600, isContainer: false, resizable: true,
+        maintainAspectRatio: false, widthRatio: 1, heightRatio: 1,
+        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
+        label: "Settings Row", description: "A single row in the settings panel",
+        tags: ["settings", "row", "configuration"], minimumProficiencyRequirements: {}, requiresInternet: false,
+    }), []);
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -240,7 +253,7 @@ function Settings(props) {
                 </div>
             </header>
             {sections.response && sections.response.results.length > 0 && sections.response.results.map((section) => (
-                <div className="settings-card">
+                <div key={section.label} className="settings-card">
                     <h3 className="card-title">{section.label}</h3>
                     <div className="api-config-table">
                         <div className="table-header">
@@ -248,9 +261,7 @@ function Settings(props) {
                             <div className="header-cell">Value</div>
                         </div>
                         {section.configurations.map((configuration) => (
-                            <>
-                                <SettingsRow settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} />
-                            </>
+                            <WrappedSettingsRow key={configuration.valueName ?? configuration.label} settings={settings} setSettings={setSettings} configuration={configuration} setSharedValues={setSharedValues} viewConfig={settingsRowConfig}/>
                         ))}
                     </div>
                     <div className="save-button-container">
