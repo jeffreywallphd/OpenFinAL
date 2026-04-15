@@ -6,8 +6,8 @@
 
 import React, { Component } from "react";
 import { NavLink } from "react-router-dom";
-import binaryHeader from "../Asset/Image/binary_header.png";
-import aiHeader from "../Asset/Image/ai_header.png";
+import binaryHeader from "../Asset/Image/binary_header.jpg";
+import aiHeader from "../Asset/Image/ai_header.jpg";
 import { HeaderContext } from "./App/LoadedLayout";
 
 class Forecast extends Component {

@@ -27,10 +27,7 @@ export class AlphaVantageEconomicGateway implements IKeyedDataGateway {
         throw new Error("This gateway does not have the ability to post content");
     }
 
-    async read(entity: IEntity, action: string): Promise<Array<IEntity>> {
-        const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
-        await sleep(1001);
-         
+    async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
         var url = `${this.baseURL}?`;
 
         if(action==="getGDP") {

@@ -88,6 +88,8 @@ export function Learn() {
         }
     };
 
+    window.console.log(window.electronApp.getAssetPath());
+
     return (
         <div className="page">
             <form onSubmit={async (e) => {

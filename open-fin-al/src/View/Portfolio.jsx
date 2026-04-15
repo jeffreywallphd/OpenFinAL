@@ -19,11 +19,7 @@
  */
 
 import React, { Component } from "react";
-import { withViewComponent } from "../hoc/withViewComponent";
-import { ViewComponent } from "../types/ViewComponent";
 import { PortfolioCreation } from "./Portfolio/Creation";
-
-const WrappedPortfolioCreation = withViewComponent(PortfolioCreation);
 import {UserInteractor} from "../Interactor/UserInteractor";
 import { PortfolioInteractor } from "../Interactor/PortfolioInteractor";
 import {PortfolioTransactionInteractor} from "../Interactor/PortfolioTransactionInteractor";
@@ -139,14 +135,6 @@ const renderActiveShape = (props) => {
  */
 class Portfolio extends Component {
     static contextType = HeaderContext;
-
-    portfolioCreationConfig = new ViewComponent({
-        height: 600, width: 800, isContainer: false, resizable: true,
-        maintainAspectRatio: false, widthRatio: 4, heightRatio: 3,
-        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
-        label: "Portfolio Creation", description: "Interface for creating and managing investment portfolios",
-        tags: ["portfolio", "creation", "investment"], minimumProficiencyRequirements: {}, requiresInternet: true,
-    });
     
     async componentDidMount() {
         window.console.log("Portfolio context in componentDidMount:", this.context);
@@ -172,19 +160,6 @@ class Portfolio extends Component {
 
             if(cashId) {
                 await this.getBuyingPower(cashId, defaultPortfolioId);
-        await this.getPortfolioData();
-    }
-
-    async getPortfolioData() {
-        window.console.log("Portfolio id:", this.state.currentPortfolio);
-
-        // Only fetch portfolio data if a portfolio is selected
-        if(this.state.currentPortfolio) {
-            await this.getPortfolioValue();
-            await this.getPortfolioChartData();
-
-            if(this.state.cashId) {
-                await this.getBuyingPower(this.state.cashId);
             }
         }
     }
@@ -325,18 +300,6 @@ class Portfolio extends Component {
         await this.getPortfolioValue(portfolioId);
         await this.getPortfolioChartData(portfolioId);
         await this.refreshBenchmarkSection(this.state.benchmarkInterval, this.state.selectedBenchmark, portfolioId);
-        window.console.log("Portfolio id changed to:", portfolioId);
-        this.setState({
-            currentPortfolio: portfolioId, 
-            portfolioName: portfolioName,
-            portfolioValue: 0,
-            assetData: [],
-            chartData: [],
-            buyingPower: 0,
-            buyingPowerLoaded: false,
-        });
-        await this.sleep(1000); // allow time for state to set
-        await this.getPortfolioData();
     }
 
     /**
@@ -896,7 +859,7 @@ class Portfolio extends Component {
                                 </>
                             )}
                          </div>
-                        {this.state.buyingPowerLoaded ? 
+                        {this.state.buyingPowerLoaded && 
                             <>
                             <div className="portfolio-overview">
                                 <div className="portfolio-card">
@@ -973,13 +936,6 @@ class Portfolio extends Component {
                                     />
                                 ) : null}
                             </div>
-                            </>
-                        :
-                            <div style={{ height: 300 }}>
-                                <div className="loader-container">Retrieving portfolio data... <div className="small-loader"></div></div>
-                            </div>
-                        }
-                        <>
                             <div>
                                 <h3>Stock Assets</h3>
                                 <div className="table-header">
@@ -1009,11 +965,11 @@ class Portfolio extends Component {
                                 
                             </div>
                             </>
-                        
+                        }
                     </div>
                 :
                     <> 
-                        {<WrappedPortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio} viewConfig={this.portfolioCreationConfig}/>    }
+                        {<PortfolioCreation state={this} currentPortfolio={this.state.currentPortfolio}/>    }
                     </>
                 }
             </div>

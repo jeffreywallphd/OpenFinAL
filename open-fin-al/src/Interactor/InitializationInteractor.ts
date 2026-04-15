@@ -12,10 +12,6 @@ import { SQLiteCompanyLookupGateway } from "../Gateway/Data/SQLite/SQLiteCompany
 import { SettingsInteractor } from "./SettingsInteractor";
 import { SQLiteAssetGateway } from "../Gateway/Data/SQLite/SQLiteAssetGateway";
 
-declare global {
-    interface Window { slideshow: any; }
-}
-
 export class InitializationInteractor implements IInputBoundary {
     requestModel: IRequestModel;
     responseModel: IResponseModel;
@@ -26,21 +22,7 @@ export class InitializationInteractor implements IInputBoundary {
         const configManager = new ConfigUpdater();
         var configCreated;
 
-        if(action === "bundelSlideshows") {
-            try {
-                window.slideshow.verifyBundle();
-                response = new JSONResponse(JSON.stringify({status: 200, ok: true}));
-                return response;
-            } catch(error) {
-                response = new JSONResponse(JSON.stringify({
-                    status: 500, 
-                    data: {
-                        error: `An unknown erorr occurred while trying to bundel the slideshows.}`
-                }}));
-                
-                return response;
-            }
-        } else if(action === "createConfig") {
+        if(action === "createConfig") {
             try {
                 //create the SQLite database    
                 const gateway = new SQLiteTableCreationGateway();
@@ -55,7 +37,7 @@ export class InitializationInteractor implements IInputBoundary {
                     response = new JSONResponse(JSON.stringify({
                         status: 400, 
                         data: {
-                            error: `The application configuration failed. Configurations created: ${configCreated}. Data tables created: ${tablesCreated}.`
+                            error: `The application configuration failed. Configurations created: ${configCreated}. Data tables created: ${tablesCreated}.}`
                     }}));
                 }
 
@@ -93,6 +75,43 @@ export class InitializationInteractor implements IInputBoundary {
                 }}));
                 return response;
             }
+            
+            //load the user table with the OS username
+            /* don't want to create user automatically during data initialization
+            TODO: remove user from settings area now that a seaparate user area exists
+            try {
+                const username = await window.config.getUsername();
+                var firstName;
+                var lastName;
+                var email = window.vault.getSecret("Email") || null;
+
+                if(window.config.exists()) {
+                    const config = await window.config.load();
+                    firstName = config.UserSettings.FirstName;
+                    lastName = config.UserSettings.LastName;
+                }
+
+                var userInteractor = new UserInteractor();
+                var userRequestObj = new JSONRequest(JSON.stringify({ 
+                    request: { 
+                        user: {
+                            username: username,
+                            firstName: firstName,
+                            lastName: lastName,
+                            email: email 
+                        }
+                    }
+                }));
+                userResponse = await userInteractor.post(userRequestObj);
+            } catch(error) {
+                response = new JSONResponse(JSON.stringify({
+                    status: 500, 
+                    data: {
+                        error: `An unkown error occured while created the application user.`
+                }}));
+                return response;
+            }
+            */
 
             //return the response based on the outcomes of initialization
             // removed userReponse if(publicCompaniesResponse.response.ok && userResponse.response.ok) {

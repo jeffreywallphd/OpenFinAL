@@ -5,34 +5,19 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React, { useState, useEffect } from "react";
-import React, { useState, createContext, useEffect, use } from "react";
 
 // Imports for react pages and assets
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
 import { DataContext } from "./App/DataContext";
-import { AppSidecarPreparing } from "./App/SidecarPreparing";
-import { AppConfiguring } from "./App/Configuring";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
-import { SidecarInitializationInteractor } from "../Interactor/SidecarInitializationInteractor";
-import { registerAllComponents } from "../hoc/registerComponents";
 
 const createInitialAppState = () => {
     const currentDate = new Date();
 
     return {
-    const [loading, setLoading] = useState(true);
-    const [sidecarLoading, setSidecarLoading] = useState(true);
-    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
-    const [configured, setConfigured] = useState(false);
-    const [statusMessage, setStatusMessage] = useState(null);
-    const [preparationError, setPreparationError] = useState(null);
-    const [sidecarPreparationError, setSidecarPreparationError] = useState(null);
-    const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
         data: null,
@@ -90,10 +75,6 @@ function App(props) {
         getDarkMode();
     }, []);
 
-    useEffect(() => {
-        registerAllComponents();
-    }, []);
-
     // Check if user is already authenticated from previous session
     const checkAuthenticationState = () => {
         try {
@@ -148,18 +129,14 @@ function App(props) {
 
     const executeDataInitialization = async() => {
         try {
-            setStatusMessage("Checking if system data is initialized...");
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj,"initializeData"); 
-
-            let slideshowBundleReponse; 
+            const response = await interactor.post(requestObj,"initializeData");
 
             if(response.response.ok) {
                 setLoading(false);
                 return true;
             } else {
-                setStatusMessage("Retreiving data resources for system use...");
                 //tables may have been deleted and need to be recreated
                 const configurationResponse = await interactor.post(requestObj,"createConfig");
                 window.console.log(configurationResponse);
@@ -179,7 +156,6 @@ function App(props) {
 
     const checkIfFullyInitialized = async () => {
         try {
-            setStatusMessage("Checking if the system is ready to start...");
             //determine if application is fully configured and data initialized
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
@@ -193,28 +169,19 @@ function App(props) {
                 setNeedsConfiguration(false);
 
                 if(secureConnectionsValidated) {
+                    setLoading(false);
                     checkAuthenticationState();
                 } else {
-                    setStatusMessage("Updating security certificates...");
                     const interactor = new InitializationInteractor();
                     const requestObj = new JSONRequest(`{}`);
                     const response = await interactor.post(requestObj,"refreshPinnedCertificates");
                     setSecureConnectionsValidated(true);
-                }
-
-                setStatusMessage("Verifying learning modules are bundled...");
-                const slideshowBundleReponse = await interactor.post(requestObj,"bundelSlideshows");
-
-                if(slideshowBundleReponse.response.ok) {
                     setLoading(false);
-                } else {
-                    throw new Error("The slideshow bundle did not configure properly");
                 }
 
                 return true;
             } else {
                 //check if the site is uninitialized but configured
-                setStatusMessage("Checking if the system is configured...");
                 const configurationResponse = await interactor.get(requestObj,"isConfigured");
 
                 if(configurationResponse.response.ok) {
@@ -237,7 +204,6 @@ function App(props) {
                     // ## Recent change
                     // Create the base config and let the user authenticate first.
                     // The authenticated shell will redirect them to Settings.
-                    setStatusMessage("Creating initial configuration...");
                     await interactor.post(requestObj,"createConfig");
                     setConfigured(true);
                     setNeedsConfiguration(true);
@@ -253,52 +219,8 @@ function App(props) {
         }
     };
 
-    const loadSidecar = async () => {
-        try {
-            const interactor = new SidecarInitializationInteractor();
-            const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj,"loadSidecar");
-            
-            setStatusMessage("Starting the graph database...");
-
-            if(response.response.ok) {
-                const loadedResponse = await interactor.get(requestObj,"isLoaded");
-                if(loadedResponse.response.ok) {
-                    setStatusMessage("Graph database started. Checking if knowledge graph is set up...");
-                    const graphExistsResponse = await interactor.get(requestObj,"isGraphInitialized");
-                    
-                    if(graphExistsResponse.response.ok) {
-                        setStatusMessage("Knowledge graph is set up. Checking if system is fully initialized...");
-                        setSidecarLoading(false);
-                        await checkIfFullyInitialized();
-                        return true;    
-                    } else {
-                        setStatusMessage("Graph database started. Initializing knowledge graph...");
-                        const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
-                        
-                        if(graphInitializedResponse.response.ok) {
-                            setSidecarLoading(false);
-                            await checkIfFullyInitialized();
-                            return true;
-                        } else {
-                            throw new Error();
-                        }
-                    }
-                } else {
-                    throw new Error();
-                }
-            } else {
-                throw new Error();
-            }
-        } catch(error) {
-            setSidecarPreparationError("Failed to initilize the software database. Please contact the software administrator.");
-            window.console.log(error);
-            return false;
-        }
-    };
-
     useEffect( () => {
-        loadSidecar();
+        checkIfFullyInitialized();
     }, []);
 
     return (
@@ -327,27 +249,6 @@ function App(props) {
             )        
         :
             <AppPreparing handleLoading={handleLoading} preparationError={preparationError}/>
-        sidecarLoading ?
-            <AppSidecarPreparing handleLoading={setSidecarLoading} statusMessage={statusMessage} sidecarPreparationError={sidecarPreparationError}/>
-        :
-            configured ?
-                ( loading ?
-                        <AppPreparing handleLoading={handleLoading} statusMessage={statusMessage} preparationError={preparationError}/>
-                    :
-                        ( !isAuthenticated ?
-                                <AuthContainer onAuthSuccess={handleAuthSuccess}/>
-                            :
-                                <DataContext.Provider value={value}>
-                                    <AppLoaded 
-                                        checkIfConfigured={checkIfFullyInitialized} 
-                                        handleConfigured={handleConfigured}
-                                        onLogout={handleLogout}
-                                    />
-                                </DataContext.Provider>
-                        )                        
-                )        
-            : 
-                <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>
     );
 }
 

@@ -4,16 +4,10 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { useContext, useEffect, useMemo } from "react";
-import { withViewComponent } from "../hoc/withViewComponent";
-import { ViewComponent } from "../types/ViewComponent";
+import React, { useContext, useEffect } from "react";
 import { NewsSearchBar } from "./News/SearchBar";
 import { NewsListing } from "./News/Listing";
 import { DataContext } from "./App/DataContext";
-
-const WrappedNewsSearchBar = withViewComponent(NewsSearchBar);
-const WrappedNewsListing   = withViewComponent(NewsListing);
-import { DataContext } from "./App";
 import { useHeader } from "./App/LoadedLayout";
 
 
@@ -21,14 +15,14 @@ function NewsPage(props) {
     const { state, setState } = useContext(DataContext);
 
     const { setHeader } = useHeader();
-
+    
     useEffect(() => {
         setHeader({
         title: "Investment News",
-        icon: "article",
+        icon: "article", 
         });
     }, [setHeader]);
-
+    
     //ensure that the state changes
     useEffect(() => {
         setState({
@@ -46,28 +40,12 @@ function NewsPage(props) {
         setState(newState);
     };
 
-    const newsSearchBarConfig = useMemo(() => new ViewComponent({
-        height: 50, width: 400, isContainer: false, resizable: false,
-        maintainAspectRatio: false, widthRatio: 1, heightRatio: 1,
-        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
-        label: "News Search Bar", description: "Search bar for finding news articles",
-        tags: ["news", "search"], minimumProficiencyRequirements: {}, requiresInternet: true,
-    }), []);
-
-    const newsListingConfig = useMemo(() => new ViewComponent({
-        height: 120, width: 600, isContainer: false, resizable: true,
-        maintainAspectRatio: false, widthRatio: 5, heightRatio: 1,
-        heightWidthRatioMultiplier: 0, visible: true, enabled: true,
-        label: "News Listing", description: "List view of news articles",
-        tags: ["news", "listing"], minimumProficiencyRequirements: {}, requiresInternet: true,
-    }), []);
-
     return (
-        <div className="page">
+        <div className="page">            
             {state ?
             (
                 <>
-                    <WrappedNewsSearchBar state={state} handleDataChange={handleDataChange} viewConfig={newsSearchBarConfig}/>
+                    <NewsSearchBar state={state} handleDataChange={handleDataChange}/>
 
                     {state.isLoading ?
                         (<p>Loading...</p>) :
@@ -78,7 +56,7 @@ function NewsPage(props) {
                                     <p>Data Source: {state.newsSource}</p>
                                     {state.newsData && state.newsData.response.results[0] ?
                                         state.newsData.response.results[0]["data"].map((listing, index) => (
-                                            <WrappedNewsListing key={index} state={state} listingData={listing} viewConfig={newsListingConfig}/>
+                                            <NewsListing key={index} state={state} listingData={listing}/>
                                         )) :
                                         null
                                     }

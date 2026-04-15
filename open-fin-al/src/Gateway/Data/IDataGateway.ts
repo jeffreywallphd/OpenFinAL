@@ -1,7 +1,6 @@
 import {IEntity} from "../../Entity/IEntity";
 
 export interface IDataGateway {
-    user?: string;
     key?: string;
     sourceName: string;
     connect(): void;

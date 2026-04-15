@@ -77,18 +77,12 @@ contextBridge.exposeInMainWorld('database', {
     SQLiteInsert: (object) => ipcRenderer.invoke('sqlite-insert', object)
 });
 
-contextBridge.exposeInMainWorld('neo4j', {
-    start: async () => ipcRenderer.invoke('neo4j-start'),
-    stop: async () => ipcRenderer.invoke('neo4j-stop'),
-    restart: async () => ipcRenderer.invoke('neo4j-restart'),
-    isConnected: async () => ipcRenderer.invoke('neo4j-is-connected'),
-    executeQuery: async (mode="read", query, params=null) => ipcRenderer.invoke('neo4j-execute', {mode, query, params})
-});
-
-contextBridge.exposeInMainWorld('slideshow', {
-    verifyBundle: () => ipcRenderer.invoke('slideshow-bundle'),
-    getPath: async (filename) => ipcRenderer.invoke('slideshow-path', filename),
-});
+/*
+commenting out this contextBridge to void require() errors, because it seems to have been replaced by the new yahooFinance context bridge below. 
+That bridge calls to a dynamic import instea of require to avoid errors. Will remove this after further testing.
+contextBridge.exposeInMainWorld('yahoo', {
+    finance: require('yahoo-finance2').default
+});*/
 
 contextBridge.exposeInMainWorld('yahooFinance', {
     chart: (ticker, options) => ipcRenderer.invoke('yahoo-chart', ticker, options),

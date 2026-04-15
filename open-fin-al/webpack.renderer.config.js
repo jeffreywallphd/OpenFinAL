@@ -27,9 +27,6 @@ module.exports = {
             test: /\.(ts|tsx)$/i,
             exclude: /node_modules/,
             loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-            },
           },
           {
               test: /\.css$/,

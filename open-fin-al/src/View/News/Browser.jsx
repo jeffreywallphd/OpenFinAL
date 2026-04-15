@@ -5,7 +5,6 @@
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
 import React from "react";
-import defaultThumbnail from "../../Asset/Image/thumbnail_unavailable.png";
 
 function NewsBrowser({ listingData, handlePrevious, handleNext }) {
   // Format date and time from listingData
@@ -20,12 +19,7 @@ function NewsBrowser({ listingData, handlePrevious, handleNext }) {
   return (
     <div className="news-browser-item">
       <div className="news-browser-item-image" style={{ marginBottom: '10px', height: '180px' }}>
-        <img src={listingData.thumbnail && listingData.thumbnail.trim() ? listingData.thumbnail: defaultThumbnail} alt="Thumbnail" style={{ width: '100%', height: 'auto', borderRadius: '4px' }} 
-          onError={(e) => {
-            // prevent infinite loop if fallback is missing
-            e.currentTarget.onerror = null;
-            e.currentTarget.src = defaultThumbnail;
-        }} />
+        <img src={listingData.thumbnail} alt="Thumbnail" style={{ width: '100%', height: 'auto', borderRadius: '4px' }} />
       </div>
       <div className="news-browser-item-content" style={{ height: '240px' }}>
         <h4 className="news-item-link" style={{ margin: '0' }} onClick={

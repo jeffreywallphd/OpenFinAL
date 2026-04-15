@@ -45,8 +45,12 @@ export function LearningModuleDetails(props) {
 
     const handleStartModule = async () => {
         try {
-            const filePath = await window.slideshow.getPath(location.state.fileName);
-            window.console.log(filePath);
+            // get base asset path from Electron (async)
+            const assetPath = await window.electronApp.getAssetPath();
+
+            // TODO: handle different OS path separators
+            const filePath = `${assetPath}\\${location.state.fileName}`;
+
             // navigate to the learningModulePage route with the full path
             navigate("/learningModulePage", {
                 state: {
