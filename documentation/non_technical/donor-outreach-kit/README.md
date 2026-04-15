@@ -1,17 +1,17 @@
 # Donor Outreach Work Submission
 
 ## Contributor
-Name:
+Name: Mary Allis
 
 ## Date
-MM/DD/YYYY
+04/15/2026
 
 ---
 
 ## Features Worked On
 (Check all that apply)
 - [ ] Target Donor Research  
-- [ ] Outreach Messaging & Positioning  
+- [Check] Outreach Messaging & Positioning  
 - [ ] Donor Pitch Materials  
 - [ ] Outreach Execution Process  
 - [ ] Measurement & Optimization
@@ -19,18 +19,19 @@ MM/DD/YYYY
 
 ## Work by Feature
 
-### Feature: (Name of Feature)
+### Feature 2: Outreach Messaging & Positioning
 **Tasks Completed**
-- 
-- 
-- 
+- Financial or technical company email template
+- Call script
+- LinkedIn message template
 
 **Work Summary**
-(2–4 sentences explaining what you did)
+We put together 3 main materials from feature 2: the email template geared toward companies in the finance or tech sectors, a call script, and a LinkedIn post template. These should make outreach and messaging more straightforward.
 
 **Links to Work**
-- [Link Title]()
-- [Link Title]()
+- https://docs.google.com/document/d/1iFOTmtGCn-KqY-pFEkoR13_FL7mr395SZARV0qBSaDo/edit?usp=sharing
+- https://docs.google.com/document/d/1AR1gIoU5KaewM8IimWfvqA05qwu8JJvR_kcXj7oW3Y8/edit?usp=sharing
+- https://docs.google.com/document/d/1Wy40_KDCXtXg0A3bIv2GuhNtTozaTnI_e6nKGUy4o6M/edit?usp=sharing
 
 ---
 
@@ -63,4 +64,4 @@ _(Add more sections as needed)_
 ---
 
 ## Next Steps
-(What should happen next based on your work?)
+Create email templates geared toward alumni, LinkedIn message templates, and make sure there is a process for internal review and approval for outreach attempts.
