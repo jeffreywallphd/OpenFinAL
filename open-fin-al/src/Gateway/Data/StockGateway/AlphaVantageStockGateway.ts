@@ -28,6 +28,9 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> {
+        const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+        await sleep(1001);
+
         try {
             var url;
             if (action === "lookup") {
@@ -43,7 +46,7 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             }     
 
             const urlObject = new URL(url);
-
+            window.console.log(url);
             var endpointRequest = new JSONRequest(JSON.stringify({
                 request: {
                     endpoint: {
@@ -62,7 +65,8 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
             endpoint.fillWithRequest(endpointRequest);
 
             const data = await window.exApi.fetch(this.baseURL, endpoint.toObject());
-            
+            window.console.log(data);
+
             if("Information" in data) {
                 throw Error("The API key used for Alpha Vantage has reached its daily limit");
             }

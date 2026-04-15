@@ -27,6 +27,9 @@ export class AlphaVantageRatioGateway implements IDataGateway {
     }
 
     async read(entity: IEntity, action: string): Promise<Array<IEntity>> { 
+        const sleep = (ms:number) => new Promise(resolve => setTimeout(resolve, ms));
+        await sleep(1001);
+        
         var url;
         if (action === "overview"){
             url = this.getOverviewUrl(entity);
