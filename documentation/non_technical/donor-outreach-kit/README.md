@@ -1,20 +1,20 @@
 # Donor Outreach Work Submission
 
 ## Contributor
-Name:
+Name: Mary Allis and Dylan Dunneback
 
 ## Date
-MM/DD/YYYY
+04/15/2026
 
 ---
 
 ## Features Worked On
 (Check all that apply)
-- [ ] Target Donor Research  
-- [ ] Outreach Messaging & Positioning  
-- [ ] Donor Pitch Materials  
-- [ ] Outreach Execution Process  
-- [ ] Measurement & Optimization
+- [X] Target Donor Research  
+- [X] Outreach Messaging & Positioning  
+- [X] Donor Pitch Materials  
+- [X] Outreach Execution Process  
+- [X] Measurement & Optimization
 ---
 
 ## Work by Feature
