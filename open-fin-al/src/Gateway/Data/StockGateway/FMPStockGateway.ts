@@ -110,7 +110,7 @@ export class FinancialModelingPrepGateway implements IKeyedDataGateway {
     for (const item of data) {
       const date = new Date(item["date"]);
       formattedData.push({
-        date: date.toISOString().split("T")[0],
+        date: date.toLocaleDateString(),
         time: action === "intraday" ? date.toLocaleTimeString() : "", // Only include time for intraday data
         price: item[closingPriceKey],
         volume: item["volume"],

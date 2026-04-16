@@ -296,28 +296,18 @@ function TimeSeriesChart(props) {
         }   
     }
 
-    // Apply an optional display multiplier (used by benchmarks to scale ETF prices to index levels)
-    const displayMultiplier = props.priceDisplayMultiplier && !isNaN(props.priceDisplayMultiplier) ? Number(props.priceDisplayMultiplier) : 1;
-
-    // Create a copied data array with scaled prices for visual display, leaving volume unchanged
-    const displayData = data ? data.map(d => ({ ...d, price: d.price * displayMultiplier })) : data;
-
     //evenly spaces the ticks of the time series chart by putting the ticks in a fixed intervall into Array "ticks" determined by tickCount
     const tickCount = 4;
-    // scale ticks by displayMultiplier
-    const scaledMin = priceMinPadded * displayMultiplier;
-    const scaledMax = priceMaxPadded * displayMultiplier;
-    const tickInterval = (scaledMax - scaledMin) / (tickCount - 1);
-    const ticks = Array.from({ length: tickCount }, (_, index) => (scaledMin + tickInterval * index).toFixed(2));
+    const tickInterval = (priceMaxPadded - priceMinPadded) / (tickCount - 1);
+    const ticks = Array.from({ length: tickCount }, (_, index) => (priceMinPadded + tickInterval * index).toFixed(2));
 
     //TODO: calculate a max value for the y-axis that adds a little padding to top of graph    
     //TODO: set the min value for the x-axis to 9:00 AM and the max value to 5:00 PM when intraday data
     return(<>
             <div className="chartContainer">
-                {!props.hideControls && <h3>{header}</h3>}
+                <h3>{header}</h3>
                 
                 {/* A button group that will eventually be clickable to change the chart timeframe. */}
-                {!props.hideControls && (
                 <div className="btn-group">
                     { props.state.data ? 
                         (<>
@@ -340,10 +330,9 @@ function TimeSeriesChart(props) {
                         </>)
                     }
                 </div>
-                )}
 
                 {/* The actual chart displaying the data from recharts */}
-                <AreaChart width={700} height={300} key="timeSeries" data={displayData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <AreaChart width={700} height={300} key="timeSeries" data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <defs>
                         <linearGradient id="colorArea" x1="0" y1="0" x2="0" y2="1">
                             <stop offset="5%" stopColor={chartColor} stopOpacity={0.8}/>
@@ -351,17 +340,16 @@ function TimeSeriesChart(props) {
                         </linearGradient>
                     </defs>
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
-                    <YAxis type="number" domain={[scaledMin, scaledMax]} ticks={ticks} tickFormatter={(val) => formatter.format(val)} />
+                    <YAxis type="number" domain={[priceMinPadded, priceMaxPadded]} ticks={ticks}/>
                     <CartesianGrid strokeDasharray="3 3" vertical={false}/>
                     <Tooltip 
                         contentStyle={toolTipStyle.contentStyle}
                         labelStyle={toolTipStyle.labelStyle}
                         itemStyle={toolTipStyle.itemStyle}
-                        formatter={(value) => formatterCent.format(value)}
                     />
                     <Area type="monotone" dataKey="price" stroke={chartColor} fillOpacity={1} fill="url(#colorArea)" dot={false}/>
                 </AreaChart>
-                <BarChart width={700} height={100} data={displayData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                <BarChart width={700} height={100} data={data} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
                     <XAxis dataKey={props.state.type === "intraday" ? "time" : "date"} domain={[props.state.yAxisStart, props.state.yAxisEnd]} />
                     <YAxis domain={[0, props.state.maxVolume]} angle={-45} />
                     <CartesianGrid strokeDasharray="3 3" />
@@ -373,7 +361,7 @@ function TimeSeriesChart(props) {
                     <Bar type="monotone" dataKey="volume" fill={chartColor}/>
                 </BarChart>
 
-                {data && !props.hideControls &&
+                {data && 
                     <div className="stockOrder">
                             <p>
                                 <button onClick={() => {

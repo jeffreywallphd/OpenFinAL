@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../index.css';
 import { StockAnalysisSearchBar } from './StockAnalysisSearchBar';
-import { DataContext } from "./App/DataContext";
+import { DataContext } from "./App";
 import { useHeader } from "./App/LoadedLayout";
 
 import { saveAs } from 'file-saver';

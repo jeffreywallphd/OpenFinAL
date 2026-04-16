@@ -1,16 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-
-jest.mock('../View/App/DataContext', () => {
-    const React = require('react');
-    return {
-        DataContext: React.createContext({ user: null })
-    };
-});
-
 import { UserInfo } from '../View/App/UserInfo';
-import { DataContext } from '../View/App/DataContext';
+import { DataContext } from '../View/App';
 
 // Mock the DataContext
 const mockUser = {
@@ -33,6 +25,12 @@ describe('UserInfo', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        // Mock window.confirm
+        global.confirm = jest.fn();
+    });
+
+    afterEach(() => {
+        delete global.confirm;
     });
 
     test('should render user avatar bubble', () => {
@@ -46,22 +44,6 @@ describe('UserInfo', () => {
 
     test('should not render when user is null', () => {
         const { container } = renderUserInfo(null);
-        expect(container.firstChild).toBeNull();
-    });
-
-    test('should unmount cleanly when user becomes null after logout', () => {
-        const { rerender, container } = render(
-            <DataContext.Provider value={{ user: mockUser }}>
-                <UserInfo onLogout={mockOnLogout} />
-            </DataContext.Provider>
-        );
-
-        rerender(
-            <DataContext.Provider value={{ user: null }}>
-                <UserInfo onLogout={mockOnLogout} />
-            </DataContext.Provider>
-        );
-
         expect(container.firstChild).toBeNull();
     });
 
@@ -106,7 +88,8 @@ describe('UserInfo', () => {
         });
     });
 
-    test('should show logout confirmation before logging out', () => {
+    test('should handle logout with confirmation', () => {
+        global.confirm.mockReturnValue(true);
         renderUserInfo(mockUser, mockOnLogout);
 
         const avatar = screen.getByRole('button');
@@ -115,26 +98,12 @@ describe('UserInfo', () => {
         const logoutButton = screen.getByText('Logout');
         fireEvent.click(logoutButton);
 
-        expect(screen.getByText('Log out of OpenFinAL?')).toBeInTheDocument();
-        expect(screen.getByText('Yes, Log Out')).toBeInTheDocument();
-        expect(screen.getByText('Cancel')).toBeInTheDocument();
-        expect(mockOnLogout).not.toHaveBeenCalled();
-    });
-
-    test('should handle confirmed logout', () => {
-        renderUserInfo(mockUser, mockOnLogout);
-
-        const avatar = screen.getByRole('button');
-        fireEvent.click(avatar);
-
-        const logoutButton = screen.getByText('Logout');
-        fireEvent.click(logoutButton);
-        fireEvent.click(screen.getByText('Yes, Log Out'));
-
+        expect(global.confirm).toHaveBeenCalledWith('Are you sure you want to logout?');
         expect(mockOnLogout).toHaveBeenCalled();
     });
 
-    test('should cancel logout confirmation', () => {
+    test('should cancel logout when confirmation is denied', () => {
+        global.confirm.mockReturnValue(false);
         renderUserInfo(mockUser, mockOnLogout);
 
         const avatar = screen.getByRole('button');
@@ -142,10 +111,24 @@ describe('UserInfo', () => {
 
         const logoutButton = screen.getByText('Logout');
         fireEvent.click(logoutButton);
-        fireEvent.click(screen.getByText('Cancel'));
+
+        expect(global.confirm).toHaveBeenCalledWith('Are you sure you want to logout?');
+        expect(mockOnLogout).not.toHaveBeenCalled();
+    });
+
+    test('should close bubble menu after logout attempt', () => {
+        global.confirm.mockReturnValue(false);
+        renderUserInfo(mockUser, mockOnLogout);
+
+        const avatar = screen.getByRole('button');
+        fireEvent.click(avatar);
+
+        expect(screen.getByText('John Doe')).toBeInTheDocument();
+
+        const logoutButton = screen.getByText('Logout');
+        fireEvent.click(logoutButton);
 
         expect(screen.queryByText('John Doe')).not.toBeInTheDocument();
-        expect(mockOnLogout).not.toHaveBeenCalled();
     });
 
     test('should display correct user information', () => {

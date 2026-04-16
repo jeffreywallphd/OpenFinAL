@@ -4,11 +4,13 @@
 // Disclaimer of Liability
 // The authors of this software disclaim all liability for any damages, including incidental, consequential, special, or indirect damages, arising from the use or inability to use this software.
 
-import React, { useState, useEffect } from "react";
+import React, { useState, createContext, useEffect, use } from "react";
+
+// Imports for react pages and assets
 import AppLoaded from "./App/Loaded";
 import { AppPreparing } from "./App/Preparing";
 import { AppSidecarPreparing } from "./App/SidecarPreparing";
-import { DataContext } from "./App/DataContext";
+import { AppConfiguring } from "./App/Configuring";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
@@ -16,10 +18,20 @@ import { getThemeColors, injectColorStyles, applyColors } from "./themes";
 import { SidecarInitializationInteractor } from "../Interactor/SidecarInitializationInteractor";
 import { registerAllComponents } from "../hoc/registerComponents";
 
-const createInitialAppState = () => {
-    const currentDate = new Date();
+const DataContext = createContext();
 
-    return {
+function App(props) {
+    const currentDate = new Date();
+    const [loading, setLoading] = useState(true);
+    const [sidecarLoading, setSidecarLoading] = useState(true);
+    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
+    const [configured, setConfigured] = useState(false);
+    const [statusMessage, setStatusMessage] = useState(null);
+    const [preparationError, setPreparationError] = useState(null);
+    const [sidecarPreparationError, setSidecarPreparationError] = useState(null);
+    const [user, setUser] = useState(null);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [state, setState] = useState({ 
         initializing: true,
         isFirstLoad: true,
         data: null,
@@ -33,8 +45,8 @@ const createInitialAppState = () => {
         error: null,
         ticker: null,
         cik: null,
-        type: "intraday",
-        interval: "1D",
+        type: 'intraday',
+        interval: '1D',
         securitiesList: null,
         searchRef: null,
         assetId: null,
@@ -42,24 +54,9 @@ const createInitialAppState = () => {
         minPrice: 0,
         maxPrice: 10,
         maxVolume: 1000,
-        yAxisStart: new Date(currentDate.getDate() - 5).toISOString().split("T")[0],
-        yAxisEnd: new Date().toISOString().split("T")[0]
-    };
-};
-
-function App(props) {
-    const [loading, setLoading] = useState(true);
-    const [sidecarLoading, setSidecarLoading] = useState(true);
-    const [secureConnectionsValidated, setSecureConnectionsValidated] = useState(false);
-    const [configured, setConfigured] = useState(false);
-    const [needsConfiguration, setNeedsConfiguration] = useState(false);
-    const [statusMessage, setStatusMessage] = useState(null);
-    const [preparationError, setPreparationError] = useState(null);
-    const [sidecarPreparationError, setSidecarPreparationError] = useState(null);
-    const [user, setUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [authViewKey, setAuthViewKey] = useState(0);
-    const [state, setState] = useState(createInitialAppState);
+        yAxisStart: new Date(currentDate.getDate() - 5).toISOString().split('T')[0],
+        yAxisEnd: new Date().toISOString().split('T')[0]
+    });
 
     const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
@@ -93,38 +90,39 @@ function App(props) {
         registerAllComponents();
     }, []);
 
+    // Check if user is already authenticated from previous session
     const checkAuthenticationState = () => {
         try {
-            const savedUser = localStorage.getItem("openfinAL_user");
+            const savedUser = localStorage.getItem('openfinAL_user');
             if (savedUser) {
                 const userData = JSON.parse(savedUser);
                 setUser(userData);
                 setIsAuthenticated(true);
-                console.log("User session restored:", userData);
+                console.log('User session restored:', userData);
             }
         } catch (error) {
-            console.error("Error restoring user session:", error);
-            localStorage.removeItem("openfinAL_user");
+            console.error('Error restoring user session:', error);
+            localStorage.removeItem('openfinAL_user');
         }
     };
 
+    // Handle successful authentication
     const handleAuthSuccess = (userData) => {
-        setState(createInitialAppState());
         setUser(userData);
         setIsAuthenticated(true);
-        setAuthViewKey((prev) => prev + 1);
-        localStorage.setItem("openfinAL_user", JSON.stringify(userData));
-        console.log("User authenticated successfully:", userData);
+        
+        // Save user session
+        localStorage.setItem('openfinAL_user', JSON.stringify(userData));
+        
+        console.log('User authenticated successfully:', userData);
     };
 
+    // Handle user logout
     const handleLogout = () => {
-        setState(createInitialAppState());
         setUser(null);
         setIsAuthenticated(false);
-        setAuthViewKey((prev) => prev + 1);
-        localStorage.removeItem("openfinAL_user");
-        window.location.hash = "#/";
-        console.log("User logged out");
+        localStorage.removeItem('openfinAL_user');
+        console.log('User logged out');
     };
 
     const handleLoading = () => {
@@ -133,30 +131,33 @@ function App(props) {
 
     const handleConfigured = async () => {
         setConfigured(true);
-        setNeedsConfiguration(false);
-        await checkIfFullyInitialized();
+        await checkIfFullyInitialized(); 
     };
 
-    const executeDataInitialization = async () => {
+    const executeDataInitialization = async() => {
         try {
             setStatusMessage("Checking if system data is initialized...");
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj, "initializeData");
+            const response = await interactor.post(requestObj,"initializeData"); 
 
-            if (response.response.ok) {
+            let slideshowBundleReponse; 
+
+            if(response.response.ok) {
                 setLoading(false);
                 return true;
+            } else {
+                setStatusMessage("Retreiving data resources for system use...");
+                //tables may have been deleted and need to be recreated
+                const configurationResponse = await interactor.post(requestObj,"createConfig");
+                window.console.log(configurationResponse);
+                if(configurationResponse.response.ok) {
+                    return await executeDataInitialization();
+                } else {
+                    throw new Error();
+                }
             }
-
-            setStatusMessage("Retreiving data resources for system use...");
-            const configurationResponse = await interactor.post(requestObj, "createConfig");
-            window.console.log(configurationResponse);
-            if (configurationResponse.response.ok) {
-                return await executeDataInitialization();
-            }
-            throw new Error();
-        } catch (error) {
+        } catch(error) {
             window.console.log(error);
             setPreparationError("Failed to initilize the software. Please contact the software administrator.");
             setLoading(true);
@@ -167,26 +168,28 @@ function App(props) {
     const checkIfFullyInitialized = async () => {
         try {
             setStatusMessage("Checking if the system is ready to start...");
+            //determine if application is fully configured and data initialized
             const interactor = new InitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.get(requestObj, "isInitialized");
-
-            if (response.response.ok) {
+            const response = await interactor.get(requestObj,"isInitialized");
+            
+            if(response.response.ok) {
                 setConfigured(true);
-                setNeedsConfiguration(false);
 
-                if (secureConnectionsValidated) {
+                if(secureConnectionsValidated) {
                     checkAuthenticationState();
                 } else {
                     setStatusMessage("Updating security certificates...");
-                    await interactor.post(requestObj, "refreshPinnedCertificates");
+                    const interactor = new InitializationInteractor();
+                    const requestObj = new JSONRequest(`{}`);
+                    const response = await interactor.post(requestObj,"refreshPinnedCertificates");
                     setSecureConnectionsValidated(true);
                 }
 
                 setStatusMessage("Verifying learning modules are bundled...");
-                const slideshowBundleResponse = await interactor.post(requestObj, "bundelSlideshows");
+                const slideshowBundleReponse = await interactor.post(requestObj,"bundelSlideshows");
 
-                if (slideshowBundleResponse.response.ok) {
+                if(slideshowBundleReponse.response.ok) {
                     setLoading(false);
                 } else {
                     throw new Error("The slideshow bundle did not configure properly");
@@ -218,17 +221,8 @@ function App(props) {
                     setLoading(true);
                     return false;
                 }
-                return false;
             }
-
-            setStatusMessage("Creating initial configuration...");
-            await interactor.post(requestObj, "createConfig");
-            setConfigured(true);
-            setNeedsConfiguration(true);
-            setLoading(false);
-            checkAuthenticationState();
-            return false;
-        } catch (error) {
+        } catch(error) {
             setConfigured(false);
             setLoading(true);
             return false;
@@ -239,42 +233,47 @@ function App(props) {
         try {
             const interactor = new SidecarInitializationInteractor();
             const requestObj = new JSONRequest(`{}`);
-            const response = await interactor.post(requestObj, "loadSidecar");
-
+            const response = await interactor.post(requestObj,"loadSidecar");
+            
             setStatusMessage("Starting the graph database...");
 
-            if (!response.response.ok) {
-                throw new Error();
-            }
-
-            const loadedResponse = await interactor.get(requestObj, "isLoaded");
-            if (!loadedResponse.response.ok) {
-                throw new Error();
-            }
-
-            setStatusMessage("Graph database started. Checking if knowledge graph is set up...");
-            const graphExistsResponse = await interactor.get(requestObj, "isGraphInitialized");
-
-            if (!graphExistsResponse.response.ok) {
-                setStatusMessage("Graph database started. Initializing knowledge graph...");
-                const graphInitializedResponse = await interactor.post(requestObj, "initializeGraph");
-                if (!graphInitializedResponse.response.ok) {
+            if(response.response.ok) {
+                const loadedResponse = await interactor.get(requestObj,"isLoaded");
+                if(loadedResponse.response.ok) {
+                    setStatusMessage("Graph database started. Checking if knowledge graph is set up...");
+                    const graphExistsResponse = await interactor.get(requestObj,"isGraphInitialized");
+                    
+                    if(graphExistsResponse.response.ok) {
+                        setStatusMessage("Knowledge graph is set up. Checking if system is fully initialized...");
+                        setSidecarLoading(false);
+                        await checkIfFullyInitialized();
+                        return true;    
+                    } else {
+                        setStatusMessage("Graph database started. Initializing knowledge graph...");
+                        const graphInitializedResponse = await interactor.post(requestObj,"initializeGraph");
+                        
+                        if(graphInitializedResponse.response.ok) {
+                            setSidecarLoading(false);
+                            await checkIfFullyInitialized();
+                            return true;
+                        } else {
+                            throw new Error();
+                        }
+                    }
+                } else {
                     throw new Error();
                 }
+            } else {
+                throw new Error();
             }
-
-            setStatusMessage("Knowledge graph is set up. Checking if system is fully initialized...");
-            setSidecarLoading(false);
-            await checkIfFullyInitialized();
-            return true;
-        } catch (error) {
+        } catch(error) {
             setSidecarPreparationError("Failed to initilize the software database. Please contact the software administrator.");
             window.console.log(error);
             return false;
         }
     };
 
-    useEffect(() => {
+    useEffect( () => {
         loadSidecar();
     }, []);
 
@@ -283,28 +282,24 @@ function App(props) {
             <AppSidecarPreparing handleLoading={setSidecarLoading} statusMessage={statusMessage} sidecarPreparationError={sidecarPreparationError}/>
         :
             configured ?
-                (
-                    loading ?
+                ( loading ?
                         <AppPreparing handleLoading={handleLoading} statusMessage={statusMessage} preparationError={preparationError}/>
                     :
-                        (
-                            !isAuthenticated ?
-                                <AuthContainer key={`auth-${authViewKey}`} onAuthSuccess={handleAuthSuccess}/>
+                        ( !isAuthenticated ?
+                                <AuthContainer onAuthSuccess={handleAuthSuccess}/>
                             :
                                 <DataContext.Provider value={value}>
-                                    <AppLoaded
-                                        key={`app-${authViewKey}`}
-                                        needsConfiguration={needsConfiguration}
-                                        checkIfConfigured={checkIfFullyInitialized}
+                                    <AppLoaded 
+                                        checkIfConfigured={checkIfFullyInitialized} 
                                         handleConfigured={handleConfigured}
                                         onLogout={handleLogout}
                                     />
                                 </DataContext.Provider>
-                        )
-                )
-            :
-                <AppPreparing handleLoading={handleLoading} statusMessage={statusMessage} preparationError={preparationError}/>
+                        )                        
+                )        
+            : 
+                <AppConfiguring checkIfConfigured={checkIfFullyInitialized} handleConfigured={handleConfigured}/>
     );
 }
 
-export { App };
+export { App, DataContext };

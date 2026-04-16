@@ -5,9 +5,6 @@ CREATE TABLE IF NOT EXISTS User (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   firstName TEXT,
   lastName TEXT,
-  -- ## Recent change
-  -- Store email per account so SEC/API identity can follow the active user.
-  email TEXT,
   username TEXT UNIQUE NOT NULL,
   pinHash TEXT NOT NULL, -- Encrypted/hashed 8-digit PIN
   lastLogin DATETIME,
@@ -16,10 +13,9 @@ CREATE TABLE IF NOT EXISTS User (
 
 CREATE TABLE IF NOT EXISTS Portfolio (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
+    name TEXT UNIQUE NOT NULL,
     userId INTEGER NOT NULL,
     isDefault INTEGER DEFAULT 0,
-    UNIQUE (userId, name),
     FOREIGN KEY (userId) REFERENCES User(id)
 );
 

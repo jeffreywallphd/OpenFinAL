@@ -20,7 +20,6 @@ import { StockInteractor } from "../Interactor/StockInteractor";
 import { MarketStatusInteractor } from "../Interactor/MarketStatusInteractor";
 import {EconomicIndicatorInteractor} from "../Interactor/EconomicIndicatorInteractor";
 import { useNavigate, Link  } from 'react-router-dom';
-import { TimeSeriesChart } from './Stock/TimeSeriesChart';
 import { HeaderContext } from "./App/LoadedLayout";
 
 const withNavigation = (Component) => {
@@ -80,33 +79,12 @@ class Home extends Component {
         randomAsset: null,
         indicatorName: null,
         data: [],
-        interval: "1M",
-        type: "interday",
+        interval: "",
         priceMin: 0,
         priceMax: 100,
         yAxisStart: Date.now(),
         yAxisEnd: Date.now(),
-        marketData: null,
-        // Tracks which benchmark the user has selected (SPY, DIA, or QQQ)
-        selectedBenchmark: 'SPY',
-        // State object for managing benchmark chart data, matching the structure used by Trade page
-        benchmarkState: {
-          searchRef: 'SPY',           // Current ticker being displayed
-          data: null,                  // Raw API response with price/volume data
-          dataSource: null,            // Source of the data (API name)
-          ticker: 'SPY',              // Selected benchmark ticker
-          cik: null,                  // Company identifier (not needed for benchmarks)
-          interval: '1M',             // Current timeframe (1D, 5D, 1M, 6M, 1Y, 5Y)
-          type: 'interday',           // Chart type: 'intraday' for 1D, 'interday' for others
-          priceMin: 0,                // Minimum price in dataset
-          priceMax: 100,              // Maximum price in dataset
-          maxVolume: 0,               // Maximum volume for bar chart scaling
-          yAxisStart: Date.now(),     // Start date for chart x-axis
-          yAxisEnd: Date.now(),       // End date for chart x-axis
-          isLoading: false,           // Shows loading message while fetching
-          error: false,               // Shows error message if API fails
-          initializing: true          // Prevents multiple fetch calls on mount
-        }
+        marketData: null
     };
 
     //Bind methods for element events
@@ -117,82 +95,6 @@ class Home extends Component {
     this.getPortfolioValue = this.getPortfolioValue.bind(this);
     this.getEconomicData = this.getEconomicData.bind(this);
     this.getMarketStatus = this.getMarketStatus.bind(this);
-    // Benchmark-related methods
-    this.getBenchmarkData = this.getBenchmarkData.bind(this);           // Fetches benchmark data from API
-    this.handleBenchmarkIntervalChange = this.handleBenchmarkIntervalChange.bind(this); // Updates state when interval changes
-    this.handleBenchmarkChange = this.handleBenchmarkChange.bind(this); // Handles dropdown ticker selection
-  }
-
-  // Updates benchmarkState when the TimeSeriesChart requests an interval change
-  handleBenchmarkIntervalChange(newState) {
-    this.setState({ benchmarkState: newState });
-  }
-
-  // Handles benchmark selection from dropdown (SPY, DIA, QQQ)
-  // Resets interval to 1M and fetches data for the selected benchmark
-  handleBenchmarkChange(e) {
-    const ticker = e.target.value;
-    this.setState({ selectedBenchmark: ticker });
-    this.getBenchmarkData('1M', ticker);
-  }
-
-  // Fetches price and volume data for the selected benchmark ticker
-  // interval: timeframe (1D, 5D, 1M, 6M, 1Y, 5Y)
-  // ticker: optional, defaults to this.state.selectedBenchmark (SPY, DIA, QQQ)
-  async getBenchmarkData(interval = '1M', ticker = null) {
-    const selectedTicker = ticker || this.state.selectedBenchmark;
-    // Set action to 'intraday' for 1-day view, 'interday' for all other timeframes
-    const action = interval === '1D' ? 'intraday' : 'interday';
-    const newState = { ...this.state.benchmarkState };
-    newState.isLoading = true;
-    newState.interval = interval;
-    newState.type = action;
-    newState.ticker = selectedTicker;
-    newState.searchRef = selectedTicker;
-    this.setState({ benchmarkState: newState });
-
-    try {
-      // Fetch data from StockInteractor using the selected ticker and interval
-      const interactor = new StockInteractor();
-      const requestObj = new JSONRequest(`{ 
-        "request": { 
-          "stock": {
-            "action": "${action}",
-            "ticker": "${selectedTicker}",
-            "interval": "${interval}"
-          }
-        }
-      }`);
-
-      const results = await interactor.get(requestObj);
-
-      // Handle API error (status 400 indicates invalid ticker or no data available)
-      if (results.status && results.status === 400) {
-        newState.error = true;
-        newState.isLoading = false;
-        this.setState({ benchmarkState: newState });
-        return;
-      }
-
-      // Extract and process price data on successful response
-      const priceData = results;
-      newState.error = false;
-      newState.initializing = true;
-      newState.data = priceData;
-      newState.dataSource = results.source || 'Local API';
-      newState.isLoading = false;
-      // Calculate min/max prices and volume for chart axis scaling
-      newState.priceMin = Math.min(...priceData.response.results[0]["data"].map(data => data.price));
-      newState.priceMax = Math.max(...priceData.response.results[0]["data"].map(data => data.price));
-      newState.maxVolume = Math.max(...priceData.response.results[0]["data"].map(data => data.volume));
-
-      this.setState({ benchmarkState: newState });
-    } catch (error) {
-      console.error('Error fetching benchmark data:', error);
-      newState.error = true;
-      newState.isLoading = false;
-      this.setState({ benchmarkState: newState });
-    }
   }
 
   async componentDidMount() {
@@ -207,7 +109,6 @@ class Home extends Component {
     this.getPortfolioValue();
     this.getEconomicData();
     this.getMarketStatus();
-    this.getBenchmarkData('1M', 'SPY');
   }
 
   handleNavigation(location) {
@@ -422,13 +323,6 @@ class Home extends Component {
   }
 
   render() {
-    const benchmarkVisualMultipliers = {
-      SPY: 10,
-      DIA: 100,
-      QQQ: 37.35,
-    };
-    const benchmarkVisualMultiplier = benchmarkVisualMultipliers[this.state.selectedBenchmark] || 1;
-
     return (
       <div className="page">
         <section className="content-grid">
@@ -492,44 +386,6 @@ class Home extends Component {
                 <h3>{this.state.name ? this.state.name : "Economic Data"}</h3>
                 <WrappedEconomicChart state={this.state} viewConfig={this.economicChartConfig}/>
               </div>
-            </div>
-            {/* Market Benchmarks Section - displays comparison charts for major indices */}
-            <div className="stock-mini" style={{ gridColumn: '1 / -1' }}>
-              {/* Header and benchmark selector dropdown */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '15px' }}>
-                <h3 style={{ margin: 0 }}>Market Benchmarks</h3>
-                {/* Dropdown to select between S&P 500, DOW, and NASDAQ */}
-                <select value={this.state.selectedBenchmark} onChange={this.handleBenchmarkChange} style={{ padding: '8px 12px', fontSize: '14px', borderRadius: '5px', border: '1px solid #ccc', backgroundColor: 'var(--background-color)', color: 'var(--text-color-dark)', cursor: 'pointer' }}>
-                  <option value="SPY">S&P 500 (SPY)</option>
-                  <option value="DIA">DOW (DIA)</option>
-                  <option value="QQQ">NASDAQ (QQQ)</option>
-                </select>
-              </div>
-              {/* Timeframe selection buttons - clicking triggers getBenchmarkData() */}
-              <div className="btn-group">
-                <button disabled={this.state.benchmarkState.interval === "1D" ? true : false} onClick={() => this.getBenchmarkData("1D")}>1D</button>
-                <button disabled={this.state.benchmarkState.interval === "5D" ? true : false} onClick={() => this.getBenchmarkData("5D")}>5D</button>
-                <button disabled={this.state.benchmarkState.interval === "1M" ? true : false} onClick={() => this.getBenchmarkData("1M")}>1M</button>
-                <button disabled={this.state.benchmarkState.interval === "6M" ? true : false} onClick={() => this.getBenchmarkData("6M")}>6M</button>
-                <button disabled={this.state.benchmarkState.interval === "1Y" ? true : false} onClick={() => this.getBenchmarkData("1Y")}>1Y</button>
-                <button disabled={this.state.benchmarkState.interval === "5Y" ? true : false} onClick={() => this.getBenchmarkData("5Y")}>5Y</button>
-              </div>
-              {/* Display loading state, error message, or chart based on data fetch status */}
-              {this.state.benchmarkState.isLoading ? (
-                <p>Loading {this.state.selectedBenchmark} data...</p>
-              ) : this.state.benchmarkState.error ? (
-                <p className="error">Unable to load {this.state.selectedBenchmark} data.</p>
-              ) : this.state.benchmarkState.data ? (
-                /* TimeSeriesChart with hideControls prop to suppress duplicate header/buttons */
-                <TimeSeriesChart
-                  state={this.state.benchmarkState}
-                  handleDataChange={this.handleBenchmarkIntervalChange}
-                  hideControls={true}
-                  priceDisplayMultiplier={benchmarkVisualMultiplier}
-                />
-              ) : (
-                <p>Loading benchmark data...</p>
-              )}
             </div>
           </div>
           <div className="news-updates">
