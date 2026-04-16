@@ -66,11 +66,7 @@ export class PortfolioTransactionInteractor implements IInputBoundary {
             transactionEntry.setFieldValue("assetId", requestModel.request.request.transaction.entry.assetId);            
             transaction.setFieldValue("portfolioId", requestModel.request.request.transaction.portfolioId);
             transaction.setFieldValue('entry', transactionEntry);
-        } else if(
-            requestModel.request.request.action === "getPortfolioValue" ||
-            requestModel.request.request.action === "getPortfolioValueByType" ||
-            requestModel.request.request.action === "getPortfolioPerformanceHistory"
-        ) {
+        } else if(requestModel.request.request.action === "getPortfolioValue" || requestModel.request.request.action === "getPortfolioValueByType") {
             transaction.setFieldValue("portfolioId", requestModel.request.request.transaction.portfolioId);
         }
 

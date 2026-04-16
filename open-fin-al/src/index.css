@@ -844,44 +844,6 @@ code {
   margin-bottom: 20px;
 }
 
-.portfolio-benchmark-section {
-  text-align: center;
-  margin-bottom: 24px;
-}
-
-.portfolio-benchmark-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-
-.portfolio-benchmark-header h3 {
-  margin: 0;
-}
-
-.portfolio-benchmark-select {
-  padding: 8px 12px;
-  font-size: 14px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  background-color: var(--background-color);
-  color: var(--text-color-dark);
-  cursor: pointer;
-}
-
-.portfolio-benchmark-controls {
-  text-align: center;
-  padding-right: 0;
-}
-
-.portfolio-benchmark-chart {
-  width: min(700px, 100%);
-  margin: 0 auto;
-}
-
 .portfolio-card {
   display: flex;
   flex-direction: column;
@@ -2653,9 +2615,6 @@ nav ul li a:hover {
 }
 
 /* PIN Login Styles */
-/* ## Recent change
-   Allow the auth screen to scroll vertically when the registration form
-   becomes taller than the viewport, instead of clipping the submit button. */
 .pin-login-container {
   position: fixed;
   top: 0;
@@ -2663,14 +2622,10 @@ nav ul li a:hover {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
   z-index: 10000;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding: 24px 0;
-  box-sizing: border-box;
 }
 
 .pin-login-background {
@@ -2697,9 +2652,6 @@ nav ul li a:hover {
   50% { transform: translateY(-10px); }
 }
 
-/* ## Recent change
-   Keep the auth card naturally sized inside the new scrollable container so
-   longer forms stay reachable on smaller screens. */
 .pin-login-card {
   background: var(--background-color);
   border-radius: 16px;
@@ -2924,13 +2876,6 @@ body.dark-mode .pin-login-error {
 
 /* Responsive Design */
 @media (max-width: 480px) {
-  /* ## Recent change
-     Tighten the auth shell spacing on narrow screens so users reach the
-     "Create Account" button sooner while preserving page scrolling. */
-  .pin-login-container {
-    padding: 16px 0;
-  }
-
   .pin-login-card {
     padding: 24px;
     margin: 16px;
@@ -3350,30 +3295,6 @@ body.dark-mode .pin-login-error {
   font-size: 18px;
 }
 
-.bubble-confirmation {
-  padding: 12px 0;
-}
-
-.bubble-confirmation-text {
-  margin: 0;
-  padding: 0 16px 12px;
-  font-size: 14px;
-  color: var(--text-color-dark);
-}
-
-.bubble-confirmation-actions {
-  display: flex;
-  flex-direction: column;
-}
-
-.bubble-confirm-button {
-  color: var(--error-color);
-}
-
-.bubble-cancel-button {
-  color: var(--text-color-medium);
-}
-
 /* User Info Dropdown Styles */
 .user-info-container {
   position: relative;
@@ -3497,30 +3418,6 @@ body.dark-mode .dropdown-item:hover {
 
 body.dark-mode .logout-item:hover {
   background-color: rgba(220, 53, 69, 0.2);
-}
-
-/* Stock Mini Chart Section */
-.stock-mini {
-  flex-basis: 100%;
-  padding: 20px;
-  background-color: var(--background-color-highlight-light);
-  border-radius: 10px;
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  margin: 10px;
-  min-height: 400px;
-}
-
-.stock-mini h3 {
-  margin-top: 0;
-  margin-bottom: 20px;
-  font-size: 18px;
-  color: var(--text-color-dark);
-}
-
-.stock-mini p {
-  padding: 10px;
-  text-align: center;
-  color: var(--text-color-medium);
 }
 
 

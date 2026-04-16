@@ -1,24 +1,22 @@
-import React, { useContext, useEffect, useState, useMemo } from "react";
+import React, { useRef, useEffect, useState, useLayoutEffect, useMemo } from "react";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SettingsInteractor } from "../Interactor/SettingsInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { withViewComponent } from "../hoc/withViewComponent";
 import { ViewComponent } from "../types/ViewComponent";
 import { SettingsRow } from "./Settings/Row";
-import { InitializationInteractor } from "../Interactor/InitializationInteractor";
-import { useHeader } from "./App/LoadedLayout";
-import { DataContext } from "./App/DataContext";
 
 const WrappedSettingsRow = withViewComponent(SettingsRow);
+import { InitializationInteractor } from "../Interactor/InitializationInteractor";
+import { useHeader } from "./App/LoadedLayout";
 
 function Settings(props) {
     const { setHeader } = useHeader();
-    const { user } = useContext(DataContext);
-
+          
     useEffect(() => {
         setHeader({
         title: "Settings",
-        icon: "settings",
+        icon: "settings", 
         });
     }, [setHeader]);
 
@@ -35,44 +33,23 @@ function Settings(props) {
 
     const interactor = new SettingsInteractor();
 
+    // Function to get setting sections from interactor
     const fetchSettingSections = async () => {
         const settingSectionRequest = new JSONRequest(JSON.stringify({}));
         try {
             const response = await interactor.get(settingSectionRequest);
-            setSections(response);
+            setSections(response); // save to state or handle however needed
         } catch (error) {
             console.error("Failed to fetch setting sections:", error);
         }
     };
 
+    // Function to get setting sections from interactor
     const fetchCurrentSettings = async () => {
         const settingRequest = new JSONRequest(JSON.stringify({action: "getCurrent"}));
         try {
             const response = await interactor.get(settingRequest);
-            const currentSettings = response.response.results[0];
-
-            if (user) {
-                currentSettings.FirstName = {
-                    ...currentSettings.FirstName,
-                    value: user.firstName ?? ""
-                };
-                currentSettings.LastName = {
-                    ...currentSettings.LastName,
-                    value: user.lastName ?? ""
-                };
-                currentSettings.Username = {
-                    ...currentSettings.Username,
-                    value: user.username ?? ""
-                };
-                if (currentSettings.Email) {
-                    currentSettings.Email = {
-                        ...currentSettings.Email,
-                        value: user.email ?? ""
-                    };
-                }
-            }
-
-            setSettings(currentSettings);
+            setSettings(response.response.results[0]); // save to state or handle however needed
         } catch (error) {
             console.error("Failed to fetch setting sections:", error);
         }
@@ -106,40 +83,6 @@ function Settings(props) {
         prepareConfiguration();
     }, []);
 
-    useEffect(() => {
-        if (!user) {
-            return;
-        }
-
-        setSettings((prev) => ({
-            ...prev,
-            ...(prev.FirstName ? {
-                FirstName: {
-                    ...prev.FirstName,
-                    value: user.firstName ?? ""
-                }
-            } : {}),
-            ...(prev.LastName ? {
-                LastName: {
-                    ...prev.LastName,
-                    value: user.lastName ?? ""
-                }
-            } : {}),
-            ...(prev.Username ? {
-                Username: {
-                    ...prev.Username,
-                    value: user.username ?? ""
-                }
-            } : {}),
-            ...(prev.Email ? {
-                Email: {
-                    ...prev.Email,
-                    value: user.email ?? ""
-                }
-            } : {})
-        }));
-    }, [user]);
-
     const setSharedValues = (valueName, value) => {
         for(var setting of Object.values(settings)) {
             if(setting.valueName === valueName) {
@@ -162,14 +105,14 @@ function Settings(props) {
             await sleep(1000);
             setMessage(null);
 
-            props.checkIfConfigured();
+            const isConfigured = props.checkIfConfigured();
 
             setTimeout(() => {
-                navigate('/refresh', { replace: true });
+                navigate('/refresh', { replace: true }); // dummy path
                 setTimeout(() => {
-                    navigate(location.pathname, { replace: true });
+                    navigate(location.pathname, { replace: true }); // go back
                 }, 100);
-            }, 500);
+            }, 500); // slight delay to allow config update
         } else {
             setMessage("Failed to save the configuration");
         }
@@ -218,6 +161,7 @@ function Settings(props) {
     return (
         <div className={`page ${props.initialConfiguration ? 'only' : ''}`}>
             <header>
+                {/* Application Style Card */}
                 <div className="settings-card">
                     <div className="style-options">
                         <button
@@ -225,12 +169,13 @@ function Settings(props) {
                             onClick={() => {
                                 toggleDarkMode();
 
+                                // Force refresh of the route after state change
                                 setTimeout(() => {
-                                    navigate('/refresh', { replace: true });
+                                    navigate('/refresh', { replace: true }); // dummy path
                                     setTimeout(() => {
-                                        navigate(location.pathname, { replace: true });
+                                        navigate(location.pathname, { replace: true }); // go back
                                     }, 10);
-                                }, 50);
+                                }, 50); // slight delay to allow config update
                             }}
                             >
                                 {darkMode ? "Light Mode" : "Dark Mode"}
