@@ -18,9 +18,14 @@ class ChatbotToggle extends Component {
         return (
             <div>
                 <div className="chatBotToggle">
-                    <div className="circle" onClick={this.handleClick}>
+                    <button
+                      className="circle"
+                      onClick={this.handleClick}
+                      aria-label={this.state.toggle ? "Close chatbot" : "Open chatbot"}
+                      aria-expanded={this.state.toggle}
+                    >
                         <img src={chatbotIcon} alt="Chatbot Icon" className="chatbotIcon" width={30} height={30} />
-                    </div>
+                    </button>
                 </div>
 
                 {this.state.toggle && (                                                

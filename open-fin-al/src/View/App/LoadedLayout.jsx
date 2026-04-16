@@ -31,6 +31,7 @@ export function AppLoadedLayout(props) {
 
   return (
     <HeaderContext.Provider value={value}>
+        <a href="#main-content" className="skip-link">Skip to main content</a>
         <header className="pageHeader"
           
         >
@@ -40,7 +41,7 @@ export function AppLoadedLayout(props) {
                 <UserInfo onLogout={props.onLogout} />
             </div>
         </header>
-        <main>
+        <main id="main-content">
           <Outlet />
         </main>
     </HeaderContext.Provider>

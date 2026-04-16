@@ -1,5 +1,6 @@
 const { FusesPlugin } = require('@electron-forge/plugin-fuses');
 const { FuseV1Options, FuseVersion } = require('@electron/fuses');
+const path = require('path');
 
 const CopyDependenciesPlugin = require('./forge-plugins');
 
@@ -8,6 +9,17 @@ module.exports = {
     name: 'OpenFinAL',
     executableName: 'OpenFinAL',
     asar: true,
+    asarUnpack: [
+      '**/*.node',
+      '**/better-sqlite3/**',
+      '**/sqlite3/**',
+      '**/keytar/**',
+    ],
+    icon: path.resolve(__dirname, 'src/Asset/Image/icon'),
+    extraResource: [
+      path.resolve(__dirname, 'src/Asset/Slideshows'),
+      path.resolve(__dirname, 'src/Asset/LearningModulesVoiceovers'),
+    ],
   },
   rebuildConfig: {
     buildPath: './',
@@ -19,7 +31,9 @@ module.exports = {
     {
       name: '@electron-forge/maker-squirrel',
       config: {
-        shortcutName: 'OpenFinal',
+        name: 'OpenFinAL',
+        shortcutName: 'OpenFinAL',
+        setupExe: 'OpenFinAL-Setup.exe',
         createDesktopShortcut: true,
         createStartMenuShortcut: true,
       },
@@ -30,11 +44,28 @@ module.exports = {
     },
     {
       name: '@electron-forge/maker-deb',
-      config: {},
+      config: {
+        options: {
+          name: 'openfinal',
+          productName: 'OpenFinAL',
+          genericName: 'Financial Analytics',
+          description: 'An AI-enabled software to learn financial investing',
+          categories: ['Finance', 'Education'],
+          icon: path.resolve(__dirname, 'src/Asset/Image/icon.png'),
+        },
+      },
     },
     {
       name: '@electron-forge/maker-rpm',
-      config: {},
+      config: {
+        options: {
+          name: 'openfinal',
+          productName: 'OpenFinAL',
+          description: 'An AI-enabled software to learn financial investing',
+          categories: ['Finance', 'Education'],
+          icon: path.resolve(__dirname, 'src/Asset/Image/icon.png'),
+        },
+      },
     },
   ],
   plugins: [
@@ -74,5 +105,4 @@ module.exports = {
       [FuseV1Options.OnlyLoadAppFromAsar]: true,
     }),
   ],
-  mainConfig: './.webpack/main/index.js'
 };

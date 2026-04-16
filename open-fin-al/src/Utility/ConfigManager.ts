@@ -63,6 +63,12 @@ class ConfigUpdater {
                         NewsSummaryModelMaxOutputTokens: 200,
                         NewsSummaryModelTemperature: 0.2,
                         NewsSummaryModelTopP: 0.2
+                    },
+                    AccessibilitySettings: {
+                        HighContrast: false,
+                        ReduceMotion: false,
+                        LargeText: false,
+                        EnhancedFocus: false,
                     }
                 }
 

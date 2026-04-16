@@ -549,7 +549,7 @@ function getAssetPath() {
   const isDev = !app.isPackaged;
   const assetPath = isDev
     ? path.join(__dirname, '../renderer/Asset/Slideshows')
-    : path.join(process.resourcesPath, 'Asset/Slideshows');
+    : path.join(process.resourcesPath, 'Slideshows');
 
   return assetPath;
 }

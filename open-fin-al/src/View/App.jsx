@@ -12,6 +12,7 @@ import { DataContext } from "./App/DataContext";
 import { AuthContainer } from "./Auth/AuthContainer";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { InitializationInteractor } from "../Interactor/InitializationInteractor";
+import { getThemeColors, injectColorStyles, applyColors } from "./themes";
 import { SidecarInitializationInteractor } from "../Interactor/SidecarInitializationInteractor";
 import { registerAllComponents } from "../hoc/registerComponents";
 
@@ -62,17 +63,30 @@ function App(props) {
 
     const value = { state, setState, user, setUser, isAuthenticated, setIsAuthenticated };
 
-    const getDarkMode = async () => {
+    // Establish dark mode and accessibility settings when loaded or refreshed
+    const applyAllSettings = async () => {
         const config = await window.config.load();
-        if(config && config.DarkMode) {
-            document.body.classList.add("dark-mode");
-        } else {
-            document.body.classList.remove("dark-mode");
-        }
+        if (!config) return;
+
+        // Dark mode (from DarkMode flag or theme IsDarkTheme)
+        const a = config.AccessibilitySettings ?? {};
+        const isDark = !!(config.DarkMode || a.IsDarkTheme);
+        document.body.classList.toggle('dark-mode', isDark);
+
+        // Accessibility body classes
+        document.body.classList.toggle('high-contrast', !!a.HighContrast);
+        document.body.classList.toggle('reduce-motion', !!a.ReduceMotion);
+        document.body.classList.toggle('large-text', !!a.LargeText);
+        document.body.classList.toggle('enhanced-focus', !!a.EnhancedFocus);
+
+        // Color theme
+        const themeName = a.ColorTheme ?? 'default';
+        injectColorStyles();
+        applyColors(getThemeColors(themeName, isDark));
     };
 
-    useEffect(() => {
-        getDarkMode();
+    useEffect( () => {
+        applyAllSettings();
     }, []);
 
     useEffect(() => {
@@ -179,20 +193,30 @@ function App(props) {
                 }
 
                 return true;
-            }
+            } else {
+                //check if the site is uninitialized but configured
+                setStatusMessage("Checking if the system is configured...");
+                const configurationResponse = await interactor.get(requestObj,"isConfigured");
 
-            setStatusMessage("Checking if the system is configured...");
-            const configurationResponse = await interactor.get(requestObj, "isConfigured");
+                if(configurationResponse.response.ok) {
+                    setConfigured(true);
+                    applyAllSettings();
 
-            if (configurationResponse.response.ok) {
-                setConfigured(true);
-                setNeedsConfiguration(false);
-                getDarkMode();
+                    //app is not initialized, so start data initialization
+                    const initialized = await executeDataInitialization();
 
-                const initialized = await executeDataInitialization();
-                if (initialized) {
-                    setLoading(false);
-                    return true;
+                    if(initialized) {
+                        setLoading(false);
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    setStatusMessage("Creating initial configuration...");
+                    await interactor.post(requestObj,"createConfig");
+                    setConfigured(false);
+                    setLoading(true);
+                    return false;
                 }
                 return false;
             }
