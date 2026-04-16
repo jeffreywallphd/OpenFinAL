@@ -6,17 +6,13 @@
 
 import React, { useContext, useEffect, useMemo, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-
+import { DataContext } from "./App/DataContext";
 import { WrappedTickerSearchBar, WrappedTimeSeriesChart, WrappedTickerSidePanel } from "../hoc/WrappedComponents";
 import { ViewComponent } from "../types/ViewComponent";
-
-import { DataContext } from "./App";
-
 import { SecInteractor } from "../Interactor/SecInteractor";
 import { LanguageModelInteractor } from "../Interactor/LanguageModelInteractor";
 import { JSONRequest } from "../Gateway/Request/JSONRequest";
 import { useHeader } from "./App/LoadedLayout";
-
 
 function Stock(props) {
     const location = useLocation();
@@ -27,23 +23,19 @@ function Stock(props) {
 
     const { setHeader } = useHeader();
 
-
-    
-
     useEffect(() => {
         setHeader({
         title: "Trade",
-        icon: "attach_money", // Material icon name, or whatever you're using
+        icon: "attach_money",
         });
     }, [setHeader]);
     
-    //ensure that the state changes
     useEffect(() => {
         state.reportLinks = null;
 
         setState({
             ...state
-        })
+        });
     }, [state.data, state.searchRef, state.secData, state.interval]);
 
     const handleDataChange = (newState) => {
@@ -87,7 +79,7 @@ function Stock(props) {
                     contents.push(<p><strong>{sectionTitle}</strong>: {sectionText}</p>);
                 }
 
-                analysis = <>{contents}</>
+                analysis = <>{contents}</>;
 
                 setFundamentalAnalysis(analysis);
             } catch(error) {
@@ -99,7 +91,7 @@ function Stock(props) {
             analysis = "The AI model failed to generate a response.";
             setFundamentalAnalysis(analysis);
             setFundamentalAnalysisDisabled(false);
-        }  
+        }
         setAnalysisLoading(false);
     };
 
@@ -107,9 +99,8 @@ function Stock(props) {
         setFundamentalAnalysis(null);
         setFundamentalAnalysisDisabled(false);
         setAnalysisLoading(false);
-    }, [state?.searchRef])
+    }, [state?.searchRef]);
 
-    // Fetch report links from the SEC API
     useEffect(() => {
         const fetchReport = async () => {
             if (!state?.cik || !state?.ticker) return;
@@ -140,7 +131,6 @@ function Stock(props) {
             const reportResults10Q = await secInteractor.get(req10Q);
             window.console.log(reportResults10K, reportResults10Q);
             if(reportResults10K && reportResults10Q) {
-                // Update the DataContext state to include reportLinks if they exist
                 setState((prevState) => ({
                     ...prevState,
                     reportLinks: {
@@ -154,9 +144,8 @@ function Stock(props) {
         if (state?.data) {
             fetchReport();
         }
-    }, [state?.cik, state?.ticker, state?.data, setState]); // Added setState to dependency
+    }, [state?.cik, state?.ticker, state?.data, setState]);
 
-    // ── ViewComponent configs — useMemo prevents recreation on every render ──
     const tickerSearchConfig = useMemo(() => new ViewComponent({
         height: 50,
         width: 400,

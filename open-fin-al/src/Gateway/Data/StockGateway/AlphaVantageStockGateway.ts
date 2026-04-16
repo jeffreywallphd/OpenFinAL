@@ -204,7 +204,7 @@ export class AlphaVantageStockGateway implements IKeyedDataGateway {
 
     private createDataItem(date: Date, timeSeries: any) {
         const item = {
-            date: date.toLocaleDateString(),
+            date: date.toISOString().split("T")[0],
             time: date.toLocaleTimeString(),
             price: timeSeries["4. close"],
             volume: timeSeries["5. volume"],

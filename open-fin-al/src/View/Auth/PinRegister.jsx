@@ -12,6 +12,9 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
+        // ## Recent change
+        // Capture a user-specific email during account creation.
+        email: '',
         username: '',
         pin: '',
         confirmPin: ''
@@ -40,10 +43,14 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
     };
 
     const validateForm = () => {
-        const { firstName, lastName, username, pin, confirmPin } = formData;
+        const { firstName, lastName, email, username, pin, confirmPin } = formData;
         
         if (!firstName.trim()) return 'First name is required';
         if (!lastName.trim()) return 'Last name is required';
+        // ## Recent change
+        // Require a valid email so the account owns its SEC/API identity.
+        if (!email.trim()) return 'Email is required';
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) return 'Enter a valid email address';
         if (!username.trim()) return 'Username is required';
         if (username.length < 3) return 'Username must be at least 3 characters';
         if (!PinEncryption.validatePinFormat(pin)) return 'PIN must be exactly 8 digits';
@@ -69,13 +76,18 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
             console.log('Form data:', {
                 firstName: formData.firstName.trim(),
                 lastName: formData.lastName.trim(),
+                email: formData.email.trim(),
                 username: formData.username.trim(),
                 pin: '****' // Don't log actual PIN
             });
 
+            // ## Recent change
+            // Pass email through registration and store it in the authenticated
+            // user session returned to the app shell.
             const result = await authInteractor.registerUser({
                 firstName: formData.firstName.trim(),
                 lastName: formData.lastName.trim(),
+                email: formData.email.trim(),
                 username: formData.username.trim(),
                 pin: formData.pin
             });
@@ -87,6 +99,7 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
                     id: result.userId,
                     firstName: formData.firstName.trim(),
                     lastName: formData.lastName.trim(),
+                    email: formData.email.trim(),
                     username: formData.username.trim()
                 });
             } else {
@@ -151,6 +164,25 @@ function PinRegister({ onRegistrationSuccess, onSwitchToLogin }) {
                             placeholder="Enter your last name"
                             disabled={isLoading}
                             autoComplete="family-name"
+                        />
+                    </div>
+
+                    {/* ## Recent change
+                        Ask for email during sign-up instead of inheriting the
+                        machine-wide setup email from first-run configuration. */}
+                    <div className="pin-login-field">
+                        <label htmlFor="email" className="pin-login-label">
+                            Email
+                        </label>
+                        <input
+                            id="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={(e) => handleInputChange('email', e.target.value)}
+                            className="pin-login-input"
+                            placeholder="Enter your email"
+                            disabled={isLoading}
+                            autoComplete="email"
                         />
                     </div>
 

@@ -8,11 +8,11 @@ import React, { Component, useEffect, useContext } from "react";
 import {
   Routes,
   Route,
+  Navigate,
   NavLink,
   HashRouter,
   useLocation
 } from "react-router-dom";
-import { DataContext } from "../App";
 
 // Imports for react pages and assets
 import { AppLoadedLayout } from "./LoadedLayout"
@@ -135,7 +135,10 @@ class AppLoaded extends Component {
 
               <Routes>
                 <Route element={<AppLoadedLayout  onLogout={this.props.onLogout}/>}>
-                  <Route path="/" element={<Home />} />
+                  {/* ## Recent change
+                      If the app still needs user-specific setup, send the
+                      authenticated user straight to Settings instead of Home. */}
+                  <Route path="/" element={this.props.needsConfiguration ? <Navigate to="/settings" replace /> : <Home />} />
                   <Route path="/portfolio" element={<Portfolio />} />
                   <Route path="/risk-analysis" element={<RiskAnalysis />} />
                   <Route path="/buy-report" element={<BuyReport />} />

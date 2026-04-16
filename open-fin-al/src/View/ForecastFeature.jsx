@@ -3,22 +3,21 @@ import { useLocation } from "react-router-dom";
 import { withViewComponent } from "../hoc/withViewComponent";
 import { ViewComponent } from "../types/ViewComponent";
 import { TickerSearchBar } from "./Stock/TickerSearchBar";
+import { DataContext } from "./App/DataContext";
 import { RSIChart } from "./RSIChart";
 import { MovingAvgChart } from "./MovingAVGChart";
 import { ROCChart } from "./ROCChart";
 
 const WrappedTickerSearchBar = withViewComponent(TickerSearchBar);
-const WrappedRSIChart        = withViewComponent(RSIChart);
-const WrappedMovingAvgChart  = withViewComponent(MovingAvgChart);
-const WrappedROCChart        = withViewComponent(ROCChart);
-import { DataContext } from "./App";
+const WrappedRSIChart = withViewComponent(RSIChart);
+const WrappedMovingAvgChart = withViewComponent(MovingAvgChart);
+const WrappedROCChart = withViewComponent(ROCChart);
 
 function ForecastFeaturesPage(props) {
   const location = useLocation();
   const { state, setState } = useContext(DataContext);
   const [selectedChart, setSelectedChart] = useState("RSIChart");
 
-  // Force state update (might be removed later)
   useEffect(() => {
     setState({
       ...state,

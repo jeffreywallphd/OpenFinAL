@@ -4,12 +4,17 @@ import { PinEncryption } from '../Utility/PinEncryption';
 interface OpenFinALDatabase {
     SQLiteQuery: (params: { query: string; parameters?: any[] }) => Promise<any[]>;
     SQLiteGet: (params: { query: string; parameters?: any[] }) => Promise<any>;
-    SQLiteInsert: (params: { query: string; parameters?: any[] }) => Promise<{ lastInsertRowid: number }>;
+    SQLiteInsert: (params: { query: string; parameters?: any[] }) => Promise<{ lastID?: number; lastInsertRowid?: number }>;
     SQLiteUpdate: (params: { query: string; parameters?: any[] }) => Promise<any>;
 }
 
 // Use existing window.database (already declared elsewhere in OpenFinAL)
-declare const window: Window & { database: OpenFinALDatabase };
+declare const window: Window & {
+    database: OpenFinALDatabase,
+    vault?: {
+        setSecret?: (key: string, value: string) => Promise<any>;
+    }
+};
 
 /**
  * User Authentication Interactor
@@ -21,6 +26,72 @@ export class UserAuthInteractor {
         // No database parameter needed - uses window.database like other gateways
     }
 
+    // ## Recent change
+    // Support both legacy and current insert result shapes returned by the
+    // renderer database bridge.
+    private getInsertedId(result: { lastID?: number; lastInsertRowid?: number }): number | undefined {
+        return result?.lastID ?? result?.lastInsertRowid;
+    }
+
+    // ## Recent change
+    // Older databases may not have the per-user email column yet, so add it
+    // lazily to keep login and registration backward compatible.
+    private async ensureUserEmailColumn(): Promise<void> {
+        try {
+            await window.database.SQLiteUpdate({
+                query: `ALTER TABLE User ADD COLUMN email TEXT`,
+                parameters: []
+            });
+        } catch (error) {
+            const message = error instanceof Error ? error.message : String(error);
+            if (!message.includes('duplicate column name')) {
+                throw error;
+            }
+        }
+    }
+
+    // ## Recent change
+    // Keep the SEC/API user-agent email aligned with the active account.
+    private async syncSessionEmail(email?: string | null): Promise<void> {
+        try {
+            await window.vault?.setSecret?.('Email', email ?? '');
+        } catch (error) {
+            // Ignore vault sync failures so auth still succeeds.
+        }
+    }
+
+    // ## Recent change
+    // Preserve registration success on legacy portfolio schemas by retrying
+    // the default portfolio name when a global uniqueness constraint exists.
+    private buildDefaultPortfolioName(firstName: string, attempt: number): string {
+        const trimmedFirstName = firstName?.trim();
+        const baseName = trimmedFirstName ? `${trimmedFirstName}'s Portfolio` : 'My Portfolio';
+        return attempt === 0 ? baseName : `${baseName} (${attempt + 1})`;
+    }
+
+    private isPortfolioNameConflict(error: unknown): boolean {
+        const message = error instanceof Error ? error.message : String(error);
+        return message.includes('UNIQUE constraint failed: Portfolio.name');
+    }
+
+    private async createDefaultPortfolio(userId: number, firstName: string): Promise<void> {
+        for (let attempt = 0; attempt < 10; attempt += 1) {
+            const portfolioName = this.buildDefaultPortfolioName(firstName, attempt);
+
+            try {
+                await window.database.SQLiteInsert({
+                    query: `INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)`,
+                    parameters: [portfolioName, userId]
+                });
+                return;
+            } catch (error) {
+                if (!this.isPortfolioNameConflict(error) || attempt === 9) {
+                    throw error;
+                }
+            }
+        }
+    }
+
     /**
      * Register a new user with encrypted PIN
      * @param userData - User registration data
@@ -29,6 +100,7 @@ export class UserAuthInteractor {
     async registerUser(userData: {
         firstName: string,
         lastName: string,
+        email: string,
         username: string,
         pin: string
     }): Promise<{success: boolean, userId?: number, error?: string}> {
@@ -37,6 +109,8 @@ export class UserAuthInteractor {
             if (!window.database) {
                 return { success: false, error: 'Database not available' };
             }
+
+            await this.ensureUserEmailColumn();
 
             // Validate PIN format
             if (!PinEncryption.validatePinFormat(userData.pin)) {
@@ -56,19 +130,28 @@ export class UserAuthInteractor {
             // Hash the PIN
             const pinHash = await PinEncryption.hashPin(userData.pin);
 
+            // ## Recent change
+            // Store email with the account so each user has their own identity
+            // instead of reusing the machine-wide setup email.
             // Insert new user
             const result = await window.database.SQLiteInsert({
-                query: `INSERT INTO User (firstName, lastName, username, pinHash) VALUES (?, ?, ?, ?)`,
-                parameters: [userData.firstName, userData.lastName, userData.username, pinHash]
+                query: `INSERT INTO User (firstName, lastName, email, username, pinHash) VALUES (?, ?, ?, ?, ?)`,
+                parameters: [userData.firstName, userData.lastName, userData.email, userData.username, pinHash]
             });
 
+            const userId = this.getInsertedId(result);
+            if (!userId) {
+                return { success: false, error: 'Registration failed: Could not determine the new user ID' };
+            }
+
+            // ## Recent change
+            // Create the default portfolio and sync the account email into the
+            // current secure session values used by external requests.
             // Create default portfolio for the user
-            await window.database.SQLiteInsert({
-                query: `INSERT INTO Portfolio (name, userId, isDefault) VALUES (?, ?, 1)`,
-                parameters: [`${userData.firstName}'s Portfolio`, result.lastID]
-            });
+            await this.createDefaultPortfolio(userId, userData.firstName);
+            await this.syncSessionEmail(userData.email);
 
-            return { success: true, userId: result.lastID };
+            return { success: true, userId };
         } catch (error) {
             return { success: false, error: `Registration failed: ${error.message || 'Unknown error'}` };
         }
@@ -86,14 +169,19 @@ export class UserAuthInteractor {
         error?: string
     }> {
         try {
+            await this.ensureUserEmailColumn();
+
             // Validate PIN format
             if (!PinEncryption.validatePinFormat(pin)) {
                 return { success: false, error: 'Invalid PIN format' };
             }
 
+            // ## Recent change
+            // Load email during login so the active session can use the
+            // logged-in account's SEC/API identity.
             // Get user from database
             const users = await window.database.SQLiteQuery({
-                query: `SELECT id, firstName, lastName, username, pinHash FROM User WHERE username = ?`,
+                query: `SELECT id, firstName, lastName, email, username, pinHash FROM User WHERE username = ?`,
                 parameters: [username]
             });
 
@@ -110,11 +198,14 @@ export class UserAuthInteractor {
                 return { success: false, error: 'Invalid PIN' };
             }
 
+            // ## Recent change
+            // Refresh the active email secret after a successful login.
             // Update last login timestamp
             await window.database.SQLiteUpdate({
                 query: `UPDATE User SET lastLogin = CURRENT_TIMESTAMP WHERE id = ?`,
                 parameters: [user.id]
             });
+            await this.syncSessionEmail(user.email);
 
             // Remove pinHash from returned user object for security
             const { pinHash, ...userWithoutPin } = user;
@@ -223,6 +314,8 @@ export class UserAuthInteractor {
         error?: string
     }> {
         try {
+            await this.ensureUserEmailColumn();
+
             // Get user from database
             const users = await window.database.SQLiteQuery({
                 query: `SELECT id, firstName, lastName, username FROM User WHERE username = ?`,

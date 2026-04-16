@@ -50,11 +50,12 @@ export class SQLiteTableCreationGateway implements ISqlDataGateway {
 
             CREATE TABLE IF NOT EXISTS Portfolio (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT UNIQUE NOT NULL,
+                name TEXT NOT NULL,
                 description TEXT,
                 userId INTEGER NOT NULL,
                 isDefault INTEGER DEFAULT 0,
                 createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE (userId, name),
                 FOREIGN KEY (userId) REFERENCES User(id)
             );
 

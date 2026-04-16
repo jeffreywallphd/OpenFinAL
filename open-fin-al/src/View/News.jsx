@@ -9,12 +9,11 @@ import { withViewComponent } from "../hoc/withViewComponent";
 import { ViewComponent } from "../types/ViewComponent";
 import { NewsSearchBar } from "./News/SearchBar";
 import { NewsListing } from "./News/Listing";
-
-const WrappedNewsSearchBar = withViewComponent(NewsSearchBar);
-const WrappedNewsListing   = withViewComponent(NewsListing);
-import { DataContext } from "./App";
+import { DataContext } from "./App/DataContext";
 import { useHeader } from "./App/LoadedLayout";
 
+const WrappedNewsSearchBar = withViewComponent(NewsSearchBar);
+const WrappedNewsListing = withViewComponent(NewsListing);
 
 function NewsPage(props) {
     const { state, setState } = useContext(DataContext);
@@ -28,17 +27,16 @@ function NewsPage(props) {
         });
     }, [setHeader]);
 
-    //ensure that the state changes
     useEffect(() => {
         setState({
             ...state
-        })
+        });
     }, [state.newsData, state.data, state.searchRef, state.secData]);
 
     useEffect(() => {
         setState({
             ...state
-        })
+        });
     }, []);
 
     const handleDataChange = (newState) => {
@@ -94,7 +92,6 @@ function NewsPage(props) {
     );
 }
 
-// In case hooks are needed for this class. Can remove later if not necessary
 export function News(props) {
-    return <NewsPage />
-};
+    return <NewsPage />;
+}
