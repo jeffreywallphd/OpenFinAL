@@ -1,7 +1,7 @@
 # Feature Documentation Template
 
 ## Feature Name
-<!-- Enter the name of the feature -->
+Accessbility page
 
 ## Feature Type
 _Core Feature / Peripheral Feature / Integration / UI Feature_
@@ -36,21 +36,18 @@ Accessibility Additions ( toggle switches on or off)
 5 - Made dropdown for overall settings
 
 ## Dependencies
-Libraries, APIs, or components required.
+N/A
 
 ## Configuration / Setup
-Steps required to enable or configure the feature.
+N/A
 
 ## Example Usage
-Example scenario or workflow demonstrating the feature.
+Changing the color themes to a darker mode for night viewing
+Englaring the text for people who have bad eyesight\
 
 ## Future Improvements
 Known limitations or possible enhancements.
-Risk Analysis Page: 
-1 - Work on circles properly being spaced when scrolling
-2 - Work on differentiating without color within the chart 
-  ( put connecting explaination within chart not just color)
+The highconstast mode only works for the defautl light mode page
+large text only enlarges the heading/titles not the subtext
+add an option to create/save custom presets
 
-Software Installation: 
-1 - Create a guide on how to download, or even an app making the process more simple
-  ( this took up way too much time from each team)
