@@ -1,4 +1,4 @@
-# GitHub Guidlines
+# GitHub Guidelines
 
 ## If you are unfamiliar with GitHub and Visual Studio Code
 * Here is a video tutorial for beginners on how to use Git with VS Code
@@ -12,19 +12,19 @@ If you are a developer on your team, you must have Jeff Wall give you access to 
     - You always create a branch from an existing branch. Typically, you might create a new branch from the default branch of your repository and our default branch is “main”. 
 
 * Once you have successfully cloned repository in your system you will be in main branch by default. You can check it in left bottom part of your VS code window as shown in below image.
-![Check Main Branch](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/check_branch.png)
+![Check Main Branch](../documentation/images/check_branch.png)
 * Moreover, it shows the name of the branch that is currently in use. If you are going to click on it there will be a popup as shown in below image and you can choose any other branch to switch from that popup.
-![Branch Options](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branch_options.png)
+![Branch Options](../documentation/images/branch_options.png)
 
 ## Create a new branch:
 * You can always create a branch using git checkout -b  NEW_BRANCH_NAME command however here is an alternative method:
 * Step - 1 : Click on link below:
 * [Repository Link](https://github.com/jeffreywallphd/AutoProphet)
 * Step - 2 : Click on highlighted option (Branches) in below image:
-![Branches](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branches.png)
+![Branches](../documentation/images/branches.png)
 * Step - 3 : Now you will be redirected to branches page as shown in below image then select new branch option and there will be a popup asking you to create a new branch and always make sure that source branch is main (by default it always be main).
-![Branches Page](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branches_page.png)
-![Create Branch Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/create_branch.png)   
+![Branches Page](../documentation/images/branches_page.png)
+![Create Branch Option](../documentation/images/create_branch.png)   
 * This way it will be ensured that you have created new branch without having any issues with main branch. 
 
 ## Changes from other teams:
@@ -32,23 +32,23 @@ If you are a developer on your team, you must have Jeff Wall give you access to 
 
 * Here is the way to do it using VS code when you are already in main barnch:
 * Step - 1 : Click on the source control:
-![Source Control](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/Source_control.png)
+![Source Control](../documentation/images/Source_control.png)
 * Step - 2 : Then you will be able to see below option in your side panel choose highlighted option:
-![Three Dots](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/three_dots.png)  
+![Three Dots](../documentation/images/three_dots.png)  
 * Step - 3 : Then you will be able to see popup just like shown in below image and select pull option and you are good to go.
-![Pull Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull.png)
+![Pull Option](../documentation/images/pull.png)
 
 * Now suppose that you are in your working branch and you want to take pull from main branch into your branch or in other words you want to merge changes from main branch into your working branch to keep your working branch up to date follow below steps:
 * Step - 1 : Click on the source control:
-![Source Control](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/Source_control.png)
+![Source Control](../documentation/images/Source_control.png)
 * Step - 2 : Then you will be able to see below option in your side panel choose highlighted option:
-![Three Dots](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/three_dots.png)  
+![Three Dots](../documentation/images/three_dots.png)  
 * Step - 3 : Then you will be able to see popup just like shown in below image and select pull,push option.
-![Pull Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull.png)
+![Pull Option](../documentation/images/pull.png)
 * Step - 4 : Then you will be able to see popup just like shown in below image and select pull from option.
-![Pull,Push Option](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/pull_from.png)
+![Pull,Push Option](../documentation/images/pull_from.png)
 * Step - 5 : Then there will be another popup just like shown in below image and choose main branch out all branches and you are done.
-![Branch Selection](https://github.com/jeffreywallphd/AutoProphet/blob/Dco_Update/documentation/images/branch_select.png)
+![Branch Selection](../documentation/images/branch_select.png)
 
 ## Above methods are using modern IDE approach however if you want to work with the traditional command line approach:
 ## Branching
